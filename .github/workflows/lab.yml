@@ -1,0 +1,29 @@
+name: lab
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lab/**'
+      - '.github/workflows/lab.yml'
+  pull_request:
+    paths:
+      - 'lab/**'
+      - '.github/workflows/lab.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Yer tutucu
+        run: echo "lab adımları ilgili görevde eklenecek"

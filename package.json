@@ -1,0 +1,16 @@
+{
+  "name": "gokturkfulser.com",
+  "private": true,
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "site:dev": "node -e \"console.log('site:dev: yer tutucu, site görevinde dolacak')\"",
+    "site:build": "node -e \"console.log('site:build: yer tutucu, site görevinde dolacak')\"",
+    "lab:dev": "node -e \"console.log('lab:dev: yer tutucu, lab görevinde dolacak')\"",
+    "lab:build": "node -e \"console.log('lab:build: yer tutucu, lab görevinde dolacak')\"",
+    "infra:up": "node -e \"console.log('infra:up: yer tutucu, infra görevinde dolacak')\"",
+    "infra:down": "node -e \"console.log('infra:down: yer tutucu, infra görevinde dolacak')\""
+  }
+}
