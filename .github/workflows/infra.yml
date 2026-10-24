@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - 'infra/**'
-      - '.github/workflows/infra.yml'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'infra/**'
-      - '.github/workflows/infra.yml'
+      - '.github/workflows/**'
 
 permissions:
   contents: read

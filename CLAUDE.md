@@ -30,7 +30,7 @@ Sonraki tüm görevler adları buradan okur; başka yerde sabit kodlamak yerine 
 
 pnpm workspace: `site`, `lab`, `lab/apps/*`. Kök `package.json` kısayolları: `site:dev`, `site:build`, `lab:dev` (`pnpm lab:dev [slug]`), `lab:build`, `lab:new` (`pnpm lab:new <slug>`); `infra:up`, `infra:down`, `infra:logs`, `infra:check` (yerel Docker; ayrıntı `infra/CLAUDE.md`); `service:new` (`pnpm service:new <ad>`: `infra/templates/fastapi-service` şablonundan `services/<ad>/`, `infra/apps/<ad>/compose.yml` ve `.github/workflows/service-<ad>.yml` üretir).
 
-CI: `.github/workflows/{site,lab,infra}.yml` yalnızca kendi klasörlerindeki ve kendi workflow dosyalarındaki değişikliklerde çalışır; her servis için `service-<app>.yml` yalnızca `services/<app>/**` ve kendi dosyasında çalışır (image: PR'da amd64, main'de amd64+arm64 → GHCR; deploy yalnızca `vars.DEPLOY_TARGET == 'vps'`).
+CI: `.github/workflows/{site,lab,infra}.yml` yalnızca kendi klasörlerindeki ve kendi workflow dosyalarındaki değişikliklerde çalışır (istisna: `infra.yml` `.github/workflows/**` değişince de çalışır, çünkü tüm workflow'ları actionlint'ler); her servis için `service-<app>.yml` yalnızca `services/<app>/**` ve kendi dosyasında çalışır (image: PR'da amd64, main'de amd64+arm64 → GHCR; deploy yalnızca `vars.DEPLOY_TARGET == 'vps'`).
 
 ## Kurallar
 
