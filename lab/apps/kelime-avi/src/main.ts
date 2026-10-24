@@ -1,5 +1,6 @@
 import './style.css';
 import { KELIMELER } from './kelimeler.ts';
+import sozlukUrl from './sozluk.txt?url';
 import type { Durum } from './mantik.ts';
 import {
   HAK,
@@ -7,9 +8,11 @@ import {
   KLAVYE_SATIRLARI,
   dahaIyi,
   degerlendir,
+  gecerliKelimeler,
   gunNumarasi,
   gunlukKelime,
   rastgeleKelime,
+  tahminGecerli,
   tusuHarfeCevir,
 } from './mantik.ts';
 
@@ -53,7 +56,7 @@ kok.innerHTML = `
       <li><span class="hucre" data-durum="var">A</span> Harf kelimede ama <strong>başka yerde</strong>.</li>
       <li><span class="hucre" data-durum="yok">Z</span> Harf kelimede <strong>yok</strong>.</li>
     </ul>
-    <p>Her gün yeni bir kelime gelir; istersen bitirdikten sonra rastgele kelimelerle oynayabilirsin.</p>
+    <p>Tahminin sözlükte bulunan gerçek bir kelime olmalı. Her gün yeni bir kelime gelir; istersen bitirdikten sonra rastgele kelimelerle oynayabilirsin.</p>
     <p>Türkçe harfler ayrıdır: <strong>İ</strong> ile <strong>I</strong>, <strong>Ş</strong>, <strong>Ğ</strong>, <strong>Ç</strong>, <strong>Ö</strong>, <strong>Ü</strong> farklı harflerdir. Klavyeden yazabilir ya da ekran klavyesini kullanabilirsin; Enter tahmini gönderir.</p>
     <button type="button" class="dugme" id="yardim-kapat">Tamam</button>
   </dialog>
@@ -248,7 +251,28 @@ function bitir(kazandi: boolean) {
   rastgeleDugme.focus({ preventScroll: true });
 }
 
-function gonder() {
+// ---- Sözlük (tahmin doğrulaması): ayrı dosya, ilk ihtiyaçta ya da boşta yüklenir --------------
+let sozlukSozu: Promise<ReadonlySet<string> | null> | null = null;
+let sozlukHazir = false;
+
+function sozluguYukle(): Promise<ReadonlySet<string> | null> {
+  sozlukSozu ??= fetch(sozlukUrl)
+    .then((yanit) => {
+      if (!yanit.ok) throw new Error(String(yanit.status));
+      return yanit.text();
+    })
+    .then((metin) => {
+      sozlukHazir = true;
+      return gecerliKelimeler(metin, KELIMELER);
+    })
+    .catch(() => {
+      sozlukSozu = null; // sonraki tahminde yeniden denenir
+      return null;
+    });
+  return sozlukSozu;
+}
+
+async function gonder() {
   if (bitti || kilit) return;
   if (gecerli.length < HARF_SAYISI) {
     mesajYaz('Beş harf gerekli.');
@@ -256,6 +280,23 @@ function gonder() {
     return;
   }
   const tahmin = gecerli.join('');
+
+  kilit = true;
+  if (!sozlukHazir) mesajYaz('Sözlük yükleniyor…', true);
+  const sozluk = await sozluguYukle();
+  kilit = false;
+  if (sozluk === null) {
+    // Sözlük indirilemedi (çevrimdışı vb.): oyunu kilitlememek için tahmin denetlenmeden kabul edilir.
+    mesajYaz('Sözlük yüklenemedi; tahmin denetlenmeden kabul edildi.');
+  } else if (!tahminGecerli(tahmin, sozluk)) {
+    mesajYaz(`“${tahmin}” sözlükte yok. Başka bir kelime dene.`);
+    sars();
+    return;
+  } else if (!bitti) {
+    mesaj.textContent = '';
+  }
+  if (bitti) return;
+
   const satirNo = tahminler.length;
   tahminler.push(tahmin);
   gecerli = [];
@@ -328,7 +369,7 @@ klavye.addEventListener('click', (e) => {
   const d = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-eylem]');
   if (!d) return;
   const eylem = d.dataset.eylem!;
-  if (eylem === 'gonder') gonder();
+  if (eylem === 'gonder') void gonder();
   else if (eylem === 'sil') harfSil();
   else harfEkle(eylem);
 });
@@ -342,7 +383,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     if (hedefEleman instanceof HTMLButtonElement && !klavyeTusu) return;
     e.preventDefault();
-    gonder();
+    void gonder();
   } else if (e.key === 'Backspace') {
     e.preventDefault();
     harfSil();
@@ -377,3 +418,5 @@ if (window.top === window.self && document.fullscreenEnabled) {
 }
 
 oyunuBaslat('gunluk');
+// Sözlük ayrı dosya: sayfa yüklendikten sonra boşta indirilir; gönderirken hazır olması beklenir.
+window.setTimeout(() => void sozluguYukle(), 1500);

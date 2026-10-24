@@ -8,6 +8,11 @@ export const LAB = fileURLToPath(new URL('..', import.meta.url));
 export const APPS = join(LAB, 'apps');
 export const SLUG_DESENI = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+/** Yeni app'lerin başlangıç CSP'si (sıkı). App'e özel ihtiyaçlar lab/public/_headers'ta elle gevşetilir. */
+export const SIKI_CSP =
+  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; " +
+  "base-uri 'self'; object-src 'none'; form-action 'none'";
+
 /** pnpm'i verilen argümanlarla çalıştırır; `shell` Windows'ta pnpm.cmd'yi bulmak içindir. */
 export function pnpm(args, secenekler = {}) {
   return spawnSync(['pnpm', ...args].join(' '), { cwd: LAB, stdio: 'inherit', shell: true, ...secenekler });

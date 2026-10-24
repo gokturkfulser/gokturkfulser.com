@@ -29,6 +29,12 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
     devDependencies:
+      dictionary-tr:
+        specifier: ^2.0.0
+        version: 2.0.0
+      nspell:
+        specifier: ^2.1.5
+        version: 2.1.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1461,6 +1467,9 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
+  dictionary-tr@2.0.0:
+    resolution: {integrity: sha512-Du0PHWIqAlNheOUEDgGea0lmEV4L/T57EvG4231IUeSWySSDZ8wj5TKo2Vlkx7j9RVD07XqZQLDCtOZvhll6xA==}
+
   diff@9.0.0:
     resolution: {integrity: sha512-svtcdpS8CgJyqAjEQIXdb3OjhFVVYjzGAPO8WGCmRbrml64SPw/jJD4GoE98aR7r25A0XcgrK3F02yw9R/vhQw==}
     engines: {node: '>=0.3.1'}
@@ -1689,6 +1698,10 @@ packages:
 
   is-alphanumerical@2.0.1:
     resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
+
+  is-buffer@2.0.5:
+    resolution: {integrity: sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==}
+    engines: {node: '>=4'}
 
   is-decimal@2.0.1:
     resolution: {integrity: sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==}
@@ -2018,6 +2031,9 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
+
+  nspell@2.1.5:
+    resolution: {integrity: sha512-PSStyugKMiD9mHmqI/CR5xXrSIGejUXPlo88FBRq5Og1kO5QwQ5Ilu8D8O5I/SHpoS+mibpw6uKA8rd3vXd2Sg==}
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -3936,6 +3952,8 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
+  dictionary-tr@2.0.0: {}
+
   diff@9.0.0: {}
 
   dom-serializer@2.0.0:
@@ -4280,6 +4298,8 @@ snapshots:
     dependencies:
       is-alphabetical: 2.0.1
       is-decimal: 2.0.1
+
+  is-buffer@2.0.5: {}
 
   is-decimal@2.0.1: {}
 
@@ -4848,6 +4868,10 @@ snapshots:
   node-mock-http@1.0.5: {}
 
   normalize-path@3.0.0: {}
+
+  nspell@2.1.5:
+    dependencies:
+      is-buffer: 2.0.5
 
   nth-check@2.1.1:
     dependencies:

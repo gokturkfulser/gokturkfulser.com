@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { KELIMELER } from './kelimeler.ts';
 import {
@@ -8,7 +9,10 @@ import {
   buyukHarf,
   degerlendir,
   gunNumarasi,
+  gecerliKelimeler,
   gunlukKelime,
+  kucukHarf,
+  tahminGecerli,
   tusuHarfeCevir,
 } from './mantik.ts';
 
@@ -77,4 +81,30 @@ test('günlük kelime: gün içinde sabit, ardışık günlerde farklı, adım a
   const goruldu = new Set(Array.from({ length: n }, (_, i) => gunlukKelime(KELIMELER, i)));
   assert.equal(goruldu.size, n);
   assert.equal(adim(n) % 1, 0);
+});
+
+test('sözlük: Türkçe küçük harf ve doğrulama', () => {
+  assert.equal(kucukHarf('IRMAK'), 'ırmak');
+  assert.equal(kucukHarf('İZMİR'), 'izmir');
+  const g = gecerliKelimeler('kitap\nırmak\n', ['KALEM']);
+  assert.equal(tahminGecerli('KİTAP', g), true); // İ → i
+  assert.equal(tahminGecerli('IRMAK', g), true); // I → ı
+  assert.equal(tahminGecerli('IRMAK'.replace('I', 'İ'), g), false); // iRMAK ≠ ırmak
+  assert.equal(tahminGecerli('KALEM', g), true); // cevaplar sözlükte olmasa da kabul
+  assert.equal(tahminGecerli('QWXZZ', g), false);
+});
+
+test('sözlük dosyası: 5 harf, küçük harf, Türk alfabesi, tekil; tüm cevapları içerir', () => {
+  const satirlar = readFileSync(new URL('./sozluk.txt', import.meta.url), 'utf8').split('\n').filter(Boolean);
+  assert.ok(satirlar.length > 5000, 'sözlük beklenenden küçük');
+  assert.equal(new Set(satirlar).size, satirlar.length);
+  for (const k of satirlar) {
+    assert.equal(k, kucukHarf(k), k);
+    const harfler = Array.from(k);
+    assert.equal(harfler.length, 5, k);
+    assert.ok(harfler.every((h) => ALFABE.includes(buyukHarf(h))), k);
+  }
+  const kume = new Set(satirlar);
+  const eksik = KELIMELER.filter((k) => !kume.has(kucukHarf(k)));
+  assert.deepEqual(eksik, [], 'cevap listesinde sözlükte olmayan kelimeler var');
 });

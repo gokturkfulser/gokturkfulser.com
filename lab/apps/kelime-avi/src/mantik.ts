@@ -6,8 +6,11 @@ export const HAK = 6;
 /** Türk alfabesi (29 harf), büyük harfle. q, w, x yoktur; ı/I ve i/İ ayrı harflerdir. */
 export const ALFABE = 'ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ';
 
-/** Ekran klavyesi satırları (Türkçe Q düzeni). */
-export const KLAVYE_SATIRLARI: readonly string[] = ['ERTYUIOPĞÜ', 'ASDFGHJKLŞİ', 'ZCVBNMÖÇ'];
+/**
+ * Ekran klavyesi satırları. Türkçe Q düzeninin harf sırası korunur ama 8'li satırlara bölünür: 360 px genişlikte
+ * 10-11'li satırlarda tuş ~27 px olurdu, 8'li satırda ~40 px'tir. Son satırda Gönder ve Sil de vardır.
+ */
+export const KLAVYE_SATIRLARI: readonly string[] = ['ERTYUIOP', 'ĞÜASDFGH', 'JKLŞİZCV', 'BNMÖÇ'];
 
 export type Durum = 'dogru' | 'var' | 'yok';
 
@@ -16,6 +19,19 @@ export type Durum = 'dogru' | 'var' | 'yok';
  * "ı" ile karıştırırdı; bu yüzden her yerde toLocaleUpperCase('tr') kullanılır.
  */
 export const buyukHarf = (metin: string): string => metin.toLocaleUpperCase('tr');
+
+/** Türkçe küçük harf: İ → i, I → ı (sözlük dosyası bu biçimdedir). */
+export const kucukHarf = (metin: string): string => metin.toLocaleLowerCase('tr');
+
+/**
+ * Geçerli tahminler: sözlük dosyası (satır başına bir kelime) ∪ cevap listesi. Cevaplar sözlükte olmasa da
+ * her zaman kabul edilir; böylece günün kelimesi hiçbir zaman "sözlükte yok" diye reddedilmez.
+ */
+export const gecerliKelimeler = (sozlukMetni: string, cevaplar: readonly string[]): Set<string> =>
+  new Set([...sozlukMetni.split('\n').filter(Boolean), ...cevaplar.map(kucukHarf)]);
+
+export const tahminGecerli = (tahmin: string, gecerliler: ReadonlySet<string>): boolean =>
+  gecerliler.has(kucukHarf(tahmin));
 
 /** Kullanıcının bastığı tuşu (KeyboardEvent.key) oyun harfine çevirir; geçersizse null. */
 export function tusuHarfeCevir(tus: string): string | null {
