@@ -7,3 +7,7 @@ dist/
 !.env.example
 .venv/
 __pycache__/
+
+# Playwright ekran görüntüleri ve MCP çıktıları: yerel kanıt, repo'ya girmez
+site/ekran-goruntuleri/
+.playwright-mcp/

@@ -1,0 +1,62 @@
+---
+baslik: "Pick and roll’un sadeliği"
+tarih: 2026-10-05
+ozet: "Basketbolun en eski oyunlarından biri neden hâlâ savunmaları çözüyor? Birkaç basit ilkeyle bir not."
+sezon: "2026-27"
+istatistik:
+  - etiket: "İzlenen pozisyon"
+    deger: 64
+  - etiket: "Perde sonrası şut"
+    deger: "%41"
+  - etiket: "Perdeci ile bitiş"
+    deger: "%27"
+kapak: ./kapak.svg
+etiketler: ["Taktik", "Pick and Roll"]
+taslak: true
+---
+
+import saha1 from './saha-bir.svg';
+import saha2 from './saha-iki.svg';
+
+Pick and roll, iki oyuncunun birlikte kurduğu bir soru: savunma topu mu, perdeci oyuncuyu mu takip edecek? Hangi cevabı verirse versin, diğer seçenek açık kalıyor.
+
+## Üç temel okuma
+
+1. **Perdeye karşı savunma:** Topla ilgilenen oyuncu perdeyi nasıl karşılıyor?
+2. **Boşluk:** Zayıf taraftaki oyuncular savunmayı ne kadar dağıtabiliyor?
+3. **Tempo:** Perde ne zaman, hangi ritimle geliyor?
+
+<Alinti kaynak="Not defterimden">
+  İyi bir perde, soruyu savunmaya geri yollar.
+</Alinti>
+
+## Neden hâlâ işe yarıyor?
+
+Çünkü karar anını savunmaya bırakıyor. Hücum, savunmanın hatasını bekleyebiliyor; oyun doğru okunduğunda her zaman bir seçenek açılıyor.
+
+<IkiGorsel
+  sol={saha1}
+  solAlt="Perde öncesi diziliş: iki oyuncu üst bölgede buluşuyor"
+  sag={saha2}
+  sagAlt="Perde sonrası diziliş: savunma iki seçenek arasında kalıyor"
+  altyazi="Solda perde öncesi, sağda perde sonrası diziliş (şematik)."
+/>
+
+Bir maçı izlerken topsuz oyuncuların konumuna bakmak, bu oyunu anlamanın en kolay yolu.
+
+<IstatistikTablosu
+  baslik="Perde sonrası tercihler (örnek veri)"
+  sutunlar={["Karar", "Pozisyon", "Oran"]}
+  satirlar={[
+    ["Top taşıyıcı şut atıyor", 26, "%41"],
+    ["Perdeciye pas", 17, "%27"],
+    ["Köşeye pas", 12, "%19"],
+    ["Top kaybı", 9, "%13"],
+  ]}
+/>
+
+<Gorsel
+  src={saha1}
+  alt="Perde öncesi diziliş şeması"
+  altyazi="Tek görsel, altyazıyla: perde kurulmadan hemen önceki diziliş."
+/>

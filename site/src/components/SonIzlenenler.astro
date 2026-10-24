@@ -1,0 +1,91 @@
+---
+import type { Izlenen } from '../lib/letterboxd';
+import { puanYaz, tarihYaz } from '../lib/format';
+
+interface Props {
+  filmler: Izlenen[];
+}
+const { filmler } = Astro.props;
+---
+
+{
+  filmler.length > 0 && (
+    <section class="seri" aria-labelledby="izlenen-baslik">
+      <div class="kap ic">
+        <h2 id="izlenen-baslik">Son izlediklerim</h2>
+        <ul class="lista filmler">
+          {filmler.map((f) => (
+            <li class="film">
+              {f.afis && (
+                <a href={f.link} tabindex="-1" aria-hidden="true">
+                  <img src={f.afis} alt="" width="150" height="225" loading="lazy" referrerpolicy="no-referrer" />
+                </a>
+              )}
+              <p class="ad">
+                <a href={f.link}>{f.film}</a>
+              </p>
+              {f.yil && <p class="soluk">{f.yil}</p>}
+              {f.puan !== undefined && <p class="puan">{puanYaz(f.puan)} / 5</p>}
+              {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="soluk">{tarihYaz(f.tarih)}</p>}
+            </li>
+          ))}
+        </ul>
+        <p class="kaynak soluk">
+          Veriler <a href="https://letterboxd.com/">Letterboxd</a> günlüğümden, build sırasında alınır.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .ic {
+    padding-block: var(--aralik-6);
+  }
+
+  h2 {
+    margin-block-end: var(--aralik-4);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .filmler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-4);
+    align-items: flex-start;
+  }
+
+  .film {
+    width: 9.375rem;
+    font-size: var(--yazi-sm);
+    line-height: 1.4;
+  }
+
+  .film p {
+    margin: 0;
+  }
+
+  .film img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: var(--yuzey);
+    margin-block-end: var(--aralik-2);
+  }
+
+  .ad {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .puan {
+    color: var(--turkuaz-metin);
+    font-weight: 600;
+  }
+
+  .kaynak {
+    margin-block-start: var(--aralik-4);
+    font-size: var(--yazi-xs);
+  }
+</style>

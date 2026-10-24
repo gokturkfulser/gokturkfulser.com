@@ -1,0 +1,88 @@
+/* Yön A — Teal & Orange. Değerler site/DESIGN.md'den gelir; orada değişmeden burada değişmez. */
+:root {
+  color-scheme: light dark;
+
+  /* Adlı renkler (açık mod) */
+  --zemin: #f4f6f8;
+  --murekkep: #16191f;
+  --turkuaz: #0e5e66;
+  --turuncu: #e2661a;
+  --yuzey: #ffffff;
+  --soluk: #4a5360;
+
+  /* Türetilmiş: zemin üstünde metin/işaret olarak kullanılan tonlar */
+  --turkuaz-metin: #0e5e66;
+  --turuncu-metin: #a8430a;
+
+  /* Alan içi metin (alan rengi iki modda da sabit) */
+  --turkuaz-alan-metin: #ffffff;
+  --turuncu-alan-metin: #16191f;
+
+  /* Dünya değişkenleri: [data-dunya] ile seçilir */
+  --dunya: var(--turkuaz);
+  --dunya-metin: var(--turkuaz-metin);
+  --dunya-alan-metin: var(--turkuaz-alan-metin);
+  --dunya-bant: var(--turkuaz-metin);
+
+  /* Tipografi */
+  --font-baslik-yigin: var(--font-baslik), 'Arial Narrow', sans-serif;
+  --font-metin-yigin: var(--font-metin), Georgia, serif;
+
+  --yazi-xs: 0.875rem;
+  --yazi-sm: 0.9375rem;
+  --yazi-govde: 1.1875rem;
+  --yazi-lede: 1.3125rem;
+  --yazi-h3: clamp(1.75rem, 1.4rem + 1.2vw, 2.375rem);
+  --yazi-h2: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --yazi-h1: clamp(3rem, 1.6rem + 5.4vw, 6.5rem);
+  --yazi-dev: clamp(3.25rem, 1.4rem + 6.6vw, 8.5rem);
+  --satir-govde: 1.7;
+  --satir-baslik: 1.04;
+
+  /* Boşluk */
+  --aralik-1: 0.25rem;
+  --aralik-2: 0.5rem;
+  --aralik-3: 1rem;
+  --aralik-4: 1.5rem;
+  --aralik-5: 2.5rem;
+  --aralik-6: clamp(2.5rem, 2rem + 3vw, 5rem);
+  --kenar: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+
+  /* Yerleşim */
+  --olcu: 68ch;
+  --kap: 78rem;
+  --sinema-oran: 2.39 / 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zemin: #0f1317;
+    --murekkep: #e9edf1;
+    --yuzey: #171d23;
+    --soluk: #a3aeba;
+    --turkuaz-metin: #5cc3cc;
+    --turuncu-metin: #ff9a63;
+  }
+}
+
+[data-dunya='sinema'] {
+  --dunya: var(--turkuaz);
+  --dunya-metin: var(--turkuaz-metin);
+  --dunya-alan-metin: var(--turkuaz-alan-metin);
+  --dunya-bant: var(--turkuaz-metin);
+}
+
+[data-dunya='basketbol'] {
+  --dunya: var(--turuncu);
+  --dunya-metin: var(--turuncu-metin);
+  --dunya-alan-metin: var(--turuncu-alan-metin);
+  --dunya-bant: var(--turuncu);
+}
+
+/* Projeler bir dünyaya ait değildir: nötr (mürekkep) tonlar */
+[data-dunya='proje'] {
+  --dunya: var(--murekkep);
+  --dunya-metin: var(--murekkep);
+  --dunya-alan-metin: var(--zemin);
+  --dunya-bant: var(--murekkep);
+}

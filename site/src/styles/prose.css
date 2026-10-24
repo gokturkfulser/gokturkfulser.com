@@ -1,0 +1,86 @@
+/* Yazı gövdesi (.metin): MDX çıktısı ve MDX bileşenleri. Satır en fazla ~70 karakter. */
+.metin {
+  max-width: var(--olcu);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.metin > * + * {
+  margin-block-start: 1.25em;
+}
+
+.metin :is(h2, h3) {
+  hyphens: manual;
+  margin-block-start: 2em;
+  color: var(--dunya-metin);
+}
+
+.metin h2 {
+  font-size: var(--yazi-h2);
+  line-height: 1.06;
+}
+
+.metin h3 {
+  font-size: var(--yazi-h3);
+  line-height: 1.08;
+}
+
+.metin :is(h2, h3) + * {
+  margin-block-start: 0.6em;
+}
+
+.metin a {
+  color: var(--dunya-metin);
+}
+
+.metin :is(ul, ol) {
+  padding-inline-start: 1.25em;
+}
+
+.metin li + li {
+  margin-block-start: 0.5em;
+}
+
+.metin li::marker {
+  color: var(--dunya-metin);
+}
+
+.metin hr {
+  border: 0;
+  height: 6px;
+  width: 4rem;
+  background: var(--dunya);
+}
+
+/* Düz Markdown alıntısı (> ...) Alinti bileşeniyle aynı görünür */
+.metin blockquote {
+  margin-block: 1.4em;
+  font-family: var(--font-baslik-yigin);
+  font-weight: 700;
+  font-size: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+  line-height: 1.06;
+  color: var(--dunya-metin);
+  hyphens: manual;
+}
+
+.metin blockquote p {
+  text-wrap: balance;
+}
+
+.metin code {
+  font-size: 0.9em;
+  padding: 0.1em 0.3em;
+  background: var(--yuzey);
+}
+
+/* Etiket listesi */
+.etiketler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--aralik-1) var(--aralik-4);
+  font-size: var(--yazi-sm);
+}
+
+.etiketler a {
+  color: var(--dunya-metin);
+}

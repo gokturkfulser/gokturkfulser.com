@@ -1,0 +1,207 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Etiketler from '../../components/Etiketler.astro';
+import { mdxBilesenleri } from '../../components/mdx';
+import { basketbolYazilari } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+import { grafLd, makaleLd } from '../../lib/jsonld';
+import { okumaSuresi } from '../../lib/okuma-suresi';
+
+export async function getStaticPaths() {
+  return (await basketbolYazilari()).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const sure = okumaSuresi(entry.body);
+const ogYolu = `/og/basketbol/${entry.id}.png`;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const ld = grafLd(
+  makaleLd({
+    baslik: data.baslik,
+    ozet: data.ozet,
+    tarih: data.tarih,
+    url,
+    gorsel: new URL(ogYolu, Astro.site).href,
+    bolumAdi: 'Basketbol',
+    etiketler: data.etiketler,
+    kelime: sure.kelime,
+    dakika: sure.dakika,
+  }),
+);
+const liste = new Intl.ListFormat('tr-TR', { style: 'long', type: 'conjunction' });
+const bilgi = [
+  data.sezon && { ad: 'Sezon', deger: data.sezon },
+  data.takimlar?.length && { ad: 'Takımlar', deger: liste.format(data.takimlar) },
+  data.oyuncular?.length && { ad: 'Oyuncular', deger: liste.format(data.oyuncular) },
+].filter((b): b is { ad: string; deger: string } => Boolean(b));
+---
+
+<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
+  <article data-dunya="basketbol" data-pagefind-body>
+    <header>
+      <div class="alan alan-zemin">
+        <div class="kap alan-ic">
+          <h1>{data.baslik}</h1>
+          <p class="ozet">{data.ozet}</p>
+          {
+            bilgi.length > 0 && (
+              <dl class="bilgi">
+                {bilgi.map((b) => (
+                  <div>
+                    <dt>{b.ad}</dt>
+                    <dd>{b.deger}</dd>
+                  </div>
+                ))}
+              </dl>
+            )
+          }
+          {
+            data.istatistik && (
+              <dl class="skor" aria-label="Maç istatistikleri">
+                {data.istatistik.map((s) => (
+                  <div>
+                    <dd>{s.deger}</dd>
+                    <dt>{s.etiket}</dt>
+                  </div>
+                ))}
+              </dl>
+            )
+          }
+          <p class="tarih">
+            <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+            <span class="okuma">{sure.dakika} dakikalık okuma</span>
+          </p>
+        </div>
+      </div>
+      <div class="kap kapak">
+        <Image
+          src={data.kapak}
+          alt=""
+          width={1600}
+          height={800}
+          fit="cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </header>
+
+    <div class="kap govde">
+      <div class="metin">
+        <Content components={mdxBilesenleri} />
+      </div>
+      <Etiketler etiketler={data.etiketler} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .alan {
+    background: var(--dunya);
+    color: var(--dunya-alan-metin);
+  }
+
+  .alan-ic {
+    display: grid;
+    gap: var(--aralik-4);
+    padding-block: var(--aralik-6);
+  }
+
+  h1 {
+    max-width: 16ch;
+    font-size: var(--yazi-h1);
+    letter-spacing: -0.01em;
+  }
+
+  .ozet {
+    max-width: 46ch;
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  .bilgi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-5);
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+
+  .bilgi dt {
+    font-size: var(--yazi-xs);
+  }
+
+  .bilgi dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* Skorbord: sayılar büyük, etiket küçük; veri frontmatter'dan gelir */
+  .skor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-3) var(--aralik-5);
+    margin: 0;
+    padding-block-start: var(--aralik-4);
+    border-block-start: 6px solid currentColor;
+  }
+
+  .skor > div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .skor dd {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: clamp(3rem, 2rem + 3vw, 5rem);
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .skor dt {
+    font-size: var(--yazi-sm);
+  }
+
+  .tarih {
+    margin: 0;
+    font-size: var(--yazi-sm);
+  }
+
+  .tarih time,
+  .tarih .okuma {
+    display: block;
+  }
+
+  .kapak {
+    padding-block-start: var(--aralik-5);
+  }
+
+  .kapak :global(img) {
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+  }
+
+  .govde {
+    padding-block: var(--aralik-5) var(--aralik-6);
+  }
+
+  .govde :global(.etiketler) {
+    margin-block-start: var(--aralik-5);
+  }
+
+  @media (max-width: 36rem) {
+    .kapak :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

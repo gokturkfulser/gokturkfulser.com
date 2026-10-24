@@ -1,0 +1,21 @@
+---
+import { slugify } from '../lib/slug';
+
+interface Props {
+  etiketler: string[];
+}
+
+const { etiketler } = Astro.props;
+---
+
+{
+  etiketler.length > 0 && (
+    <ul class="lista etiketler" aria-label="Etiketler">
+      {etiketler.map((etiket) => (
+        <li>
+          <a href={`/etiketler/${slugify(etiket)}/`}>#{etiket}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

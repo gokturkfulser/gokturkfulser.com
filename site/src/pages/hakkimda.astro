@@ -1,0 +1,40 @@
+---
+import { SHOW_DRAFTS } from 'astro:env/server';
+import Base from '../layouts/Base.astro';
+---
+
+<Base baslik="Hakkımda" aciklama="Göktürk Fulser kimdir, bu site ne için var.">
+  <div class="kap sayfa" data-pagefind-body>
+    <h1>Hakkımda</h1>
+    <div class="metin">
+      {
+        SHOW_DRAFTS ? (
+          <>
+            <p>
+              Ben Göktürk. Yazılım geliştiriyorum; boş zamanlarımda film izliyor, basketbol maçlarını
+              takip ediyor ve küçük projeler yapıyorum.
+            </p>
+            <p>
+              Bu site film yazılarımı, basketbol notlarımı ve projelerimi bir araya getirdiğim kişisel
+              alanım. İçerikler Türkçe.
+            </p>
+          </>
+        ) : (
+          <p>Bu sayfa hazırlanıyor. Yazılar ve projeler için üstteki menüyü kullanabilirsiniz.</p>
+        )
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sayfa {
+    padding-block: var(--aralik-5) var(--aralik-6);
+  }
+
+  h1 {
+    margin-block-end: var(--aralik-5);
+    font-size: var(--yazi-h1);
+    letter-spacing: -0.01em;
+  }
+</style>

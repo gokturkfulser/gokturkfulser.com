@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjeListesi from '../../components/ProjeListesi.astro';
+import { projeler } from '../../lib/content';
+
+const liste = await projeler();
+---
+
+<Base baslik="Projeler" aciklama="Yaptığım oyunlar, uygulamalar, siteler ve araçlar.">
+  <div class="kap sayfa">
+    <h1>Projeler</h1>
+    <ProjeListesi projeler={liste} />
+  </div>
+</Base>
+
+<style>
+  .sayfa {
+    padding-block: var(--aralik-5) var(--aralik-6);
+  }
+
+  h1 {
+    margin-block-end: var(--aralik-4);
+    font-size: var(--yazi-dev);
+    letter-spacing: -0.01em;
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+interface Props {
+  /** Tablo başlığı (caption): ekran okuyucular için de tabloyu adlandırır. */
+  baslik: string;
+  /** Sütun başlıkları; ilki satır adıdır. */
+  sutunlar: string[];
+  satirlar: (string | number)[][];
+}
+const { baslik, sutunlar, satirlar } = Astro.props;
+const sayiMi = (v: string | number) => typeof v === 'number';
+---
+
+<div class="sarmal" role="region" aria-label={baslik} tabindex="0">
+  <table>
+    <caption>{baslik}</caption>
+    <thead>
+      <tr>
+        {sutunlar.map((s, i) => <th scope="col" class:list={{ sayi: i > 0 }}>{s}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        satirlar.map(([ad, ...degerler]) => (
+          <tr>
+            <th scope="row">{ad}</th>
+            {degerler.map((d) => <td class:list={{ sayi: sayiMi(d) || /^[\d.,%\-–/ ]+$/.test(String(d)) }}>{d}</td>)}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .sarmal {
+    margin-block: 1.6em;
+    overflow-x: auto;
+    background: var(--yuzey);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--yazi-sm);
+    line-height: 1.4;
+    hyphens: manual;
+  }
+
+  caption {
+    padding: var(--aralik-3) var(--aralik-3) var(--aralik-2);
+    text-align: start;
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    color: var(--dunya-metin);
+  }
+
+  th,
+  td {
+    padding: var(--aralik-2) var(--aralik-3);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  thead th {
+    font-weight: 600;
+    color: var(--soluk);
+    border-block-end: 3px solid var(--dunya);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--dunya) 8%, transparent);
+  }
+
+  .sayi {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

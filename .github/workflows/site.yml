@@ -14,16 +14,69 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4 # sürüm kök package.json'daki packageManager'dan
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc # tek kaynak: Node sürümü köktek .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Yer tutucu
-        run: echo "site adımları ilgili görevde eklenecek"
+
+      - name: Astro check
+        run: pnpm --filter site check
+
+      # Production build: taslaklar hiçbir yerde olmamalı.
+      - name: Build (production)
+        run: pnpm --filter site build
+      - name: Taslak sızıntısı yok
+        run: |
+          if grep -rIl 'name="robots" content="noindex' site/dist --include=index.html; then
+            echo "::error::Production build'de noindex bulundu (SHOW_DRAFTS sızmış olabilir)"
+            exit 1
+          fi
+
+      # Kalite kontrolleri için örnek içerik gerekir: gerçek yazı yokken tüm içerik taslaktır.
+      # En az bir gerçek yazı yayımlanınca bu adım ve ona bağlı SHOW_DRAFTS silinebilir.
+      - name: Build (kalite kontrolleri için, taslaklar dahil)
+        run: pnpm --filter site build
+        env:
+          SHOW_DRAFTS: 'true'
+
+      - name: Kırık link kontrolü (site içi, katı)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --offline --no-progress --include-fragments
+            --root-dir ${{ github.workspace }}/site/dist
+            'site/dist/**/*.html'
+          fail: true
+
+      - name: Kırık link kontrolü (dış linkler, esnek)
+        uses: lycheeverse/lychee-action@v2
+        continue-on-error: true # dış sitelerin anlık hataları build'i düşürmez
+        with:
+          args: >-
+            --no-progress --max-retries 2 --retry-wait-time 5 --timeout 20
+            --accept '100..=103,200..=299,403,429'
+            --exclude '^https://(lab\.)?gokturkfulser\.com'
+            --exclude '^https://github\.com/gokturkfulser/'
+            'site/dist/**/*.html'
+          fail: false
+
+      - name: Lighthouse CI (ana sayfa ve bir yazı; 95 altı uyarı)
+        run: |
+          pnpm --filter site preview --port 4321 --host 127.0.0.1 &
+          npx --yes wait-on@8.0.3 http://127.0.0.1:4321/
+          yazi="$(cd site/dist && ls -d sinema/*/ basketbol/*/ 2>/dev/null | head -n 1)"
+          urls=(--collect.url=http://127.0.0.1:4321/)
+          if [ -n "$yazi" ]; then urls+=(--collect.url="http://127.0.0.1:4321/$yazi"); fi
+          npx --yes @lhci/cli@0.15.1 autorun --config=site/lighthouserc.json "${urls[@]}"

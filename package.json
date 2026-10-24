@@ -3,11 +3,13 @@
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "engines": {
-    "node": ">=22"
+    "node": ">=24.21.0 <25",
+    "pnpm": ">=11.1.2 <12"
   },
   "scripts": {
-    "site:dev": "node -e \"console.log('site:dev: yer tutucu, site görevinde dolacak')\"",
-    "site:build": "node -e \"console.log('site:build: yer tutucu, site görevinde dolacak')\"",
+    "site:dev": "pnpm --filter site dev",
+    "site:build": "pnpm --filter site build",
+    "site:tmdb": "pnpm --filter site tmdb",
     "lab:dev": "node -e \"console.log('lab:dev: yer tutucu, lab görevinde dolacak')\"",
     "lab:build": "node -e \"console.log('lab:build: yer tutucu, lab görevinde dolacak')\"",
     "infra:up": "node -e \"console.log('infra:up: yer tutucu, infra görevinde dolacak')\"",

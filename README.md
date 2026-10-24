@@ -16,13 +16,13 @@ Kişisel sitenin monoreposu (marka: gokturkfulser). Adların tam listesi için [
 ## Geliştirme ortamı
 
 - Windows + PowerShell
-- Node.js 22 veya üstü
-- pnpm 11 (`packageManager` alanında sabit)
+- Node.js 24.21.0 (`.nvmrc`; `nvm install` ile aynı sürüm)
+- pnpm 11.1.2 (`packageManager` alanında sabit)
 - Docker (servisler ve infra için)
 
 ```powershell
 pnpm install
-pnpm site:dev     # yer tutucu
+pnpm site:dev     # geliştirme sunucusu (taslaklar için SHOW_DRAFTS=true)
 pnpm lab:dev      # yer tutucu
 ```
 

@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { DURUM, TUR } from '../lib/labels';
+
+interface Props {
+  projeler: CollectionEntry<'projeler'>[];
+}
+
+const { projeler } = Astro.props;
+---
+
+<section class="vitrin" aria-labelledby="vitrin-baslik">
+  <div class="kap ic">
+    <h2 id="vitrin-baslik">Öne çıkan projeler</h2>
+    <div class="liste">
+      {
+        projeler.map((proje) => (
+          <article class="proje">
+            <a class="gorsel" href={`/projeler/${proje.id}/`} tabindex="-1" aria-hidden="true">
+              <Image src={proje.data.gorsel} alt="" width={900} loading="lazy" />
+            </a>
+            <h3>
+              <a href={`/projeler/${proje.id}/`}>{proje.data.ad}</a>
+            </h3>
+            <p class="ozet">{proje.data.ozet}</p>
+            <dl>
+              <dt>Tür</dt>
+              <dd>{TUR[proje.data.tur]}</dd>
+              <dt>Durum</dt>
+              <dd>{DURUM[proje.data.durum]}</dd>
+            </dl>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .vitrin {
+    background: var(--yuzey);
+  }
+
+  .ic {
+    padding-block: var(--aralik-6);
+  }
+
+  h2 {
+    margin-block-end: var(--aralik-4);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .liste {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: clamp(1.5rem, 1rem + 3vw, 4rem);
+    align-items: start;
+  }
+
+  .liste:has(> :only-child) {
+    grid-template-columns: minmax(0, 40rem);
+  }
+
+  .proje:nth-child(2) {
+    margin-block-start: clamp(0rem, -3rem + 8vw, 5rem);
+  }
+
+  .gorsel img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  h3 {
+    margin-block: var(--aralik-3) var(--aralik-2);
+    font-size: 2.25rem;
+  }
+
+  h3 a {
+    text-decoration-thickness: 0.06em;
+  }
+
+  .ozet {
+    max-width: 44ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.125rem var(--aralik-3);
+    margin: var(--aralik-3) 0 0;
+    font-size: var(--yazi-sm);
+  }
+
+  dt {
+    color: var(--soluk);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  @media (max-width: 52rem) {
+    .liste {
+      grid-template-columns: 1fr;
+    }
+
+    .proje:nth-child(2) {
+      margin-block-start: 0;
+    }
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+interface Props {
+  /** Alıntının sahibi (isteğe bağlı): kişi, film ya da kaynak. */
+  kaynak?: string;
+}
+const { kaynak } = Astro.props;
+---
+
+<figure class="alinti">
+  <blockquote>
+    <slot />
+  </blockquote>
+  {kaynak && <figcaption>{kaynak}</figcaption>}
+</figure>
+
+<style>
+  .alinti {
+    margin-block: 1.6em;
+    padding-inline-start: var(--aralik-4);
+    border-inline-start: 12px solid var(--dunya);
+  }
+
+  .alinti blockquote {
+    margin: 0;
+  }
+
+  figcaption {
+    margin-block-start: var(--aralik-2);
+    font-family: var(--font-metin-yigin);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+    color: var(--soluk);
+  }
+</style>

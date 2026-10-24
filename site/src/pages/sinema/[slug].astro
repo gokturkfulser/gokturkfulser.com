@@ -1,0 +1,257 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Etiketler from '../../components/Etiketler.astro';
+import { mdxBilesenleri } from '../../components/mdx';
+import { sinemaYazilari } from '../../lib/content';
+import { puanYaz, tarihIso, tarihYaz } from '../../lib/format';
+import { filmYorumuLd, grafLd, makaleLd } from '../../lib/jsonld';
+import { okumaSuresi } from '../../lib/okuma-suresi';
+import { tmdbKaydi, tmdbUrl } from '../../lib/tmdb';
+
+export async function getStaticPaths() {
+  return (await sinemaYazilari()).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const { film } = data;
+
+const tmdb = tmdbKaydi(film.tmdbId);
+const orijinalAd = film.orijinalAd ?? tmdb?.orijinalBaslik;
+const orijinal = orijinalAd && orijinalAd !== film.ad ? orijinalAd : undefined;
+const sure = okumaSuresi(entry.body);
+const ogYolu = `/og/sinema/${entry.id}.png`;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const ogUrl = new URL(ogYolu, Astro.site).href;
+
+const ld = grafLd(
+  makaleLd({
+    baslik: data.baslik,
+    ozet: data.ozet,
+    tarih: data.tarih,
+    url,
+    gorsel: ogUrl,
+    bolumAdi: 'Sinema',
+    etiketler: data.etiketler,
+    kelime: sure.kelime,
+    dakika: sure.dakika,
+  }),
+  ...(data.puan !== undefined
+    ? [
+        filmYorumuLd({
+          baslik: data.baslik,
+          ozet: data.ozet,
+          tarih: data.tarih,
+          url,
+          film: { ad: film.ad, orijinalAd: orijinal, yil: film.yil, yonetmen: film.yonetmen },
+          puan: data.puan,
+          tmdbUrl: film.tmdbId ? tmdbUrl(film.tmdbId) : undefined,
+        }),
+      ]
+    : []),
+);
+---
+
+<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
+  <article data-dunya="sinema" data-pagefind-body>
+    <header>
+      <Image
+        class="kare"
+        src={data.kapak}
+        alt=""
+        width={1920}
+        height={803}
+        fit="cover"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="jenerik alan-zemin">
+        <div class="kap jenerik-ic">
+          <h1>{data.baslik}</h1>
+          <div class="kunye-satiri">
+            {
+              tmdb?.afisGorsel && (
+                <Image
+                  class="afis"
+                  src={tmdb.afisGorsel}
+                  alt={`${film.ad} filminin afişi`}
+                  width={320}
+                  loading="eager"
+                />
+              )
+            }
+            <dl>
+              <dt>Film</dt>
+              <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
+              <dt>Yönetmen</dt>
+              <dd>{film.yonetmen}</dd>
+              <dt>Yıl</dt>
+              <dd>{film.yil}</dd>
+              {
+                tmdb?.sure && (
+                  <>
+                    <dt>Süre</dt>
+                    <dd>{tmdb.sure} dakika</dd>
+                  </>
+                )
+              }
+              {
+                tmdb && tmdb.turler.length > 0 && (
+                  <>
+                    <dt>Tür</dt>
+                    <dd>{tmdb.turler.join(', ')}</dd>
+                  </>
+                )
+              }
+              {
+                data.puan !== undefined && (
+                  <>
+                    <dt>Puanım</dt>
+                    <dd class="puan">
+                      {puanYaz(data.puan)}{' '}<span>/ 5</span>
+                    </dd>
+                  </>
+                )
+              }
+            </dl>
+          </div>
+          <p class="ozet">{data.ozet}</p>
+          <p class="tarih">
+            <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+            <span class="okuma">{sure.dakika} dakikalık okuma</span>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="kap govde">
+      <div class="metin">
+        <Content components={mdxBilesenleri} />
+      </div>
+      <Etiketler etiketler={data.etiketler} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .kare {
+    width: 100%;
+    aspect-ratio: var(--sinema-oran);
+    object-fit: cover;
+  }
+
+  .jenerik {
+    background: var(--dunya);
+    color: var(--dunya-alan-metin);
+  }
+
+  .jenerik-ic {
+    display: grid;
+    justify-items: center;
+    gap: var(--aralik-5);
+    padding-block: var(--aralik-6);
+    text-align: center;
+  }
+
+  h1 {
+    max-width: 18ch;
+    font-size: var(--yazi-h1);
+    letter-spacing: -0.01em;
+  }
+
+  .kunye-satiri {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--aralik-5);
+    width: 100%;
+  }
+
+  .afis {
+    width: 10rem;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+  }
+
+  /* Jenerik: ortak eksende, soldaki etiket sağa, sağdaki ad sola yaslı */
+  dl {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: var(--aralik-4);
+    row-gap: var(--aralik-2);
+    width: min(100%, 34rem);
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+
+  .afis + dl {
+    width: auto;
+    justify-content: start;
+  }
+
+  dt {
+    text-align: end;
+    opacity: 0.85;
+  }
+
+  dd {
+    margin: 0;
+    text-align: start;
+    font-weight: 600;
+  }
+
+  .puan {
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .puan span {
+    font-size: 1.25rem;
+    opacity: 0.85;
+  }
+
+  .ozet {
+    max-width: 38ch;
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  .tarih {
+    margin: 0;
+    font-size: var(--yazi-sm);
+  }
+
+  .tarih time,
+  .tarih .okuma {
+    display: block;
+  }
+
+  .govde {
+    padding-block: var(--aralik-6);
+  }
+
+  .govde :global(.etiketler) {
+    margin-block-start: var(--aralik-5);
+  }
+
+  @media (max-width: 36rem) {
+    .kare {
+      aspect-ratio: 16 / 9;
+    }
+
+    dl {
+      font-size: 1rem;
+    }
+  }
+</style>

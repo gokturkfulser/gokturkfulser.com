@@ -1,0 +1,112 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Pagefind arama motoru WebAssembly çalıştırır; 'wasm-unsafe-eval' yalnızca bu sayfaya eklenir.
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
+---
+
+<Base baslik="Ara" aciklama="Sinema, basketbol ve proje yazılarında arama.">
+  <div class="kap sayfa">
+    <h1>Ara</h1>
+    <p class="soluk">Sinema ve basketbol yazılarında, projelerde ve hakkımda sayfasında arayın.</p>
+    <div id="arama" class="arama"></div>
+    <p id="arama-hata" hidden>
+      Arama dizini bulunamadı. Dizin yalnızca <code>pnpm --filter site build</code> sonrasında oluşur;
+      geliştirme sunucusunda çalışmaz.
+    </p>
+    <noscript><p>Arama için JavaScript gerekir.</p></noscript>
+  </div>
+  <!-- Pagefind dizini ve arayüzü build sonrası /pagefind/ altına yazılır; bu yüzden bundle'a değil
+       çalışma anında yüklenir. Betik paketlenip hash'lenir (CSP); Pagefind'ın kendi dosyaları 'self'. -->
+  <script>
+    const hata = document.getElementById('arama-hata')!;
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = '/pagefind/pagefind-ui.css';
+    document.head.appendChild(css);
+
+    const js = document.createElement('script');
+    js.src = '/pagefind/pagefind-ui.js';
+    js.onerror = () => {
+      hata.hidden = false;
+    };
+    js.onload = () => {
+      const PagefindUI = (window as any).PagefindUI;
+      const ui = new PagefindUI({
+        element: '#arama',
+        showImages: false,
+        showSubResults: false,
+        resetStyles: false,
+        autofocus: true,
+        pageSize: 8,
+        translations: {
+          placeholder: 'Yazı ve proje ara',
+          clear_search: 'Temizle',
+          load_more: 'Daha fazla sonuç göster',
+          search_label: 'Sitede ara',
+          filters_label: 'Filtreler',
+          zero_results: '[SEARCH_TERM] için sonuç bulunamadı',
+          many_results: '[SEARCH_TERM] için [COUNT] sonuç',
+          one_result: '[SEARCH_TERM] için [COUNT] sonuç',
+          alt_search: '[SEARCH_TERM] için sonuç yok. Bunun yerine [DIFFERENT_TERM] sonuçları gösteriliyor',
+          search_suggestion: '[SEARCH_TERM] için sonuç yok. Şunlardan birini deneyin:',
+          searching: '[SEARCH_TERM] aranıyor…',
+        },
+      });
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
+    };
+    document.head.appendChild(js);
+  </script>
+</Base>
+
+
+
+<style>
+  .sayfa {
+    padding-block: var(--aralik-5) var(--aralik-6);
+  }
+
+  h1 {
+    margin-block-end: var(--aralik-3);
+    font-size: var(--yazi-h1);
+    letter-spacing: -0.01em;
+  }
+
+  .arama {
+    margin-block-start: var(--aralik-4);
+    max-width: var(--olcu);
+    /* Pagefind arayüzü bu değişkenlerle site token'larına bağlanır */
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-primary: var(--turkuaz-metin);
+    --pagefind-ui-text: var(--murekkep);
+    --pagefind-ui-background: var(--zemin);
+    --pagefind-ui-border: var(--soluk);
+    --pagefind-ui-tag: var(--yuzey);
+    --pagefind-ui-border-width: 2px;
+    --pagefind-ui-border-radius: 0;
+    --pagefind-ui-image-border-radius: 0;
+    --pagefind-ui-font: var(--font-metin-yigin);
+  }
+
+  .arama :global(.pagefind-ui__result-title a) {
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1.05;
+  }
+
+  .arama :global(button),
+  .arama :global(input) {
+    font-family: inherit;
+  }
+
+  .arama :global(mark) {
+    background: color-mix(in srgb, var(--turuncu) 35%, transparent);
+    color: inherit;
+  }
+
+  code {
+    font-size: 0.9em;
+  }
+</style>

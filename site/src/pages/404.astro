@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base baslik="Sayfa bulunamadı" aciklama="Aradığınız sayfa bulunamadı.">
+  <div class="kap sayfa">
+    <h1>Sayfa bulunamadı</h1>
+    <p class="ozet">Adres yanlış yazılmış ya da sayfa taşınmış olabilir.</p>
+    <p><a href="/">Ana sayfaya dön</a></p>
+  </div>
+</Base>
+
+<style>
+  .sayfa {
+    display: grid;
+    gap: var(--aralik-3);
+    padding-block: var(--aralik-6);
+  }
+
+  h1 {
+    font-size: var(--yazi-h1);
+  }
+
+  .ozet {
+    max-width: 40ch;
+    font-size: var(--yazi-lede);
+  }
+
+  a {
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,24 @@
+# Workers static assets _headers (en çok 100 kural, satır başına 2.000 karakter).
+# Aynı header birden fazla kuralla eşleşirse değerler virgülle BİRLEŞTİRİLİR (ezilmez);
+# bu yüzden Cache-Control /* altına konmaz, yoksa /_astro/* için "max-age=300, ..., immutable" olurdu.
+
+# Tüm yollar: güvenlik header'ları.
+# CSP'nin geri kalanı (script-src/style-src hash'leri, img-src vb.) her HTML sayfasındaki <meta>
+# etiketinden gelir (astro.config.mjs → security.csp). <meta> frame-ancestors'ı desteklemediği için
+# yalnızca o direktif burada. Header ve meta birlikte uygulanır; burada başka direktif olmadığı için
+# çakışma/daralma olmaz.
+/*
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=(), interest-cohort=()
+  X-Content-Type-Options: nosniff
+  Content-Security-Policy: frame-ancestors 'none'
+
+# Parmak izli (içerik hash'li) build çıktıları: değişmez, bir yıl.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML (trailingSlash: 'always' → tüm sayfa URL'leri / ile biter): kısa cache.
+/
+  Cache-Control: public, max-age=300, must-revalidate
+/*/
+  Cache-Control: public, max-age=300, must-revalidate

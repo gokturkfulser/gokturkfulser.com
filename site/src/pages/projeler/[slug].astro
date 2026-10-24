@@ -1,0 +1,261 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DemoVideo from '../../components/DemoVideo.astro';
+import OyunKutusu from '../../components/OyunKutusu.astro';
+import { mdxBilesenleri } from '../../components/mdx';
+import { projeler } from '../../lib/content';
+import { BARINDIRMA, DURUM, STORE, TUR } from '../../lib/labels';
+
+export async function getStaticPaths() {
+  return (await projeler()).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const yakinda = data.durum === 'yakinda';
+const arsiv = data.durum === 'arsiv';
+const vps = data.barindirma === 'vps';
+
+// Yakında olan projede canlı bağlantı, mağaza bağlantısı ve gömülü oyun gösterilmez.
+const storeLinkleri = yakinda
+  ? []
+  : Object.entries(data.storeLinkleri ?? {}).filter(
+      (cift): cift is [string, string] => typeof cift[1] === 'string',
+    );
+const canliUrl = yakinda ? undefined : data.url;
+const oynat = !yakinda && data.embedUrl;
+// Yakında + demo videosu: video kapak görselinin yerine öne çıkar.
+const videoOnde = yakinda && data.demoVideo;
+---
+
+<Base baslik={data.ad} aciklama={data.ozet}>
+  <article class="kap sayfa" data-pagefind-body>
+    <header class="ust" class:list={{ 'video-onde': videoOnde }}>
+      <div class="ust-metin">
+        <h1>{data.ad}</h1>
+        <p class="ozet">{data.ozet}</p>
+        {
+          yakinda && (
+            <p class="not yakinda" role="note">
+              <strong>Yakında.</strong> Henüz yayında değil.
+              {vps && ' Servis yayına alındığında kendi adresinde, VPS üzerinde çalışacak.'}
+            </p>
+          )
+        }
+        {arsiv && <p class="not" role="note"><strong>Arşiv.</strong> Artık geliştirilmiyor.</p>}
+        <dl class="bilgi">
+          <div>
+            <dt>Tür</dt>
+            <dd>{TUR[data.tur]}</dd>
+          </div>
+          <div>
+            <dt>Durum</dt>
+            <dd>{DURUM[data.durum]}</dd>
+          </div>
+          <div>
+            <dt>Barındırma</dt>
+            <dd>{BARINDIRMA[data.barindirma]}</dd>
+          </div>
+        </dl>
+        <ul class="lista baglantilar">
+          {canliUrl && <li><a href={canliUrl}>Projeyi aç</a></li>}
+          {data.repo && <li><a href={data.repo}>Kaynak kod</a></li>}
+          {data.demoVideo && !videoOnde && <li><a href="#demo">Demo videosu</a></li>}
+          {storeLinkleri.map(([anahtar, href]) => <li><a href={href}>{STORE[anahtar]}</a></li>)}
+        </ul>
+      </div>
+      {
+        videoOnde ? (
+          <div class="medya" id="demo">
+            <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
+          </div>
+        ) : (
+          <Image class="medya" src={data.gorsel} alt="" width={1000} loading="eager" fetchpriority="high" />
+        )
+      }
+    </header>
+
+    {
+      oynat && (
+        <section class="oyun-bolumu" aria-labelledby="oyun-baslik">
+          <h2 id="oyun-baslik">{data.tur === 'oyun' ? 'Burada oyna' : 'Burada dene'}</h2>
+          <OyunKutusu
+            baslik={data.ad}
+            kapak={data.gorsel}
+            embedUrl={data.embedUrl!}
+            etiket={data.tur === 'oyun' ? 'Oyna' : 'Dene'}
+          />
+        </section>
+      )
+    }
+
+    {
+      data.demoVideo && !videoOnde && (
+        <section id="demo" aria-labelledby="demo-baslik">
+          <h2 id="demo-baslik">Demo videosu</h2>
+          <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
+        </section>
+      )
+    }
+
+    <div class="metin" data-dunya="proje">
+      <Content components={mdxBilesenleri} />
+    </div>
+
+    {
+      data.ekranGoruntuleri.length > 0 && (
+        <section aria-labelledby="ekran-baslik">
+          <h2 id="ekran-baslik">Ekran görüntüleri</h2>
+          <ul class="lista ekranlar">
+            {data.ekranGoruntuleri.map((e) => (
+              <li>
+                <figure>
+                  <Image src={e.gorsel} alt={e.alt} width={900} loading="lazy" />
+                  {e.altyazi && <figcaption>{e.altyazi}</figcaption>}
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      data.stack.length > 0 && (
+        <section aria-labelledby="stack-baslik">
+          <h2 id="stack-baslik">Kullanılan teknolojiler</h2>
+          <ul class="lista teknolojiler">{data.stack.map((s) => <li>{s}</li>)}</ul>
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .sayfa {
+    display: grid;
+    gap: var(--aralik-6);
+    padding-block: var(--aralik-5) var(--aralik-6);
+  }
+
+  .ust {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--aralik-5);
+    align-items: end;
+  }
+
+  .ust-metin {
+    display: grid;
+    gap: var(--aralik-4);
+  }
+
+  h1 {
+    font-size: var(--yazi-h1);
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    margin-block-end: var(--aralik-3);
+    font-size: var(--yazi-h2);
+  }
+
+  .ozet {
+    max-width: 40ch;
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+    color: var(--soluk);
+  }
+
+  .not {
+    max-width: 44ch;
+    padding: var(--aralik-3) var(--aralik-4);
+    background: var(--yuzey);
+    border-inline-start: 10px solid var(--murekkep);
+    line-height: 1.5;
+  }
+
+  .not.yakinda {
+    border-inline-start-color: var(--turuncu);
+  }
+
+  .bilgi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-5);
+    margin: 0;
+  }
+
+  .bilgi dt {
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  .bilgi dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .baglantilar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-4);
+    font-weight: 700;
+  }
+
+  .ust :global(img.medya) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .ekranlar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-4);
+    align-items: flex-start;
+  }
+
+  .ekranlar li {
+    flex: 1 1 20rem;
+    max-width: 36rem;
+  }
+
+  .ekranlar figure {
+    margin: 0;
+  }
+
+  .ekranlar img {
+    width: 100%;
+    height: auto;
+  }
+
+  .ekranlar figcaption {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-sm);
+    color: var(--soluk);
+  }
+
+  .teknolojiler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-4);
+  }
+
+  @media (max-width: 52rem) {
+    .ust {
+      grid-template-columns: 1fr;
+    }
+
+    .ust :global(.medya) {
+      order: -1;
+    }
+  }
+</style>

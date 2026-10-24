@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  sol: ImageMetadata;
+  solAlt: string;
+  sag: ImageMetadata;
+  sagAlt: string;
+  /** İki görsel için ortak altyazı. */
+  altyazi?: string;
+}
+const { sol, solAlt, sag, sagAlt, altyazi } = Astro.props;
+---
+
+<figure class="iki">
+  <div class="cift">
+    <Image src={sol} alt={solAlt} width={800} loading="lazy" />
+    <Image src={sag} alt={sagAlt} width={800} loading="lazy" />
+  </div>
+  {altyazi && <figcaption>{altyazi}</figcaption>}
+</figure>
+
+<style>
+  .iki {
+    margin-block: 1.6em;
+  }
+
+  .cift {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--aralik-2);
+  }
+
+  .cift :global(img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  figcaption {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+    color: var(--soluk);
+    hyphens: manual;
+  }
+
+  @media (max-width: 36rem) {
+    .cift {
+      grid-template-columns: 1fr;
+    }
+
+    .cift :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

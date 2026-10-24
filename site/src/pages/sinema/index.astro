@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import DunyaBasligi from '../../components/DunyaBasligi.astro';
+import YaziSatiri from '../../components/YaziSatiri.astro';
+import { sinemaYazilari } from '../../lib/content';
+
+const yazilar = await sinemaYazilari();
+---
+
+<Base baslik="Sinema" aciklama="Film yazıları ve izleme notları.">
+  <DunyaBasligi
+    dunya="sinema"
+    baslik="Sinema"
+    aciklama="İzlediğim filmler üzerine yazılar ve puanlar."
+    rss="/sinema/rss.xml"
+  />
+  <div class="kap liste">
+    {
+      yazilar.length === 0 && (
+        <p class="bos">Bu bölümde henüz yazı yok. Yazılar yayımlandığında burada görünecek; RSS ile de takip edebilirsiniz.</p>
+      )
+    }
+    <ul class="lista akis">
+      {
+        yazilar.map((entry) => (
+          <li>
+            <YaziSatiri yazi={{ bolum: 'sinema', entry }} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .liste {
+    padding-block: var(--aralik-6);
+  }
+
+  .bos {
+    max-width: var(--olcu);
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  .akis {
+    display: grid;
+    gap: var(--aralik-5);
+  }
+</style>

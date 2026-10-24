@@ -1,0 +1,219 @@
+---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { Font } from 'astro:assets';
+import { CF_ANALYTICS_TOKEN, SHOW_DRAFTS } from 'astro:env/server';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/prose.css';
+import { jsonLdMetni } from '../lib/jsonld';
+
+interface Props {
+  baslik?: string;
+  aciklama?: string;
+  /** Sayfa türü: Open Graph için. */
+  tur?: 'website' | 'article';
+  /** Site köküne göre OG görseli yolu; verilmezse ortak görsel. */
+  ogGorsel?: string;
+  /** schema.org verisi (JSON-LD). */
+  jsonLd?: unknown;
+}
+
+const SITE_ADI = 'Göktürk Fulser';
+const VARSAYILAN_ACIKLAMA = 'Sinema, basketbol ve yaptığım projeler üzerine kişisel site.';
+
+const {
+  baslik,
+  aciklama = VARSAYILAN_ACIKLAMA,
+  tur = 'website',
+  ogGorsel = '/og/varsayilan.png',
+  jsonLd,
+} = Astro.props;
+const tamBaslik = baslik ? `${baslik} · ${SITE_ADI}` : SITE_ADI;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogUrl = new URL(ogGorsel, Astro.site);
+const yol = Astro.url.pathname;
+
+// TMDB logosu: site/public/tmdb-logo.svg (ya da .png) varsa footer'da gösterilir; yoksa yalnızca metin atfı.
+const tmdbLogo = ['tmdb-logo.svg', 'tmdb-logo.png'].find((f) => existsSync(join(process.cwd(), 'public', f)));
+
+const menu = [
+  { ad: 'Sinema', href: '/sinema/' },
+  { ad: 'Basketbol', href: '/basketbol/' },
+  { ad: 'Projeler', href: '/projeler/' },
+  { ad: 'Hakkımda', href: '/hakkimda/' },
+];
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tamBaslik}</title>
+    <meta name="description" content={aciklama} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE_ADI} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:site_name" content={SITE_ADI} />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:type" content={tur} />
+    <meta property="og:title" content={tamBaslik} />
+    <meta property="og:description" content={aciklama} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {SHOW_DRAFTS && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-baslik" preload />
+    <Font cssVariable="--font-metin" preload />
+    {jsonLd && <script type="application/ld+json" is:inline set:html={jsonLdMetni(jsonLd)} />}
+  </head>
+  <body>
+    <a class="atla" href="#icerik">İçeriğe geç</a>
+    <header class="kap ust">
+      <a href="/" class="marka">{SITE_ADI}</a>
+      <nav aria-label="Ana menü">
+        <ul class="lista menu">
+          {
+            menu.map((oge) => (
+              <li>
+                <a href={oge.href} aria-current={yol.startsWith(oge.href) ? 'page' : undefined}>
+                  {oge.ad}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <a class="ara" href="/arama/" aria-current={yol.startsWith('/arama/') ? 'page' : undefined}>Ara</a>
+    </header>
+    <main id="icerik">
+      <slot />
+    </main>
+    <footer class="kap alt">
+      <p>© {new Date().getFullYear()} {SITE_ADI}. <a href="/rss.xml">RSS</a> ile takip edebilirsiniz.</p>
+      <div class="tmdb">
+        {
+          tmdbLogo && (
+            <a class="tmdb-logo" href="https://www.themoviedb.org/" aria-label="TMDB">
+              <img src={`/${tmdbLogo}`} alt="TMDB" height="14" />
+            </a>
+          )
+        }
+        <p>
+          Film bilgileri ve afişler <a href="https://www.themoviedb.org/">TMDB</a> kaynaklıdır. This product uses
+          the TMDB API but is not endorsed or certified by TMDB.
+        </p>
+      </div>
+    </footer>
+    {
+      CF_ANALYTICS_TOKEN && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}
+        />
+      )
+    }
+  </body>
+</html>
+
+<style>
+  .ust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--aralik-2) var(--aralik-5);
+    padding-block: var(--aralik-4);
+  }
+
+  .marka {
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: 1.875rem;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  nav {
+    margin-inline-start: auto;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-4);
+    font-size: 1.0625rem;
+  }
+
+  .menu a,
+  .ara {
+    display: inline-block;
+    padding-block: var(--aralik-2);
+    text-decoration: none;
+    border-block-end: 3px solid transparent;
+    font-size: 1.0625rem;
+  }
+
+  .menu a:hover,
+  .menu a[aria-current='page'],
+  .ara:hover,
+  .ara[aria-current='page'] {
+    border-block-end-color: currentColor;
+  }
+
+  @media (max-width: 40rem) {
+    .ust {
+      gap: 0 var(--aralik-3);
+    }
+
+    .ara {
+      margin-inline-start: auto;
+    }
+
+    nav {
+      order: 3;
+      width: 100%;
+      margin-inline-start: 0;
+    }
+
+    .menu {
+      gap: var(--aralik-1) var(--aralik-3);
+      font-size: 1rem;
+    }
+  }
+
+  .alt {
+    display: grid;
+    gap: var(--aralik-2);
+    padding-block: var(--aralik-5);
+    color: var(--soluk);
+    font-size: var(--yazi-sm);
+  }
+
+  .tmdb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-2) var(--aralik-3);
+    max-width: 70ch;
+    font-size: var(--yazi-xs);
+  }
+
+  .tmdb p {
+    margin: 0;
+    flex: 1 1 24ch;
+  }
+
+  /* TMDB logosu bu sitenin kendi başlığından belirgin olmamalı: küçük, tek renk kalır */
+  .tmdb-logo img {
+    display: block;
+    width: auto;
+    height: 0.875rem;
+  }
+</style>

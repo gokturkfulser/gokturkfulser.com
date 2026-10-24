@@ -1,0 +1,52 @@
+---
+interface Props {
+  dunya: 'sinema' | 'basketbol';
+  baslik: string;
+  aciklama: string;
+  rss: string;
+}
+const { dunya, baslik, aciklama, rss } = Astro.props;
+---
+
+<section class="alan alan-zemin" data-dunya={dunya}>
+  <div class="kap ic">
+    <h1>{baslik}</h1>
+    <div class="yan">
+      <p>{aciklama}</p>
+      <a href={rss}>RSS ile takip et</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .alan {
+    background: var(--dunya);
+    color: var(--dunya-alan-metin);
+  }
+
+  .ic {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--aralik-4) var(--aralik-5);
+    padding-block: var(--aralik-6);
+  }
+
+  h1 {
+    font-size: var(--yazi-dev);
+    letter-spacing: -0.01em;
+  }
+
+  .yan {
+    display: grid;
+    gap: var(--aralik-2);
+    max-width: 34ch;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  .yan a {
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { tarihIso, tarihYaz } from '../lib/format';
+
+interface Props {
+  yazi: Yazi;
+}
+
+const { yazi } = Astro.props;
+const { data, id } = yazi.entry;
+---
+
+<article class="satir" data-dunya={yazi.bolum}>
+  <p class="zaman">
+    <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+    <span>{BOLUM_ADLARI[yazi.bolum]}</span>
+  </p>
+  <div class="icerik">
+    <h3><a href={yaziUrl(yazi.bolum, id)}>{data.baslik}</a></h3>
+    <p>{data.ozet}</p>
+  </div>
+</article>
+
+<style>
+  .satir {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--aralik-2) var(--aralik-5);
+    padding-inline-start: var(--aralik-4);
+    border-inline-start: 10px solid var(--dunya-bant);
+  }
+
+  .zaman {
+    margin: 0;
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+    color: var(--soluk);
+  }
+
+  .zaman time,
+  .zaman span {
+    display: block;
+  }
+
+  h3 {
+    font-weight: 700;
+    font-size: var(--yazi-h3);
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .icerik p {
+    max-width: var(--olcu);
+    margin-block-start: var(--aralik-2);
+    color: var(--soluk);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 52rem) {
+    .satir {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

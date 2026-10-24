@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import YaziOne from '../components/YaziOne.astro';
+import YaziSatiri from '../components/YaziSatiri.astro';
+import ProjeVitrin from '../components/ProjeVitrin.astro';
+import SonIzlenenler from '../components/SonIzlenenler.astro';
+import { LETTERBOXD_RSS } from 'astro:env/server';
+import { projeler, tumYazilar } from '../lib/content';
+import { sonIzlenenler } from '../lib/letterboxd';
+
+const [en_yeni, ...oncekiler] = await tumYazilar();
+// LETTERBOXD_RSS tanımlı değilse boş döner ve şerit hiç render edilmez.
+const izlenenler = await sonIzlenenler(LETTERBOXD_RSS);
+const vitrin = (await projeler()).filter((p) => p.data.oneCikan && p.data.durum !== 'arsiv').slice(0, 2);
+---
+
+<Base>
+  <h1 class="sr-only">Göktürk Fulser: sinema, basketbol ve projeler</h1>
+  {en_yeni && <YaziOne yazi={en_yeni} />}
+
+  {
+    !en_yeni && (
+      <section class="kap bos-kap" aria-labelledby="bos-baslik">
+       <div class="bos">
+        <h2 id="bos-baslik">Henüz yazı yok</h2>
+        <p>Sinema ve basketbol yazıları hazır oldukça burada, tarih sırasıyla listelenecek.</p>
+        <p>
+          Şimdilik <a href="/projeler/">projelere</a> ya da <a href="/hakkimda/">hakkımda sayfasına</a> göz
+          atabilirsiniz.
+        </p>
+       </div>
+      </section>
+    )
+  }
+
+  {
+    oncekiler.length > 0 && (
+      <section class="kap onceki" aria-labelledby="onceki-baslik">
+        <h2 id="onceki-baslik">Önceki yazılar</h2>
+        <ul class="lista akis">
+          {oncekiler.map((yazi) => (
+            <li>
+              <YaziSatiri yazi={yazi} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <SonIzlenenler filmler={izlenenler} />
+
+  {vitrin.length > 0 && <ProjeVitrin projeler={vitrin} />}
+</Base>
+
+<style>
+  .bos-kap {
+    padding-block: var(--aralik-6);
+  }
+
+  .bos {
+    display: grid;
+    gap: var(--aralik-3);
+    max-width: 46rem;
+  }
+
+  .bos h2 {
+    font-size: var(--yazi-h1);
+  }
+
+  .bos p {
+    max-width: var(--olcu);
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  .onceki {
+    padding-block: var(--aralik-6);
+  }
+
+  h2 {
+    margin-block-end: var(--aralik-4);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .akis {
+    display: grid;
+    gap: var(--aralik-5);
+  }
+</style>

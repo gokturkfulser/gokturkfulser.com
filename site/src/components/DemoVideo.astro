@@ -1,0 +1,56 @@
+---
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  url: string;
+  baslik: string;
+  poster?: ImageMetadata;
+}
+
+const { url, baslik, poster } = Astro.props;
+
+const dosya = /\.(mp4|webm|ogg)(\?.*)?$/i.exec(url);
+const youtube = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{6,})/i.exec(url);
+const vimeo = /vimeo\.com\/(?:video\/)?(\d+)/i.exec(url);
+const gomulu = youtube
+  ? `https://www.youtube-nocookie.com/embed/${youtube[1]}`
+  : vimeo
+    ? `https://player.vimeo.com/video/${vimeo[1]}`
+    : undefined;
+const tur = dosya ? `video/${dosya[1]!.toLowerCase().replace('ogg', 'ogg')}` : undefined;
+---
+
+{
+  dosya ? (
+    <video controls preload="none" poster={poster?.src} aria-label={`${baslik} demo videosu`}>
+      <source src={url} type={tur} />
+      <p>Tarayıcınız videoyu oynatamıyor. <a href={url}>Videoyu indirin</a>.</p>
+    </video>
+  ) : gomulu ? (
+    <iframe
+      src={gomulu}
+      title={`${baslik} demo videosu`}
+      loading="lazy"
+      sandbox="allow-scripts allow-same-origin allow-presentation"
+      allow="fullscreen"
+      referrerpolicy="no-referrer"
+    />
+  ) : (
+    <p><a href={url}>Demo videosunu izle</a></p>
+  )
+}
+
+<style>
+  video,
+  iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: 0;
+    background: var(--murekkep);
+  }
+
+  video {
+    object-fit: contain;
+  }
+</style>

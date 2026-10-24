@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  /** Anlam taşıyorsa açıklama; yalnızca süsse boş bırakılır. */
+  alt: string;
+  altyazi?: string;
+}
+const { src, alt, altyazi } = Astro.props;
+---
+
+<figure class="gorsel">
+  <Image src={src} alt={alt} width={1200} loading="lazy" />
+  {altyazi && <figcaption>{altyazi}</figcaption>}
+</figure>
+
+<style>
+  .gorsel {
+    margin-block: 1.6em;
+  }
+
+  .gorsel img {
+    width: 100%;
+    height: auto;
+  }
+
+  figcaption {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+    color: var(--soluk);
+    hyphens: manual;
+  }
+</style>
