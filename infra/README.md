@@ -15,6 +15,7 @@ internet ──▶ Cloudflare ──▶ tunnel gokturkfulser-vps ──▶ cloud
 | `apps/_template/` | Yeni servis şablonu; `apps/ornek/` traefik/whoami örneği |
 | `monitoring/` | Uptime Kuma (`status.gokturkfulser.com`) |
 | `backup/` | restic → R2 (`gokturkfulser-backup`), systemd timer, restore |
+| `templates/` | Servis şablonları: `fastapi-service/` (+ ayrı repolar için `templates/README.md`) |
 | `scripts/` | VPS komutları: `core-up.sh`, `app-up.sh <ad>`, `app-down.sh <ad>`, `ghcr-login.sh`; `validate.sh` (CI) |
 | `local.env` | Yerel test değişkenleri (`DOMAIN=localhost`; gizli bilgi yok) |
 
@@ -195,31 +196,76 @@ kurulum ekranı (admin hesabı oluşturma) ilk gelene verilir. **Önce Access'i 
 
 Kapsam ve saklama: yalnızca `com.gokturkfulser.backup=true` etiketli volume'lar yedeklenir (Uptime Kuma'nınki
 etiketli; yeni servislerde volume'a bu etiketi ekle). Saklama: 7 günlük, 4 haftalık, 6 aylık
-(`backup/.env` içindeki `KEEP_*`). Yedek, çalışan servisten alınır; SQLite/DB kullanan bir servis eklenirse
-tutarlılık için önce dump almayı ya da kısa süre durdurmayı düşün.
+(`backup/.env` içindeki `KEEP_*`).
+
+#### Yedek tutarlılığı: veritabanı dump'ı (`com.gokturkfulser.backup.pre`)
+
+Yedek çalışan servisten alınır; açık bir SQLite/Postgres dosyasını doğrudan kopyalamak bozuk yedek verebilir.
+Veritabanı kullanan servis, yedekten **önce** konteynerinde çalışacak dump komutunu label ile bildirir:
+
+```yaml
+services:
+  db:
+    labels:
+      # SQLite (python imajında sqlite3 CLI yok; standart kütüphane yeter). ">-" satırları birleştirir.
+      com.gokturkfulser.backup.pre: >-
+        python -c "import sqlite3;
+        sqlite3.connect('/data/app.db').backup(sqlite3.connect('/data/dump.sqlite'))"
+      # Postgres: "pg_dump -U $$POSTGRES_USER -Fc -f /backups/db.dump $$POSTGRES_DB"  (compose'ta $ için $$)
+    volumes:
+      - data:/data
+volumes:
+  data:
+    labels:
+      com.gokturkfulser.backup: "true"   # dump'ın yazıldığı volume yedeklenenler arasında olmalı
+```
+
+`backup.sh`, `com.gokturkfulser.backup.pre` etiketli **çalışan** konteynerlerde komutu `sh -c` ile çalıştırır
+(zaman aşımı `BACKUP_PRE_TIMEOUT`, varsayılan 600 sn), sonra volume'ları yedekler; dump böylece yedeğe girer.
+Kurallar: komut dump'ı her çalışmada **üzerine yazmalı**; dump, yedeklenen (etiketli) bir volume'a yazılmalı;
+komut konteynerin kendi imajında çalışabilmeli. Komut başarısız olursa yedek yine alınır (diğer servisler ve önceki
+dump korunur) ama script sonda `exit 1` verir, yani `gokturkfulser-backup.service` "failed" görünür. Geri
+yüklemede dump'ı kullan (`restore.sh` volume'u geri koyar; Postgres için `pg_restore`, SQLite için `dump.sqlite`'ı
+`app.db` yap). Şablonlardaki compose.yml'lerde bu etiket yorum satırı olarak örneklenir; `ornek`/`ornek-api` kullanmaz.
 
 ### 9. GitHub secret/variable'ları
 
 - **Şu an gerekmez.** `infra.yml` yalnızca doğrulama yapar; secret kullanmaz.
 - Servis image'larını `ghcr.io/gokturkfulser/gokturkfulser-<app>` olarak yayınlayan workflow'lar
   (`services/` görevi) `GITHUB_TOKEN` ile (`permissions: packages: write`) push eder; ek secret gerekmez.
-- Otomatik deploy (SSH ile `app-up.sh`) eklenirse (henüz yok) önerilen adlar: variable `VPS_HOST`,
-  `VPS_USER` (= `deploy`); secret `VPS_SSH_KEY` (yalnızca bu iş için üretilmiş, `deploy`a yetkilendirilmiş
-  ayrı anahtar), `VPS_KNOWN_HOSTS`. Ortam bazlı koruma için bir GitHub Environment (`production`) kullan.
+- Servis workflow'larındaki (`service-<app>.yml`) deploy job'u yalnızca repo variable'ı `DEPLOY_TARGET` = `vps`
+  ise çalışır; tanımlı değilken atlanır ve workflow yeşil kalır. Açmak için (Settings → Secrets and variables →
+  Actions): variables `DEPLOY_TARGET=vps`, `VPS_HOST`, `VPS_USER` (= `deploy`); secrets `VPS_SSH_KEY` (yalnızca bu
+  iş için üretilmiş, `deploy`a yetkilendirilmiş ayrı anahtar), `VPS_KNOWN_HOSTS` (`ssh-keyscan <ip>` çıktısı).
+  Deploy sunucuda `git pull --ff-only` + `IMAGE_TAG=sha-<7> app-up.sh <app>` çalıştırır. Elle `app-up.sh`
+  yeniden çalıştırılırsa `IMAGE_TAG` yoksa `latest` (aynı image) kullanılır.
 - Sunucudaki gizliler GitHub'a girmez: `infra/.env` (GHCR_TOKEN), `infra/core/.env` (TUNNEL_TOKEN),
   `infra/backup/.env` (R2 + restic).
 
 ## Yeni servis ekleme
 
-```bash
-cp -r apps/_template apps/<ad>
-# apps/<ad>/compose.yml içinde "sablon" -> <ad>; port ve healthcheck yolunu ayarla
-cp apps/<ad>/.env.example apps/<ad>/.env
-./scripts/app-up.sh <ad>        # https://<ad>.gokturkfulser.com, DNS kaydı gerekmez (wildcard)
+Aynı repoda FastAPI servisi (kök dizinden):
+
+```powershell
+pnpm service:new skor-api
 ```
 
-Yerelde denemek için aynı compose'u `docker compose --env-file infra/local.env -f infra/apps/<ad>/compose.yml up -d`
-ile (core ayakta olmalı) çalıştırabilirsin; adres `http://<ad>.localhost`.
+Komut `infra/templates/fastapi-service/`'i `services/skor-api/` altına kopyalar, `infra/apps/skor-api/compose.yml`
+ve `.github/workflows/service-skor-api.yml`'yi üretir (geçersiz ya da var olan ad anlaşılır hatayla durur).
+Yerelde çalıştırma/test, Python sürüm gerekçesi ve CI akışı: `services/skor-api/README.md` (kaynağı
+`templates/fastapi-service/README.md`). Ayrı repodaki projeler için: [templates/README.md](templates/README.md).
+
+VPS'te, image GHCR'a yayınlandıktan sonra (ya da CI deploy'u açıksa otomatik):
+
+```bash
+cd /opt/gokturkfulser && git pull --ff-only
+cp infra/apps/skor-api/.env.example infra/apps/skor-api/.env   # gerekiyorsa doldur
+./scripts/app-up.sh skor-api     # https://skor-api.gokturkfulser.com, DNS kaydı gerekmez (wildcard)
+```
+
+Hazır image'lı (kendi kodumuz olmayan) uygulamalar için elle: `cp -r apps/_template apps/<ad>` ve `sablon` → `<ad>`.
+Yerelde denemek için compose'u `docker compose --env-file infra/local.env -f infra/apps/<ad>/compose.yml up -d`
+ile (core ayakta olmalı) çalıştır; adres `http://<ad>.localhost`.
 
 ## Güvenlik notları
 

@@ -45,12 +45,13 @@ else
   docker run --rm -v "$mount_path:/mnt" -w /mnt "$shellcheck_image" -x "${scripts[@]}" || failed=1
 fi
 
-# Yalnızca bu pipeline'ın workflow'u; diğer workflow'lar kendi pipeline'larının sorumluluğunda.
+# .github/workflows altındaki tüm workflow'lar + servis şablonunun workflow şablonu.
 step "actionlint"
 if command -v actionlint >/dev/null 2>&1; then
-  actionlint .github/workflows/infra.yml || failed=1
+  actionlint .github/workflows/*.yml infra/templates/fastapi-service/workflow.yml || failed=1
 else
-  docker run --rm -v "$mount_path:/repo" -w /repo "$actionlint_image" -color .github/workflows/infra.yml || failed=1
+  docker run --rm -v "$mount_path:/repo" -w /repo "$actionlint_image" -color \
+    .github/workflows/*.yml infra/templates/fastapi-service/workflow.yml || failed=1
 fi
 
 step "docker compose config"
@@ -66,6 +67,7 @@ compose_check -f infra/core/compose.yml
 compose_check -f infra/core/compose.yml -f infra/core/compose.local.yml
 compose_check --env-file infra/local.env -f infra/core/compose.yml -f infra/core/compose.local.yml
 compose_check -f infra/apps/_template/compose.yml
+compose_check -f infra/templates/fastapi-service/compose.yml
 for f in infra/apps/*/compose.yml infra/monitoring/compose.yml; do
   [[ "$f" == "infra/apps/_template/compose.yml" ]] && continue
   compose_check --env-file infra/local.env -f "$f"

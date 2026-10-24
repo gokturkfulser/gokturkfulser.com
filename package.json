@@ -13,6 +13,7 @@
     "lab:dev": "pnpm --filter lab dev",
     "lab:build": "pnpm --filter lab build",
     "lab:new": "node lab/scripts/yeni.mjs",
+    "service:new": "node services/scripts/yeni.mjs",
     "infra:up": "docker compose --env-file infra/local.env -p gokturkfulser-core -f infra/core/compose.yml -f infra/core/compose.local.yml up -d --wait && docker compose --env-file infra/local.env -p gokturkfulser-ornek -f infra/apps/ornek/compose.yml up -d --wait && docker compose --env-file infra/local.env -p gokturkfulser-monitoring -f infra/monitoring/compose.yml up -d --wait",
     "infra:down": "docker compose --env-file infra/local.env -p gokturkfulser-monitoring -f infra/monitoring/compose.yml down && docker compose --env-file infra/local.env -p gokturkfulser-ornek -f infra/apps/ornek/compose.yml down && docker compose --env-file infra/local.env -p gokturkfulser-core -f infra/core/compose.yml -f infra/core/compose.local.yml down",
     "infra:logs": "docker compose --env-file infra/local.env -p gokturkfulser-core -f infra/core/compose.yml -f infra/core/compose.local.yml logs -f --tail=100",

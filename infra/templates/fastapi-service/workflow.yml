@@ -1,0 +1,121 @@
+# .github/workflows/service-sablon.yml olarak üretilir (pnpm service:new <ad>).
+# test+lint -> image (PR: yalnızca amd64, push yok; main: amd64+arm64, GHCR'a push) -> isteğe bağlı deploy.
+name: service-sablon
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/sablon/**'
+      - '.github/workflows/service-sablon.yml'
+  pull_request:
+    paths:
+      - 'services/sablon/**'
+      - '.github/workflows/service-sablon.yml'
+
+permissions:
+  contents: read
+
+# Aynı PR'daki eski çalışmayı iptal et (dakika tasarrufu); main çalışmaları iptal edilmez.
+concurrency:
+  group: service-sablon-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE: ghcr.io/gokturkfulser/gokturkfulser-sablon
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/sablon
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: services/sablon/uv.lock
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest
+
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write  # GHCR push: yalnızca GITHUB_TOKEN
+    env:
+      PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@v7
+      # arm64 yalnızca main'de (QEMU emülasyonu pahalı); PR'larda amd64 yeterli.
+      - uses: docker/setup-qemu-action@v4
+        if: env.PUBLISH == 'true'
+        with:
+          platforms: arm64
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        if: env.PUBLISH == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ env.PUBLISH == 'true' }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: services/sablon
+          platforms: ${{ env.PUBLISH == 'true' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+          push: ${{ env.PUBLISH == 'true' }}
+          load: ${{ env.PUBLISH != 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: APP_VERSION=${{ github.sha }}
+          cache-from: type=gha,scope=sablon
+          cache-to: type=gha,scope=sablon,mode=max
+      # PR'da image'ın gerçekten ayağa kalktığını doğrula (healthcheck komutu dahil).
+      - name: Smoke test
+        if: env.PUBLISH != 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          image="$(echo "$TAGS" | head -n1)"
+          docker run -d --name smoke "$image"
+          for _ in $(seq 1 20); do
+            if docker exec smoke python -m app.healthcheck; then
+              echo "sağlıklı"; exit 0
+            fi
+            sleep 1
+          done
+          docker logs smoke
+          exit 1
+
+  deploy:
+    needs: image
+    # DEPLOY_TARGET repo variable'ı tanımlı değilse (ya da 'vps' değilse) bu job atlanır; workflow yeşil kalır.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_TARGET == 'vps'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sunucuda app-up.sh çalıştır
+        env:
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          SHA: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # metadata-action'ın type=sha etiketi 7 karakterlik kısa sha'dır (sha-abc1234).
+          ssh -i ~/.ssh/deploy_key "$VPS_USER@$VPS_HOST" \
+            "cd /opt/gokturkfulser && git pull --ff-only && IMAGE_TAG=sha-${SHA:0:7} infra/scripts/app-up.sh sablon"

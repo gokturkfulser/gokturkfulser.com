@@ -8,6 +8,10 @@ infra_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 env_file="${BACKUP_ENV_FILE:-$infra_dir/backup/.env}"
 restic_image="restic/restic:0.18.1"
 label="com.gokturkfulser.backup=true"
+pre_label="com.gokturkfulser.backup.pre"
+pre_timeout="${BACKUP_PRE_TIMEOUT:-600}"
+# Git Bash'te docker exec argümanlarındaki /yol ifadeleri Windows yoluna çevrilmesin (VPS'te etkisiz).
+export MSYS_NO_PATHCONV=1
 
 [[ -f "$env_file" ]] || { echo "HATA: $env_file yok (bkz. .env.example)." >&2; exit 1; }
 # Git Bash'te docker.exe için Windows biçimli yol (VPS'te etkisiz).
@@ -32,6 +36,24 @@ if [[ ${#volumes[@]} -eq 0 ]]; then
   echo "Yedeklenecek volume yok ('$label' etiketli). Çıkılıyor." >&2
   exit 0
 fi
+
+# Yedek öncesi komutlar: servis, veritabanı dump'ını yedeklenen bir volume'a yazan komutu
+# `com.gokturkfulser.backup.pre` etiketiyle bildirir; konteynerde `sh -c` ile çalıştırılır.
+# Komut başarısız olursa yedek yine alınır (diğer servisler ve önceki dump korunur) ama script
+# sonda hata koduyla çıkar; böylece systemd servisi "failed" görünür.
+pre_failed=0
+mapfile -t pre_containers < <(docker ps --quiet --filter "label=$pre_label")
+for c in "${pre_containers[@]}"; do
+  [[ -n "$c" ]] || continue
+  name="$(docker inspect --format '{{.Name}}' "$c")"
+  name="${name#/}"
+  cmd="$(docker inspect --format "{{ index .Config.Labels \"$pre_label\" }}" "$c")"
+  echo "Yedek öncesi komut [$name]: $cmd"
+  if ! timeout "$pre_timeout" docker exec "$c" sh -c "$cmd"; then
+    echo "HATA: [$name] yedek öncesi komutu başarısız oldu." >&2
+    pre_failed=1
+  fi
+done
 
 run_args=(--rm --env-file "$docker_env_file" --hostname gokturkfulser-vps -v restic-cache:/root/.cache/restic)
 if [[ -n "$local_volume" ]]; then
@@ -58,3 +80,8 @@ restic forget --tag volumes --group-by host,tags \
   --keep-daily "$keep_daily" --keep-weekly "$keep_weekly" --keep-monthly "$keep_monthly" --prune
 restic check
 restic snapshots --tag volumes --compact
+
+if [[ $pre_failed -ne 0 ]]; then
+  echo "UYARI: en az bir yedek öncesi komut başarısız; ilgili servisin dump'ı güncel olmayabilir." >&2
+  exit 1
+fi

@@ -1,0 +1,56 @@
+# infra/apps/<ad>/compose.yml olarak üretilir (pnpm service:new <ad>); apps/_template ile aynı kurallar.
+# Image: ghcr.io/gokturkfulser/gokturkfulser-sablon (private; VPS'te önce scripts/ghcr-login.sh).
+# Yerelde: image'ı yerelde build et (services/sablon/README.md), sonra bu compose'u çalıştır.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+name: gokturkfulser-sablon
+
+services:
+  sablon:
+    image: ghcr.io/gokturkfulser/gokturkfulser-sablon:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: edge
+      traefik.http.routers.sablon.rule: Host(`sablon.${DOMAIN:-gokturkfulser.com}`)
+      traefik.http.routers.sablon.entrypoints: web
+      traefik.http.services.sablon.loadbalancer.server.port: "8000"
+      # Veritabanı (SQLite/Postgres) kullanan servis: yedekten ÖNCE konteynerde çalışacak dump komutu.
+      # Dump, yedeklenen (com.gokturkfulser.backup etiketli) bir volume'a yazılmalı; backup.sh bu komutu
+      # `sh -c` ile çalıştırır. Compose'ta "$" için "$$" yaz. Ayrıntı: infra/README.md > Yedek tutarlılığı.
+      # SQLite (python imajında sqlite3 CLI yok; standart kütüphane yeter):
+      # com.gokturkfulser.backup.pre: >-
+      #   python -c "import sqlite3;
+      #   sqlite3.connect('/data/app.db').backup(sqlite3.connect('/data/dump.sqlite'))"
+      # Postgres (veritabanı konteynerinde): com.gokturkfulser.backup.pre: "pg_dump -U $$POSTGRES_USER -Fc -f /backups/db.dump $$POSTGRES_DB"
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - edge
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging: *logging
+
+networks:
+  edge:
+    external: true

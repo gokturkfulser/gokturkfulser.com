@@ -11,3 +11,7 @@ __pycache__/
 # Playwright ekran görüntüleri ve MCP çıktıları: yerel kanıt, repo'ya girmez
 site/ekran-goruntuleri/
 .playwright-mcp/
+
+# Python
+.pytest_cache/
+.ruff_cache/
