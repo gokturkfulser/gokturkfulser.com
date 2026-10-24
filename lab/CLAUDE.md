@@ -44,3 +44,5 @@ Hatasız geçmeden görev bitmiş sayılmaz. Bir app değiştiyse production ç�
 - Tahmin sözlükte aranmaz (yalnızca beş Türkçe harf); cevaplar listeden gelir. Tam bir Türkçe sözlük eklenirse tahmin doğrulaması orada yapılır.
 - Düzen `container query` birimleriyle ölçeklenir: dar/uzun ekranda yığılı, geniş ve alçak (iframe, telefon yatay) ekranda tahta solda klavye sağda. Tam ekran düğmesi yalnızca iframe dışında görünür; iframe'de `site/`'ın `OyunKutusu` bileşeni kendi "Tam ekran" düğmesini sunar.
 - Kapak ve `site/`'daki proje ekran görüntüleri gerçek oyundan alınmıştır (Playwright, sabit tarihle: 2026-10-24, kelime `IRMAK`). Oyunun görünümü değişirse yeniden alınır: `lab/apps/kelime-avi/public/kapak.png` ve `site/src/content/projeler/kelime-avi/{kapak,oyun-1,oyun-2}.png`.
+
+
