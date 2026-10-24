@@ -1,0 +1,44 @@
+# Uptime Kuma: status.gokturkfulser.com (yerelde status.localhost), Traefik arkasında.
+# Yönetim paneli internete açık olacağı için Cloudflare Access ile korunmalı (README).
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+name: gokturkfulser-monitoring
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: edge
+      traefik.http.routers.status.rule: Host(`status.${DOMAIN:-gokturkfulser.com}`)
+      traefik.http.routers.status.entrypoints: web
+      traefik.http.services.status.loadbalancer.server.port: "3001"
+    # Image'ın kendi HEALTHCHECK'i (extra/healthcheck) kullanılır.
+    networks:
+      - edge
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M
+    logging: *logging
+
+volumes:
+  uptime-kuma-data:
+    # backup/backup.sh yalnızca bu etiketi taşıyan volume'ları yedekler.
+    labels:
+      com.gokturkfulser.backup: "true"
+
+networks:
+  edge:
+    external: true

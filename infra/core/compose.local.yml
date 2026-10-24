@@ -1,0 +1,12 @@
+# Yerel (Docker Desktop) override: tunnel yok, Traefik localhost:80'de.
+# Kullanım: docker compose -f compose.yml -f compose.local.yml up -d
+# Uygulama host kuralları <app>.localhost olur (DOMAIN=localhost, bkz. ../local.env).
+
+services:
+  cloudflared:
+    # Profil etkinleştirilmedikçe başlamaz => yerelde kapalı.
+    profiles: ["tunnel"]
+
+  traefik:
+    ports:
+      - "127.0.0.1:80:80"

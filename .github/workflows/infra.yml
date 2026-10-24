@@ -15,15 +15,16 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4  # sürüm: kök package.json'daki packageManager
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc  # tek kaynak: Node sürümü köktek .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Yer tutucu
-        run: echo "infra adımları ilgili görevde eklenecek"
+      # LF denetimi + shellcheck + actionlint + docker compose config (infra/scripts/validate.sh)
+      - name: Doğrula
+        run: pnpm infra:check

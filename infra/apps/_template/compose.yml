@@ -1,0 +1,50 @@
+# Yeni servis şablonu. Kullanım (VPS'te veya yerelde):
+#   1) cp -r apps/_template apps/<ad>
+#   2) apps/<ad>/compose.yml içinde "sablon" sözcüğünü <ad> ile değiştir
+#      (name, image, router/service adı, Host kuralı, healthcheck portu/yolu)
+#   3) cp apps/<ad>/.env.example apps/<ad>/.env  # gerekiyorsa doldur
+#   4) VPS'te: infra/scripts/app-up.sh <ad>
+# Image: ghcr.io/gokturkfulser/gokturkfulser-<app> (private; önce scripts/ghcr-login.sh).
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+name: gokturkfulser-sablon
+
+services:
+  sablon:
+    image: ghcr.io/gokturkfulser/gokturkfulser-sablon:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: edge
+      traefik.http.routers.sablon.rule: Host(`sablon.${DOMAIN:-gokturkfulser.com}`)
+      traefik.http.routers.sablon.entrypoints: web
+      traefik.http.services.sablon.loadbalancer.server.port: "3000"
+    healthcheck:
+      # Image'da wget/curl olmayabilir; gerekirse uygulamanın kendi komutunu kullan.
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - edge
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging: *logging
+
+networks:
+  edge:
+    external: true

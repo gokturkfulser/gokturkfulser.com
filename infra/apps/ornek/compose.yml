@@ -1,0 +1,41 @@
+# Örnek servis: traefik/whoami. Yerelde http://ornek.localhost, VPS'te https://ornek.gokturkfulser.com
+# Wildcard tunnel kapsamında; Cloudflare DNS'te ek kayıt gerekmez.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+name: gokturkfulser-ornek
+
+services:
+  ornek:
+    image: traefik/whoami:v1.11.0
+    restart: unless-stopped
+    command: ["--port", "80"]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: edge
+      traefik.http.routers.ornek.rule: Host(`ornek.${DOMAIN:-gokturkfulser.com}`)
+      traefik.http.routers.ornek.entrypoints: web
+      traefik.http.services.ornek.loadbalancer.server.port: "80"
+    healthcheck:
+      # whoami kabuksuz ve içinde istemci/healthcheck komutu yok; şablondaki healthcheck
+      # burada uygulanamaz. Gerçek servislerde healthcheck zorunlu (bkz. apps/_template).
+      disable: true
+    networks:
+      - edge
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 32M
+    logging: *logging
+
+networks:
+  edge:
+    external: true
