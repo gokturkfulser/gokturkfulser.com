@@ -1,34 +1,37 @@
 ---
 ad: "Kelime Avı"
-ozet: "Türkçe kelimelerle oynanan, tarayıcıda çalışan günlük bir bulmaca oyunu."
+ozet: "Her gün yeni bir kelime: beş harfli Türkçe kelimeyi altı tahminde bul. Tarayıcıda, klavyeyle ya da dokunarak oynanır."
 tur: oyun
 barindirma: lab
 durum: yayinda
-url: "https://lab.gokturkfulser.com/ornek-oyun/"
-embedUrl: "https://lab.gokturkfulser.com/ornek-oyun/"
-repo: "https://github.com/gokturkfulser/kelime-avi"
-stack: ["TypeScript", "Astro", "Cloudflare Workers"]
-gorsel: ./kapak.svg
+url: "https://lab.gokturkfulser.com/kelime-avi/"
+embedUrl: "https://lab.gokturkfulser.com/kelime-avi/"
+stack: ["TypeScript", "Vite", "Cloudflare Workers"]
+gorsel: ./kapak.png
 ekranGoruntuleri:
-  - gorsel: ./ekran-1.svg
-    alt: "Oyunun başlangıç ekranı: boş bir tahmin ızgarası"
+  - gorsel: ./oyun-1.png
+    alt: "Telefonda Kelime Avı: boş tahmin ızgarası ve altında Türkçe ekran klavyesi"
     altyazi: "Başlangıç ekranı"
-  - gorsel: ./ekran-2.svg
-    alt: "Üç tahminden sonra harflerin renklendiği oyun ekranı"
+  - gorsel: ./oyun-2.png
+    alt: "Üç tahminden sonra harfler renklenmiş: doğru yerdekiler turkuaz, başka yerdekiler turuncu, kelimede olmayanlar koyu gri"
     altyazi: "Üçüncü tahminden sonra"
 oneCikan: true
 sira: 1
-taslak: true
+taslak: false
 ---
 
-Kelime Avı, her gün yeni bir kelimeyi tahmin etmeye çalıştığınız küçük bir bulmaca oyunu. Türkçeye özgü harfler (ç, ğ, ı, ö, ş, ü) oyunun merkezinde.
+Kelime Avı, her gün yeni bir kelimeyi tahmin etmeye çalıştığınız küçük bir bulmaca oyunu. Türkçeye özgü harfler (ç, ğ, ı, i, ö, ş, ü) oyunun merkezinde: <strong>İ</strong> ile <strong>I</strong> ayrı harflerdir ve büyük harfe çevirme Türkçe kurallarıyla yapılır.
 
 ## Nasıl oynanır?
 
 1. Beş harfli bir kelime tahmin edin.
-2. Her tahminden sonra harflerin doğru yerde olup olmadığını görün.
+2. Her tahminden sonra harflerin rengine bakın: turkuaz harf doğru yerde, turuncu harf kelimede ama başka yerde, koyu gri harf kelimede yok.
 3. Altı hakkınız içinde kelimeyi bulun.
+
+Her gün yeni bir kelime gelir; bitirdikten sonra rastgele kelimelerle istediğiniz kadar oynayabilirsiniz.
 
 ## Notlar
 
-Oyun lab ortamında deneysel olarak çalışıyor; geri bildirimler yeni sürümleri şekillendiriyor. Klavyeyle de oynanır: harfleri yazın, Enter ile tahmin edin.
+Klavyeyle de dokunmatik ekranla da oynanır: harfleri yazın ya da ekran klavyesine dokunun, Enter tahmini gönderir. Oyun kendi sayfasında tam ekran çalışır, bu sayfada da yerleşik olarak oynanabilir; hareket azaltma tercihiniz (`prefers-reduced-motion`) açıksa harf çevirme animasyonları kapanır. Bugünkü tahminleriniz tarayıcınızda saklanır, başka hiçbir veri toplanmaz.
+
+Tahmin ettiğiniz kelimenin sözlükte olup olmadığı denetlenmez; yalnızca beş Türkçe harf girmeniz yeterlidir. Günün kelimesi ise yaygın, çekimsiz kelimelerden oluşan seçili bir listeden gelir.

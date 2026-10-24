@@ -2,7 +2,7 @@
 
 Hedef: `gokturkfulser-site` Worker'ı, bu repodan (`gokturkfulser/gokturkfulser.com`, private) her `main` push'unda `gokturkfulser.com`'a yayımlanır; diğer dallar preview build'i alır. Bu dosyadaki her değer dashboard'a olduğu gibi girilir.
 
-> Not: Aynı repoya ikinci Worker (`gokturkfulser-lab`) ayrıca bağlanır; adımlar aynıdır, yalnızca ad, komutlar ve watch path'ler `lab/` için değişir (lab görevinde yazılır).
+> Not: Aynı repoya ikinci Worker (`gokturkfulser-lab`) ayrıca bağlanır; adımlar aynıdır, değerler [lab/DEPLOY.md](../lab/DEPLOY.md)'dedir.
 
 ## 1. Repo bağlama
 
@@ -12,7 +12,9 @@ Hedef: `gokturkfulser-site` Worker'ı, bu repodan (`gokturkfulser/gokturkfulser.
 4. **Project name: `gokturkfulser-site`**. Bu ad `site/wrangler.jsonc` içindeki `name` ile birebir aynı olmalı; farklıysa build `wrangler deploy` aşamasında uyarı/hata verir.
 5. **Production branch: `main`**.
 
-## 2. Build ayarları (Settings → Build)
+## 2. Kurulum ekranındaki alanlar (Settings → Build)
+
+Kurulum ekranında **Build command**, **Deploy command** ve **Preview command** alanları vardır.
 
 Monorepo yöntemi: **Root directory boş (repo kökü)**. Lockfile (`pnpm-lock.yaml`) ve `pnpm-workspace.yaml` kökte olduğu için `pnpm install` kökten çalışır; paket `--filter site` ile seçilir. (Cloudflare dokümanı root directory'yi "build ve deploy komutlarının çalıştığı yer, Wrangler config'in bulunduğu klasör" olarak anlatıyor ama bağımlılık kurulumunun nerede çalıştığını açıklamıyor; kökten çalıştırmak bu belirsizliği ortadan kaldırır.)
 
@@ -21,7 +23,7 @@ Monorepo yöntemi: **Root directory boş (repo kökü)**. Lockfile (`pnpm-lock.y
 | Root directory | *(boş bırakın)* |
 | Build command | `pnpm --filter site build:workers` |
 | Deploy command | `pnpm --filter site exec wrangler deploy` |
-| Non-production branch deploy / Preview command | `pnpm --filter site exec wrangler preview` |
+| Preview command | `pnpm --filter site exec wrangler preview` |
 | Enable Preview Builds (Branch control) | işaretli |
 | API token | varsayılan (Cloudflare'in otomatik oluşturduğu) |
 
@@ -29,11 +31,13 @@ Neden böyle:
 
 - Varsayılan deploy komutu `npx wrangler deploy` kökte çalışır ve `wrangler` kök `package.json`'da olmadığı için bulunamaz. `pnpm --filter site exec` komutu `site/` içinde, `site/package.json`'daki Wrangler sürümüyle çalıştırır; `wrangler.jsonc`'deki `./dist` o dosyaya göre çözülür.
 - `build:workers` (`site/scripts/workers-build.mjs`) `pnpm build`'i (`astro build && pagefind --site dist`) çalıştırır ve `WORKERS_CI_BRANCH` değişkenine bakar: dal `main` değilse `SHOW_DRAFTS=true`, `main` ise `false` yapar. Yani preview'da taslaklar görünür ve `noindex` + `Disallow: /` otomatik gelir; production'da hiçbir taslak çıkmaz.
-- Önizleme komutu (`wrangler preview`) için de aynı `pnpm --filter site exec` ön eki gerekir, aksi halde kökte `wrangler` bulunamaz.
+- **Preview command** için varsayılan `npx wrangler preview`'dır; kökte `wrangler` bulunmadığı için aynı `pnpm --filter site exec` ön ekiyle yazılır. Wrangler bu komutu tanımazsa (eski sürüm) yerine `pnpm --filter site exec wrangler versions upload` kullanın. Bu repodaki Wrangler 4.152 ikisini de tanıyor (yerelde doğrulandı).
 
 ## 3. Build watch paths (Settings → Build → Build watch paths)
 
-**Include paths** (her biri ayrı satır/giriş):
+**Cloudflare'in varsayılan include kalıbı `*`'dır (her push build tetikler). Önce onu silin**; aksi halde aşağıdaki kısıtlama hiçbir işe yaramaz, çünkü `*` her şeyle eşleşir.
+
+**Include paths** (varsayılan `*` silindikten sonra, (her biri ayrı satır/giriş):
 
 ```
 site/*
@@ -45,13 +49,13 @@ pnpm-workspace.yaml
 
 **Exclude paths:** boş.
 
-Dokümana göre: `*` sıfır veya daha fazla karakterle eşleşir ve kuralın başında/sonunda ya da tek başına kullanılabilir; önce exclude'lara bakılır, kalan yollar include'larla karşılaştırılır, hiçbiri eşleşmezse build atlanır. Varsayılan include `*`, yani her push build tetikler. `site/*` alt klasörlerdeki dosyaları da kapsar (`*` yol ayracıyla sınırlı değildir). Dokümanda, root directory boşken yolların repo köküne göre olduğu açıkça yazmıyor; örnekleri (`project-a/*`) repo köküne göre. Kurduktan sonra sınayın: yalnızca `lab/` altında bir dosya değiştirip push edin, `gokturkfulser-site` için build **tetiklenmemeli**.
+Dokümana göre: `*` sıfır veya daha fazla karakterle eşleşir ve kuralın başında/sonunda ya da tek başına kullanılabilir; önce exclude'lara bakılır, kalan yollar include'larla karşılaştırılır, hiçbiri eşleşmezse build atlanır. `site/*` alt klasörlerdeki dosyaları da kapsar (`*` yol ayracıyla sınırlı değildir). Dokümanda, root directory boşken yolların repo köküne göre olduğu açıkça yazmıyor; örnekleri (`project-a/*`) repo köküne göre. Kurduktan sonra sınayın: yalnızca `lab/` altında bir dosya değiştirip push edin, `gokturkfulser-site` için build **tetiklenmemeli**.
 
 Zorunlu build durumları: değişiklik içermeyen push, 3.000+ dosya veya 20+ commit'lik push yol eşleşmesine bakılmadan build alır.
 
 ## 4. Build variables and secrets (Settings → Build → Variables and secrets)
 
-Bunlar **build değişkenleri**: site statik olduğu için değerler build sırasında HTML'e gömülür; çalışma zamanı (Worker) değişkeni değildir.
+Değişkenler **Settings → Build → Variables and secrets** bölümüne girilir. Bunlar **build değişkenleri**: site statik olduğu için değerler build sırasında HTML'e gömülür. **Settings → Variables & Secrets** (runtime) bölümüne girilen değerler build sırasında görünmez ve bu sitede işe yaramaz (Worker kodu yok); oraya bir şey girmeyin.
 
 | Ad | Değer | Zorunlu mu |
 | --- | --- | --- |
@@ -93,6 +97,6 @@ Tarayıcı konsolunda ana sayfa, bir yazı, `/arama/` ve oyunlu proje sayfasınd
 
 - **`_headers` / `_redirects`** (Workers static assets, dokümandan): en fazla 100 header kuralı, satır başına 2.000 karakter; `_redirects` en çok 2.000 statik + 100 dinamik. Her dosya en fazla 25 MiB; Free planda sürüm başına 20.000 dosya (Paid 100.000). Redirect'ler header'lardan önce uygulanır; ikisi de yalnızca statik asset yanıtlarına işler (Worker kodunun yanıtlarına değil, bu sitede Worker kodu yok). Aynı header birden çok kuralla eşleşirse değerler **virgülle birleşir**, ezilmez: bu yüzden `Cache-Control` `/*` altına konmadı. Şu an 4 kural var.
 - **CSP iki yerden gelir:** her HTML'de Astro'nun `<meta http-equiv="content-security-policy">` etiketi (script/style hash'leri + `directives`), ve `public/_headers`'ta yalnızca `frame-ancestors 'none'` (meta'da çalışmaz). İkisi birlikte uygulanır ve kesişir; header'da başka direktif olmadığı için çakışma yoktur. `_headers`'a başka CSP direktifi eklemeyin; ekleyecekseniz `astro.config.mjs` → `security.csp.directives`'e ekleyin.
-- **`lab` Worker'ının tarafı:** `frame-src https://lab.gokturkfulser.com` bu sitede izinli; ama lab sayfalarının `gokturkfulser.com` tarafından çerçevelenmesine izin vermesi lab'ın işidir (`Content-Security-Policy: frame-ancestors https://gokturkfulser.com`, `X-Frame-Options: DENY` olmamalı).
+- **`lab` Worker'ının tarafı:** `frame-src https://lab.gokturkfulser.com` bu sitede izinli; lab de `lab/public/_headers` ile `frame-ancestors 'self' https://gokturkfulser.com` gönderir, yani karşılıklı izin kurulu. Yerelde iki production build'i birlikte servis edip (`wrangler dev`) `kelime-avi` iframe'inin açıldığı, başka origin'den çerçevelemenin engellendiği doğrulandı.
 - **Yeni harici kaynak** (ör. başka bir gömülü video sitesi, harici görsel, harici `.mp4`) CSP'ye `astro.config.mjs`'ten eklenmeden çalışmaz. Şu an izinliler: `static.cloudflareinsights.com` (script), `cloudflareinsights.com` (connect), `lab.gokturkfulser.com`, `www.youtube-nocookie.com`, `player.vimeo.com` (frame), `*.ltrbxd.com` (img). Demo videoları kendi sitenizden (`media-src 'self'`) servis edilmelidir.
 - **Pagefind** WebAssembly çalıştırır; `'wasm-unsafe-eval'` yalnızca `/arama/` sayfasının CSP'sine eklenir (`src/pages/arama.astro`, `Astro.csp.insertScriptResource`).

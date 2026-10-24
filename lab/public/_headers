@@ -1,0 +1,27 @@
+# Workers static assets _headers. Aynı header birden çok kuralla eşleşirse değerler virgülle
+# BİRLEŞTİRİLİR (ezilmez); bu yüzden Cache-Control /* altına konmaz. Kuralda tek splat olabilir,
+# bu yüzden app yolu :app yer tutucusuyla yazılır. Kullanılan app'ler lab/apps/<slug>/ altındadır.
+
+# Tüm yollar (lab sayfası ve her app): yalnızca benim siteme gömülebilir.
+# CSP'nin frame-ancestors'ı <meta> ile çalışmaz, bu yüzden header olarak gönderilir.
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://gokturkfulser.com
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+
+# Vite'in parmak izli çıktıları (/<slug>/assets/…) ve lab sayfasının yazı tipleri (lab.css hariç, o her seferinde doğrulanır): değişmez, bir yıl.
+/:app/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/_lab/yazi/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML: kısa cache.
+/
+  Cache-Control: public, max-age=300, must-revalidate
+/:app/
+  Cache-Control: public, max-age=300, must-revalidate
+
+# kelime-avi: kendi başına yeterli olduğu için sıkı CSP (frame-ancestors yukarıdaki kuraldan gelir;
+# iki CSP header'ı birlikte uygulanır, kesişim geçerlidir).
+/kelime-avi/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'

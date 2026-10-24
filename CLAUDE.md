@@ -28,7 +28,7 @@ Sonraki tüm görevler adları buradan okur; başka yerde sabit kodlamak yerine 
 | `infra/` | VPS altyapısı (compose, script'ler, yedekleme) | VPS; yedekler `gokturkfulser-backup` bucket'ına |
 | `infra/templates/` | Yeni servis için şablonlar | — |
 
-pnpm workspace: `site`, `lab`, `lab/apps/*`. Kök `package.json` kısayolları: `site:dev`, `site:build`, `lab:dev`, `lab:build`, `infra:up`, `infra:down` (şimdilik yer tutucu).
+pnpm workspace: `site`, `lab`, `lab/apps/*`. Kök `package.json` kısayolları: `site:dev`, `site:build`, `lab:dev` (`pnpm lab:dev [slug]`), `lab:build`, `lab:new` (`pnpm lab:new <slug>`); `infra:up`, `infra:down` şimdilik yer tutucu.
 
 CI: `.github/workflows/{site,lab,infra}.yml` yalnızca kendi klasörlerindeki ve kendi workflow dosyalarındaki değişikliklerde çalışır.
 

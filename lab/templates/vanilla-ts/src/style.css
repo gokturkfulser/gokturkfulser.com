@@ -1,0 +1,32 @@
+/* Değerler site/DESIGN.md token'larıdır (Teal & Orange). */
+:root {
+  color-scheme: light dark;
+  --zemin: #f4f6f8;
+  --murekkep: #16191f;
+  --turkuaz: #0e5e66;
+  --turuncu: #e2661a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zemin: #0f1317;
+    --murekkep: #e9edf1;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--zemin);
+  color: var(--murekkep);
+  font-family: Georgia, serif;
+  line-height: 1.6;
+}
+
+main {
+  padding: 1.5rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--turkuaz);
+  outline-offset: 3px;
+}

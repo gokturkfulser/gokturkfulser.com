@@ -10,8 +10,9 @@
     "site:dev": "pnpm --filter site dev",
     "site:build": "pnpm --filter site build",
     "site:tmdb": "pnpm --filter site tmdb",
-    "lab:dev": "node -e \"console.log('lab:dev: yer tutucu, lab görevinde dolacak')\"",
-    "lab:build": "node -e \"console.log('lab:build: yer tutucu, lab görevinde dolacak')\"",
+    "lab:dev": "pnpm --filter lab dev",
+    "lab:build": "pnpm --filter lab build",
+    "lab:new": "node lab/scripts/yeni.mjs",
     "infra:up": "node -e \"console.log('infra:up: yer tutucu, infra görevinde dolacak')\"",
     "infra:down": "node -e \"console.log('infra:down: yer tutucu, infra görevinde dolacak')\""
   }

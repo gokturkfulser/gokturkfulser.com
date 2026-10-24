@@ -7,10 +7,10 @@ Her madde işaretlenmeden `gokturkfulser.com` custom domain'i bağlanmaz. Sıray
 - [ ] **`YER-TUTUCULAR.md` boş.** Dosyadaki tüm yer tutucular gerçek içerikle değiştirildi ya da silindi, listede satır kalmadı; ardından dosyanın kendisi silindi. Doğrulama: production build'den sonra aşağıdaki komut **hiç satır** döndürmemeli:
 
   ```powershell
-  Get-ChildItem site/dist -Recurse -File | Select-String -SimpleMatch -Pattern 'Paris, Texas','Pick and roll','Kelime Avı','Dakika','Salon Rehberi','Eski Portföy','flower.mp4','ornek-oyun','github.io'
+  Get-ChildItem site/dist -Recurse -File | Where-Object { $_.FullName -notlike '*\pagefind\*' } | Select-String -SimpleMatch -Pattern 'Paris, Texas','Pick and roll','Dakika','Salon Rehberi','Eski Portföy','flower.mp4','github.io'
   ```
 
-  (Aranacak dizeleri yer tutucu listesine göre güncelleyin; kendi gerçek içeriğinizde geçen bir ad yanlış alarm verirse listeden çıkarın.)
+  (`dist/pagefind/` dışarıda bırakılır: Pagefind'ın kendi betiği `github.io` içerir. Aranacak dizeleri yer tutucu listesine göre güncelleyin; kendi gerçek içeriğinizde geçen bir ad yanlış alarm verirse listeden çıkarın.)
 - [ ] **Gerçek "Hakkımda" metni** yazıldı (`src/pages/hakkimda.astro`): uydurma biyografi, uydurma iletişim/sosyal bağlantı yok; e-posta ve profil bağlantıları gerçek.
 - [ ] **En az bir gerçek yazı** (`taslak: false`) yayında: sinema veya basketbol. `site/dist/sinema/` ya da `site/dist/basketbol/` altında en az bir yazı klasörü var; ana sayfada ve ilgili listede görünüyor; boş durum ("Henüz yazı yok") görünmüyor.
 - [ ] Gerçek yazıdan sonra **CI'daki "taslaklar dahil" ikinci build adımı** (`.github/workflows/site.yml`) kaldırıldı; Lighthouse ve lychee artık gerçek yazıyı denetliyor.

@@ -14,16 +14,31 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: lab-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4 # sürüm kök package.json'daki packageManager'dan
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc  # tek kaynak: Node sürümü köktek .nvmrc
+          node-version-file: .nvmrc # tek kaynak: Node sürümü köktek .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Yer tutucu
-        run: echo "lab adımları ilgili görevde eklenecek"
+      # Her app'in testi + tip kontrolü + Vite build'i, sonra lab/dist toplama (kök script'in karşılığı: pnpm lab:build)
+      - name: Build
+        run: pnpm --filter lab build
+      - name: Çıktı kontrolü
+        run: |
+          test -f lab/dist/index.html
+          test -f lab/dist/404.html
+          test -f lab/dist/_headers
+          for app in lab/apps/*/; do
+            slug="$(basename "$app")"
+            test -f "lab/dist/$slug/index.html" || { echo "::error::lab/dist/$slug/index.html yok"; exit 1; }
+          done

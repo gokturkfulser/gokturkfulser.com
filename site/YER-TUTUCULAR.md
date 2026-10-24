@@ -2,7 +2,7 @@
 
 Bu klasördeki **tüm örnek içerik uydurmadır** ve `taslak: true` ile işaretlidir. Production build'de hiçbiri bulunmaz (sayfa, RSS, sitemap, OG görseli, Pagefind dizini, görsel dosyaları dahil); `SHOW_DRAFTS=true` ile alınan preview build'inde tasarımı denemek için görünürler.
 
-Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `Kelime Avı`, `Dakika`, `Salon Rehberi`, `Eski Portföy`, `flower.mp4`, `ornek-oyun`, `github.io`. (Doğrulandı: 0 eşleşme; `dist/` yalnızca 7 HTML, `favicon.svg` ve varsayılan OG görselini içeriyor.)
+Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `Dakika`, `Salon Rehberi`, `Eski Portföy`, `flower.mp4`, `github.io`. `dist/pagefind/` hariç aranır: Pagefind'ın kendi betiği `github.io` dizesini içerir (yanlış alarm). (Doğrulandı: 0 eşleşme; `dist/` 9 HTML içeriyor: 6 sabit sayfa, 404, `projeler/kelime-avi/` ve `projeler/tur/oyun/`.)
 
 ## 1. Yazılar (`src/content/sinema/`, `src/content/basketbol/`)
 
@@ -17,9 +17,10 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 ## 2. Projeler (`src/content/projeler/`)
 
+> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. Aşağıdaki liste kalan yer tutucuları kapsar.
+
 | Klasör | Uydurma olanlar |
 | --- | --- |
-| `kelime-avi/` | Oyunun kendisi yok. `url` ve `embedUrl`: `https://lab.gokturkfulser.com/ornek-oyun/` (bu adres yok), `repo: github.com/gokturkfulser/kelime-avi` (yok), açıklama ve kurallar metni, `ekranGoruntuleri` (`ekran-1.svg`, `ekran-2.svg`), `kapak.svg`. |
 | `dakika/` | Servis yok. `repo: github.com/gokturkfulser/dakika` (yok), **`demoVideo`: MDN'in `flower.mp4` örnek videosu** (konuyla ilgisiz), metin, `kapak.svg`. |
 | `salon-rehberi/` | Site yok. `url: gokturkfulser.github.io/salon-rehberi/` (yok), `repo` (yok), metin, `kapak.svg`. |
 | `eski-portfoy/` | `url: gokturkfulser.github.io/` (belirsiz), metin, `kapak.svg`. |
@@ -36,7 +37,7 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 ## 4. Gerçeğe çevirme
 
 1. Gerçek içeriği yeni klasör olarak ekleyin (`taslak: false` ya da alanı hiç yazmayın).
-2. İlgili yer tutucu klasörü silin. Hepsini silmek için `site/src/content/*/` altındaki yukarıdaki 8 klasörü kaldırmak yeter; şema ve kod değişmez.
+2. İlgili yer tutucu klasörü silin. Hepsini silmek için `site/src/content/*/` altındaki yukarıdaki 7 klasörü kaldırmak yeter; şema ve kod değişmez.
 3. `hakkimda.astro`'daki `SHOW_DRAFTS` koşulunu gerçek metinle değiştirin.
 4. `public/favicon.svg`'yi değiştirin; isterseniz `public/tmdb-logo.svg` ekleyin.
 5. `pnpm site:tmdb` (anahtar gerekir), sonra `pnpm site:build`; yukarıdaki "Kontrol" adımını yeniden çalıştırın.

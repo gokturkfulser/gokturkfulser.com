@@ -1,0 +1,286 @@
+/* Yazı tipleri: yalnızca woff2 (latin + latin-ext; Türkçe ğ ş İ için ext şart), @fontsource dosyalarından. */
+@font-face {
+  font-family: 'Big Shoulders Display';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url('../node_modules/@fontsource/big-shoulders-display/files/big-shoulders-display-latin-ext-800-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Big Shoulders Display';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url('../node_modules/@fontsource/big-shoulders-display/files/big-shoulders-display-latin-800-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../node_modules/@fontsource/literata/files/literata-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../node_modules/@fontsource/literata/files/literata-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('../node_modules/@fontsource/literata/files/literata-latin-ext-700-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('../node_modules/@fontsource/literata/files/literata-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* Renk ve tipografi değerleri site/DESIGN.md (Teal & Orange) token'larıdır; orada değişmeden burada değişmez. */
+:root {
+  color-scheme: light dark;
+  --zemin: #f4f6f8;
+  --murekkep: #16191f;
+  --turkuaz: #0e5e66;
+  --turkuaz-metin: #0e5e66;
+  --turkuaz-alan-metin: #ffffff;
+  --turuncu: #e2661a;
+  --turuncu-alan-metin: #16191f;
+  --yuzey: #ffffff;
+  --soluk: #4a5360;
+  /* "yok" harfleri: iki modda da okunur koyu/açık ton */
+  --yok-zemin: #4a5360;
+  --yok-metin: #ffffff;
+  --font-baslik: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --font-metin: 'Literata', Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zemin: #0f1317;
+    --murekkep: #e9edf1;
+    --yuzey: #171d23;
+    --soluk: #a3aeba;
+    --turkuaz-metin: #5cc3cc;
+    --yok-zemin: #2b333c;
+    --yok-metin: #e9edf1;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--zemin);
+  color: var(--murekkep);
+  font-family: var(--font-metin);
+  font-size: 1rem;
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+}
+
+.sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+:focus-visible { outline: 3px solid var(--turkuaz-metin); outline-offset: 2px; }
+
+/* ---- Yerleşim: ekran ne olursa olsun (iframe, tam ekran, telefon) sığar ---------------------- */
+.oyun {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100dvh;
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: max(0.5rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+    max(0.5rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  gap: 0.5rem;
+}
+
+.ust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+}
+
+.baslik-alani { display: flex; align-items: baseline; gap: 0.75rem; min-width: 0; }
+
+.baslik {
+  margin: 0;
+  font-family: var(--font-baslik);
+  font-weight: 800;
+  font-size: clamp(1.75rem, 1.2rem + 3dvh, 2.5rem);
+  line-height: 1.04;
+}
+
+.mod { margin: 0; color: var(--soluk); font-size: 0.9375rem; }
+
+.araclar { display: flex; gap: 0.5rem; }
+
+.dugme {
+  padding: 0.35rem 0.75rem;
+  border: 3px solid var(--murekkep);
+  border-radius: 0;
+  background: transparent;
+  color: var(--murekkep);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.dugme:hover { background: var(--murekkep); color: var(--zemin); }
+.dugme[hidden] { display: none; }
+
+/* ---- Tahta: kutunun boyutuna göre ölçeklenir (container query birimleri) --------------------- */
+.sahne {
+  container-type: size;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.tahta {
+  --bosluk: 0.3rem;
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  gap: var(--bosluk);
+  width: min(100cqw, calc(100cqh * 5 / 6));
+  aspect-ratio: 5 / 6;
+}
+
+.satir { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--bosluk); }
+
+.hucre {
+  --zemin-hucre: var(--yuzey);
+  --metin-hucre: var(--murekkep);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--soluk);
+  background: var(--zemin-hucre);
+  color: var(--metin-hucre);
+  font-family: var(--font-baslik);
+  font-weight: 800;
+  font-size: 11cqi;
+  line-height: 1;
+  user-select: none;
+}
+.tahta .hucre[data-dolu] { border-color: var(--murekkep); }
+
+.hucre[data-durum='dogru'] { --zemin-hucre: var(--turkuaz); --metin-hucre: var(--turkuaz-alan-metin); border-color: var(--turkuaz); }
+/* "başka yerde": turuncu + iç halka; renk körlüğünde dolgu/halka ayrımıyla da seçilir */
+.hucre[data-durum='var'] {
+  --zemin-hucre: var(--turuncu);
+  --metin-hucre: var(--turuncu-alan-metin);
+  border-color: var(--turuncu);
+  box-shadow: inset 0 0 0 0.22em var(--zemin);
+}
+.hucre[data-durum='yok'] { --zemin-hucre: var(--yok-zemin); --metin-hucre: var(--yok-metin); border-color: var(--yok-zemin); }
+
+/* ---- Alt alan: mesaj + klavye ---------------------------------------------------------------- */
+.alt { display: grid; gap: 0.4rem; }
+
+.mesaj { margin: 0; min-height: 1.4em; text-align: center; font-weight: 700; font-size: 1rem; }
+
+.yeni { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.yeni[hidden] { display: none; }
+
+.klavye { display: grid; gap: 0.3rem; }
+.tus-satiri { display: flex; gap: 0.25rem; justify-content: center; }
+
+.tus {
+  flex: 1 1 0;
+  min-width: 0;
+  height: clamp(2.75rem, 7.4dvh, 3.5rem);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--soluk) 28%, var(--zemin));
+  color: var(--murekkep);
+  font-family: var(--font-baslik);
+  font-weight: 800;
+  font-size: clamp(1.1rem, 3.4dvh, 1.5rem);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.tus.genis { flex: 1.7 1 0; font-size: clamp(0.8rem, 2.4dvh, 1rem); letter-spacing: 0.02em; }
+.tus:hover { background: color-mix(in srgb, var(--soluk) 45%, var(--zemin)); }
+.tus[data-durum='dogru'] { background: var(--turkuaz); color: var(--turkuaz-alan-metin); }
+.tus[data-durum='var'] { background: var(--turuncu); color: var(--turuncu-alan-metin); }
+.tus[data-durum='yok'] { background: var(--yok-zemin); color: var(--yok-metin); opacity: 0.85; }
+
+/* ---- Yardım penceresi ------------------------------------------------------------------------ */
+.yardim {
+  width: min(32rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.25rem;
+  border: 3px solid var(--murekkep);
+  background: var(--zemin);
+  color: var(--murekkep);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.yardim::backdrop { background: rgb(15 19 23 / 0.6); }
+.yardim h2 { margin: 0 0 0.5rem; font-family: var(--font-baslik); font-weight: 800; font-size: 2rem; line-height: 1.06; }
+.yardim p { margin: 0 0 0.75rem; }
+.ornek { list-style: none; margin: 0 0 0.75rem; padding: 0; display: grid; gap: 0.5rem; }
+.ornek li { display: flex; align-items: center; gap: 0.75rem; }
+.ornek .hucre { flex: none; width: 2.5rem; height: 2.5rem; font-size: 1.5rem; }
+
+.noscript { padding: 1rem; }
+
+/* ---- Geniş ve alçak ekran (ör. 16:9 iframe, telefon yatay): tahta solda, klavye sağda ----------- */
+@media (min-aspect-ratio: 5/4) and (max-height: 720px) {
+  .oyun {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 1rem;
+  }
+  .ust { grid-column: 1 / -1; }
+  .sahne { grid-column: 1; grid-row: 2; }
+  .alt { grid-column: 2; grid-row: 2; align-content: center; }
+  .tus { height: clamp(2.5rem, 11dvh, 3.5rem); font-size: clamp(1.1rem, 5dvh, 1.5rem); }
+}
+
+/* ---- Hareket: yalnızca azaltma istenmediğinde. Durum renkleri animasyonsuz da hemen uygulanır. - */
+@media (prefers-reduced-motion: no-preference) {
+  .hucre.ac {
+    animation: cevir 0.52s ease both;
+    animation-delay: calc(var(--sira) * 0.25s);
+  }
+  .hucre.pop { animation: pop 0.1s ease; }
+  .satir.sars { animation: sars 0.45s ease; }
+}
+
+@keyframes cevir {
+  0% { transform: rotateX(0); background: var(--yuzey); color: var(--murekkep); border-color: var(--murekkep); }
+  49% { transform: rotateX(90deg); background: var(--yuzey); color: var(--murekkep); border-color: var(--murekkep); }
+  50% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0); }
+}
+@keyframes pop { 50% { transform: scale(1.08); } }
+@keyframes sars {
+  20%, 60% { transform: translateX(-0.4rem); }
+  40%, 80% { transform: translateX(0.4rem); }
+}
