@@ -26,7 +26,7 @@ export default defineConfig({
         "base-uri 'self'",
         "object-src 'none'",
         "form-action 'self'",
-        "img-src 'self' data: https://*.ltrbxd.com",
+        "img-src 'self' data:",
         "font-src 'self'",
         // Cloudflare Web Analytics beacon'ı (manuel gömme) verisini cloudflareinsights.com'a yollar.
         "connect-src 'self' https://cloudflareinsights.com",
@@ -38,19 +38,19 @@ export default defineConfig({
     },
   },
   // Fontlar build sırasında indirilip kendi domain'imizden servis edilir.
-  // Türkçe (ğ ş İ) için latin-ext zorunlu.
+  // Türkçe (ğ ş İ) için latin-ext zorunlu. Yön 1: Bricolage Grotesque (başlık/UI) + Newsreader (gövde).
   fonts: [
     {
-      name: 'Big Shoulders Display',
+      name: 'Bricolage Grotesque',
       cssVariable: '--font-baslik',
       provider: fontProviders.fontsource(),
-      weights: ['700 800'],
+      weights: ['500 800'],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
-      fallbacks: ['Arial Narrow', 'sans-serif'],
+      fallbacks: ['Arial', 'sans-serif'],
     },
     {
-      name: 'Literata',
+      name: 'Newsreader',
       cssVariable: '--font-metin',
       provider: fontProviders.fontsource(),
       weights: ['400 700'],

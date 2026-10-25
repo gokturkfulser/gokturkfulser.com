@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import Medya from '../../components/Medya.astro';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import DemoVideo from '../../components/DemoVideo.astro';
@@ -36,119 +37,119 @@ const videoOnde = yakinda && data.demoVideo;
 ---
 
 <Base baslik={data.ad} aciklama={data.ozet}>
-  <article class="kap sayfa" data-pagefind-body>
-    <header class="ust" class:list={{ 'video-onde': videoOnde }}>
-      <div class="ust-metin">
-        <h1>{data.ad}</h1>
-        <p class="ozet">{data.ozet}</p>
+  <article data-dunya="proje" data-pagefind-body>
+    <header class="bant bant--koyu bant--basi">
+      <div class="kap ust">
+        <div class="ust-metin">
+          <h1 class="h1">{data.ad}</h1>
+          <p class="lede">{data.ozet}</p>
+          {
+            yakinda && (
+              <p class="not yakinda" role="note">
+                <strong>Yakında.</strong> Henüz yayında değil.
+                {vps && ' Servis yayına alındığında kendi adresinde, VPS üzerinde çalışacak.'}
+              </p>
+            )
+          }
+          {arsiv && <p class="not" role="note"><strong>Arşiv.</strong> Artık geliştirilmiyor.</p>}
+          <dl class="bilgi">
+            <div>
+              <dt>Tür</dt>
+              <dd>{TUR[data.tur]}</dd>
+            </div>
+            <div>
+              <dt>Durum</dt>
+              <dd>{DURUM[data.durum]}</dd>
+            </div>
+            <div>
+              <dt>Barındırma</dt>
+              <dd>{BARINDIRMA[data.barindirma]}</dd>
+            </div>
+          </dl>
+          <ul class="lista baglantilar">
+            {canliUrl && <li><a href={canliUrl}>Projeyi aç</a></li>}
+            {data.repo && <li><a href={data.repo}>Kaynak kod</a></li>}
+            {data.demoVideo && !videoOnde && <li><a href="#demo">Demo videosu</a></li>}
+            {storeLinkleri.map(([anahtar, href]) => <li><a href={href}>{STORE[anahtar]}</a></li>)}
+          </ul>
+        </div>
         {
-          yakinda && (
-            <p class="not yakinda" role="note">
-              <strong>Yakında.</strong> Henüz yayında değil.
-              {vps && ' Servis yayına alındığında kendi adresinde, VPS üzerinde çalışacak.'}
-            </p>
+          videoOnde ? (
+            <div class="medya-kutu" id="demo">
+              <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
+            </div>
+          ) : (
+            <Medya class="medya-kutu" src={data.gorsel} oran="proje" width={1200} oncelikli />
           )
         }
-        {arsiv && <p class="not" role="note"><strong>Arşiv.</strong> Artık geliştirilmiyor.</p>}
-        <dl class="bilgi">
-          <div>
-            <dt>Tür</dt>
-            <dd>{TUR[data.tur]}</dd>
-          </div>
-          <div>
-            <dt>Durum</dt>
-            <dd>{DURUM[data.durum]}</dd>
-          </div>
-          <div>
-            <dt>Barındırma</dt>
-            <dd>{BARINDIRMA[data.barindirma]}</dd>
-          </div>
-        </dl>
-        <ul class="lista baglantilar">
-          {canliUrl && <li><a href={canliUrl}>Projeyi aç</a></li>}
-          {data.repo && <li><a href={data.repo}>Kaynak kod</a></li>}
-          {data.demoVideo && !videoOnde && <li><a href="#demo">Demo videosu</a></li>}
-          {storeLinkleri.map(([anahtar, href]) => <li><a href={href}>{STORE[anahtar]}</a></li>)}
-        </ul>
       </div>
-      {
-        videoOnde ? (
-          <div class="medya" id="demo">
-            <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
-          </div>
-        ) : (
-          <Image class="medya" src={data.gorsel} alt="" width={1000} loading="eager" fetchpriority="high" />
-        )
-      }
     </header>
 
-    {
-      oynat && (
-        <section class="oyun-bolumu" aria-labelledby="oyun-baslik">
-          <h2 id="oyun-baslik">{data.tur === 'oyun' ? 'Burada oyna' : 'Burada dene'}</h2>
-          <OyunKutusu
-            baslik={data.ad}
-            kapak={data.gorsel}
-            embedUrl={data.embedUrl!}
-            etiket={data.tur === 'oyun' ? 'Oyna' : 'Dene'}
-          />
-        </section>
-      )
-    }
+    <div class="bant bant--acik govde">
+      <div class="kap sayfa">
+        {
+          oynat && (
+            <section class="oyun-bolumu" aria-labelledby="oyun-baslik">
+              <h2 id="oyun-baslik" class="h3">{data.tur === 'oyun' ? 'Burada oyna' : 'Burada dene'}</h2>
+              <OyunKutusu
+                baslik={data.ad}
+                kapak={data.gorsel}
+                embedUrl={data.embedUrl!}
+                etiket={data.tur === 'oyun' ? 'Oyna' : 'Dene'}
+              />
+            </section>
+          )
+        }
 
-    {
-      data.demoVideo && !videoOnde && (
-        <section id="demo" aria-labelledby="demo-baslik">
-          <h2 id="demo-baslik">Demo videosu</h2>
-          <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
-        </section>
-      )
-    }
+        {
+          data.demoVideo && !videoOnde && (
+            <section id="demo" aria-labelledby="demo-baslik">
+              <h2 id="demo-baslik" class="h3">Demo videosu</h2>
+              <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
+            </section>
+          )
+        }
 
-    <div class="metin" data-dunya="proje">
-      <Content components={mdxBilesenleri} />
+        <div class="metin">
+          <Content components={mdxBilesenleri} />
+        </div>
+
+        {
+          data.ekranGoruntuleri.length > 0 && (
+            <section aria-labelledby="ekran-baslik">
+              <h2 id="ekran-baslik" class="h3">Ekran görüntüleri</h2>
+              <ul class="lista ekranlar">
+                {data.ekranGoruntuleri.map((e) => (
+                  <li>
+                    <figure>
+                      <Image src={e.gorsel} alt={e.alt} width={900} loading="lazy" />
+                      {e.altyazi && <figcaption>{e.altyazi}</figcaption>}
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          data.stack.length > 0 && (
+            <section aria-labelledby="stack-baslik">
+              <h2 id="stack-baslik" class="h3">Kullanılan teknolojiler</h2>
+              <ul class="lista teknolojiler">{data.stack.map((s) => <li>{s}</li>)}</ul>
+            </section>
+          )
+        }
+      </div>
     </div>
-
-    {
-      data.ekranGoruntuleri.length > 0 && (
-        <section aria-labelledby="ekran-baslik">
-          <h2 id="ekran-baslik">Ekran görüntüleri</h2>
-          <ul class="lista ekranlar">
-            {data.ekranGoruntuleri.map((e) => (
-              <li>
-                <figure>
-                  <Image src={e.gorsel} alt={e.alt} width={900} loading="lazy" />
-                  {e.altyazi && <figcaption>{e.altyazi}</figcaption>}
-                </figure>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-
-    {
-      data.stack.length > 0 && (
-        <section aria-labelledby="stack-baslik">
-          <h2 id="stack-baslik">Kullanılan teknolojiler</h2>
-          <ul class="lista teknolojiler">{data.stack.map((s) => <li>{s}</li>)}</ul>
-        </section>
-      )
-    }
   </article>
 </Base>
 
 <style>
-  .sayfa {
-    display: grid;
-    gap: var(--aralik-6);
-    padding-block: var(--aralik-5) var(--aralik-6);
-  }
-
   .ust {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    gap: var(--aralik-5);
+    gap: clamp(2rem, 4vw, 5rem);
     align-items: end;
   }
 
@@ -158,32 +159,20 @@ const videoOnde = yakinda && data.demoVideo;
   }
 
   h1 {
-    font-size: var(--yazi-h1);
-    letter-spacing: -0.01em;
-  }
-
-  h2 {
-    margin-block-end: var(--aralik-3);
-    font-size: var(--yazi-h2);
-  }
-
-  .ozet {
-    max-width: 40ch;
-    font-size: var(--yazi-lede);
-    line-height: 1.5;
-    color: var(--soluk);
+    letter-spacing: -0.055em;
   }
 
   .not {
     max-width: 44ch;
-    padding: var(--aralik-3) var(--aralik-4);
-    background: var(--yuzey);
-    border-inline-start: 10px solid var(--murekkep);
+    margin: 0;
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 6px solid var(--murekkep);
+    font-family: var(--font-baslik-yigin);
     line-height: 1.5;
   }
 
   .not.yakinda {
-    border-inline-start-color: var(--turuncu);
+    border-inline-start-color: var(--turuncu-metin);
   }
 
   .bilgi {
@@ -191,6 +180,7 @@ const videoOnde = yakinda && data.demoVideo;
     flex-wrap: wrap;
     gap: var(--aralik-2) var(--aralik-5);
     margin: 0;
+    font-family: var(--font-baslik-yigin);
   }
 
   .bilgi dt {
@@ -207,13 +197,22 @@ const videoOnde = yakinda && data.demoVideo;
     display: flex;
     flex-wrap: wrap;
     gap: var(--aralik-2) var(--aralik-4);
-    font-weight: 700;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
   }
 
-  .ust :global(img.medya) {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
+  .sayfa {
+    display: grid;
+    gap: var(--aralik-6);
+  }
+
+  .sayfa h2 {
+    margin-block-end: var(--aralik-3);
+  }
+
+  .govde :global(.metin) {
+    max-width: 46rem;
   }
 
   .ekranlar {
@@ -235,10 +234,12 @@ const videoOnde = yakinda && data.demoVideo;
   .ekranlar img {
     width: 100%;
     height: auto;
+    border-radius: var(--medya-kose);
   }
 
   .ekranlar figcaption {
     margin-block-start: var(--aralik-2);
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
     color: var(--soluk);
   }
@@ -247,6 +248,8 @@ const videoOnde = yakinda && data.demoVideo;
     display: flex;
     flex-wrap: wrap;
     gap: var(--aralik-2) var(--aralik-4);
+    font-family: var(--font-baslik-yigin);
+    font-weight: 500;
   }
 
   @media (max-width: 52rem) {
@@ -254,7 +257,7 @@ const videoOnde = yakinda && data.demoVideo;
       grid-template-columns: 1fr;
     }
 
-    .ust :global(.medya) {
+    .ust :global(.medya-kutu) {
       order: -1;
     }
   }

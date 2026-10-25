@@ -1,1 +1,19 @@
-{}
+{
+  "655": {
+    "tmdbId": 655,
+    "baslik": "Paris, Texas",
+    "orijinalBaslik": "Paris, Texas",
+    "yil": 1984,
+    "sure": 145,
+    "yonetmenler": [
+      "Wim Wenders"
+    ],
+    "turler": [
+      "Dram"
+    ],
+    "afis": "655.jpg",
+    "arkaplan": "655.jpg",
+    "surum": 2,
+    "cekildi": "2026-10-25"
+  }
+}

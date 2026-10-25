@@ -62,12 +62,16 @@ Değişkenler **Settings → Build → Variables and secrets** bölümüne giril
 | `NODE_VERSION` | `24.21.0` | Hayır. Node sürümü kökteki `.nvmrc`'den okunur (kök CLAUDE.md "Sürümler"); yine de eklemek istenirse tek kaynak ile aynı değer. |
 | `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics site token'ı | İsteğe bağlı. Tanımlıysa her sayfaya beacon eklenir; tanımsızsa hiç eklenmez. |
 | `LETTERBOXD_RSS` | `https://letterboxd.com/<kullanici>/rss/` | İsteğe bağlı. Tanımsızsa ana sayfadaki "Son izlediklerim" şeridi çizilmez. |
+| `TMDB_API_KEY` | TMDB v4 "API Read Access Token" (ya da v3 anahtarı) | İsteğe bağlı. Şeridin afişlerini her build'de TMDB'den indirir. **Secret** olarak girin (Type: Secret). Yoksa ya da TMDB'ye ulaşılamazsa build yine başarılı olur, şerit afişsiz (yalnızca metin) çizilir. |
 
 `CF_ANALYTICS_TOKEN` nasıl alınır: dash → **Analytics & Logs → Web Analytics → Add a site** → hostname `gokturkfulser.com`; verilen snippet'teki `"token"` değeri. Çift sayımı önlemek için bu sayfa kendi script'imizi gömdüğünden, aynı site için otomatik (edge) enjeksiyon açıksa kapalı tutun.
 
 **`SHOW_DRAFTS` tanımlamayın.** Preview'da `true` olması isteniyordu; Cloudflare dokümanı production ve preview build değişkenlerinin ayrı ayrı girilebildiğini belirtmiyor (Worker Previews ayarları yalnızca çalışma zamanını kapsıyor). Bu yüzden değer daldan türetilir (bkz. bölüm 2). Dashboard'da preview için ayrı build değişkeni alanı görürseniz oraya `SHOW_DRAFTS=true` eklemek de zararsızdır, `build:workers` zaten aynı sonucu verir.
 
-`TMDB_API_KEY` build'de **kullanılmaz** (TMDB verisi `pnpm site:tmdb` ile yerelde çekilip `src/data/` altına yazılır, repoya girer); dashboard'a koymayın.
+**TMDB iki ayrı yoldan kullanılır:**
+
+- Sinema yazılarının künyesi, afişi ve backdrop'u `pnpm site:tmdb` ile yerelde çekilir, `src/data/tmdb/` altına yazılır ve repoya girer (build bu veriyi okur; anahtar gerekmez).
+- "Son izlediklerim" afişleri her build'in başında `pnpm --filter site afisler` ile (`site/scripts/letterboxd-afis.ts`, `build` betiği zaten çalıştırır) `TMDB_API_KEY` ve `LETTERBOXD_RSS` build değişkenleriyle indirilir; `src/data/letterboxd/` `.gitignore`'dadır, repoya girmez. Bu yüzden Workers Builds'te `TMDB_API_KEY`'in tanımlı olması gerekir (aksi hâlde şerit afişsiz çizilir). GitHub Actions'taki `site.yml` kalite build'leri anahtarsız çalışır ve afişsiz şerit üretir; sorun değildir.
 
 ## 5. Custom domain
 
@@ -98,5 +102,34 @@ Tarayıcı konsolunda ana sayfa, bir yazı, `/arama/` ve oyunlu proje sayfasınd
 - **`_headers` / `_redirects`** (Workers static assets, dokümandan): en fazla 100 header kuralı, satır başına 2.000 karakter; `_redirects` en çok 2.000 statik + 100 dinamik. Her dosya en fazla 25 MiB; Free planda sürüm başına 20.000 dosya (Paid 100.000). Redirect'ler header'lardan önce uygulanır; ikisi de yalnızca statik asset yanıtlarına işler (Worker kodunun yanıtlarına değil, bu sitede Worker kodu yok). Aynı header birden çok kuralla eşleşirse değerler **virgülle birleşir**, ezilmez: bu yüzden `Cache-Control` `/*` altına konmadı. Şu an 4 kural var.
 - **CSP iki yerden gelir:** her HTML'de Astro'nun `<meta http-equiv="content-security-policy">` etiketi (script/style hash'leri + `directives`), ve `public/_headers`'ta yalnızca `frame-ancestors 'none'` (meta'da çalışmaz). İkisi birlikte uygulanır ve kesişir; header'da başka direktif olmadığı için çakışma yoktur. `_headers`'a başka CSP direktifi eklemeyin; ekleyecekseniz `astro.config.mjs` → `security.csp.directives`'e ekleyin.
 - **`lab` Worker'ının tarafı:** `frame-src https://lab.gokturkfulser.com` bu sitede izinli; lab de `lab/public/_headers` ile `frame-ancestors 'self' https://gokturkfulser.com` gönderir, yani karşılıklı izin kurulu. Yerelde iki production build'i birlikte servis edip (`wrangler dev`) `kelime-avi` iframe'inin açıldığı, başka origin'den çerçevelemenin engellendiği doğrulandı.
-- **Yeni harici kaynak** (ör. başka bir gömülü video sitesi, harici görsel, harici `.mp4`) CSP'ye `astro.config.mjs`'ten eklenmeden çalışmaz. Şu an izinliler: `static.cloudflareinsights.com` (script), `cloudflareinsights.com` (connect), `lab.gokturkfulser.com`, `www.youtube-nocookie.com`, `player.vimeo.com` (frame), `*.ltrbxd.com` (img). Demo videoları kendi sitenizden (`media-src 'self'`) servis edilmelidir.
+- **Yeni harici kaynak** (ör. başka bir gömülü video sitesi, harici görsel, harici `.mp4`) CSP'ye `astro.config.mjs`'ten eklenmeden çalışmaz. Şu an izinliler: `static.cloudflareinsights.com` (script), `cloudflareinsights.com` (connect), `lab.gokturkfulser.com`, `www.youtube-nocookie.com`, `player.vimeo.com` (frame). Demo videoları kendi sitenizden (`media-src 'self'`) servis edilmelidir.
 - **Pagefind** WebAssembly çalıştırır; `'wasm-unsafe-eval'` yalnızca `/arama/` sayfasının CSP'sine eklenir (`src/pages/arama.astro`, `Astro.csp.insertScriptResource`).
+
+## 9. Günlük otomatik build (son izlediklerim güncel kalsın)
+
+Site statik olduğundan "Son izlediklerim" şeridi yalnızca build anında güncellenir. Yeni film izleyip hiçbir şey push etmesenizde şerit tazelensin diye her gün bir build tetiklenir.
+
+**Yol: Workers Builds Deploy Hook + GitHub Actions cron.** Cloudflare dokümanına göre (Workers → CI/CD → Builds → Deploy Hooks, 1 Nisan 2026 changelog'u) bir Deploy Hook, belirli bir dala bağlı benzersiz bir URL'dir; `POST` atınca Worker o daldan build edip deploy eder. Ayrı bir API token gerekmez: URL'nin kendisi gizlidir. (Alternatif olan Builds API `POST /builds/triggers/{trigger_uuid}/builds` kullanıcı kapsamlı bir API token, hesap kimliği ve trigger UUID ister; daha çok sır ve daha çok adım demektir, bu yüzden seçilmedi.) Hook'lar dakikada Worker başına 10, hesap başına 100 build ile sınırlıdır; hook birden fazla tetiklenirse ilk build başlamadan gelen fazlalıklar otomatik atlanır.
+
+### Cloudflare'de yapmanız gerekenler
+
+1. dash.cloudflare.com → **Workers & Pages** → `gokturkfulser-site` → **Settings → Builds → Deploy Hooks**.
+2. **Create deploy hook** → ad: `gunluk-yenileme`, **branch: `main`** → oluşturun.
+3. Çıkan URL'yi kopyalayın (`https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/<ID>`). Bu URL bir sırdır; sohbete, repoya, issue'ya yazmayın. Sızarsa hook'u silip yenisini oluşturun.
+4. Aynı sayfada (Settings → Build → Variables and secrets) `TMDB_API_KEY` (Secret) ve `LETTERBOXD_RSS` değişkenlerinin tanımlı olduğunu doğrulayın (bölüm 4).
+
+### GitHub'da yapmanız gerekenler
+
+1. GitHub → `gokturkfulser/gokturkfulser.com` → **Settings → Secrets and variables → Actions → New repository secret**.
+2. Name: `CF_DEPLOY_HOOK_URL`, Secret: 3. adımdaki URL.
+3. Workflow dosyası `.github/workflows/site-gunluk-build.yml` repoda hazırdır: her gün **04:00 İstanbul** (`cron: '0 1 * * *'`; GitHub cron'u UTC çalışır, İstanbul UTC+3 olduğundan 01:00 UTC) hook'a `POST` atar. Repoya commit atmaz (`permissions: {}`), kod çekmez. **Actions → site-gunluk-build → Run workflow** ile elle de çalıştırılabilir.
+
+### Doğrulama
+
+- Actions'ta workflow'u elle çalıştırın: adım yeşil olmalı. Sonra Cloudflare → `gokturkfulser-site` → **Deployments → View build history**: build'in kaynağında Deploy Hook adı (`gunluk-yenileme`) görünür.
+- Build günlüğünde `letterboxd-afis: N/M afiş indirildi.` satırını arayın.
+
+### Bilinmeyenler (dokümanda yok, ilk çalıştırmada kontrol edin)
+
+- Deploy Hook ile tetiklenen build'in **Build watch paths** kuralından muaf olup olmadığı dokümanda yazmıyor; yol kuralları dosya değişikliğine baktığı için hook build'inin çalışması beklenir. İlk elle çalıştırmada build history'de "Skipped" görürseniz watch paths'e `site/*` zaten ekli olduğundan bunu bildirin.
+- GitHub zamanlanmış workflow'ları yoğun saatlerde birkaç dakika gecikebilir; 60 gün hiç etkinlik olmayan **public** repolarda otomatik durdurulur (bu repo private).

@@ -1,90 +1,139 @@
 ---
 import Base from '../layouts/Base.astro';
-import YaziOne from '../components/YaziOne.astro';
-import YaziSatiri from '../components/YaziSatiri.astro';
+import Hero from '../components/Hero.astro';
+import YaziKarti from '../components/YaziKarti.astro';
 import ProjeVitrin from '../components/ProjeVitrin.astro';
+import SayilarSeridi from '../components/SayilarSeridi.astro';
 import SonIzlenenler from '../components/SonIzlenenler.astro';
 import { LETTERBOXD_RSS } from 'astro:env/server';
-import { projeler, tumYazilar } from '../lib/content';
+import { oneCikanYazilar, projeler, tumYazilar } from '../lib/content';
 import { sonIzlenenler } from '../lib/letterboxd';
+import { HERO_CUMLESI, KISACA_METNI } from '../lib/site';
 
-const [en_yeni, ...oncekiler] = await tumYazilar();
+const [vitrinYazilar, yazilar, tumProjeler] = await Promise.all([oneCikanYazilar(3), tumYazilar(), projeler()]);
+const [buyukYazi, ...digerYazilar] = vitrinYazilar;
 // LETTERBOXD_RSS tanımlı değilse boş döner ve şerit hiç render edilmez.
 const izlenenler = await sonIzlenenler(LETTERBOXD_RSS);
-const vitrin = (await projeler()).filter((p) => p.data.oneCikan && p.data.durum !== 'arsiv').slice(0, 2);
+
+const vitrinProjeler = (() => {
+  const aktif = tumProjeler.filter((p) => p.data.durum !== 'arsiv');
+  const secili = aktif.filter((p) => p.data.oneCikan);
+  return (secili.length > 0 ? secili : aktif).slice(0, 3);
+})();
+
+const sayilar = [
+  { deger: yazilar.length, etiket: 'yazı' },
+  { deger: tumProjeler.length, etiket: 'proje' },
+].filter((s) => s.deger > 0); // sıfır sayı gösterilmez
+// Tek başına kalan bir sayı şerit olmaz: en az iki sayı varsa çizilir.
+const sayiSeridiVar = sayilar.length >= 2;
+
+// Bant ritmi: hero koyu; sonraki var olan bölümler açık/koyu dönüşür (bölüm yoksa ritim kaymaz).
+const bolumler = [
+  ...(buyukYazi ? ['yazilar'] : []),
+  ...(vitrinProjeler.length > 0 ? ['projeler'] : []),
+  ...(KISACA_METNI ? ['kisaca'] : []),
+  ...(sayiSeridiVar ? ['sayilar'] : []),
+  ...(izlenenler.length > 0 ? ['izlenen'] : []),
+];
+const ton = (ad: string): 'koyu' | 'acik' => (bolumler.indexOf(ad) % 2 === 0 ? 'acik' : 'koyu');
 ---
 
 <Base>
-  <h1 class="sr-only">Göktürk Fulser: sinema, basketbol ve projeler</h1>
-  {en_yeni && <YaziOne yazi={en_yeni} />}
+  <Hero cumle={HERO_CUMLESI || undefined} />
 
   {
-    !en_yeni && (
-      <section class="kap bos-kap" aria-labelledby="bos-baslik">
-       <div class="bos">
-        <h2 id="bos-baslik">Henüz yazı yok</h2>
-        <p>Sinema ve basketbol yazıları hazır oldukça burada, tarih sırasıyla listelenecek.</p>
-        <p>
-          Şimdilik <a href="/projeler/">projelere</a> ya da <a href="/hakkimda/">hakkımda sayfasına</a> göz
-          atabilirsiniz.
-        </p>
-       </div>
+    buyukYazi && (
+      <section class={`bant bant--${ton('yazilar')}`} aria-labelledby="yazilar-baslik">
+        <div class="kap">
+          <div class="bas-satiri">
+            <h2 id="yazilar-baslik" class="h2">Yazılar</h2>
+            <a href="/yazilar/">Tüm yazılar</a>
+          </div>
+          <div class="yazi-izgara">
+            <YaziKarti yazi={buyukYazi} boyut="buyuk" oncelikli />
+            {digerYazilar.length > 0 && (
+              <div class="yan-yazilar">
+                {digerYazilar.map((y) => (
+                  <YaziKarti yazi={y} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </section>
     )
   }
 
+  {vitrinProjeler.length > 0 && <ProjeVitrin projeler={vitrinProjeler} ton={ton('projeler')} />}
+
   {
-    oncekiler.length > 0 && (
-      <section class="kap onceki" aria-labelledby="onceki-baslik">
-        <h2 id="onceki-baslik">Önceki yazılar</h2>
-        <ul class="lista akis">
-          {oncekiler.map((yazi) => (
-            <li>
-              <YaziSatiri yazi={yazi} />
-            </li>
-          ))}
-        </ul>
+    KISACA_METNI && (
+      <section class={`bant bant--${ton('kisaca')}`} aria-labelledby="kisaca-baslik">
+        <div class="kap kisaca">
+          <h2 id="kisaca-baslik" class="h3">Kısaca</h2>
+          <div>
+            <p class="kisaca-metin">{KISACA_METNI}</p>
+            <p class="kisaca-link"><a href="/hakkimda/">Hakkımda</a></p>
+          </div>
+        </div>
       </section>
     )
   }
 
-  <SonIzlenenler filmler={izlenenler} />
+  {sayiSeridiVar && <SayilarSeridi {sayilar} ton={ton('sayilar')} />}
 
-  {vitrin.length > 0 && <ProjeVitrin projeler={vitrin} />}
+  <SonIzlenenler filmler={izlenenler} ton={ton('izlenen')} />
 </Base>
 
 <style>
-  .bos-kap {
-    padding-block: var(--aralik-6);
-  }
-
-  .bos {
+  .yazi-izgara {
     display: grid;
-    gap: var(--aralik-3);
-    max-width: 46rem;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: var(--aralik-5) clamp(2rem, 4vw, 5rem);
+    align-items: start;
   }
 
-  .bos h2 {
-    font-size: var(--yazi-h1);
+  .yazi-izgara:has(> :only-child) {
+    grid-template-columns: minmax(0, 60rem);
   }
 
-  .bos p {
-    max-width: var(--olcu);
-    font-size: var(--yazi-lede);
-    line-height: 1.5;
-  }
-
-  .onceki {
-    padding-block: var(--aralik-6);
-  }
-
-  h2 {
-    margin-block-end: var(--aralik-4);
-    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  }
-
-  .akis {
+  .yan-yazilar {
     display: grid;
-    gap: var(--aralik-5);
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  @media (max-width: 52rem) {
+    .yazi-izgara {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kisaca {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+    gap: var(--aralik-4) clamp(2rem, 5vw, 6rem);
+  }
+
+  .kisaca-metin {
+    font-family: var(--font-baslik-yigin);
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3.25rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+    text-wrap: pretty;
+  }
+
+  .kisaca-link {
+    margin: var(--aralik-5) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 52rem) {
+    .kisaca {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

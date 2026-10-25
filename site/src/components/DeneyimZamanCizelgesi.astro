@@ -1,0 +1,85 @@
+---
+// Hakkımda sayfası için isteğe bağlı deneyim zaman çizelgesi. Boş listede hiçbir şey çizilmez.
+interface Oge {
+  donem: string;
+  baslik: string;
+  kurum?: string;
+  aciklama?: string;
+}
+
+interface Props {
+  ogeler?: Oge[];
+  baslik?: string;
+}
+
+const { ogeler = [], baslik = 'Deneyim' } = Astro.props;
+---
+
+{
+  ogeler.length > 0 && (
+    <section class="cizelge" aria-labelledby="deneyim-baslik">
+      <h2 id="deneyim-baslik">{baslik}</h2>
+      <ol class="lista">
+        {ogeler.map((o) => (
+          <li>
+            <p class="donem">{o.donem}</p>
+            <div>
+              <h3>{o.baslik}</h3>
+              {o.kurum && <p class="kurum">{o.kurum}</p>}
+              {o.aciklama && <p class="aciklama">{o.aciklama}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+<style>
+  .cizelge {
+    margin-block-start: var(--aralik-6);
+  }
+
+  h2 {
+    margin-block-end: var(--aralik-4);
+    font-size: clamp(2rem, 1.2rem + 3vw, 4rem);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: var(--aralik-2) var(--aralik-4);
+    padding-block: var(--aralik-4);
+    border-block-start: 1px solid color-mix(in srgb, var(--murekkep) 14%, transparent);
+  }
+
+  .donem {
+    margin: 0;
+    color: var(--soluk);
+    font-size: var(--yazi-sm);
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .kurum {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .aciklama {
+    max-width: 60ch;
+    margin: var(--aralik-2) 0 0;
+    color: var(--soluk);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 40rem) {
+    li {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

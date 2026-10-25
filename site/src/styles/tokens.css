@@ -1,43 +1,55 @@
-/* Yön A — Teal & Orange. Değerler site/DESIGN.md'den gelir; orada değişmeden burada değişmez. */
+/* Yön 1 — "Gece seansı". Değerler site/DESIGN.md'den gelir; orada değişmeden burada değişmez.
+   Koyu bantlar sinema salonu, açık bantlar parke. Aynı token adları iki bantta farklı değer alır:
+   :root koyu bandın değerleridir, `.bant--acik` açık bandınkileri üstüne yazar. */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  /* Adlı renkler (açık mod) */
-  --zemin: #f4f6f8;
-  --murekkep: #16191f;
-  --turkuaz: #0e5e66;
-  --turuncu: #e2661a;
-  --yuzey: #ffffff;
-  --soluk: #4a5360;
+  /* Ham renkler */
+  --perde: #0a0d12;
+  --perde-2: #121820;
+  --parke: #e8e7e2;
+  --parke-2: #f3f2ee;
+  --turkuaz: #0e5e66; /* alan dolgusu (iki bantta aynı) */
+  --turuncu: #e2661a; /* alan dolgusu (iki bantta aynı) */
 
-  /* Türetilmiş: zemin üstünde metin/işaret olarak kullanılan tonlar */
-  --turkuaz-metin: #0e5e66;
-  --turuncu-metin: #a8430a;
+  /* Bant değerleri: koyu bant (varsayılan) */
+  --zemin: var(--perde);
+  --murekkep: #eef1f4;
+  --soluk: #9aa5b1;
+  --lede-renk: #c4ccd5;
+  --yuzey: var(--perde-2);
+  --cizgi: #27303b;
+  --turkuaz-metin: #3fc8cf;
+  --turuncu-metin: #ff7a2f;
+  --medya-vinyet-guc: 0.4;
 
   /* Alan içi metin (alan rengi iki modda da sabit) */
   --turkuaz-alan-metin: #ffffff;
-  --turuncu-alan-metin: #16191f;
+  --turuncu-alan-metin: #12161c;
 
-  /* Dünya değişkenleri: [data-dunya] ile seçilir */
+  /* Dünya değişkenleri: [data-dunya] ile seçilir; vurgu bant tonuna göre değişir */
   --dunya: var(--turkuaz);
   --dunya-metin: var(--turkuaz-metin);
   --dunya-alan-metin: var(--turkuaz-alan-metin);
   --dunya-bant: var(--turkuaz-metin);
+  --vurgu: var(--turkuaz-metin);
 
-  /* Tipografi */
-  --font-baslik-yigin: var(--font-baslik), 'Arial Narrow', sans-serif;
+  /* Tipografi: Bricolage Grotesque (başlık/UI) + Newsreader (gövde) */
+  --font-baslik-yigin: var(--font-baslik), Arial, sans-serif;
   --font-metin-yigin: var(--font-metin), Georgia, serif;
 
   --yazi-xs: 0.875rem;
   --yazi-sm: 0.9375rem;
   --yazi-govde: 1.1875rem;
-  --yazi-lede: 1.3125rem;
-  --yazi-h3: clamp(1.75rem, 1.4rem + 1.2vw, 2.375rem);
-  --yazi-h2: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
-  --yazi-h1: clamp(3rem, 1.6rem + 5.4vw, 6.5rem);
-  --yazi-dev: clamp(3.25rem, 1.4rem + 6.6vw, 8.5rem);
+  --yazi-yazi: 1.3125rem; /* yazı gövdesi */
+  --yazi-lede: clamp(1.25rem, 1rem + 1vw, 1.875rem);
+  --yazi-h3: clamp(1.625rem, 1.1rem + 1.7vw, 2.5rem);
+  --yazi-h2: clamp(2.75rem, 1.2rem + 6vw, 7rem);
+  --yazi-h1: clamp(3.5rem, 1rem + 11vw, 10rem);
+  --yazi-dev: clamp(4rem, 0.5rem + 14.5vw, 13rem);
+  --yazi-sayi: clamp(3.75rem, 1rem + 10vw, 9.5rem);
   --satir-govde: 1.7;
-  --satir-baslik: 1.04;
+  --satir-baslik: 0.98;
 
   /* Boşluk */
   --aralik-1: 0.25rem;
@@ -46,23 +58,31 @@
   --aralik-4: 1.5rem;
   --aralik-5: 2.5rem;
   --aralik-6: clamp(2.5rem, 2rem + 3vw, 5rem);
-  --kenar: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  --bant: clamp(4.5rem, 2.5rem + 7vw, 10rem);
+  --kenar: clamp(1.25rem, 0.5rem + 3.2vw, 4rem);
 
   /* Yerleşim */
   --olcu: 68ch;
-  --kap: 78rem;
-  --sinema-oran: 2.39 / 1;
+  --kap: 90rem;
+  --nav: 3.75rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --zemin: #0f1317;
-    --murekkep: #e9edf1;
-    --yuzey: #171d23;
-    --soluk: #a3aeba;
-    --turkuaz-metin: #5cc3cc;
-    --turuncu-metin: #ff9a63;
-  }
+/* Açık bant (parke) */
+.bant--acik {
+  color-scheme: light;
+  --zemin: var(--parke);
+  --murekkep: #12161c;
+  --soluk: #4b5560;
+  --lede-renk: #3a434d;
+  --yuzey: var(--parke-2);
+  --cizgi: #cbc9c0;
+  --turkuaz-metin: #0e5e66;
+  --turuncu-metin: #a8430a;
+  --medya-vinyet-guc: 0.3;
+  --dunya-bant: var(--turkuaz-metin);
+  --dunya-metin: var(--turkuaz-metin);
+  --vurgu: var(--turkuaz-metin);
 }
 
 [data-dunya='sinema'] {
@@ -70,19 +90,22 @@
   --dunya-metin: var(--turkuaz-metin);
   --dunya-alan-metin: var(--turkuaz-alan-metin);
   --dunya-bant: var(--turkuaz-metin);
+  --vurgu: var(--turkuaz-metin);
 }
 
 [data-dunya='basketbol'] {
   --dunya: var(--turuncu);
   --dunya-metin: var(--turuncu-metin);
   --dunya-alan-metin: var(--turuncu-alan-metin);
-  --dunya-bant: var(--turuncu);
+  --dunya-bant: var(--turuncu-metin);
+  --vurgu: var(--turuncu-metin);
 }
 
-/* Projeler bir dünyaya ait değildir: nötr (mürekkep) tonlar */
+/* Projeler bir dünyaya ait değildir: nötr (metin) tonlar */
 [data-dunya='proje'] {
   --dunya: var(--murekkep);
   --dunya-metin: var(--murekkep);
   --dunya-alan-metin: var(--zemin);
   --dunya-bant: var(--murekkep);
+  --vurgu: var(--turkuaz-metin);
 }

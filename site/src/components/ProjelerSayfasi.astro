@@ -1,0 +1,232 @@
+---
+// /projeler/ ve /projeler/tur/<tur>/ için ortak sayfa. Süzgeç JS'siz: her tür kendi URL'inde.
+// Düzen: koyu sayfa başı bandı, ardından her proje için dönüşümlü açık/koyu bant, en sonda sade arşiv.
+import Base from '../layouts/Base.astro';
+import Medya from './Medya.astro';
+import type { CollectionEntry } from 'astro:content';
+import { DURUM, TUR, TUR_SIRASI } from '../lib/labels';
+
+interface Props {
+  /** Tüm projeler (sıralı: arşiv en sonda). */
+  projeler: CollectionEntry<'projeler'>[];
+  /** Seçili tür; yoksa hepsi. */
+  tur?: (typeof TUR_SIRASI)[number];
+}
+
+const { projeler, tur } = Astro.props;
+const turler = TUR_SIRASI.filter((t) => projeler.some((p) => p.data.tur === t));
+const gorunen = tur ? projeler.filter((p) => p.data.tur === tur) : projeler;
+const aktif = gorunen.filter((p) => p.data.durum !== 'arsiv');
+const arsiv = gorunen.filter((p) => p.data.durum === 'arsiv');
+const sayi = (t?: string) => (t ? projeler.filter((p) => p.data.tur === t).length : projeler.length);
+// Sayfa başı koyu; projeler açıkla başlar ve dönüşür.
+const ton = (i: number) => (i % 2 === 0 ? 'acik' : 'koyu');
+
+const baslik = tur ? `Projeler: ${TUR[tur]}` : 'Projeler';
+const aciklama = tur ? `${TUR[tur]} türündeki projelerim.` : 'Yaptığım oyunlar, uygulamalar, siteler ve araçlar.';
+---
+
+<Base baslik={baslik} aciklama={aciklama}>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="projeler-baslik">
+    <div class="kap">
+      <h1 id="projeler-baslik" class="h1">Projeler</h1>
+      <p class="lede">Oyunlar, küçük uygulamalar ve siteler. Her kayıt neyin yayında olduğunu söylüyor.</p>
+      {
+        projeler.length > 0 && (
+          <nav class="sekmeler" aria-label="Projeleri türe göre süz">
+            <a href="/projeler/" aria-current={tur ? undefined : 'page'}>
+              Tümü <span class="adet">{sayi()}</span>
+            </a>
+            {turler.map((t) => (
+              <a href={`/projeler/tur/${t}/`} aria-current={tur === t ? 'page' : undefined}>
+                {TUR[t]} <span class="adet">{sayi(t)}</span>
+              </a>
+            ))}
+          </nav>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    aktif.map((p, i) => (
+      <section class={`bant bant--${ton(i)} proje-bandi`} data-dunya="proje" data-durum={p.data.durum} data-tur={p.data.tur} aria-labelledby={`proje-${p.id}`}>
+        <div class:list={['kap', 'proje-izgara', i % 2 === 1 && 'ters']}>
+          <a class="gorsel" href={`/projeler/${p.id}/`} tabindex="-1" aria-hidden="true">
+            <Medya src={p.data.gorsel} oran="proje" width={1100} />
+          </a>
+          <div class="proje-metin">
+            <h2 id={`proje-${p.id}`} class="proje-ad">
+              <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+            </h2>
+            <p class="ozet">{p.data.ozet}</p>
+            {p.data.durum === 'yakinda' && (
+              <p class="yakinda-not">
+                <strong>Yakında.</strong> Henüz yayında değil.
+                {p.data.barindirma === 'vps' && ' VPS üzerinde çalışacak.'}
+              </p>
+            )}
+            {p.data.stack.length > 0 && (
+              <ul class="lista stack" aria-label="Kullanılan teknolojiler">
+                {p.data.stack.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ul>
+            )}
+            <dl>
+              <dt>Tür</dt>
+              <dd>{TUR[p.data.tur]}</dd>
+              <dt>Durum</dt>
+              <dd>{DURUM[p.data.durum]}</dd>
+            </dl>
+            <a class="ayrinti" href={`/projeler/${p.id}/`}>Projeyi incele</a>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    arsiv.length > 0 && (
+      <section class={`bant bant--${ton(aktif.length)} arsiv`} aria-labelledby="arsiv-baslik">
+        <div class="kap">
+          <h2 id="arsiv-baslik" class="h3">Arşiv</h2>
+          <ul class="lista">
+            {arsiv.map((p) => (
+              <li>
+                <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+                <span class="soluk">{p.data.ozet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    aktif.length === 0 && arsiv.length === 0 && (
+      <section class="bant bant--acik" aria-label="Boş durum">
+        <div class="kap">
+          <p class="bos">
+            {tur ? 'Bu türde henüz proje yok.' : 'Henüz proje yok. Yayına alınan projeler burada listelenecek.'}
+          </p>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .proje-bandi {
+    padding-block: clamp(3.5rem, 7vw, 7rem);
+  }
+
+  .proje-izgara {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 5rem);
+    align-items: center;
+  }
+
+  .proje-izgara.ters .gorsel {
+    order: 2;
+  }
+
+  .gorsel {
+    display: block;
+    text-decoration: none;
+  }
+
+  .proje-bandi[data-durum='yakinda'] .gorsel :global(img) {
+    opacity: 0.7;
+  }
+
+  .proje-ad {
+    font-size: clamp(2.5rem, 1.2rem + 4.2vw, 5.5rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .ozet {
+    max-width: 40ch;
+    margin: var(--aralik-4) 0 0;
+    font-size: 1.1875rem;
+    line-height: 1.6;
+    color: var(--soluk);
+  }
+
+  .yakinda-not {
+    margin: var(--aralik-4) 0 0;
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 6px solid var(--turuncu-metin);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--aralik-4);
+    margin-block-start: var(--aralik-4);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    font-weight: 500;
+    color: var(--soluk);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem var(--aralik-4);
+    margin: var(--aralik-4) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+  }
+
+  dt {
+    color: var(--soluk);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .ayrinti {
+    display: inline-block;
+    margin-block-start: var(--aralik-4);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .arsiv ul {
+    margin-block-start: var(--aralik-3);
+  }
+
+  .arsiv li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--aralik-2) var(--aralik-5);
+    padding-block: var(--aralik-3);
+    border-block-start: 1px solid var(--cizgi);
+    font-family: var(--font-baslik-yigin);
+  }
+
+  .bos {
+    max-width: var(--olcu);
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 52rem) {
+    .proje-izgara,
+    .arsiv li {
+      grid-template-columns: 1fr;
+    }
+
+    .proje-izgara.ters .gorsel {
+      order: 0;
+    }
+  }
+</style>

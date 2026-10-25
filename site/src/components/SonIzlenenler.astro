@@ -1,91 +1,99 @@
 ---
+import Medya from './Medya.astro';
 import type { Izlenen } from '../lib/letterboxd';
+import { letterboxdAfisi } from '../lib/letterboxd-afis';
 import { puanYaz, tarihYaz } from '../lib/format';
 
 interface Props {
   filmler: Izlenen[];
+  ton?: 'koyu' | 'acik';
 }
-const { filmler } = Astro.props;
+const { filmler, ton = 'acik' } = Astro.props;
 ---
 
 {
   filmler.length > 0 && (
-    <section class="seri" aria-labelledby="izlenen-baslik">
-      <div class="kap ic">
-        <h2 id="izlenen-baslik">Son izlediklerim</h2>
-        <ul class="lista filmler">
-          {filmler.map((f) => (
+    <section class={`bant bant--${ton}`} data-dunya="sinema" aria-labelledby="izlenen-baslik">
+      <div class="kap">
+        <div class="bas-satiri">
+          <h2 id="izlenen-baslik" class="h2">Son izlediklerim</h2>
+          <p class="kucuk">
+            Veriler <a href="https://letterboxd.com/">Letterboxd</a> günlüğümden, build sırasında alınır.
+          </p>
+        </div>
+        <ul class="lista afisler">
+          {filmler.map((f) => {
+            const afis = letterboxdAfisi(f.tmdbId);
+            return (
             <li class="film">
-              {f.afis && (
-                <a href={f.link} tabindex="-1" aria-hidden="true">
-                  <img src={f.afis} alt="" width="150" height="225" loading="lazy" referrerpolicy="no-referrer" />
+              {afis && (
+                <a class="afis" href={f.link} tabindex="-1" aria-hidden="true">
+                  <Medya src={afis} oran="afis" alt="" width={300} />
                 </a>
               )}
               <p class="ad">
                 <a href={f.link}>{f.film}</a>
               </p>
-              {f.yil && <p class="soluk">{f.yil}</p>}
+              {f.yil && <p class="kucuk">{f.yil}</p>}
               {f.puan !== undefined && <p class="puan">{puanYaz(f.puan)} / 5</p>}
-              {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="soluk">{tarihYaz(f.tarih)}</p>}
+              {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="kucuk">{tarihYaz(f.tarih)}</p>}
             </li>
-          ))}
+            );
+          })}
         </ul>
-        <p class="kaynak soluk">
-          Veriler <a href="https://letterboxd.com/">Letterboxd</a> günlüğümden, build sırasında alınır.
-        </p>
       </div>
     </section>
   )
 }
 
 <style>
-  .ic {
-    padding-block: var(--aralik-6);
-  }
-
-  h2 {
-    margin-block-end: var(--aralik-4);
-    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  }
-
-  .filmler {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--aralik-4);
-    align-items: flex-start;
-  }
-
-  .film {
-    width: 9.375rem;
-    font-size: var(--yazi-sm);
-    line-height: 1.4;
+  .afisler {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.5vw, 1.5rem);
   }
 
   .film p {
     margin: 0;
   }
 
-  .film img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    background: var(--yuzey);
-    margin-block-end: var(--aralik-2);
+  .afis {
+    display: block;
+    margin-block-end: var(--aralik-3);
+    text-decoration: none;
+  }
+
+  .afis .medya-kalip {
+    display: block;
   }
 
   .ad {
-    font-weight: 700;
+    font-family: var(--font-baslik-yigin);
     font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .ad a {
+    text-decoration-color: transparent;
+  }
+
+  .ad a:hover,
+  .ad a:focus-visible {
+    text-decoration-color: var(--vurgu);
   }
 
   .puan {
-    color: var(--turkuaz-metin);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
     font-weight: 600;
+    color: var(--turkuaz-metin);
   }
 
-  .kaynak {
-    margin-block-start: var(--aralik-4);
-    font-size: var(--yazi-xs);
+  @media (max-width: 52rem) {
+    .afisler {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 </style>

@@ -1,4 +1,4 @@
-/* Reset + temel stiller + native view transitions. Yalnızca token değişkenlerini kullanır. */
+/* Reset + temel stiller + bantlar + tek tip link + native view transitions. Yalnızca token değişkenlerini kullanır. */
 *,
 *::before,
 *::after {
@@ -35,22 +35,29 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  background: var(--zemin);
+  /* Kenarda şerit kalmasın: kök zemin ve kaydırma çubuğu koyu bantla aynı ton */
+  background: var(--perde);
   color: var(--murekkep);
   font-family: var(--font-metin-yigin);
   font-size: 100%;
   line-height: var(--satir-govde);
+  scrollbar-color: #4b5663 var(--perde);
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  background: var(--perde);
   font-size: var(--yazi-govde);
 }
 
 main {
   flex: 1;
+  width: 100%;
 }
 
 img,
@@ -66,13 +73,22 @@ iframe {
   max-width: 100%;
 }
 
+/* ——— Başlıklar ——— */
 h1,
 h2,
 h3 {
   font-family: var(--font-baslik-yigin);
   font-weight: 800;
   line-height: var(--satir-baslik);
+  letter-spacing: -0.05em;
   text-wrap: balance;
+  hyphens: manual;
+}
+
+h3 {
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
 }
 
 p,
@@ -80,20 +96,37 @@ li {
   text-wrap: pretty;
 }
 
+/* ——— Link: tek tip. Vurgu renkli alt çizgi (1,5 px), hover/odakta 3 px ——— */
 a {
   color: inherit;
-  text-underline-offset: 0.18em;
-  text-decoration-thickness: 0.08em;
+  text-decoration-line: underline;
+  text-decoration-color: var(--vurgu);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  transition:
+    text-decoration-thickness 0.2s var(--ease),
+    text-underline-offset 0.2s var(--ease),
+    text-decoration-color 0.2s var(--ease);
+}
+
+a:hover {
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.28em;
+}
+
+/* Dinlenme hâli: menü, marka, başlık, etiket ve sekme bağlantılarında çizgi saydamdır;
+   hover/odak/geçerli sayfada aynı vurgu çizgisi çıkar. */
+:is(.sessiz-link, .marka, h1 a, h2 a, h3 a, .sekmeler a, .etiketler a, .etiket-listesi a) {
+  text-decoration-color: transparent;
+}
+
+:is(.sessiz-link, .marka, h1 a, h2 a, h3 a, .sekmeler a, .etiketler a, .etiket-listesi a):is(:hover, :focus-visible, [aria-current='page']) {
+  text-decoration-color: var(--vurgu);
 }
 
 :focus-visible {
-  outline: 3px solid var(--turuncu-metin);
-  outline-offset: 3px;
-}
-
-/* Renkli alanların içinde odak halkası alan metni renginde (turuncu üstünde turuncu halka görünmezdi) */
-.alan-zemin :focus-visible {
-  outline-color: var(--dunya-alan-metin);
+  outline: 3px solid var(--vurgu);
+  outline-offset: 4px;
 }
 
 .kap {
@@ -101,6 +134,141 @@ a {
   max-width: var(--kap);
   margin-inline: auto;
   padding-inline: var(--kenar);
+}
+
+/* ——— Bantlar: tam genişlik, dümdüz renk; dikey boşluk tek token ——— */
+.bant {
+  width: 100%;
+  padding-block: var(--bant);
+  background: var(--zemin);
+  color: var(--murekkep);
+}
+
+.bant--koyu {
+  background: var(--perde);
+}
+
+.bant--acik {
+  background: var(--parke);
+}
+
+/* Aynı tonda iki bant yan yana gelirse ince çizgiyle ayrılır */
+.bant--koyu + .bant--koyu,
+.bant--acik + .bant--acik {
+  border-block-start: 1px solid var(--cizgi);
+}
+
+/* Sayfa başı bandı: nav'ın altında, daha az üst boşluk */
+.bant--basi {
+  padding-block: calc(var(--bant) * 0.55) clamp(2.5rem, 5vw, 5rem);
+}
+
+.bas-satiri {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--aralik-3) var(--aralik-5);
+  margin-block-end: clamp(2.5rem, 5vw, 5rem);
+}
+
+/* ——— Tip sınıfları ——— */
+.dev {
+  font-size: var(--yazi-dev);
+  line-height: 0.96;
+  letter-spacing: -0.058em;
+}
+
+.h1 {
+  font-size: var(--yazi-h1);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.h2 {
+  font-size: var(--yazi-h2);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.h3 {
+  font-size: var(--yazi-h3);
+}
+
+.lede {
+  max-width: 34ch;
+  font-family: var(--font-baslik-yigin);
+  font-size: var(--yazi-lede);
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.02em;
+  color: var(--lede-renk);
+}
+
+.kucuk {
+  font-family: var(--font-baslik-yigin);
+  font-size: var(--yazi-sm);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.005em;
+  color: var(--soluk);
+}
+
+/* ——— Sekmeler: tek satır; dar ekranda yatay kayar (bağlantılar klavyeyle odaklanır, odak görünür kalır) ——— */
+.sekmeler {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0 var(--aralik-5);
+  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  font-family: var(--font-baslik-yigin);
+  font-size: clamp(1.25rem, 0.9rem + 1.5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.sekmeler::-webkit-scrollbar {
+  display: none;
+}
+
+.sekmeler a {
+  flex: none;
+  padding-block: var(--aralik-1);
+  border-block-end: 3px solid transparent;
+  text-decoration-line: none;
+  color: var(--soluk);
+}
+
+.sekmeler a:hover {
+  color: var(--murekkep);
+}
+
+.sekmeler a[aria-current='page'] {
+  color: var(--murekkep);
+  border-block-end-color: var(--vurgu);
+}
+
+.sekmeler .adet {
+  margin-inline-start: var(--aralik-1);
+  font-size: var(--yazi-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.sekmeler :focus-visible {
+  outline-offset: 2px;
+}
+
+@media (max-width: 36rem) {
+  .sekmeler {
+    gap: 0 var(--aralik-4);
+    /* Son sekme kenara değerken kaydırılabilir olduğu belli olsun */
+    margin-inline: calc(var(--kenar) * -1);
+    padding-inline: var(--kenar);
+  }
 }
 
 .lista {
@@ -131,10 +299,10 @@ a {
   position: absolute;
   left: var(--aralik-2);
   top: var(--aralik-2);
-  z-index: 10;
+  z-index: 40;
   padding: var(--aralik-2) var(--aralik-3);
-  background: var(--murekkep);
-  color: var(--zemin);
+  background: var(--parke);
+  color: #12161c;
   transform: translateY(-300%);
 }
 

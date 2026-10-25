@@ -1,5 +1,7 @@
 // Letterboxd RSS'inden son izlenenler. Yalnızca build sırasında çalışır; hata olursa boş döner
 // (build kırılmaz, şerit hiç render edilmez).
+// Afişler Letterboxd'dan (ltrbxd.com) değil, RSS'teki `tmdb:movieId` ile TMDB'den alınır: `scripts/letterboxd-afis.ts`
+// her build'den önce indirir (repo'ya girmez), `letterboxd-afis.ts` yerel dosyadan okur. TMDB kimliği olmayan öğeler atlanır.
 import { get as httpGet } from 'node:http';
 import { get as httpsGet } from 'node:https';
 import { XMLParser } from 'fast-xml-parser';
@@ -10,7 +12,7 @@ export type Izlenen = {
   puan?: number;
   tarih?: Date;
   link: string;
-  afis?: string;
+  tmdbId: number;
 };
 
 const ayrisan = new XMLParser({ ignoreAttributes: false, processEntities: true });
@@ -43,15 +45,13 @@ function metinAl(adres: string, yonlendirme = 3): Promise<string> {
   });
 }
 
-async function cek(adres: string, adet: number): Promise<Izlenen[]> {
+async function cek(adres: string): Promise<Izlenen[]> {
   try {
     const kanal = ayrisan.parse(await metinAl(adres))?.rss?.channel;
     const ogeler: any[] = [kanal?.item ?? []].flat();
     return ogeler
-      .filter((o) => o['letterboxd:filmTitle'])
-      .slice(0, adet)
+      .filter((o) => o['letterboxd:filmTitle'] && Number.isInteger(Number(o['tmdb:movieId'])))
       .map((o) => {
-        const afis = String(o.description ?? '').match(/<img[^>]+src=["']([^"']+)["']/)?.[1];
         const puan = Number(o['letterboxd:memberRating']);
         const tarih = o['letterboxd:watchedDate'] ? new Date(o['letterboxd:watchedDate']) : undefined;
         return {
@@ -60,7 +60,7 @@ async function cek(adres: string, adet: number): Promise<Izlenen[]> {
           puan: Number.isFinite(puan) && o['letterboxd:memberRating'] !== undefined ? puan : undefined,
           tarih,
           link: String(o.link),
-          afis,
+          tmdbId: Number(o['tmdb:movieId']),
         };
       });
   } catch (e) {
@@ -70,9 +70,13 @@ async function cek(adres: string, adet: number): Promise<Izlenen[]> {
   }
 }
 
-/** LETTERBOXD_RSS tanımlı değilse boş döner; tanımlıysa build başına bir kez çeker. */
-export function sonIzlenenler(adres: string | undefined, adet = 6): Promise<Izlenen[]> {
+/** LETTERBOXD_RSS tanımlı değilse boş döner; tanımlıysa akış build başına bir kez çekilir. */
+function akis(adres: string | undefined): Promise<Izlenen[]> {
   if (!adres) return Promise.resolve([]);
-  onbellek ??= cek(adres, adet);
+  onbellek ??= cek(adres);
   return onbellek;
+}
+
+export async function sonIzlenenler(adres: string | undefined, adet = 6): Promise<Izlenen[]> {
+  return (await akis(adres)).slice(0, adet);
 }

@@ -9,9 +9,9 @@ Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden h
 | Klasör | Uydurma olanlar |
 | --- | --- |
 | `sinema/paris-texas-bir-yalnizlik-resmi/` | Yazı metni ve yorumları, `puan: 4.5`, "Ry Cooder" cümlesi, alıntı, etiketler. `tmdbId: 655` gerçek filmin kimliğidir ama cache hiç çekilmedi, doğrulanmadı. `kapak.svg`, `col.svg` düz renk yer tutucu görseller. |
-| `sinema/uzak-karin-ve-sessizlik/` | Yazı metni, `puan: 4`, `orijinalAd`, etiketler, `kapak.svg`. |
+| `sinema/uzak-karin-ve-sessizlik/` | Yazı metni, `puan: 4`, `orijinalAd`, etiketler. **Bilerek kapaksız**: görselsiz yedek kapağı (projektör ışığı + yıl) gösterir. |
 | `basketbol/pick-and-roll-sadeligi/` | Yazı metni, **uydurma istatistikler** (`istatistik`: 64 / %41 / %27 ve gövdedeki "Perde sonrası tercihler (örnek veri)" tablosu: 26 / 17 / 12 / 9), "Not defterimden" alıntısı, `sezon: 2026-27`, `kapak.svg`, `saha-bir.svg`, `saha-iki.svg`. |
-| `basketbol/sezon-acilisi-ritim-savasi/` | Yazı metni, `takimlar` (gerçek takım adları, içerik uydurma), `kapak.svg`. |
+| `basketbol/sezon-acilisi-ritim-savasi/` | Yazı metni, `takimlar` (gerçek takım adları, içerik uydurma). **Bilerek kapaksız**: görselsiz yedek kapağı (saha çizgileri + sezon) gösterir. |
 
 Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
@@ -44,4 +44,12 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 ## 5. Production'da boş durumlar
 
-İçerik hiç yokken sayfalar şöyle davranır: ana sayfa "Henüz yazı yok" ve projeler/hakkımda bağlantıları, `/sinema/` ve `/basketbol/` bölüm başlığı + "Bu bölümde henüz yazı yok", `/projeler/` "Henüz proje yok", hakkımda "Bu sayfa hazırlanıyor"; RSS'ler öğesiz, sitemap yalnızca 6 sabit sayfa, arama yalnızca hakkımda'yı indeksler. `etiketler/` ve `projeler/tur/` sayfaları üretilmez.
+İçerik hiç yokken sayfalar şöyle davranır: ana sayfa "Henüz yazı yok" ve projeler/hakkımda bağlantıları, `/yazilar/` (ve `/yazilar/sinema/`, `/yazilar/basketbol/`) başlık + "Bu bölümde henüz yazı yok", `/projeler/` "Henüz proje yok", hakkımda "Bu sayfa hazırlanıyor"; RSS'ler öğesiz, sitemap yalnızca 6 sabit sayfa, arama yalnızca hakkımda'yı indeksler. `etiketler/` ve `projeler/tur/` sayfaları üretilmez.
+
+## 4. Yeniden tasarımla gelen yer tutucular
+
+| Dosya | Uydurma/yer tutucu olan |
+| --- | --- |
+| `src/lib/site.ts` | `PROFILLER` yalnızca GitHub + RSS (Letterboxd vb. eklenecek). **`HERO_CUMLESI` ve `KISACA_METNI`: isteğe bağlı, boş bırakılabilir.** Boşken hero cümlesi ve "Kısaca" bölümü hiç render edilmez; metin yazılınca kendiliğinden görünür. |
+| `src/pages/index.astro` | Yer tutucu metin yok (hero cümlesi ve "Kısaca" `site.ts`'ten gelir, şimdilik boş). Hero görseli kalıcı: `HeroSahne` SVG; portre fotoğrafı kullanılmaz. |
+| `src/pages/hakkimda.astro` | `deneyim` listesi yalnızca `SHOW_DRAFTS` iken uydurma; gerçek deneyim girilince `SHOW_DRAFTS` koşulu kalkar. |

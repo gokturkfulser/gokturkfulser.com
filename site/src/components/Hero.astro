@@ -1,0 +1,110 @@
+---
+// Ana sayfa hero'su: ad bloğu solda, build gününe göre değişen SVG sahne sağda ve ad bloğuyla aynı yükseklikte.
+// Adın altındaki cümle (lede) isteğe bağlıdır; verilmezse hiç render edilmez.
+import HeroSahne from './HeroSahne.astro';
+
+interface Props {
+  /** Başlığın altındaki tek cümle (isteğe bağlı). */
+  cumle?: string;
+}
+
+const { cumle } = Astro.props;
+// Build günü: sahnenin küçük varyasyonu (ışığın yönü, açısı, toz) için tohum; aynı gün aynı çıktı.
+const tohum = Math.floor(Date.now() / 86_400_000);
+---
+<section class="bant bant--koyu hero" aria-labelledby="hero-baslik">
+  <div class="kap hero-izgara">
+    <div class="hero-metin">
+      <h1 id="hero-baslik" class="dev"><span>Göktürk</span> <span>Fulser</span></h1>
+      {cumle && <p class="lede">{cumle}</p>}
+      <p class="baglantilar">
+        <a href="/yazilar/">Yazılara git</a>
+        <a href="/projeler/">Projelere git</a>
+      </p>
+    </div>
+    <div class="hero-gorsel" aria-hidden="true">
+      <HeroSahne {tohum} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    align-items: end;
+    min-height: calc(100svh - var(--nav));
+    padding-block: clamp(2.5rem, 5vw, 5rem) clamp(3rem, 6vw, 6rem);
+  }
+
+  .hero-izgara {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: clamp(2rem, 4vw, 5rem);
+  }
+
+  .hero-metin {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  h1 {
+    font-size: var(--yazi-dev);
+    line-height: 0.96;
+    letter-spacing: -0.058em;
+  }
+
+  h1 span {
+    display: block;
+  }
+
+  .lede {
+    margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  /* Lede yokken bağlantılar doğrudan adın altında durur */
+  .baglantilar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-5);
+    margin: var(--aralik-5) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .hero-gorsel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    h1 {
+      animation: hero-giris 0.9s var(--ease) both;
+    }
+
+    @keyframes hero-giris {
+      from {
+        opacity: 0;
+        transform: translateY(1.5rem);
+      }
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .hero {
+      min-height: 0;
+    }
+
+    .hero-izgara {
+      grid-template-columns: 1fr;
+    }
+
+    /* Mobilde görsel adın üstünde, tam genişlikte */
+    .hero-gorsel {
+      order: -1;
+    }
+  }
+</style>

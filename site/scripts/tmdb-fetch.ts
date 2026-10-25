@@ -1,6 +1,7 @@
-// TMDB künye ve afiş çekici. Çalıştırma: `pnpm site:tmdb` (kökten) ya da `pnpm --filter site tmdb`.
-// - Yalnızca film.tmdbId'si olan sinema yazılarını işler.
-// - Cache'te olanı yeniden çekmez (`--yenile` ile hepsini yeniler).
+// TMDB künye, afiş ve backdrop çekici. Çalıştırma: `pnpm site:tmdb` (kökten) ya da `pnpm --filter site tmdb`.
+// - Yalnızca film.tmdbId'si olan sinema yazılarını işler. (Letterboxd şeridinin afişleri repo'ya girmez; her build'de
+//   `scripts/letterboxd-afis.ts` indirir.)
+// - Cache'te olanı yeniden çekmez (`--yenile` ile hepsini yeniler). Backdrop'tan önceki (surum < 2) kayıtlar bir kez yeniden çekilir.
 // - Anahtar: TMDB_API_KEY (v3 anahtarı ya da v4 "API Read Access Token"). Anahtar repo'ya girmez.
 // - Test için TMDB_API_TABANI ve TMDB_GORSEL_TABANI ortam değişkenleriyle sahte sunucuya yönlendirilebilir.
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -17,6 +18,9 @@ type Kayit = {
   yonetmenler: string[];
   turler: string[];
   afis?: string;
+  /** Yatay backdrop (w1280); kapak yoksa sinema yazısında 2.39:1 kırpılarak kapak olur. */
+  arkaplan?: string;
+  surum?: number;
   cekildi: string;
 };
 
@@ -24,6 +28,8 @@ const kok = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sinemaKlasoru = join(kok, 'src/content/sinema');
 const cacheYolu = join(kok, 'src/data/tmdb-cache.json');
 const afisKlasoru = join(kok, 'src/data/tmdb/afis');
+const arkaplanKlasoru = join(kok, 'src/data/tmdb/arkaplan');
+const SURUM = 2;
 
 const API = process.env.TMDB_API_TABANI ?? 'https://api.themoviedb.org/3';
 const GORSEL = process.env.TMDB_GORSEL_TABANI ?? 'https://image.tmdb.org/t/p';
@@ -81,12 +87,13 @@ async function oku(): Promise<Record<string, Kayit>> {
 const idler = await tmdbIdleri();
 const cache = await oku();
 await mkdir(afisKlasoru, { recursive: true });
+await mkdir(arkaplanKlasoru, { recursive: true });
 
 let cekilen = 0;
 let hata = 0;
 
 for (const id of idler) {
-  if (cache[id] && !yenile) continue;
+  if (cache[id]?.surum === SURUM && !yenile) continue;
   try {
     const film = await tmdb(`/movie/${id}`, { language: 'tr-TR', append_to_response: 'credits' });
     const yonetmenler: string[] = (film.credits?.crew ?? [])
@@ -101,6 +108,14 @@ for (const id of idler) {
       await writeFile(join(afisKlasoru, afis), Buffer.from(await yanit.arrayBuffer()));
     }
 
+    let arkaplan: string | undefined;
+    if (film.backdrop_path) {
+      const yanit = await fetch(`${GORSEL}/w1280${film.backdrop_path}`, { signal: AbortSignal.timeout(30_000) });
+      if (!yanit.ok) throw new Error(`Backdrop indirilemedi: ${yanit.status}`);
+      arkaplan = `${id}.jpg`;
+      await writeFile(join(arkaplanKlasoru, arkaplan), Buffer.from(await yanit.arrayBuffer()));
+    }
+
     cache[id] = {
       tmdbId: id,
       baslik: film.title,
@@ -110,6 +125,8 @@ for (const id of idler) {
       yonetmenler,
       turler: (film.genres ?? []).map((g: { name: string }) => g.name),
       afis,
+      arkaplan,
+      surum: SURUM,
       cekildi: new Date().toISOString().slice(0, 10),
     };
     cekilen++;
@@ -125,6 +142,8 @@ for (const anahtarId of Object.keys(cache)) {
   if (idler.includes(Number(anahtarId))) continue;
   const afis = cache[anahtarId]?.afis;
   if (afis) await rm(join(afisKlasoru, afis), { force: true });
+  const arkaplan = cache[anahtarId]?.arkaplan;
+  if (arkaplan) await rm(join(arkaplanKlasoru, arkaplan), { force: true });
   delete cache[anahtarId];
   console.log(`− ${anahtarId} (kullanılmıyor, silindi)`);
 }

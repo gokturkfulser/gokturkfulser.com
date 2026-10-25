@@ -29,8 +29,11 @@ const sinema = defineCollection({
       }),
       // 0–5 arası, yarım puanlı
       puan: z.number().min(0).max(5).multipleOf(0.5).optional(),
-      kapak: image(),
+      // Yoksa TMDB backdrop'u (film.tmdbId), o da yoksa görselsiz yedek kapak (projektör ışığı + yıl).
+      kapak: image().optional(),
       etiketler: z.array(z.string()).default([]),
+      // Ana sayfada öne çıkar; hiçbiri işaretli değilse en yeniler gösterilir.
+      oneCikan: z.boolean().default(false),
       taslak: z.boolean().default(false),
     }),
 });
@@ -55,8 +58,10 @@ const basketbol = defineCollection({
         )
         .max(6)
         .optional(),
-      kapak: image(),
+      // Yoksa görselsiz yedek kapak (saha çizgileri + sezon/istatistik) üretilir.
+      kapak: image().optional(),
       etiketler: z.array(z.string()).default([]),
+      oneCikan: z.boolean().default(false),
       taslak: z.boolean().default(false),
     }),
 });

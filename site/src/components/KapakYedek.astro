@@ -1,0 +1,71 @@
+---
+// Görselsiz kapak: kapağı olmayan yazılar için tasarımın kendi dilinde, statik, JS'siz SVG.
+// Basketbol: saha çizgileri (turuncu) + tipografik sayı; sinema: projektör ışığı (turkuaz) + yıl.
+// Medya kuralının kalıbından (oran, köşe, gren, vinyet) geçer; süstür, bilgi taşımaz (alt metin boş).
+// Önemli öğeler (yıl/sezon metni, projektör) 16:10'a kırpıldığında da görünsün diye tuvalin orta 1600 biriminde tutulur.
+interface Props {
+  dunya: 'sinema' | 'basketbol';
+  /** Büyük tipografik öğe: basketbolda sezon ya da ilk istatistik, sinemada film yılı. */
+  metin: string;
+  oran?: 'kapak' | 'vitrin' | 'proje';
+  class?: string;
+}
+
+const { dunya, metin, oran = 'kapak', class: sinif } = Astro.props;
+const sinema = dunya === 'sinema';
+
+// Sinema: ışık hüzmesindeki toz (deterministik; her build aynı)
+const toz = Array.from({ length: 26 }, (_, i) => {
+  const t = Math.sin(i * 12.9898) * 43758.5453;
+  const r = t - Math.floor(t);
+  const u = Math.sin(i * 78.233) * 12345.678;
+  const q = u - Math.floor(u);
+  return { x: 600 + r * 1500, y: 120 + q * 700, r: 2 + (i % 3) * 1.5, o: 0.25 + (i % 4) * 0.1 };
+});
+const delikler = Array.from({ length: 28 }, (_, i) => 40 + i * 86);
+---
+
+<div class:list={['medya-kalip', 'kapak-yedek', sinif]} data-oran={oran} data-yedek={dunya}>
+  <svg viewBox="0 0 2390 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <rect width="2390" height="1000" fill={sinema ? '#0b1316' : '#120f0d'}></rect>
+    {
+      sinema ? (
+        <>
+          <polygon points="430,880 2390,-140 2390,330" fill="#3fc8cf" opacity="0.07"></polygon>
+          <polygon points="430,880 2390,-20 2390,260" fill="#3fc8cf" opacity="0.09"></polygon>
+          <polygon points="430,880 2390,90 2390,200" fill="#3fc8cf" opacity="0.13"></polygon>
+          {toz.map((t) => <circle cx={t.x} cy={t.y} r={t.r} fill="#bff3f5" opacity={t.o}></circle>)}
+          <circle cx="430" cy="880" r="46" fill="#3fc8cf"></circle>
+          <circle cx="430" cy="880" r="18" fill="#0b1316"></circle>
+          <g fill="#eef1f4" opacity="0.2">
+            {delikler.map((x) => <rect x={x} y="930" width="46" height="34" rx="8"></rect>)}
+            {delikler.map((x) => <rect x={x} y="36" width="46" height="34" rx="8"></rect>)}
+          </g>
+          <text x="1960" y="790" text-anchor="end" fill="#eef1f4">{metin}</text>
+        </>
+      ) : (
+        <>
+          <g fill="none" stroke="#ff7a2f" stroke-width="8" stroke-linecap="round">
+            <line x1="1850" y1="-60" x2="1850" y2="1060"></line>
+            <circle cx="1850" cy="520" r="360"></circle>
+            <circle cx="1850" cy="520" r="120"></circle>
+            <path d="M-40 140H400A620 620 0 0 1 400 900H-40" opacity="0.9"></path>
+            <rect x="-60" y="330" width="480" height="380"></rect>
+            <circle cx="420" cy="520" r="150" opacity="0.7"></circle>
+          </g>
+          <circle cx="1850" cy="520" r="120" fill="#ff7a2f" opacity="0.16"></circle>
+          <text x="540" y="930" fill="#eef1f4">{metin}</text>
+        </>
+      )
+    }
+  </svg>
+</div>
+
+<style>
+  svg text {
+    font-family: var(--font-baslik-yigin);
+    font-size: 300px;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+  }
+</style>

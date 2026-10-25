@@ -1,4 +1,4 @@
-// OG görseli: Satori (SVG) + resvg (PNG). Renk ve fontlar DESIGN.md token'larıyla aynı.
+// OG görseli: Satori (SVG) + resvg (PNG). Renk ve fontlar DESIGN.md Yön 1 token'larıyla aynı (koyu perde + vurgu çizgisi).
 // Satori woff2 okuyamaz; @fontsource'un statik woff dosyaları kullanılır. Türkçe (ğ ş İ) için
 // her fontun latin + latin-ext dosyası ayrı aile adıyla verilir ('… Ext'); fontFamily listesi
 // ("Ana, Ana Ext") eksik glifi latin-ext dosyasından alır. Aynı ad iki kez verilirse yedek çalışmaz.
@@ -19,9 +19,9 @@ type Girdi = {
 };
 
 const RENK = {
-  sinema: { zemin: '#0e5e66', metin: '#ffffff' },
-  basketbol: { zemin: '#e2661a', metin: '#16191f' },
-  varsayilan: { zemin: '#f4f6f8', metin: '#16191f' },
+  sinema: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#3fc8cf' },
+  basketbol: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#ff7a2f' },
+  varsayilan: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#3fc8cf' },
 } as const;
 
 let fontlar: Promise<
@@ -33,18 +33,18 @@ function fontlariYukle() {
     const dosya = (paket: string, ad: string) =>
       readFile(join(process.cwd(), 'node_modules/@fontsource', paket, 'files', ad));
     return [
-      { name: 'Big Shoulders Display', data: await dosya('big-shoulders-display', 'big-shoulders-display-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
-      { name: 'Big Shoulders Display Ext', data: await dosya('big-shoulders-display', 'big-shoulders-display-latin-ext-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
-      { name: 'Literata', data: await dosya('literata', 'literata-latin-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
-      { name: 'Literata Ext', data: await dosya('literata', 'literata-latin-ext-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
+      { name: 'Bricolage Grotesque', data: await dosya('bricolage-grotesque', 'bricolage-grotesque-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
+      { name: 'Bricolage Grotesque Ext', data: await dosya('bricolage-grotesque', 'bricolage-grotesque-latin-ext-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
+      { name: 'Newsreader', data: await dosya('newsreader', 'newsreader-latin-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
+      { name: 'Newsreader Ext', data: await dosya('newsreader', 'newsreader-latin-ext-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
     ];
   })();
   return fontlar;
 }
 
 // Satori JSX yerine düz nesne ağacı kabul eder.
-const BASLIK_AILESI = 'Big Shoulders Display, Big Shoulders Display Ext';
-const METIN_AILESI = 'Literata, Literata Ext';
+const BASLIK_AILESI = 'Bricolage Grotesque, Bricolage Grotesque Ext';
+const METIN_AILESI = 'Newsreader, Newsreader Ext';
 
 const el = (type: string, style: Record<string, unknown>, children?: unknown) => ({
   type,
@@ -53,14 +53,14 @@ const el = (type: string, style: Record<string, unknown>, children?: unknown) =>
 
 function baslikBoyutu(baslik: string) {
   const n = baslik.length;
-  if (n <= 24) return 150;
-  if (n <= 40) return 112;
-  if (n <= 64) return 92;
-  return 76;
+  if (n <= 24) return 138;
+  if (n <= 40) return 104;
+  if (n <= 64) return 84;
+  return 70;
 }
 
 export async function ogPng({ dunya, baslik, altBilgi, bolumAdi }: Girdi): Promise<Uint8Array<ArrayBuffer>> {
-  const { zemin, metin } = RENK[dunya];
+  const { zemin, metin, soluk, vurgu } = RENK[dunya];
   const varsayilan = dunya === 'varsayilan';
 
   const agac = el(
@@ -79,8 +79,8 @@ export async function ogPng({ dunya, baslik, altBilgi, bolumAdi }: Girdi): Promi
     },
     [
       el('div', { display: 'flex', justifyContent: 'space-between', fontSize: 34 }, [
-        el('div', { display: 'flex', fontFamily: BASLIK_AILESI, fontWeight: 800, fontSize: 48 }, 'Göktürk Fulser'),
-        el('div', { display: 'flex' }, bolumAdi ?? ''),
+        el('div', { display: 'flex', fontFamily: BASLIK_AILESI, fontWeight: 800, fontSize: 48, letterSpacing: -2 }, 'Göktürk Fulser'),
+        el('div', { display: 'flex', color: soluk }, bolumAdi ?? ''),
       ]),
       el(
         'div',
@@ -89,19 +89,22 @@ export async function ogPng({ dunya, baslik, altBilgi, bolumAdi }: Girdi): Promi
           fontFamily: BASLIK_AILESI,
           fontWeight: 800,
           fontSize: baslikBoyutu(baslik),
-          lineHeight: 1.04,
-          letterSpacing: -1,
+          lineHeight: 1,
+          letterSpacing: -5,
         },
         baslik,
       ),
       varsayilan
-        ? el('div', { display: 'flex', width: '100%', height: 36 }, [
-            el('div', { display: 'flex', flex: 1, background: '#0e5e66' }),
-            el('div', { display: 'flex', flex: 1, background: '#e2661a' }),
+        ? el('div', { display: 'flex', width: '100%', height: 12 }, [
+            el('div', { display: 'flex', flex: 1, background: '#3fc8cf' }),
+            el('div', { display: 'flex', flex: 1, background: '#ff7a2f' }),
           ])
-        : el('div', { display: 'flex', justifyContent: 'space-between', fontSize: 30 }, [
-            el('div', { display: 'flex' }, altBilgi ?? ''),
-            el('div', { display: 'flex' }, 'gokturkfulser.com'),
+        : el('div', { display: 'flex', flexDirection: 'column', gap: 24 }, [
+            el('div', { display: 'flex', width: '100%', height: 8, background: vurgu }),
+            el('div', { display: 'flex', justifyContent: 'space-between', fontSize: 30, color: soluk }, [
+              el('div', { display: 'flex' }, altBilgi ?? ''),
+              el('div', { display: 'flex' }, 'gokturkfulser.com'),
+            ]),
           ]),
     ],
   );

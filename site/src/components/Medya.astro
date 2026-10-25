@@ -1,0 +1,33 @@
+---
+// Tek medya işleme kuralının bileşeni: bkz. src/styles/medya.css ve DESIGN.md "Medya kuralı".
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  oran?: 'kapak' | 'vitrin' | 'proje' | 'afis' | 'kare';
+  alt?: string;
+  width?: number;
+  /** Ekran üstü (LCP) görselleri için. */
+  oncelikli?: boolean;
+  sizes?: string;
+  class?: string;
+}
+
+const { src, oran = 'vitrin', alt = '', width = 1200, oncelikli = false, sizes, class: sinif } = Astro.props;
+const oranlar = { kapak: 2.39, vitrin: 1.6, proje: 4 / 3, afis: 2 / 3, kare: 1 } as const;
+const height = Math.round(width / oranlar[oran]);
+---
+
+<div class:list={['medya-kalip', sinif]} data-oran={oran}>
+  <Image
+    {src}
+    {alt}
+    {width}
+    {height}
+    {sizes}
+    fit="cover"
+    loading={oncelikli ? 'eager' : 'lazy'}
+    fetchpriority={oncelikli ? 'high' : undefined}
+  />
+</div>

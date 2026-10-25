@@ -1,0 +1,211 @@
+---
+// /yazilar/, /yazilar/sinema/, /yazilar/basketbol/ için ortak sayfa. Sekmeler JS'siz: her biri kendi URL'inde.
+// Düzen: koyu sayfa başı bandı (başlık + sekmeler), açık liste bandı (arama, etiketler, yıl grupları).
+import Base from '../layouts/Base.astro';
+import YaziSatiri from './YaziSatiri.astro';
+import { BOLUM_ADLARI, BOLUM_URL, tumYazilar, yillaraGore, type Bolum } from '../lib/content';
+import { slugify } from '../lib/slug';
+
+interface Props {
+  bolum?: Bolum;
+}
+
+const { bolum } = Astro.props;
+const hepsi = await tumYazilar();
+const yazilar = bolum ? hepsi.filter((y) => y.bolum === bolum) : hepsi;
+const yillar = yillaraGore(yazilar);
+
+const sekmeler = [
+  { ad: 'Tümü', href: '/yazilar/', adet: hepsi.length, aktif: !bolum },
+  ...(['sinema', 'basketbol'] as const).map((b) => ({
+    ad: BOLUM_ADLARI[b],
+    href: BOLUM_URL[b],
+    adet: hepsi.filter((y) => y.bolum === b).length,
+    aktif: bolum === b,
+  })),
+];
+
+// Etiket süzgeci: her etiket kendi sayfasına gider (JS'siz); en sık kullanılanlar önde.
+const etiketler = new Map<string, { ad: string; adet: number }>();
+for (const { entry } of yazilar) {
+  for (const ad of entry.data.etiketler) {
+    const slug = slugify(ad);
+    etiketler.set(slug, { ad, adet: (etiketler.get(slug)?.adet ?? 0) + 1 });
+  }
+}
+const etiketListesi = [...etiketler].sort((a, b) => b[1].adet - a[1].adet || a[1].ad.localeCompare(b[1].ad, 'tr'));
+
+const baslik = bolum ? BOLUM_ADLARI[bolum] : 'Yazılar';
+const aciklama = {
+  tumu: 'Sinema ve basketbol üzerine yazılar, yeniden eskiye.',
+  sinema: 'İzlediğim filmler üzerine yazılar ve puanlar.',
+  basketbol: 'Maçlar, taktikler ve sezon notları.',
+}[bolum ?? 'tumu'];
+const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
+---
+
+<Base baslik={bolum ? `Yazılar · ${baslik}` : 'Yazılar'} aciklama={aciklama}>
+  <section class="bant bant--koyu bant--basi" data-dunya={bolum} aria-labelledby="yazilar-baslik">
+    <div class="kap">
+      <h1 id="yazilar-baslik" class="h1">{baslik}</h1>
+      <p class="lede">{aciklama}</p>
+      <nav class="sekmeler" aria-label="Yazı bölümleri">
+        {
+          sekmeler.map((s) => (
+            <a href={s.href} aria-current={s.aktif ? 'page' : undefined}>
+              {s.ad} <span class="adet">{s.adet}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <section class="bant bant--acik liste-bandi" aria-label="Yazı listesi">
+    <div class="kap">
+      <div class="araclar">
+        <form class="ara-formu" action="/arama/" method="get" role="search">
+          <label class="sr-only" for="yazi-ara">Yazılarda ara</label>
+          <input id="yazi-ara" type="search" name="q" placeholder="Yazılarda ara" autocomplete="off" />
+          <button type="submit">Ara</button>
+        </form>
+        <a class="rss" href={rss}>RSS ile takip et</a>
+      </div>
+
+      {
+        etiketListesi.length > 0 && (
+          <ul class="lista etiket-listesi" aria-label="Etikete göre süz">
+            {etiketListesi.map(([slug, e]) => (
+              <li>
+                <a href={`/etiketler/${slug}/`}>
+                  #{e.ad} <span class="adet">{e.adet}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        yazilar.length === 0 && (
+          <p class="bos">
+            Bu bölümde henüz yazı yok. Yazılar yayımlandığında burada görünecek; RSS ile de takip edebilirsiniz.
+          </p>
+        )
+      }
+      {
+        yillar.map(({ yil, yazilar: liste }) => (
+          <section class="yil" aria-labelledby={`yil-${yil}`}>
+            <h2 id={`yil-${yil}`}>{yil}</h2>
+            <ul class="lista">
+              {liste.map((yazi) => (
+                <li>
+                  <YaziSatiri yazi={yazi} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .liste-bandi {
+    padding-block-start: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .araclar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-3) var(--aralik-5);
+  }
+
+  .ara-formu {
+    display: flex;
+    flex: 1 1 18rem;
+    max-width: 30rem;
+  }
+
+  .ara-formu input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem var(--aralik-3);
+    border: 1px solid var(--murekkep);
+    border-radius: var(--medya-kose) 0 0 var(--medya-kose);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+  }
+
+  .ara-formu input::placeholder {
+    color: var(--soluk);
+    opacity: 1;
+  }
+
+  .ara-formu button {
+    padding: 0.75rem var(--aralik-4);
+    border: 1px solid var(--murekkep);
+    border-radius: 0 var(--medya-kose) var(--medya-kose) 0;
+    background: var(--murekkep);
+    color: var(--zemin);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .rss {
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    font-weight: 500;
+  }
+
+  /* Etiketler gövdeden bir basamak küçük ve soluk; çizgi yalnızca hover/odakta */
+  .etiket-listesi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-2) var(--aralik-4);
+    margin-block: var(--aralik-4) var(--aralik-5);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    font-weight: 500;
+    color: var(--soluk);
+  }
+
+  .etiket-listesi a {
+    color: var(--soluk);
+  }
+
+  .etiket-listesi a:hover,
+  .etiket-listesi a:focus-visible {
+    color: var(--murekkep);
+  }
+
+  .adet {
+    font-weight: 400;
+    opacity: 1;
+  }
+
+  .bos {
+    max-width: var(--olcu);
+    font-size: var(--yazi-lede);
+    line-height: 1.5;
+  }
+
+  .yil + .yil {
+    margin-block-start: clamp(3rem, 6vw, 6rem);
+  }
+
+  .yil h2 {
+    padding-block-end: var(--aralik-3);
+    border-block-end: 1px solid var(--cizgi);
+    font-size: clamp(2rem, 1.2rem + 3vw, 4rem);
+    letter-spacing: -0.05em;
+    color: var(--soluk);
+  }
+</style>

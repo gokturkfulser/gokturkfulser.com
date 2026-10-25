@@ -1,8 +1,7 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import ProjeListesi from '../../../components/ProjeListesi.astro';
+import ProjelerSayfasi from '../../../components/ProjelerSayfasi.astro';
 import { projeler } from '../../../lib/content';
-import { TUR, TUR_SIRASI } from '../../../lib/labels';
+import { TUR_SIRASI } from '../../../lib/labels';
 
 // Süzgeç JS'siz çalışır: her tür kendi statik sayfası (/projeler/tur/oyun/ gibi).
 // Yalnızca en az bir projesi olan türler üretilir.
@@ -17,21 +16,4 @@ export async function getStaticPaths() {
 const { tur, liste } = Astro.props;
 ---
 
-<Base baslik={`Projeler: ${TUR[tur]}`} aciklama={`${TUR[tur]} türündeki projelerim.`}>
-  <div class="kap sayfa">
-    <h1>Projeler</h1>
-    <ProjeListesi projeler={liste} tur={tur} />
-  </div>
-</Base>
-
-<style>
-  .sayfa {
-    padding-block: var(--aralik-5) var(--aralik-6);
-  }
-
-  h1 {
-    margin-block-end: var(--aralik-4);
-    font-size: var(--yazi-dev);
-    letter-spacing: -0.01em;
-  }
-</style>
+<ProjelerSayfasi projeler={liste} tur={tur} />

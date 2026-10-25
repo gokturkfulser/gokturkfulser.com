@@ -1,0 +1,31 @@
+name: site-gunluk-build
+
+# Her gün 04:00 İstanbul (UTC+3 → 01:00 UTC): Cloudflare Workers Builds Deploy Hook'unu tetikler;
+# böylece "Son izlediklerim" şeridi (build anında Letterboxd + TMDB'den çekilir) yeni push olmasa da güncellenir.
+# Repoya commit atmaz, kod çekmez. Kurulum: site/DEPLOY.md "Günlük otomatik build".
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: site-gunluk-build
+  cancel-in-progress: false
+
+jobs:
+  yenile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Deploy Hook'u tetikle
+        env:
+          CF_DEPLOY_HOOK_URL: ${{ secrets.CF_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$CF_DEPLOY_HOOK_URL" ]; then
+            echo "::error::CF_DEPLOY_HOOK_URL secret'ı tanımlı değil (site/DEPLOY.md, Günlük otomatik build)"
+            exit 1
+          fi
+          curl --fail --silent --show-error --retry 3 --retry-delay 10 -X POST "$CF_DEPLOY_HOOK_URL" > /dev/null
+          echo "Deploy Hook tetiklendi."

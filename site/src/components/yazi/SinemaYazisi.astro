@@ -1,20 +1,17 @@
 ---
-import { Image } from 'astro:assets';
-import { render } from 'astro:content';
+import Medya from '../Medya.astro';
+import YaziKapagi from '../YaziKapagi.astro';
+import { render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Etiketler from '../../components/Etiketler.astro';
 import { mdxBilesenleri } from '../../components/mdx';
-import { sinemaYazilari } from '../../lib/content';
 import { puanYaz, tarihIso, tarihYaz } from '../../lib/format';
 import { filmYorumuLd, grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
 import { tmdbKaydi, tmdbUrl } from '../../lib/tmdb';
 
-export async function getStaticPaths() {
-  return (await sinemaYazilari()).map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+interface Props {
+  entry: CollectionEntry<'sinema'>;
 }
 
 const { entry } = Astro.props;
@@ -61,28 +58,23 @@ const ld = grafLd(
 <Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
   <article data-dunya="sinema" data-pagefind-body>
     <header>
-      <Image
-        class="kare"
-        src={data.kapak}
-        alt=""
-        width={1920}
-        height={803}
-        fit="cover"
-        loading="eager"
-        fetchpriority="high"
-      />
-      <div class="jenerik alan-zemin">
+      <div class="kapak-bant">
+        <YaziKapagi class="kare" yazi={{ bolum: 'sinema', entry }} oran="kapak" width={1920} oncelikli />
+      </div>
+      <div class="bant bant--koyu jenerik">
         <div class="kap jenerik-ic">
-          <h1>{data.baslik}</h1>
+          <h1 class="h1">{data.baslik}</h1>
+          <p class="ozet">{data.ozet}</p>
           <div class="kunye-satiri">
             {
               tmdb?.afisGorsel && (
-                <Image
+                <Medya
                   class="afis"
                   src={tmdb.afisGorsel}
+                  oran="afis"
                   alt={`${film.ad} filminin afişi`}
                   width={320}
-                  loading="eager"
+                  oncelikli
                 />
               )
             }
@@ -121,7 +113,6 @@ const ld = grafLd(
               }
             </dl>
           </div>
-          <p class="ozet">{data.ozet}</p>
           <p class="tarih">
             <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
             <span class="okuma">{sure.dakika} dakikalık okuma</span>
@@ -130,55 +121,66 @@ const ld = grafLd(
       </div>
     </header>
 
-    <div class="kap govde">
-      <div class="metin">
-        <Content components={mdxBilesenleri} />
+    <div class="bant bant--acik govde">
+      <div class="kap">
+        <div class="kolon">
+          <div class="metin">
+            <Content components={mdxBilesenleri} />
+          </div>
+          <Etiketler etiketler={data.etiketler} />
+        </div>
       </div>
-      <Etiketler etiketler={data.etiketler} />
     </div>
   </article>
 </Base>
 
 <style>
-  .kare {
+  .kapak-bant {
     width: 100%;
-    aspect-ratio: var(--sinema-oran);
-    object-fit: cover;
+    background: var(--perde);
+  }
+
+  .kapak-bant :global(.kare) {
+    border-radius: 0;
   }
 
   .jenerik {
-    background: var(--dunya);
-    color: var(--dunya-alan-metin);
+    padding-block: clamp(3.5rem, 7vw, 8rem);
+    text-align: center;
   }
 
   .jenerik-ic {
     display: grid;
     justify-items: center;
-    gap: var(--aralik-5);
-    padding-block: var(--aralik-6);
-    text-align: center;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
   }
 
   h1 {
-    max-width: 18ch;
-    font-size: var(--yazi-h1);
-    letter-spacing: -0.01em;
+    max-width: 14ch;
+    font-size: clamp(3rem, 1rem + 8vw, 8.5rem);
+  }
+
+  .ozet {
+    max-width: 34ch;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--lede-renk);
   }
 
   .kunye-satiri {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
-    gap: var(--aralik-5);
+    justify-content: center;
+    gap: var(--aralik-5) 3.5rem;
     width: 100%;
   }
 
-  .afis {
-    width: 10rem;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
+  .kunye-satiri :global(.afis) {
+    width: 9.5rem;
   }
 
   /* Jenerik: ortak eksende, soldaki etiket sağa, sağdaki ad sola yaslı */
@@ -187,20 +189,15 @@ const ld = grafLd(
     grid-template-columns: auto auto;
     column-gap: var(--aralik-4);
     row-gap: var(--aralik-2);
-    width: min(100%, 34rem);
     margin: 0;
-    font-size: 1.125rem;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.0625rem;
     line-height: 1.4;
-  }
-
-  .afis + dl {
-    width: auto;
-    justify-content: start;
   }
 
   dt {
     text-align: end;
-    opacity: 0.85;
+    color: var(--soluk);
   }
 
   dd {
@@ -210,48 +207,43 @@ const ld = grafLd(
   }
 
   .puan {
-    font-family: var(--font-baslik-yigin);
-    font-weight: 800;
     font-size: 2.5rem;
+    font-weight: 800;
     line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--turkuaz-metin);
   }
 
   .puan span {
-    font-size: 1.25rem;
-    opacity: 0.85;
-  }
-
-  .ozet {
-    max-width: 38ch;
-    font-size: var(--yazi-lede);
-    line-height: 1.5;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--soluk);
   }
 
   .tarih {
+    display: grid;
+    gap: 0.125rem;
     margin: 0;
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
+    font-weight: 500;
+    color: var(--soluk);
   }
 
-  .tarih time,
-  .tarih .okuma {
-    display: block;
-  }
-
-  .govde {
-    padding-block: var(--aralik-6);
+  .govde .kolon {
+    max-width: 46rem;
+    margin-inline: auto;
   }
 
   .govde :global(.etiketler) {
     margin-block-start: var(--aralik-5);
+    padding-block-start: var(--aralik-4);
+    border-block-start: 1px solid var(--cizgi);
   }
 
   @media (max-width: 36rem) {
-    .kare {
-      aspect-ratio: 16 / 9;
-    }
-
-    dl {
-      font-size: 1rem;
+    .kunye-satiri :global(.afis) {
+      width: 7.5rem;
     }
   }
 </style>

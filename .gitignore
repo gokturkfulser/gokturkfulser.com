@@ -8,6 +8,9 @@ dist/
 .venv/
 __pycache__/
 
+# Letterboxd şeridinin afişleri: her build'de TMDB'den indirilir (site/scripts/letterboxd-afis.ts), repo'ya girmez
+site/src/data/letterboxd/
+
 # Playwright ekran görüntüleri ve MCP çıktıları: yerel kanıt, repo'ya girmez
 site/ekran-goruntuleri/
 .playwright-mcp/

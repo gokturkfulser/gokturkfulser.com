@@ -1,4 +1,5 @@
 ---
+import YaziKapagi from './YaziKapagi.astro';
 import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
 import { tarihIso, tarihYaz } from '../lib/format';
 
@@ -8,64 +9,83 @@ interface Props {
 
 const { yazi } = Astro.props;
 const { data, id } = yazi.entry;
+const href = yaziUrl(yazi.bolum, id);
 ---
 
 <article class="satir" data-dunya={yazi.bolum}>
   <p class="zaman">
+    <span class="bolum-adi">{BOLUM_ADLARI[yazi.bolum]}</span>
     <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
-    <span>{BOLUM_ADLARI[yazi.bolum]}</span>
   </p>
   <div class="icerik">
-    <h3><a href={yaziUrl(yazi.bolum, id)}>{data.baslik}</a></h3>
-    <p>{data.ozet}</p>
+    <h3><a href={href}>{data.baslik}</a></h3>
+    <p class="ozet">{data.ozet}</p>
   </div>
+  <a class="kucuk-kapak" href={href} tabindex="-1" aria-hidden="true">
+    <YaziKapagi {yazi} oran="vitrin" width={640} />
+  </a>
 </article>
 
 <style>
   .satir {
     display: grid;
-    grid-template-columns: 10rem minmax(0, 1fr);
-    gap: var(--aralik-2) var(--aralik-5);
-    padding-inline-start: var(--aralik-4);
-    border-inline-start: 10px solid var(--dunya-bant);
+    grid-template-columns: 9rem minmax(0, 1fr) minmax(0, 16rem);
+    gap: var(--aralik-3) clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+    padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    border-block-end: 1px solid var(--cizgi);
   }
 
   .zaman {
+    display: grid;
+    gap: 0.125rem;
     margin: 0;
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
-    line-height: 1.5;
+    font-weight: 500;
     color: var(--soluk);
   }
 
-  .zaman time,
-  .zaman span {
-    display: block;
+  .bolum-adi {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+    color: var(--murekkep);
+  }
+
+  .bolum-adi::before {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--dunya-bant);
   }
 
   h3 {
-    font-weight: 700;
-    font-size: var(--yazi-h3);
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3rem);
+    letter-spacing: -0.04em;
   }
 
-  h3 a {
-    text-decoration: none;
-  }
-
-  h3 a:hover {
-    text-decoration: underline;
-  }
-
-  .icerik p {
-    max-width: var(--olcu);
-    margin-block-start: var(--aralik-2);
+  .ozet {
+    max-width: 52ch;
+    margin: var(--aralik-2) 0 0;
     color: var(--soluk);
     font-size: 1.0625rem;
     line-height: 1.6;
   }
 
+  .kucuk-kapak {
+    display: block;
+  }
+
   @media (max-width: 52rem) {
     .satir {
       grid-template-columns: 1fr;
+    }
+
+    .kucuk-kapak {
+      order: -1;
     }
   }
 </style>

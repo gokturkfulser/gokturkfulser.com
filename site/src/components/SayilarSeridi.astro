@@ -1,0 +1,91 @@
+---
+interface Sayi {
+  deger: number;
+  etiket: string;
+  not?: string;
+}
+
+interface Props {
+  sayilar: Sayi[];
+  ton?: 'koyu' | 'acik';
+}
+
+const { sayilar, ton = 'koyu' } = Astro.props;
+---
+
+<section class={`bant bant--${ton}`} aria-label="Sayılarla site">
+  <div class="kap">
+    <dl class="sayilar">
+      {
+        sayilar.map((s) => (
+          <div>
+            <dt>{s.etiket}</dt>
+            <dd class="sayi">{s.deger.toLocaleString('tr-TR')}</dd>
+            {s.not && <dd class="not">{s.not}</dd>}
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .sayilar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    margin: 0;
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  /* Okuma sırası etiket → sayı; görsel sırası sayı önde */
+  .sayilar div {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: var(--aralik-2);
+    padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 2vw, 2rem) clamp(1.5rem, 3vw, 3rem) 0;
+  }
+
+  .sayilar div + div {
+    padding-inline-start: clamp(1rem, 2vw, 2rem);
+    border-inline-start: 1px solid var(--cizgi);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .sayi {
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sayi);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.06em;
+  }
+
+  dt {
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--soluk);
+  }
+
+  .not {
+    order: -1;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  @media (max-width: 40rem) {
+    .sayilar {
+      grid-template-columns: 1fr;
+    }
+
+    .sayilar div + div {
+      padding-inline-start: 0;
+      border-inline-start: 0;
+      border-block-start: 1px solid var(--cizgi);
+    }
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+import YaziKapagi from './YaziKapagi.astro';
+import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { tarihIso, tarihYaz } from '../lib/format';
+
+interface Props {
+  yazi: Yazi;
+  /** `buyuk`: kapak 2,39:1, başlık dev; `orta`: kapak 16:10. */
+  boyut?: 'buyuk' | 'orta';
+  oncelikli?: boolean;
+}
+
+const { yazi, boyut = 'orta', oncelikli = false } = Astro.props;
+const { data, id } = yazi.entry;
+const href = yaziUrl(yazi.bolum, id);
+---
+
+<article class:list={['kart', boyut]} data-dunya={yazi.bolum}>
+  <a class="kapak" href={href} tabindex="-1" aria-hidden="true">
+    <YaziKapagi
+      {yazi}
+      oran={boyut === 'buyuk' ? 'kapak' : 'vitrin'}
+      width={boyut === 'buyuk' ? 1400 : 800}
+      {oncelikli}
+    />
+  </a>
+  <p class="bolum">
+    <span class="bolum-adi">{BOLUM_ADLARI[yazi.bolum]}</span>
+    <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+  </p>
+  <h3><a href={href}>{data.baslik}</a></h3>
+  <p class="ozet">{data.ozet}</p>
+</article>
+
+<style>
+  .kart {
+    display: grid;
+    gap: var(--aralik-2);
+    align-content: start;
+  }
+
+  .kapak {
+    display: block;
+    margin-block-end: var(--aralik-2);
+    text-decoration: none;
+  }
+
+  .bolum {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--aralik-3);
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    font-weight: 500;
+    color: var(--soluk);
+  }
+
+  .bolum-adi {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+    color: var(--murekkep);
+  }
+
+  .bolum-adi::before {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--dunya-bant);
+  }
+
+  h3 {
+    font-size: var(--yazi-h3);
+  }
+
+  .buyuk h3 {
+    font-size: clamp(2.25rem, 1.2rem + 3.6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .ozet {
+    max-width: 48ch;
+    margin: 0;
+    color: var(--soluk);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+</style>

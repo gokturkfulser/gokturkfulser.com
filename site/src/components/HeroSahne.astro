@@ -1,0 +1,154 @@
+---
+// (b) SVG sahne: projektör ışık hüzmesi basketbol sahasının orta çemberine düşüyor.
+// Tamamen inline SVG (harici görsel yok), statik, JS'siz. Tohum (build günü) ışığın yönünü, açısını ve toz dağılımını
+// birkaç piksel oynatır; aynı gün aynı çıktı. Turkuaz ışık, turuncu saha çizgileri, koyu bant.
+interface Props {
+  tohum?: number;
+}
+
+const { tohum = 1 } = Astro.props;
+
+const rnd = (i: number) => {
+  const x = Math.sin((i + 1) * 127.1 + tohum * 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+const sagdan = tohum % 2 === 1; // ışığın geldiği taraf
+const ax = (sagdan ? 690 : 110) + ((tohum % 7) - 3) * 14; // projektör
+const ay = 22;
+const cx = 400 + ((tohum % 5) - 2) * 16; // orta çember
+const cy = 548;
+
+// Işık hüzmesinin zeminde düştüğü uç noktalar
+const p1 = { x: cx - 280, y: cy + 24 };
+const p2 = { x: cx + 280, y: cy - 24 };
+const i1 = { x: cx - 170, y: cy + 12 };
+const i2 = { x: cx + 170, y: cy - 12 };
+
+// Toz: hüzmenin içinde, projektöre yakın yerde daha parlak
+const toz = Array.from({ length: 56 }, (_, i) => {
+  const u = rnd(i) ** 0.8;
+  const v = rnd(i + 200);
+  const hedefX = p1.x + v * (p2.x - p1.x);
+  const hedefY = p1.y + v * (p2.y - p1.y);
+  return {
+    x: ax + u * (hedefX - ax),
+    y: ay + u * (hedefY - ay),
+    r: 0.9 + rnd(i + 400) * 2.1,
+    o: (0.25 + 0.6 * rnd(i + 600)) * (1 - u * 0.45),
+  };
+});
+
+// Sahanın perspektifi: arka çizgi dar (y=330), ön kenar geniş (y=700)
+const yanX = (y: number, sol: boolean) => {
+  const t = (y - 330) / 370;
+  return sol ? 140 - 340 * t : 660 + 340 * t;
+};
+const ortaY = cy;
+---
+
+<div class="sahne">
+  <svg viewBox="0 0 800 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="isik-hizma" gradientUnits="userSpaceOnUse" x1={ax} y1={ay} x2={cx} y2={cy}>
+        <stop offset="0" stop-color="#bff3f5" stop-opacity="0.62"></stop>
+        <stop offset="0.7" stop-color="#3fc8cf" stop-opacity="0.2"></stop>
+        <stop offset="1" stop-color="#3fc8cf" stop-opacity="0.12"></stop>
+      </linearGradient>
+      <radialGradient id="isik-havuz" gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="300" gradientTransform={`translate(${cx} ${cy}) scale(1 0.28) translate(${-cx} ${-cy})`}>
+        <stop offset="0" stop-color="#bff3f5" stop-opacity="0.5"></stop>
+        <stop offset="0.45" stop-color="#3fc8cf" stop-opacity="0.22"></stop>
+        <stop offset="1" stop-color="#3fc8cf" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="vinyet" cx="50%" cy="46%" r="75%">
+        <stop offset="0.5" stop-color="#05070a" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#05070a" stop-opacity="0.82"></stop>
+      </radialGradient>
+      <linearGradient id="on-karanlik" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0.72" stop-color="#05070a" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#05070a" stop-opacity="0.7"></stop>
+      </linearGradient>
+      <filter id="yumusak" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter>
+      <filter id="parlama" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter>
+      <filter id="gren" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+        <feColorMatrix values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.9 0"></feColorMatrix>
+      </filter>
+      <clipPath id="sahne-kes"><rect width="800" height="700"></rect></clipPath>
+    </defs>
+
+    <g clip-path="url(#sahne-kes)">
+      <rect width="800" height="700" fill="#07090d"></rect>
+
+      <!-- Zemin: koyu, sıcak parke -->
+      <polygon points={`140,330 660,330 1000,700 -200,700`} fill="#0f0b08"></polygon>
+
+      <!-- Saha çizgileri (turuncu): öne yaklaştıkça parlar -->
+      <g fill="none" stroke="#ff7a2f" stroke-linecap="round">
+        <line x1="140" y1="330" x2="-200" y2="700" stroke-width="5" opacity="0.55"></line>
+        <line x1="660" y1="330" x2="1000" y2="700" stroke-width="5" opacity="0.55"></line>
+        <line x1="140" y1="330" x2="660" y2="330" stroke-width="3" opacity="0.4"></line>
+        <line x1={yanX(ortaY, true)} y1={ortaY} x2={yanX(ortaY, false)} y2={ortaY} stroke-width="5" opacity="0.8"></line>
+        <!-- anahtar ve serbest atış çemberi (arka uçta) -->
+        <polygon points="318,330 482,330 520,430 280,430" stroke-width="3.5" opacity="0.5"></polygon>
+        <path d="M290 430 A110 30 0 0 0 510 430" stroke-width="3.5" opacity="0.5"></path>
+        <!-- üçlük çizgisi -->
+        <path d="M198 330 C210 480 590 480 602 330" stroke-width="4" opacity="0.5"></path>
+        <!-- orta çember -->
+        <ellipse cx={cx} cy={cy} rx="262" ry="72" stroke-width="6" opacity="0.95"></ellipse>
+        <ellipse cx={cx} cy={cy} rx="92" ry="25" stroke-width="5" opacity="0.9"></ellipse>
+      </g>
+      <!-- Çember çizgilerinin ışıkla parlaması -->
+      <g fill="none" stroke="#ff9a63" stroke-width="10" opacity="0.5" filter="url(#parlama)">
+        <ellipse cx={cx} cy={cy} rx="262" ry="72"></ellipse>
+        <ellipse cx={cx} cy={cy} rx="92" ry="25"></ellipse>
+      </g>
+
+      <!-- Işık hüzmesi: üç iç içe, yumuşatılmış kama -->
+      <g filter="url(#yumusak)">
+        <polygon points={`${ax},${ay} ${p1.x},${p1.y} ${p2.x},${p2.y}`} fill="url(#isik-hizma)" opacity="0.55"></polygon>
+        <polygon points={`${ax},${ay} ${i1.x},${i1.y} ${i2.x},${i2.y}`} fill="url(#isik-hizma)" opacity="0.9"></polygon>
+      </g>
+      <!-- Zeminde ışık havuzu -->
+      <ellipse cx={cx} cy={cy} rx="300" ry="84" fill="url(#isik-havuz)"></ellipse>
+
+      <!-- Toz -->
+      <g fill="#bff3f5">
+        {toz.map((t) => <circle cx={t.x.toFixed(1)} cy={t.y.toFixed(1)} r={t.r.toFixed(2)} opacity={t.o.toFixed(2)}></circle>)}
+      </g>
+
+      <!-- Projektör -->
+      <g>
+        <circle cx={ax} cy={ay + 30} r="46" fill="#bff3f5" opacity="0.55" filter="url(#yumusak)"></circle>
+        <circle cx={ax} cy={ay + 28} r="17" fill="#eafcfd"></circle>
+      </g>
+
+      <!-- Derinlik: kenar kararması ve ön plan -->
+      <rect width="800" height="700" fill="url(#vinyet)"></rect>
+      <rect width="800" height="700" fill="url(#on-karanlik)"></rect>
+
+      <!-- Gren -->
+      <rect class="gren" width="800" height="700" filter="url(#gren)"></rect>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .sahne {
+    flex: 1;
+    min-height: 22rem;
+    overflow: hidden;
+    border-radius: var(--medya-kose);
+    background: #07090d;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .gren {
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+  }
+</style>

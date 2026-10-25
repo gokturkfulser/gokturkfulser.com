@@ -100,6 +100,8 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
   .sahne {
     position: relative;
     aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--medya-kose);
     background: var(--murekkep);
   }
 
@@ -114,6 +116,8 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
 
   .sahne :global(.kapak) {
     object-fit: cover;
+    /* 4:3 oyun görüntüsü 16:9'a kırpılır: üst (başlık ve ızgara) görünsün, alttaki klavye kesilsin */
+    object-position: 50% 0;
   }
 
   .sahne :global(.iframe) {
@@ -129,6 +133,7 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
     width: max-content;
     height: max-content;
     padding: var(--aralik-3) var(--aralik-5);
+    border-radius: 999px;
     background: var(--murekkep);
     color: var(--zemin);
     font-family: var(--font-baslik-yigin);
@@ -161,10 +166,12 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
 
   button {
     padding: var(--aralik-2) var(--aralik-4);
-    border: 3px solid var(--murekkep);
+    border: 2px solid var(--murekkep);
+    border-radius: 999px;
     background: transparent;
     color: var(--murekkep);
     font: inherit;
+    font-family: var(--font-baslik-yigin);
     font-weight: 700;
     cursor: pointer;
   }

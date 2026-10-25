@@ -1,0 +1,13 @@
+# Workers static assets _redirects (en çok 2.000 statik + 100 dinamik kural).
+# Yazılar tek adres uzayına taşındı: /yazilar/<slug>/. Eski bölüm adresleri kalıcı (301) yönlenir.
+# Son eşleşen değil, İLK eşleşen kural geçerlidir; özel yollar splat'tan önce yazılır.
+/sinema/rss.xml /yazilar/sinema/rss.xml 301
+/basketbol/rss.xml /yazilar/basketbol/rss.xml 301
+/sinema /yazilar/sinema/ 301
+/sinema/ /yazilar/sinema/ 301
+/basketbol /yazilar/basketbol/ 301
+/basketbol/ /yazilar/basketbol/ 301
+/sinema/:slug /yazilar/:slug/ 301
+/sinema/:slug/ /yazilar/:slug/ 301
+/basketbol/:slug /yazilar/:slug/ 301
+/basketbol/:slug/ /yazilar/:slug/ 301

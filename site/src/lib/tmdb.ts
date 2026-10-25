@@ -12,6 +12,8 @@ export type TmdbKayit = {
   yonetmenler: string[];
   turler: string[];
   afis?: string;
+  arkaplan?: string;
+  surum?: number;
   cekildi: string;
 };
 
@@ -22,12 +24,18 @@ const afisler = import.meta.glob<ImageMetadata>('../data/tmdb/afis/*.jpg', {
   import: 'default',
 });
 
+const arkaplanlar = import.meta.glob<ImageMetadata>('../data/tmdb/arkaplan/*.jpg', {
+  eager: true,
+  import: 'default',
+});
+
 export function tmdbKaydi(tmdbId: number | undefined) {
   if (tmdbId === undefined) return undefined;
   const kayit = cache[String(tmdbId)];
   if (!kayit) return undefined;
   const afis = kayit.afis ? afisler[`../data/tmdb/afis/${kayit.afis}`] : undefined;
-  return { ...kayit, afisGorsel: afis };
+  const arkaplan = kayit.arkaplan ? arkaplanlar[`../data/tmdb/arkaplan/${kayit.arkaplan}`] : undefined;
+  return { ...kayit, afisGorsel: afis, arkaplanGorsel: arkaplan };
 }
 
 export const tmdbVarMi = () => Object.keys(cache).length > 0;

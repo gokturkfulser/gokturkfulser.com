@@ -6,16 +6,22 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
 ---
 
 <Base baslik="Ara" aciklama="Sinema, basketbol ve proje yazılarında arama.">
-  <div class="kap sayfa">
-    <h1>Ara</h1>
-    <p class="soluk">Sinema ve basketbol yazılarında, projelerde ve hakkımda sayfasında arayın.</p>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="ara-baslik">
+    <div class="kap">
+      <h1 id="ara-baslik" class="h1">Ara</h1>
+      <p class="lede">Sinema ve basketbol yazılarında, projelerde ve hakkımda sayfasında arayın.</p>
+    </div>
+  </section>
+  <section class="bant bant--acik sayfa">
+    <div class="kap">
     <div id="arama" class="arama"></div>
     <p id="arama-hata" hidden>
       Arama dizini bulunamadı. Dizin yalnızca <code>pnpm --filter site build</code> sonrasında oluşur;
       geliştirme sunucusunda çalışmaz.
     </p>
     <noscript><p>Arama için JavaScript gerekir.</p></noscript>
-  </div>
+    </div>
+  </section>
   <!-- Pagefind dizini ve arayüzü build sonrası /pagefind/ altına yazılır; bu yüzden bundle'a değil
        çalışma anında yüklenir. Betik paketlenip hash'lenir (CSP); Pagefind'ın kendi dosyaları 'self'. -->
   <script>
@@ -63,18 +69,7 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
 
 
 <style>
-  .sayfa {
-    padding-block: var(--aralik-5) var(--aralik-6);
-  }
-
-  h1 {
-    margin-block-end: var(--aralik-3);
-    font-size: var(--yazi-h1);
-    letter-spacing: -0.01em;
-  }
-
   .arama {
-    margin-block-start: var(--aralik-4);
     max-width: var(--olcu);
     /* Pagefind arayüzü bu değişkenlerle site token'larına bağlanır */
     --pagefind-ui-scale: 1;
@@ -83,10 +78,10 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
     --pagefind-ui-background: var(--zemin);
     --pagefind-ui-border: var(--soluk);
     --pagefind-ui-tag: var(--yuzey);
-    --pagefind-ui-border-width: 2px;
-    --pagefind-ui-border-radius: 0;
-    --pagefind-ui-image-border-radius: 0;
-    --pagefind-ui-font: var(--font-metin-yigin);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 6px;
+    --pagefind-ui-image-border-radius: 6px;
+    --pagefind-ui-font: var(--font-baslik-yigin);
   }
 
   .arama :global(.pagefind-ui__result-title a) {
@@ -94,6 +89,7 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
     font-weight: 800;
     font-size: 1.75rem;
     line-height: 1.05;
+    letter-spacing: -0.03em;
   }
 
   .arama :global(button),

@@ -1,0 +1,25 @@
+---
+// Yazının kapağı: kendi kapağı ya da TMDB backdrop'u (Medya kuralı); ikisi de yoksa görselsiz yedek (KapakYedek).
+import Medya from './Medya.astro';
+import KapakYedek from './KapakYedek.astro';
+import { yaziKapagi, yedekMetin, type Yazi } from '../lib/content';
+
+interface Props {
+  yazi: Yazi;
+  oran?: 'kapak' | 'vitrin' | 'proje';
+  width?: number;
+  oncelikli?: boolean;
+  class?: string;
+}
+
+const { yazi, oran = 'kapak', width = 1400, oncelikli = false, class: sinif } = Astro.props;
+const kapak = yaziKapagi(yazi);
+---
+
+{
+  kapak ? (
+    <Medya src={kapak} oran={oran} width={width} oncelikli={oncelikli} class={sinif} />
+  ) : (
+    <KapakYedek dunya={yazi.bolum} metin={yedekMetin(yazi)} oran={oran} class={sinif} />
+  )
+}

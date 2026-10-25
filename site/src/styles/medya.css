@@ -1,0 +1,101 @@
+/*
+  Tek medya işleme kuralı. Kaynağı ne olursa olsun (TMDB backdrop, afiş, kendi kapak, ekran görüntüsü, portre)
+  her görsel aynı kalıptan geçer: sabit oran → ortak köşe → ortak renk işlemesi → gren → vinyet.
+  Değerler Yön 1 "Gece seansı"dır (DESIGN.md "Medya kuralı"); vinyet gücü bant tonuna göre tokens.css'ten gelir.
+  Overlay'ler pseudo-element'tir, resme dokunmaz; bu yüzden alt metin, lazy yükleme ve astro:assets bozulmaz.
+*/
+:root {
+  --medya-kose: 6px;
+  /* Ortak renk işlemesi: biraz desatüre, biraz kontrast */
+  --medya-filtre: saturate(0.88) contrast(1.05) brightness(0.97);
+  /* Tek ton: tüm görseller aynı ışığa çekilir (soft-light) */
+  --medya-ton: #0e5e66;
+  --medya-ton-guc: 0.2;
+  --medya-gren-guc: 0.14;
+  /* Oranlar */
+  --oran-kapak: 2.39 / 1;
+  --oran-vitrin: 16 / 10;
+  --oran-proje: 4 / 3;
+  --oran-afis: 2 / 3;
+  --oran-kare: 1 / 1;
+}
+
+.medya-kalip {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--medya-kose);
+  background: var(--yuzey);
+  aspect-ratio: var(--oran-vitrin);
+}
+
+.medya-kalip[data-oran='kapak'] {
+  aspect-ratio: var(--oran-kapak);
+}
+.medya-kalip[data-oran='vitrin'] {
+  aspect-ratio: var(--oran-vitrin);
+}
+.medya-kalip[data-oran='proje'] {
+  aspect-ratio: var(--oran-proje);
+}
+.medya-kalip[data-oran='afis'] {
+  aspect-ratio: var(--oran-afis);
+}
+.medya-kalip[data-oran='kare'] {
+  aspect-ratio: var(--oran-kare);
+}
+
+@media (max-width: 36rem) {
+  /* 2.39:1 telefonda çok ince kalır */
+  .medya-kalip[data-oran='kapak'] {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* Hover: yalnızca içerik yakınlaşır (kart/bağlantı içindeki medya) */
+a:hover .medya-kalip > img,
+a:hover .medya-kalip > svg,
+.kart:hover .medya-kalip > img,
+.kart:hover .medya-kalip > svg {
+  transform: scale(1.025);
+}
+
+.medya-kalip > img,
+.medya-kalip > svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--medya-filtre);
+  transition: transform 0.5s var(--ease);
+}
+
+/* Ton + gren */
+.medya-kalip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: var(--medya-gren-guc);
+  mix-blend-mode: overlay;
+}
+
+/* Vinyet + ton: ışık merkezde toplanır */
+.medya-kalip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 45%, transparent 55%, rgb(0 0 0 / var(--medya-vinyet-guc)) 100%),
+    color-mix(in srgb, var(--medya-ton) calc(var(--medya-ton-guc) * 100%), transparent);
+  mix-blend-mode: soft-light;
+}
+
+/* Afiş vinyet taşımaz: kendi ışığı vardır */
+.medya-kalip[data-oran='afis']::after {
+  background: color-mix(in srgb, var(--medya-ton) calc(var(--medya-ton-guc) * 100%), transparent);
+}

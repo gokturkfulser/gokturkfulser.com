@@ -1,0 +1,16 @@
+---
+import SinemaYazisi from '../../components/yazi/SinemaYazisi.astro';
+import BasketbolYazisi from '../../components/yazi/BasketbolYazisi.astro';
+import { tumYazilar } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await tumYazilar()).map((yazi) => ({
+    params: { slug: yazi.entry.id },
+    props: { yazi },
+  }));
+}
+
+const { yazi } = Astro.props;
+---
+
+{yazi.bolum === 'sinema' ? <SinemaYazisi entry={yazi.entry} /> : <BasketbolYazisi entry={yazi.entry} />}

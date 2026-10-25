@@ -77,7 +77,8 @@ jobs:
           pnpm --filter site preview --port 4321 --host 127.0.0.1 &
           npx --yes wait-on@8.0.3 http://127.0.0.1:4321/
           yazi=""
-          for d in site/dist/basketbol/*/ site/dist/sinema/*/; do
+          for d in site/dist/yazilar/*/; do
+            case "$d" in */sinema/|*/basketbol/) continue ;; esac
             if [ -d "$d" ]; then yazi="${d#site/dist/}"; break; fi
           done
           urls=(--collect.url=http://127.0.0.1:4321/)

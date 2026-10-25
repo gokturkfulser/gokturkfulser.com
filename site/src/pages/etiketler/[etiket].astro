@@ -15,33 +15,23 @@ const { ad, yazilar } = Astro.props;
 ---
 
 <Base baslik={`#${ad}`} aciklama={`“${ad}” etiketli yazılar.`}>
-  <div class="kap sayfa">
-    <h1>#{ad}</h1>
-    <ul class="lista akis">
-      {
-        yazilar.map((yazi) => (
-          <li>
-            <YaziSatiri yazi={yazi} />
-          </li>
-        ))
-      }
-    </ul>
-  </div>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="etiket-baslik">
+    <div class="kap">
+      <h1 id="etiket-baslik" class="h1">#{ad}</h1>
+      <p class="lede">“{ad}” etiketli yazılar.</p>
+    </div>
+  </section>
+  <section class="bant bant--acik" aria-label="Etiketli yazılar">
+    <div class="kap">
+      <ul class="lista">
+        {
+          yazilar.map((yazi) => (
+            <li>
+              <YaziSatiri yazi={yazi} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </Base>
-
-<style>
-  .sayfa {
-    padding-block: var(--aralik-5) var(--aralik-6);
-  }
-
-  h1 {
-    margin-block-end: var(--aralik-5);
-    font-size: var(--yazi-h1);
-    letter-spacing: -0.01em;
-  }
-
-  .akis {
-    display: grid;
-    gap: var(--aralik-5);
-  }
-</style>

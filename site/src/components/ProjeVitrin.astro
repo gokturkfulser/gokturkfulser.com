@@ -1,97 +1,108 @@
 ---
-import { Image } from 'astro:assets';
+// Ana sayfa proje vitrini: ilki büyük vitrin, kalanlar iki sütun.
 import type { CollectionEntry } from 'astro:content';
+import Medya from './Medya.astro';
 import { DURUM, TUR } from '../lib/labels';
 
 interface Props {
   projeler: CollectionEntry<'projeler'>[];
+  ton?: 'koyu' | 'acik';
 }
 
-const { projeler } = Astro.props;
+const { projeler, ton = 'koyu' } = Astro.props;
+const [buyuk, ...digerleri] = projeler;
 ---
 
-<section class="vitrin" aria-labelledby="vitrin-baslik">
-  <div class="kap ic">
-    <h2 id="vitrin-baslik">Öne çıkan projeler</h2>
-    <div class="liste">
-      {
-        projeler.map((proje) => (
-          <article class="proje">
-            <a class="gorsel" href={`/projeler/${proje.id}/`} tabindex="-1" aria-hidden="true">
-              <Image src={proje.data.gorsel} alt="" width={900} loading="lazy" />
-            </a>
-            <h3>
-              <a href={`/projeler/${proje.id}/`}>{proje.data.ad}</a>
+{
+  buyuk && (
+    <section class={`bant bant--${ton}`} data-dunya="proje" aria-labelledby="vitrin-baslik">
+      <div class="kap">
+        <div class="bas-satiri">
+          <h2 id="vitrin-baslik" class="h2">Projeler</h2>
+          <a href="/projeler/">Tüm projeler</a>
+        </div>
+
+        <article class="buyuk">
+          <a class="gorsel" href={`/projeler/${buyuk.id}/`} tabindex="-1" aria-hidden="true">
+            <Medya src={buyuk.data.gorsel} oran="proje" width={1400} />
+          </a>
+          <div class="baslik-satiri">
+            <h3 class="buyuk-ad">
+              <a href={`/projeler/${buyuk.id}/`}>{buyuk.data.ad}</a>
             </h3>
-            <p class="ozet">{proje.data.ozet}</p>
-            <dl>
-              <dt>Tür</dt>
-              <dd>{TUR[proje.data.tur]}</dd>
-              <dt>Durum</dt>
-              <dd>{DURUM[proje.data.durum]}</dd>
-            </dl>
-          </article>
-        ))
-      }
-    </div>
-  </div>
-</section>
+            <div>
+              <p class="lede">{buyuk.data.ozet}</p>
+              <dl>
+                <dt>Tür</dt>
+                <dd>{TUR[buyuk.data.tur]}</dd>
+                <dt>Durum</dt>
+                <dd>{DURUM[buyuk.data.durum]}</dd>
+              </dl>
+            </div>
+          </div>
+        </article>
+
+        {
+          digerleri.length > 0 && (
+            <div class="ikili">
+              {digerleri.map((p) => (
+                <article class="kucuk">
+                  <a class="gorsel" href={`/projeler/${p.id}/`} tabindex="-1" aria-hidden="true">
+                    <Medya src={p.data.gorsel} oran="proje" width={900} />
+                  </a>
+                  <h3>
+                    <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+                  </h3>
+                  <p class="ozet">{p.data.ozet}</p>
+                  <p class="kucuk-not">{TUR[p.data.tur]}</p>
+                  <p class="kucuk-not">{DURUM[p.data.durum]}</p>
+                </article>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </section>
+  )
+}
 
 <style>
-  .vitrin {
-    background: var(--yuzey);
-  }
-
-  .ic {
-    padding-block: var(--aralik-6);
-  }
-
-  h2 {
-    margin-block-end: var(--aralik-4);
-    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-  }
-
-  .liste {
+  /* Proje görselleri (ekran görüntüsü/arayüz) 4:3 kaynaktan gelir; 16:10'a kırpılınca arayüz kesilir.
+     Bu yüzden büyük vitrin görseli 4:3 basar ve yanında metinle iki sütun kurar. */
+  .buyuk {
     display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: clamp(1.5rem, 1rem + 3vw, 4rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--aralik-4) clamp(2rem, 5vw, 6rem);
+    align-items: end;
   }
 
-  .liste:has(> :only-child) {
-    grid-template-columns: minmax(0, 40rem);
+  .gorsel {
+    display: block;
+    text-decoration: none;
   }
 
-  .proje:nth-child(2) {
-    margin-block-start: clamp(0rem, -3rem + 8vw, 5rem);
+  .baslik-satiri {
+    display: grid;
+    gap: var(--aralik-4);
   }
 
-  .gorsel img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+  .buyuk-ad {
+    font-size: clamp(3rem, 1rem + 5.5vw, 6.5rem);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
   }
 
-  h3 {
-    margin-block: var(--aralik-3) var(--aralik-2);
-    font-size: 2.25rem;
-  }
-
-  h3 a {
-    text-decoration-thickness: 0.06em;
-  }
-
-  .ozet {
-    max-width: 44ch;
-    font-size: 1.0625rem;
-    line-height: 1.6;
+  .buyuk .lede {
+    color: var(--lede-renk);
   }
 
   dl {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.125rem var(--aralik-3);
-    margin: var(--aralik-3) 0 0;
+    margin: var(--aralik-4) 0 0;
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
   }
 
@@ -103,13 +114,43 @@ const { projeler } = Astro.props;
     margin: 0;
   }
 
-  @media (max-width: 52rem) {
-    .liste {
-      grid-template-columns: 1fr;
-    }
+  .ikili {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 4rem);
+    margin-block-start: clamp(4rem, 8vw, 8rem);
+  }
 
-    .proje:nth-child(2) {
-      margin-block-start: 0;
+  .kucuk {
+    display: grid;
+    gap: var(--aralik-2);
+    align-content: start;
+  }
+
+  .kucuk h3 {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-h3);
+  }
+
+  .ozet {
+    max-width: 44ch;
+    margin: 0;
+    color: var(--soluk);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .kucuk-not {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    color: var(--soluk);
+  }
+
+  @media (max-width: 52rem) {
+    .buyuk,
+    .ikili {
+      grid-template-columns: 1fr;
     }
   }
 </style>

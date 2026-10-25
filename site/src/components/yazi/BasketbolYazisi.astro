@@ -1,19 +1,15 @@
 ---
-import { Image } from 'astro:assets';
-import { render } from 'astro:content';
+import YaziKapagi from '../YaziKapagi.astro';
+import { render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Etiketler from '../../components/Etiketler.astro';
 import { mdxBilesenleri } from '../../components/mdx';
-import { basketbolYazilari } from '../../lib/content';
 import { tarihIso, tarihYaz } from '../../lib/format';
 import { grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
 
-export async function getStaticPaths() {
-  return (await basketbolYazilari()).map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+interface Props {
+  entry: CollectionEntry<'basketbol'>;
 }
 
 const { entry } = Astro.props;
@@ -46,10 +42,10 @@ const bilgi = [
 <Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
   <article data-dunya="basketbol" data-pagefind-body>
     <header>
-      <div class="alan alan-zemin">
-        <div class="kap alan-ic">
-          <h1>{data.baslik}</h1>
-          <p class="ozet">{data.ozet}</p>
+      <div class="bant bant--koyu bant--basi">
+        <div class="kap baslik-ic">
+          <h1 class="h1">{data.baslik}</h1>
+          <p class="lede">{data.ozet}</p>
           {
             bilgi.length > 0 && (
               <dl class="bilgi">
@@ -67,8 +63,8 @@ const bilgi = [
               <dl class="skor" aria-label="Maç istatistikleri">
                 {data.istatistik.map((s) => (
                   <div>
-                    <dd>{s.deger}</dd>
                     <dt>{s.etiket}</dt>
+                    <dd>{s.deger}</dd>
                   </div>
                 ))}
               </dl>
@@ -80,50 +76,38 @@ const bilgi = [
           </p>
         </div>
       </div>
-      <div class="kap kapak">
-        <Image
-          src={data.kapak}
-          alt=""
-          width={1600}
-          height={800}
-          fit="cover"
-          loading="eager"
-          fetchpriority="high"
-        />
+      <div class="bant--koyu kapak-bant">
+        <div class="kap">
+          <YaziKapagi yazi={{ bolum: 'basketbol', entry }} oran="kapak" width={1600} oncelikli />
+        </div>
       </div>
     </header>
 
-    <div class="kap govde">
-      <div class="metin">
-        <Content components={mdxBilesenleri} />
+    <div class="bant bant--acik govde">
+      <div class="kap">
+        <div class="kolon">
+          <div class="metin">
+            <Content components={mdxBilesenleri} />
+          </div>
+          <Etiketler etiketler={data.etiketler} />
+        </div>
       </div>
-      <Etiketler etiketler={data.etiketler} />
     </div>
   </article>
 </Base>
 
 <style>
-  .alan {
-    background: var(--dunya);
-    color: var(--dunya-alan-metin);
-  }
-
-  .alan-ic {
+  .baslik-ic {
     display: grid;
     gap: var(--aralik-4);
-    padding-block: var(--aralik-6);
   }
 
   h1 {
-    max-width: 16ch;
-    font-size: var(--yazi-h1);
-    letter-spacing: -0.01em;
+    max-width: 14ch;
   }
 
-  .ozet {
-    max-width: 46ch;
-    font-size: var(--yazi-lede);
-    line-height: 1.5;
+  .lede {
+    max-width: 40ch;
   }
 
   .bilgi {
@@ -131,11 +115,13 @@ const bilgi = [
     flex-wrap: wrap;
     gap: var(--aralik-2) var(--aralik-5);
     margin: 0;
+    font-family: var(--font-baslik-yigin);
     font-size: 1.0625rem;
   }
 
   .bilgi dt {
     font-size: var(--yazi-xs);
+    color: var(--soluk);
   }
 
   .bilgi dd {
@@ -150,58 +136,55 @@ const bilgi = [
     gap: var(--aralik-3) var(--aralik-5);
     margin: 0;
     padding-block-start: var(--aralik-4);
-    border-block-start: 6px solid currentColor;
+    border-block-start: 1px solid var(--cizgi);
   }
 
   .skor > div {
     display: flex;
     flex-direction: column-reverse;
+    justify-content: flex-end;
   }
 
   .skor dd {
     margin: 0;
     font-family: var(--font-baslik-yigin);
     font-weight: 800;
-    font-size: clamp(3rem, 2rem + 3vw, 5rem);
+    font-size: clamp(3rem, 2rem + 4vw, 6rem);
     line-height: 0.95;
+    letter-spacing: -0.05em;
     font-variant-numeric: tabular-nums;
+    color: var(--turuncu-metin);
   }
 
   .skor dt {
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
+    color: var(--soluk);
   }
 
   .tarih {
+    display: grid;
+    gap: 0.125rem;
     margin: 0;
+    font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
+    font-weight: 500;
+    color: var(--soluk);
   }
 
-  .tarih time,
-  .tarih .okuma {
-    display: block;
-  }
-
-  .kapak {
-    padding-block-start: var(--aralik-5);
-  }
-
-  .kapak :global(img) {
+  .kapak-bant {
     width: 100%;
-    aspect-ratio: 2 / 1;
-    object-fit: cover;
+    padding-block-end: var(--bant);
   }
 
-  .govde {
-    padding-block: var(--aralik-5) var(--aralik-6);
+  .govde .kolon {
+    max-width: 46rem;
+    margin-inline: auto;
   }
 
   .govde :global(.etiketler) {
     margin-block-start: var(--aralik-5);
-  }
-
-  @media (max-width: 36rem) {
-    .kapak :global(img) {
-      aspect-ratio: 4 / 3;
-    }
+    padding-block-start: var(--aralik-4);
+    border-block-start: 1px solid var(--cizgi);
   }
 </style>
