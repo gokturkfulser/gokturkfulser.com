@@ -1,5 +1,5 @@
 ---
-// Ana sayfa hero'su: ad bloğu solda, build gününe göre değişen SVG sahne sağda ve ad bloğuyla aynı yükseklikte.
+// Ana sayfa hero'su: ad bloğu solda, build gününe göre değişen SVG sahne bandın arka planında (sağa yaslı, sola doğru erir).
 // Adın altındaki cümle (lede) isteğe bağlıdır; verilmezse hiç render edilmez.
 import HeroSahne from './HeroSahne.astro';
 
@@ -30,6 +30,9 @@ const tohum = Math.floor(Date.now() / 86_400_000);
 
 <style>
   .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: grid;
     align-items: end;
     min-height: calc(100svh - var(--nav));
@@ -38,9 +41,8 @@ const tohum = Math.floor(Date.now() / 86_400_000);
 
   .hero-izgara {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    align-items: stretch;
-    gap: clamp(2rem, 4vw, 5rem);
+    grid-template-columns: minmax(0, 1fr);
+    align-items: end;
   }
 
   .hero-metin {
@@ -74,10 +76,24 @@ const tohum = Math.floor(Date.now() / 86_400_000);
     font-weight: 600;
   }
 
+  .hero-metin {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Sahne bandın arka planıdır: sağa yaslı, sol ve alt kenarı arka plana erir */
   .hero-gorsel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: -1;
+    width: min(78%, 72rem);
     display: flex;
     flex-direction: column;
     min-width: 0;
+    mask-image:
+      linear-gradient(to right, transparent, #000 40%),
+      linear-gradient(to bottom, #000 80%, transparent);
+    mask-composite: intersect;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -98,13 +114,15 @@ const tohum = Math.floor(Date.now() / 86_400_000);
       min-height: 0;
     }
 
-    .hero-izgara {
-      grid-template-columns: 1fr;
+    /* Mobilde sahne tüm bandın arkasında, metnin okunması için biraz kısık */
+    .hero {
+      min-height: 32rem;
     }
 
-    /* Mobilde görsel adın üstünde, tam genişlikte */
     .hero-gorsel {
-      order: -1;
+      width: 100%;
+      opacity: 0.55;
+      mask-image: linear-gradient(to bottom, #000 40%, transparent);
     }
   }
 </style>
