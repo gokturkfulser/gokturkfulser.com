@@ -19,7 +19,7 @@ export function taslakKlasorDesenleri(base: string): string[] {
   const desenler: string[] = [];
   for (const klasor of readdirSync(base, { withFileTypes: true })) {
     if (!klasor.isDirectory()) continue;
-    for (const dosya of ['index.mdx', 'index.md']) {
+    for (const dosya of ['index.mdx', 'index.md', 'index.en.mdx']) {
       const yol = join(base, klasor.name, dosya);
       if (!existsSync(yol)) continue;
       const onyazi = ONYAZI.exec(readFileSync(yol, 'utf8'))?.[1] ?? '';

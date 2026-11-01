@@ -23,6 +23,10 @@ interface Props {
   jsonLd?: unknown;
   /** Üst çubuk ilk (koyu, görselli) bandın üstüne biner; verilmezse kendi koyu şeridinde durur. */
   bindirme?: boolean;
+  /** İçeriğin dili. Site kabuğu (menü, alt bilgi) Türkçe kalır; `en` sayfada kabuk `lang="tr"` ile işaretlenir. */
+  dil?: 'tr' | 'en';
+  /** Aynı içeriğin diğer dil sürümleri (hreflang). Kendisi de listede olmalıdır. */
+  alternatifler?: { dil: 'tr' | 'en'; href: string }[];
 }
 
 const VARSAYILAN_ACIKLAMA = 'Sinema, basketbol ve yaptığım projeler üzerine kişisel site.';
@@ -34,7 +38,10 @@ const {
   ogGorsel = '/og/varsayilan.png',
   jsonLd,
   bindirme = false,
+  dil = 'tr',
+  alternatifler = [],
 } = Astro.props;
+const kabukDil = dil === 'tr' ? undefined : 'tr';
 const tamBaslik = baslik ? `${baslik} · ${SITE_ADI}` : SITE_ADI;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogUrl = new URL(ogGorsel, Astro.site);
@@ -48,18 +55,19 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
 ---
 
 <!doctype html>
-<html lang="tr">
+<html lang={dil}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tamBaslik}</title>
     <meta name="description" content={aciklama} />
     <link rel="canonical" href={canonical} />
+    {alternatifler.map((a) => <link rel="alternate" hreflang={a.dil} href={new URL(a.href, Astro.site)} />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={SITE_ADI} href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:site_name" content={SITE_ADI} />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale" content={dil === 'en' ? 'en_US' : 'tr_TR'} />
     <meta property="og:type" content={tur} />
     <meta property="og:title" content={tamBaslik} />
     <meta property="og:description" content={aciklama} />
@@ -76,8 +84,8 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     {jsonLd && <script type="application/ld+json" is:inline set:html={jsonLdMetni(jsonLd)} />}
   </head>
   <body>
-    <a class="atla" href="#icerik">İçeriğe geç</a>
-    <header class:list={['ust', bindirme && 'bindirme']}>
+    <a class="atla" href="#icerik" lang={kabukDil}>İçeriğe geç</a>
+    <header class:list={['ust', bindirme && 'bindirme']} lang={kabukDil}>
       <div class="kap ust-ic">
         <a href="/" class="marka">{SITE_ADI}</a>
         <nav class="menu" aria-label="Ana menü">
@@ -130,7 +138,7 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     <main id="icerik">
       <slot />
     </main>
-    <footer class="alt">
+    <footer class="alt" lang={kabukDil}>
       <div class="kap">
         <div class="alt-izgara">
           <div class="alt-marka">

@@ -46,6 +46,10 @@ deneyim:
         not:
           en: Joined as an AI engineering intern.
           tr: Yapay zekâ mühendisliği stajyeri olarak başladım.
+        # "Yol" zaman çizelgesindeki tek cümle.
+        kisa:
+          en: Started as an intern; now I build AI products and the infrastructure that keeps them running.
+          tr: Stajyer olarak başladım; bugün yapay zekâ ürünlerini ve onları ayakta tutan altyapıyı geliştiriyorum.
         maddeler:
           - en: >-
               Build AI features for Enocta's learning platform, including
@@ -112,6 +116,9 @@ deneyim:
           tr: Oyun Geliştirici
         baslangic: 2021-07
         bitis: 2022-08
+        kisa:
+          en: Built game mechanics in Unity and C#; this is where my career began.
+          tr: Unity ve C# ile oyun mekanikleri geliştirdim; meslek hayatım burada başladı.
         maddeler:
           - en: >-
               Built game mechanics and core gameplay systems in Unity3D and
@@ -143,6 +150,44 @@ egitim:
     web: https://www.metu.edu.tr/
     baslangic: 2016
     bitis: 2024
+    kisa:
+      en: Studied computer engineering.
+      tr: Bilgisayar mühendisliği okudum.
+
+# "Yol" zaman çizelgesinde deneyim ve eğitimin dışında kalan duraklar (yıl sırasına göre araya girer).
+duraklar:
+  - kurum:
+      en: My own projects
+      tr: Kendi projelerim
+    baslangic: 2026
+    bitis: null
+    href: /projeler/
+    kisa:
+      en: "Back to making games, this time my own: a daily word game and an Anatolian adventure for kids."
+      tr: "Oyun yapmaya kendi projelerimle döndüm: günlük bir kelime oyunu ve çocuklar için bir Anadolu macerası."
+
+# "Sayılarla" şeridi: elle girilen sayılar. Yayındaki proje ve yazı sayısı otomatik hesaplanır; sıfır/boş olan gösterilmez.
+sayilar:
+  - deger: 15–20
+    etiket:
+      en: microservices in production
+      tr: üretimde mikroservis
+
+# "Şu sıralar": gruplar ve öğeler (slug verilirse site içi proje sayfasına bağlanır). Boş grup gösterilmez;
+# izlediklerim Letterboxd şeridinden gelir. Doldurmak için ogeler listesine { metin: { en, tr } } ekleyin.
+su_siralar:
+  - baslik:
+      en: Working on
+      tr: Üzerinde çalıştığım
+    ogeler:
+      - metin:
+          en: Cities of Anatolia, an Anatolian adventure for kids (in preparation)
+          tr: Cities of Anatolia, çocuklar için bir Anadolu macerası (hazırlanıyor)
+        slug: perde-perde-anadolu
+  - baslik:
+      en: Following
+      tr: Takip ettiğim
+    ogeler: []
 
 projeler:
   # Site içindeki proje sayfalarına bağlanır (slug).
@@ -167,20 +212,36 @@ beceriler:
   - grup:
       en: AI & LLM
       tr: Yapay zekâ ve LLM
+    # "Araç kutusu"nda grup başlığının altındaki cümle; etiketlerin ilk 6'sı orada, tamamı "Özgeçmişin tamamı"nda görünür.
+    cumle:
+      en: Turning models into products, from prompts and agents to local inference.
+      tr: "Modelleri ürüne dönüştürüyorum: istemlerden ajanlara, yerel çıkarıma kadar."
     ogeler: [Generative AI, RAG, Prompt engineering, AI agents, CrewAI, smolagents, Instructor, Local inference]
   - grup:
       en: Retrieval & data
       tr: Arama ve veri
+    cumle:
+      en: Semantic search built on vector and relational databases.
+      tr: Anlamsal aramayı vektör ve ilişkisel veritabanlarının üzerine kuruyorum.
     ogeler: [Weaviate, FAISS, Semantic search, Vector databases, SQL, SQL Server, SQLAlchemy]
   - grup:
       en: Speech & media
       tr: Ses ve medya
+    cumle:
+      en: Features that turn speech into text, and text into voice and media.
+      tr: Konuşmayı metne, metni sese ve görüntüye çeviren özellikler kuruyorum.
     ogeler: [Speech-to-text, Text-to-speech, Whisper, ElevenLabs, fal, Groq]
   - grup:
       en: Backend & infrastructure
       tr: Backend ve altyapı
+    cumle:
+      en: I write services, ship them in containers and keep them running.
+      tr: Servisleri yazıyor, konteynerlerde yayına alıyor ve ayakta tutuyorum.
     ogeler: [Python, FastAPI, Streamlit, Docker, Docker Swarm, Jenkins, Nexus, Nginx Proxy Manager, RabbitMQ, Linux, Git]
   - grup:
       en: Other languages & tools
       tr: Diğer diller ve araçlar
+    cumle:
+      en: "Where I started: games in Unity and C#, with C and C++ close by."
+      tr: "Başladığım yer: Unity ve C# ile oyunlar, yanında C ve C++."
     ogeler: [C#, C++, C, Unity3D]

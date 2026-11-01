@@ -1,0 +1,132 @@
+---
+// "İlk 8 haftada kaybedilen maç": sütun grafiği. Veri: src/data/nba-sakatlik.json > first8Weeks.
+// Değeri olmayan (gamesLost: null) sezon içi boş, kesikli çerçeveli sütun + not olarak çizilir.
+import GrafikKutu from './GrafikKutu.astro';
+import veri from '../../data/nba-sakatlik.json';
+import type { Dil } from '../../lib/format';
+import { sayiYaz } from '../../lib/grafik';
+
+interface Props {
+  dil?: Dil;
+}
+const { dil = 'tr' } = Astro.props;
+const en = dil === 'en';
+
+const t = en
+  ? {
+      baslik: 'Games lost in the first 8 weeks',
+      ozet: 'Games lost to injury or illness in the first 8 weeks of the season',
+      kaynak: 'Source: Jeff Stotts’s data via Front Office Sports (see',
+      kaynakBag: 'Sources',
+      kaynakSon: '). The dashed column is a placeholder for a season that has not reached week 8; its height means nothing.',
+      bekleniyor: 'not known yet',
+    }
+  : {
+      baslik: 'İlk 8 haftada kaybedilen maç',
+      ozet: 'Sezonun ilk 8 haftasında sakatlık ve hastalık yüzünden kaçırılan maç',
+      kaynak: 'Kaynak: Jeff Stotts verisi, Front Office Sports aracılığıyla (bkz.',
+      kaynakBag: 'Kaynaklar',
+      kaynakSon: '). Kesikli sütun, 8. haftaya henüz gelmemiş sezonun yer tutucusudur; yüksekliğinin anlamı yoktur.',
+      bekleniyor: 'henüz belli değil',
+    };
+
+const W = 400;
+const H = 262;
+const TABAN = 222;
+const UST = 36;
+const MAX = 2200; // eksen üst sınırı
+const SUTUN = 72;
+const ARALIK = (W - 8 - veri.first8Weeks.length * SUTUN) / (veri.first8Weeks.length - 1);
+const yukseklik = (v: number) => (v / MAX) * (TABAN - UST);
+const sonDeger = [...veri.first8Weeks].reverse().find((s) => s.gamesLost != null)?.gamesLost ?? 0;
+
+const sutunlar = veri.first8Weeks.map((s, i) => {
+  const x = 4 + i * (SUTUN + ARALIK);
+  const bos = s.gamesLost == null;
+  const h = yukseklik(bos ? sonDeger : (s.gamesLost as number));
+  const not = 'note' in s ? (en ? s.noteEn : s.note) : undefined;
+  return { s, x, bos, h, y: TABAN - h, orta: x + SUTUN / 2, not };
+});
+
+const ariaEtiketi = `${t.baslik}. ${t.ozet}: ${sutunlar
+  .map((c) => `${c.s.season}: ${c.bos ? `${t.bekleniyor}${c.not ? ` (${c.not})` : ''}` : sayiYaz(c.s.gamesLost as number, dil)}`)
+  .join('; ')}.`;
+---
+
+<GrafikKutu id="g-ilk8" baslik={t.baslik}>
+  <svg class="svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={ariaEtiketi}>
+    <title>{t.baslik}</title>
+    <line class="taban" x1="0" x2={W} y1={TABAN} y2={TABAN} aria-hidden="true"></line>
+    {
+      sutunlar.map((c) =>
+        c.bos ? (
+          <g>
+            <rect class="bos" x={c.x + 0.75} y={c.y} width={SUTUN - 1.5} height={c.h} rx="2" />
+            <text class="not" x={c.orta} y={c.y + c.h / 2 - 4} text-anchor="middle">
+              {en ? 'end of' : 'kasım'}
+            </text>
+            <text class="not" x={c.orta} y={c.y + c.h / 2 + 14} text-anchor="middle">
+              {en ? 'November' : 'sonunda'}
+            </text>
+          </g>
+        ) : (
+          <g>
+            <rect class="sutun" x={c.x} y={c.y} width={SUTUN} height={c.h} />
+            <text class="deger" x={c.orta} y={c.y - 8} text-anchor="middle">{sayiYaz(c.s.gamesLost as number, dil)}</text>
+          </g>
+        ),
+      )
+    }
+    {
+      sutunlar.map((c) => (
+        <text class="sezon" x={c.orta} y={TABAN + 22} text-anchor="middle">{c.s.season}</text>
+      ))
+    }
+  </svg>
+  <Fragment slot="kaynak">{t.kaynak}{' '}<a href={en ? '#sources' : '#kaynaklar'}>{t.kaynakBag}</a>{t.kaynakSon}</Fragment>
+</GrafikKutu>
+
+<style>
+  .svg {
+    display: block;
+    width: 100%;
+    max-width: 30rem;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  .taban {
+    stroke: var(--cizgi);
+    stroke-width: 1.5;
+  }
+
+  .sutun {
+    fill: var(--dunya-metin);
+  }
+
+  .bos {
+    fill: none;
+    stroke: var(--dunya-metin);
+    stroke-width: 2;
+    stroke-dasharray: 7 5;
+  }
+
+  .deger {
+    font-size: 16px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    fill: var(--murekkep);
+  }
+
+  .sezon {
+    font-size: 13px;
+    fill: var(--soluk);
+  }
+
+  .not {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--murekkep);
+  }
+</style>

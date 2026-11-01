@@ -1,0 +1,209 @@
+---
+// "Kim, ne kadar yok?": oyuncu başına yatay çubuk, x ekseni hafta. Build'de üretilen statik SVG, JS yok.
+// Çubuk 0'dan başlar (bugünden itibaren süre): 0–minWeeks dolu, minWeeks–maxWeeks açık tonlu aralık;
+// openEnded ise ucu ok biçimindedir (süre uzayabilir). Veri: src/data/nba-sakatlik.json > injuries.
+import GrafikKutu from './GrafikKutu.astro';
+import veri from '../../data/nba-sakatlik.json';
+import type { Dil } from '../../lib/format';
+import { sayiYaz } from '../../lib/grafik';
+
+interface Props {
+  dil?: Dil;
+}
+const { dil = 'tr' } = Astro.props;
+const en = dil === 'en';
+
+const t = en
+  ? {
+      baslik: 'Who’s out, and for how long?',
+      hafta: 'wk',
+      dolu: 'Minimum time out',
+      aralik: 'Estimated range',
+      ok: 'May run longer',
+      kaynak: 'Source: return timelines announced by the teams (see',
+      kaynakSon: '). For Williams and Wallace the teams gave no number; the ranges are my rough estimate from “most of the season”.',
+      kaynakBag: 'Sources',
+      ozet: 'Weeks each player is expected to miss',
+      belirsiz: 'could be longer',
+      sezonSonu: 'until the end of the season',
+    }
+  : {
+      baslik: 'Kim, ne kadar yok?',
+      hafta: 'hf',
+      dolu: 'En az süre',
+      aralik: 'Tahmini aralık',
+      ok: 'Uzayabilir',
+      kaynak: 'Kaynak: takımların açıkladığı tahmini süreler (bkz.',
+      kaynakSon: '). Williams ve Wallace için takım süre vermedi; aralıklar “sezonun çoğu” ifadesine göre benim yaklaşık değerimdir.',
+      kaynakBag: 'Kaynaklar',
+      ozet: 'Oyuncuların kaçıracağı tahmini hafta',
+      belirsiz: 'uzayabilir',
+      sezonSonu: 'sezon sonuna kadar',
+    };
+
+// Ölçü birimi viewBox: 400 genişlikte 14 birimlik yazı, 350 px'lik telefonda ~12 px'e iner.
+const W = 400;
+const SOL = 4;
+const SAG = 12; // ok ucu taşması için pay
+const EKSEN_MAX = 30;
+const SATIR = 46;
+const UST = 4;
+const EKSEN_Y = UST + veri.injuries.length * SATIR + 18;
+const H = EKSEN_Y + 10;
+const x = (hafta: number) => SOL + (hafta / EKSEN_MAX) * (W - SOL - SAG);
+const OK = 9; // ok ucunun uzunluğu
+const CUBUK = 14;
+const izgaralar = [0, 5, 10, 15, 20, 25, 30];
+
+const satirlar = veri.injuries.map((o, i) => {
+  const y = UST + i * SATIR;
+  const bitis = x(o.maxWeeks);
+  const gosterim = 'endLabel' in o && o.endLabel ? o.endLabel[dil] : null;
+  const aralikMetni = o.minWeeks === o.maxWeeks ? `${o.minWeeks}` : `${o.minWeeks}–${o.maxWeeks}`;
+  const sag = gosterim ?? `${aralikMetni} ${t.hafta}${o.openEnded ? '+' : ''}`;
+  const sakatlik = en ? o.injuryEn : o.injury;
+  return {
+    o,
+    y,
+    sag,
+    bar: y + 22,
+    dolu: { x: x(0), w: x(o.minWeeks) - x(0) - (o.openEnded && o.minWeeks === o.maxWeeks ? OK : 0) },
+    aralik: o.maxWeeks > o.minWeeks ? { x: x(o.minWeeks), w: bitis - x(o.minWeeks) - (o.openEnded ? OK : 0) } : null,
+    okX: bitis - OK,
+    bitis,
+    etiket: `${o.player}${o.team ? ` (${o.team})` : ''}, ${sakatlik}, ${gosterim ?? `${aralikMetni} ${en ? 'weeks' : 'hafta'}${o.openEnded ? `, ${t.belirsiz}` : ''}`}`,
+  };
+});
+
+const ariaEtiketi = `${t.baslik} ${t.ozet}: ${satirlar.map((s) => s.etiket).join('; ')}.`;
+---
+
+<GrafikKutu id="g-sakatlik" baslik={t.baslik}>
+  <svg class="svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={ariaEtiketi}>
+    <title>{t.baslik}</title>
+    <g class="izgara" aria-hidden="true">
+      {izgaralar.map((g) => <line x1={x(g)} x2={x(g)} y1={UST} y2={EKSEN_Y - 12} />)}
+    </g>
+    {
+      satirlar.map((s) => (
+        <g>
+          <title>{s.etiket}</title>
+          <text class="ad" x={SOL} y={s.y + 14}>
+            {s.o.player}
+            {s.o.team && <tspan class="takim" dx="6">{s.o.team}</tspan>}
+          </text>
+          <text class="sure" x={W - SAG} y={s.y + 14} text-anchor="end">{s.sag}</text>
+          {s.dolu.w > 0 && <rect class="dolu" x={s.dolu.x} y={s.bar} width={s.dolu.w} height={CUBUK} />}
+          {s.aralik && <rect class="aralik" x={s.aralik.x} y={s.bar + 0.75} width={s.aralik.w} height={CUBUK - 1.5} />}
+          {
+            s.o.openEnded && (
+              <polygon class="ok" points={`${s.okX},${s.bar} ${s.bitis},${s.bar + CUBUK / 2} ${s.okX},${s.bar + CUBUK}`} />
+            )
+          }
+        </g>
+      ))
+    }
+    <g class="eksen" aria-hidden="true">
+      {
+        izgaralar
+          .filter((g) => g % 10 === 0)
+          .map((g) => (
+            <text x={x(g)} y={EKSEN_Y} text-anchor={g === 0 ? 'start' : g === EKSEN_MAX ? 'end' : 'middle'}>
+              {sayiYaz(g, dil)}{g === EKSEN_MAX ? ` ${t.hafta}` : ''}
+            </text>
+          ))
+      }
+    </g>
+  </svg>
+  <ul class="gosterge">
+    <li><span class="ornek dolu-ornek" aria-hidden="true"></span>{t.dolu}</li>
+    <li><span class="ornek aralik-ornek" aria-hidden="true"></span>{t.aralik}</li>
+    <li><span class="ornek ok-ornek" aria-hidden="true"></span>{t.ok} (+)</li>
+  </ul>
+  <Fragment slot="kaynak">{t.kaynak}{' '}<a href={en ? '#sources' : '#kaynaklar'}>{t.kaynakBag}</a>{t.kaynakSon}</Fragment>
+</GrafikKutu>
+
+<style>
+  .svg {
+    display: block;
+    width: 100%;
+    max-width: 30rem;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  .izgara line {
+    stroke: var(--cizgi);
+    stroke-width: 1;
+  }
+
+  .ad {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--murekkep);
+  }
+
+  .takim {
+    font-size: 12px;
+    font-weight: 500;
+    fill: var(--soluk);
+  }
+
+  .sure {
+    font-size: 13px;
+    fill: var(--soluk);
+  }
+
+  .eksen text {
+    font-size: 12px;
+    fill: var(--soluk);
+  }
+
+  .dolu,
+  .ok {
+    fill: var(--dunya-metin);
+  }
+
+  .aralik {
+    fill: color-mix(in srgb, var(--dunya-metin) 28%, transparent);
+    stroke: var(--dunya-metin);
+    stroke-width: 1.5;
+  }
+
+  .gosterge {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-4);
+    margin: var(--aralik-3) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  .gosterge li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .ornek {
+    display: inline-block;
+    width: 1.5rem;
+    height: 0.75rem;
+    background: var(--dunya-metin);
+  }
+
+  .aralik-ornek {
+    background: color-mix(in srgb, var(--dunya-metin) 28%, transparent);
+    border: 1.5px solid var(--dunya-metin);
+  }
+
+  .ok-ornek {
+    width: 0.75rem;
+    background: var(--dunya-metin);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+</style>

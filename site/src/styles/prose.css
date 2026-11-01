@@ -91,6 +91,37 @@
   background: var(--dunya-bant);
 }
 
+/* Düz Markdown tablosu (| a | b |): IstatistikTablosu ile aynı dil; dar ekranda yatay kayar */
+.yazi-metni > table {
+  display: block;
+  overflow-x: auto;
+  font-family: var(--font-baslik-yigin);
+  font-size: var(--yazi-sm);
+  line-height: 1.4;
+  hyphens: manual;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.yazi-metni > table :is(th, td) {
+  padding: var(--aralik-2) clamp(0.5rem, 2.5vw, var(--aralik-3));
+  text-align: start;
+}
+
+.yazi-metni > table td:first-child {
+  white-space: nowrap;
+}
+
+.yazi-metni > table th {
+  font-weight: 600;
+  color: var(--soluk);
+  border-block-end: 3px solid var(--dunya-bant);
+}
+
+.yazi-metni > table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--dunya-bant) 8%, transparent);
+}
+
 /* Drop cap: yalnızca yazı sayfasının ilk paragrafı (Hanken, kâğıt yüzeyde) */
 .yazi-metni > p:first-of-type::first-letter {
   float: left;

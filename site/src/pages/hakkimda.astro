@@ -1,20 +1,33 @@
 ---
-// /hakkimda/: sayfanın kendisi özgeçmiştir (veri: src/content/ozgecmis.yaml, Zod şemalı, { en, tr } iki dilli). Kâğıt bandında, A4 yazdırmaya uygun.
-// i18n gelene kadar `tr` gösterilir (`dil`); bileşen `en`'i şimdiden destekler.
-// `taslak: true` iken production'da "hazırlanıyor" durumu gösterilir (nav bağlantısı kalır); SHOW_DRAFTS=true'da özgeçmiş görünür.
-import { getEntry } from 'astro:content';
-import { SHOW_DRAFTS } from 'astro:env/server';
+// /hakkimda/: "önce hikâye, sonra özgeçmiş". Koyu kapak (büyük cümle + birinci tekil şahıs metin; src/content/hakkimda.<dil>.md),
+// kâğıt bandında "Yol" zaman çizelgesi, koyu bantta sayılar ve "Şu sıralar", kâğıtta "Araç kutusu" ve varsayılan kapalı <details> içinde özgeçmişin tamamı.
+// Veri: src/content/ozgecmis.yaml (Zod şemalı, { en, tr } iki dilli). i18n gelene kadar `tr` gösterilir (`dil`); bileşen `en`'i şimdiden destekler.
+// Boş olan bölüm hiç render edilmez. Yazdırmada yalnızca <details> içindeki özgeçmiş basılır (A4, açık); diğer bantlar gizlidir.
+// `taslak: true` iken production'da "hazırlanıyor" durumu gösterilir (nav bağlantısı kalır); SHOW_DRAFTS=true'da sayfa görünür.
+import { getEntry, render } from 'astro:content';
+import { LETTERBOXD_RSS, SHOW_DRAFTS } from 'astro:env/server';
 import Base from '../layouts/Base.astro';
-import { projeler } from '../lib/content';
-import { donemYaz, yerel, type Dil } from '../lib/format';
+import SayilarSeridi from '../components/SayilarSeridi.astro';
+import SonIzlenenlerKucuk from '../components/SonIzlenenlerKucuk.astro';
+import { projeler, tumYazilar } from '../lib/content';
+import { donemYaz, yerel, yilAraligi, type Dil } from '../lib/format';
+import { sonIzlenenler } from '../lib/letterboxd';
 
 const dil: Dil = 'tr';
 const kayit = await getEntry('ozgecmis', 'ozgecmis');
 const cv = kayit && (SHOW_DRAFTS || !kayit.data.taslak) ? kayit.data : undefined;
 
-// Site içi proje bağlantıları: yalnızca görünür (taslak olmayan) projeler.
-const tumProjeler = cv && cv.projeler.length > 0 ? await projeler() : [];
-const cvProjeleri = (cv?.projeler ?? []).flatMap(({ slug }) => tumProjeler.find((p) => p.id === slug) ?? []);
+// Kapak metni: dile göre dosya, yoksa `tr`. Başlık ya da gövde boşsa kapak bandı yoktur.
+const hikayeKaydi = (await getEntry('hakkimda', dil)) ?? (await getEntry('hakkimda', 'tr'));
+const hikayeVar = Boolean(hikayeKaydi?.data.baslik && hikayeKaydi.body?.trim());
+const Hikaye = hikayeKaydi && hikayeVar ? (await render(hikayeKaydi)).Content : undefined;
+
+const [tumProjeler, yazilar, izlenenler] = cv
+  ? await Promise.all([projeler(), tumYazilar(), sonIzlenenler(LETTERBOXD_RSS, 6)])
+  : [[], [], []];
+const proje = (slug: string) => tumProjeler.find((p) => p.id === slug);
+// Özgeçmişteki proje listesi: yalnızca görünür (taslak olmayan) projeler.
+const cvProjeleri = (cv?.projeler ?? []).flatMap(({ slug }) => proje(slug) ?? []);
 
 const ozet = cv?.ozet ? yerel(cv.ozet, dil) : '';
 const konum = cv?.kimlik.konum ? yerel(cv.kimlik.konum, dil) : '';
@@ -28,130 +41,258 @@ const iletisim = cv
       })),
     ]
   : [];
+
+// "Yol": deneyim, eğitim ve ek duraklar; `kisa` cümlesi olanlar, başlangıca göre sıralı.
+const anahtar = (t: string) => (t.length === 4 ? `${t}-00` : t);
+const duraklar = cv
+  ? [
+      ...cv.deneyim.flatMap((d) =>
+        d.roller.flatMap((r) =>
+          r.kisa ? { baslangic: r.baslangic, bitis: r.bitis, kurum: d.kurum, href: d.web || undefined, kisa: yerel(r.kisa, dil) } : [],
+        ),
+      ),
+      ...cv.egitim.flatMap((e) =>
+        e.kisa ? { baslangic: e.baslangic, bitis: e.bitis, kurum: yerel(e.kurum, dil), href: e.web || undefined, kisa: yerel(e.kisa, dil) } : [],
+      ),
+      ...cv.duraklar.map((d) => ({ baslangic: d.baslangic, bitis: d.bitis, kurum: yerel(d.kurum, dil), href: d.href, kisa: yerel(d.kisa, dil) })),
+    ].sort((a, b) => anahtar(a.baslangic).localeCompare(anahtar(b.baslangic)))
+  : [];
+
+// Büyük sayılar: yayındaki proje ve yazı sayısı otomatik; elle girilenler yaml'da. Sıfır/boş olan gösterilmez; tek sayı şerit olmaz.
+const sayilar = (
+  cv
+    ? [
+        { deger: tumProjeler.filter((p) => p.data.durum === 'yayinda').length, etiket: 'yayındaki proje' },
+        { deger: yazilar.length, etiket: 'yazı' },
+        ...cv.sayilar.map((s) => ({ deger: s.deger, etiket: yerel(s.etiket, dil), not: s.not ? yerel(s.not, dil) : undefined })),
+      ]
+    : []
+).filter((s) => (typeof s.deger === 'number' ? s.deger > 0 : s.deger.length > 0));
+
+// "Şu sıralar": boş grup yok; izlediklerim Letterboxd'dan.
+const suSiralar = (cv?.su_siralar ?? []).filter((g) => g.ogeler.length > 0);
+const suSiralarVar = suSiralar.length > 0 || izlenenler.length > 0;
+
+const arac = cv?.beceriler.filter((b) => b.cumle) ?? [];
+const ARAC_ETIKET = 6;
 ---
 
-<Base baslik="Hakkımda" aciklama="Göktürk Fulser kimdir: özgeçmiş.">
+<Base baslik="Hakkımda" aciklama="Göktürk Fulser kimdir: hikâye ve özgeçmiş." bindirme={Boolean(cv && Hikaye)}>
   {
     cv ? (
-      <div class="bant bant--acik cv-bandi" data-pagefind-body>
-        <div class="kap cv">
-          <header class="yan">
-            <h1 class="h1">
-              {cv.kimlik.ad.split(' ').map((kelime) => <span class="satir"><span>{kelime}</span></span>)}
-            </h1>
-            <p class="unvan">{yerel(cv.kimlik.unvan, dil)}{konum && <>, {konum}</>}</p>
-            {ozet && <p class="ozet">{ozet}</p>}
-            <p class="yazdirma-gizle">
-              <button type="button" class="dugme" data-yazdir>Yazdır / PDF</button>
-            </p>
-          </header>
+      <div data-pagefind-body>
+        {Hikaye ? (
+          <section class="bant bant--koyu kapak yazdirma-gizle" aria-labelledby="hakkimda-baslik">
+            <div class="kap kapak-ic">
+              <p class="kunye">
+                <span>{cv.kimlik.ad}</span>
+                <span>{yerel(cv.kimlik.unvan, dil)}{konum && <>, {konum}</>}</span>
+              </p>
+              <h1 id="hakkimda-baslik" class="kapak-baslik">
+                <span class="satir"><span>{hikayeKaydi!.data.baslik}</span></span>
+              </h1>
+              <div class="hikaye">
+                <Hikaye />
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section class="bant bant--acik bant--basi yazdirma-gizle" aria-labelledby="hakkimda-baslik">
+            <div class="kap">
+              <h1 id="hakkimda-baslik" class="h1"><span class="satir"><span>Hakkımda</span></span></h1>
+            </div>
+          </section>
+        )}
 
-          <div class="ana">
-            {
-              cv.deneyim.length > 0 && (
-                <section aria-labelledby="deneyim-baslik">
-                  <h2 id="deneyim-baslik">Deneyim</h2>
-                  {cv.deneyim.map((d) => (
-                    <div class="kurum">
-                      <h3>{d.web ? <a href={d.web}>{d.kurum}</a> : d.kurum}</h3>
-                      {d.konum && <p class="soluk kurum-konum">{d.konum}</p>}
-                      {d.roller.map((r) => (
-                        <div class="kayit">
-                          <p class="donem">{donemYaz(r.baslangic, r.bitis, dil)}</p>
-                          <div>
-                            <h4>{yerel(r.unvan, dil)}</h4>
-                            {r.not && <p class="soluk rol-not">{yerel(r.not, dil)}</p>}
-                            {r.maddeler.length > 0 && <ul>{r.maddeler.map((m) => <li>{yerel(m, dil)}</li>)}</ul>}
-                          </div>
-                        </div>
-                      ))}
+        {
+          duraklar.length > 1 && (
+            <section class="bant bant--acik yazdirma-gizle" aria-labelledby="yol-baslik">
+              <div class="kap">
+                <h2 id="yol-baslik" class="bolum-baslik">Yol</h2>
+                <ol class="lista yol">
+                  {duraklar.map((d) => (
+                    <li class="durak">
+                      <p class="yil">{yilAraligi(d.baslangic, d.bitis)}</p>
+                      <p class="yer">{d.href ? <a href={d.href}>{d.kurum}</a> : d.kurum}</p>
+                      <p class="cumle">{d.kisa}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+          )
+        }
+
+        {sayilar.length >= 2 && <div class="yazdirma-gizle"><SayilarSeridi {sayilar} ton="koyu" etiket="Sayılarla" /></div>}
+
+        {
+          suSiralarVar && (
+            <section class="bant bant--koyu su-bandi yazdirma-gizle" aria-labelledby="su-siralar-baslik">
+              <div class="kap">
+                <h2 id="su-siralar-baslik" class="bolum-baslik">Şu sıralar</h2>
+                <div class="su-siralar">
+                  {suSiralar.map((g) => (
+                    <div class="su-grup">
+                      <h3 class="alt-baslik">{yerel(g.baslik, dil)}</h3>
+                      <ul class="lista">
+                        {g.ogeler.map((o) => {
+                          const p = o.slug ? proje(o.slug) : undefined;
+                          return <li>{p ? <a href={`/projeler/${p.id}/`}>{yerel(o.metin, dil)}</a> : yerel(o.metin, dil)}</li>;
+                        })}
+                      </ul>
                     </div>
                   ))}
-                </section>
-              )
-            }
+                  <SonIzlenenlerKucuk filmler={izlenenler} baslik="İzlediğim" />
+                </div>
+              </div>
+            </section>
+          )
+        }
+
+        <section class="bant bant--acik" aria-labelledby={arac.length > 0 ? 'arac-baslik' : 'tam-baslik'}>
+          <div class="kap">
             {
-              cvProjeleri.length > 0 && (
-                <section aria-labelledby="proje-baslik">
-                  <h2 id="proje-baslik">Projeler</h2>
-                  <ul class="lista projeler">
-                    {cvProjeleri.map((p) => (
-                      <li>
-                        <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
-                        <span class="yazdir-url"> ({new URL(`/projeler/${p.id}/`, Astro.site).href})</span>
-                        <span class="soluk"> — {p.data.ozet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )
-            }
-            {
-              cv.egitim.length > 0 && (
-                <section aria-labelledby="egitim-baslik">
-                  <h2 id="egitim-baslik">Eğitim</h2>
-                  {cv.egitim.map((e) => (
-                    <div class="kayit">
-                      <p class="donem">{donemYaz(e.baslangic, e.bitis, dil)}</p>
-                      <div>
-                        <h3>{yerel(e.derece, dil)}</h3>
-                        <p class="soluk">
-                          {e.web ? <a href={e.web}>{yerel(e.kurum, dil)}</a> : yerel(e.kurum, dil)}
-                          {e.konum && <>, {e.konum}</>}
-                        </p>
+              arac.length > 0 && (
+                <div class="arac-kutusu yazdirma-gizle">
+                  <h2 id="arac-baslik" class="bolum-baslik">Araç kutusu</h2>
+                  <div class="arac">
+                    {arac.map((b) => (
+                      <div class="arac-grup">
+                        <h3>{yerel(b.grup, dil)}</h3>
+                        <p class="cumle">{yerel(b.cumle!, dil)}</p>
+                        <ul class="lista sakin-etiketler" aria-label={`${yerel(b.grup, dil)} araçları`}>
+                          {b.ogeler.slice(0, ARAC_ETIKET).map((o) => <li>{o}</li>)}
+                        </ul>
                       </div>
-                    </div>
-                  ))}
-                </section>
-              )
-            }
-            {
-              cv.beceriler.length > 0 && (
-                <section class="yeni-sayfa" aria-labelledby="beceri-baslik">
-                  <h2 id="beceri-baslik">Beceriler</h2>
-                  <dl class="ikili">
-                    {cv.beceriler.map((b) => (
-                      <>
-                        <dt>{yerel(b.grup, dil)}</dt>
-                        <dd>{b.ogeler.join(', ')}</dd>
-                      </>
                     ))}
-                  </dl>
-                </section>
+                  </div>
+                </div>
               )
             }
-            {
-              cv.diller.length > 0 && (
-                <section aria-labelledby="dil-baslik">
-                  <h2 id="dil-baslik">Diller</h2>
-                  <dl class="ikili">
-                    {cv.diller.map((d) => (
-                      <>
-                        <dt>{yerel(d.ad, dil)}</dt>
-                        <dd>{yerel(d.seviye, dil)}</dd>
-                      </>
-                    ))}
-                  </dl>
-                </section>
-              )
-            }
-            {
-              iletisim.length > 0 && (
-                <section aria-labelledby="iletisim-baslik">
-                  <h2 id="iletisim-baslik">İletişim</h2>
-                  <dl class="ikili">
-                    {iletisim.map((i) => (
-                      <>
-                        <dt>{i.ad}</dt>
-                        <dd><a href={i.href}>{i.metin}</a></dd>
-                      </>
-                    ))}
-                  </dl>
-                </section>
-              )
-            }
+
+            <div class="tam">
+              <div class="tam-bas yazdirma-gizle">
+                <h2 id="tam-baslik" class="bolum-baslik">Özgeçmişin tamamı</h2>
+                <p><button type="button" class="baglanti-dugme" data-yazdir>Özgeçmişi PDF olarak indir</button></p>
+              </div>
+
+              <details class="ozgecmis">
+                <summary class="yazdirma-gizle">Deneyim, projeler, eğitim, beceriler ve iletişim ayrıntıları</summary>
+                <div class="cv-ic">
+                  <header class="cv-yazdir">
+                    <p class="cv-ad">{cv.kimlik.ad}</p>
+                    <p class="cv-unvan">{yerel(cv.kimlik.unvan, dil)}{konum && <>, {konum}</>}</p>
+                    {ozet && <p class="cv-ozet">{ozet}</p>}
+                  </header>
+
+                  {
+                    cv.deneyim.length > 0 && (
+                      <section aria-labelledby="deneyim-baslik">
+                        <h3 id="deneyim-baslik" class="cv-baslik">Deneyim</h3>
+                        {cv.deneyim.map((d) => (
+                          <div class="kurum">
+                            <h4>{d.web ? <a href={d.web}>{d.kurum}</a> : d.kurum}</h4>
+                            {d.konum && <p class="soluk kurum-konum">{d.konum}</p>}
+                            {d.roller.map((r) => (
+                              <div class="kayit">
+                                <p class="donem">{donemYaz(r.baslangic, r.bitis, dil)}</p>
+                                <div>
+                                  <h5>{yerel(r.unvan, dil)}</h5>
+                                  {r.not && <p class="soluk rol-not">{yerel(r.not, dil)}</p>}
+                                  {r.maddeler.length > 0 && <ul>{r.maddeler.map((m) => <li>{yerel(m, dil)}</li>)}</ul>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </section>
+                    )
+                  }
+                  {
+                    cvProjeleri.length > 0 && (
+                      <section aria-labelledby="proje-baslik">
+                        <h3 id="proje-baslik" class="cv-baslik">Projeler</h3>
+                        <ul class="lista projeler">
+                          {cvProjeleri.map((p) => (
+                            <li>
+                              <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+                              <span class="yazdir-url"> ({new URL(`/projeler/${p.id}/`, Astro.site).href})</span>
+                              <span class="soluk"> — {p.data.ozet}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    )
+                  }
+                  {
+                    cv.egitim.length > 0 && (
+                      <section aria-labelledby="egitim-baslik">
+                        <h3 id="egitim-baslik" class="cv-baslik">Eğitim</h3>
+                        {cv.egitim.map((e) => (
+                          <div class="kayit">
+                            <p class="donem">{donemYaz(e.baslangic, e.bitis, dil)}</p>
+                            <div>
+                              <h5>{yerel(e.derece, dil)}</h5>
+                              <p class="soluk">
+                                {e.web ? <a href={e.web}>{yerel(e.kurum, dil)}</a> : yerel(e.kurum, dil)}
+                                {e.konum && <>, {e.konum}</>}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </section>
+                    )
+                  }
+                  {
+                    cv.beceriler.length > 0 && (
+                      <section class="yeni-sayfa" aria-labelledby="beceri-baslik">
+                        <h3 id="beceri-baslik" class="cv-baslik">Beceriler</h3>
+                        <dl class="ikili">
+                          {cv.beceriler.map((b) => (
+                            <>
+                              <dt>{yerel(b.grup, dil)}</dt>
+                              <dd>{b.ogeler.join(', ')}</dd>
+                            </>
+                          ))}
+                        </dl>
+                      </section>
+                    )
+                  }
+                  {
+                    cv.diller.length > 0 && (
+                      <section aria-labelledby="dil-baslik">
+                        <h3 id="dil-baslik" class="cv-baslik">Diller</h3>
+                        <dl class="ikili">
+                          {cv.diller.map((d) => (
+                            <>
+                              <dt>{yerel(d.ad, dil)}</dt>
+                              <dd>{yerel(d.seviye, dil)}</dd>
+                            </>
+                          ))}
+                        </dl>
+                      </section>
+                    )
+                  }
+                  {
+                    iletisim.length > 0 && (
+                      <section aria-labelledby="iletisim-baslik">
+                        <h3 id="iletisim-baslik" class="cv-baslik">İletişim</h3>
+                        <dl class="ikili">
+                          {iletisim.map((i) => (
+                            <>
+                              <dt>{i.ad}</dt>
+                              <dd><a href={i.href}>{i.metin}</a></dd>
+                            </>
+                          ))}
+                        </dl>
+                      </section>
+                    )
+                  }
+                </div>
+              </details>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     ) : (
       <section class="bant bant--acik bant--basi" aria-labelledby="hakkimda-baslik">
@@ -169,81 +310,297 @@ const iletisim = cv
     <script>
       // Paketlenmiş (hash'li) betik: CSP 'unsafe-inline' gerektirmez; yalnızca bu sayfaya girer.
       document.querySelector('[data-yazdir]')?.addEventListener('click', () => window.print());
+      // Kapalı <details> içeriğini basmayan eski tarayıcılar için: yazdırma sırasında açılır, sonra eski durumuna döner.
+      const ozgecmis = document.querySelector<HTMLDetailsElement>('details.ozgecmis');
+      let acikmiydi = false;
+      addEventListener('beforeprint', () => {
+        if (ozgecmis) {
+          acikmiydi = ozgecmis.open;
+          ozgecmis.open = true;
+        }
+      });
+      addEventListener('afterprint', () => {
+        if (ozgecmis) ozgecmis.open = acikmiydi;
+      });
     </script>
   )
 }
 
 <style>
-  .cv-bandi {
-    padding-block: calc(var(--bant) * 0.8);
+  /* ——— Koyu kapak ——— */
+  .kapak {
+    padding-block: clamp(8rem, 18vw, 13rem) var(--bant);
   }
 
-  .cv {
+  .kapak-ic {
     display: grid;
-    grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
-    gap: 0 clamp(1.5rem, 5vw, 5rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    gap: clamp(1.5rem, 3vw, 2.6rem) clamp(2rem, 5vw, 6rem);
   }
 
-  .yan {
-    position: sticky;
-    top: 1.6rem;
-    display: grid;
-    gap: 1.2rem;
-    font-size: 1rem;
-  }
-
-  .yan .h1 {
-    font-size: clamp(2.8rem, 1rem + 4.2vw, 4.6rem);
-    line-height: 0.95;
-  }
-
-  .unvan {
+  .kunye {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem clamp(1rem, 3vw, 2.5rem);
     margin: 0;
     font-family: var(--font-baslik-yigin);
-    font-size: 1.375rem;
+    font-size: 1rem;
     font-weight: 500;
-    line-height: 1.3;
-  }
-
-  .ozet {
-    margin: 0;
     color: var(--soluk);
   }
 
-  .dugme {
-    display: inline-block;
-    padding: 0.7rem 1.1rem;
-    border: 1px solid var(--murekkep);
+  .kunye span:first-child {
+    color: var(--murekkep);
+    font-weight: 600;
+  }
+
+  .kapak-baslik {
+    grid-column: 1 / -1;
+    max-width: 20ch;
+    font-size: clamp(2.75rem, 1rem + 6.4vw, 7rem);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .hikaye {
+    grid-column: 2;
+    display: grid;
+    gap: 1.2em;
+    font-family: var(--font-bas);
+    font-size: var(--yazi-lede);
+    line-height: 1.38;
+    letter-spacing: -0.005em;
+    color: var(--lede-renk);
+  }
+
+  .hikaye :global(p) {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ——— Bölüm başlığı (kâğıtta Hanken, koyuda Cormorant; her ikisi ≥ 24 px) ——— */
+  .bolum-baslik {
+    margin-block-end: clamp(1.75rem, 3.5vw, 3rem);
+    font-size: clamp(2.25rem, 1rem + 3.6vw, 4.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+  }
+
+  .alt-baslik {
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--soluk);
+  }
+
+  .cumle {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  /* ——— Yol: yatay zaman çizelgesi (mobilde dikey) ——— */
+  .yol {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(12rem, 1fr);
+    gap: 0 clamp(1.5rem, 3vw, 3rem);
+    padding-block-start: 6px;
+    overflow-x: auto;
+  }
+
+  .durak {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-block-start: 1.4rem;
+    border-block-start: 1px solid var(--murekkep);
+  }
+
+  .durak::before {
+    content: '';
+    position: absolute;
+    inset: -5px auto auto 0;
+    width: 9px;
+    height: 9px;
+    background: var(--vurgu);
+  }
+
+  .durak p {
+    margin: 0;
+  }
+
+  .yil {
+    font-family: var(--font-baslik-yigin);
+    font-size: clamp(1.5rem, 1rem + 1.3vw, 2.125rem);
+    font-weight: 650;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .yer {
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  /* ——— Şu sıralar ——— */
+  /* Sayılar bandının hemen altında: çift bant boşluğu olmasın */
+  .su-bandi {
+    padding-block-start: calc(var(--bant) * 0.6);
+  }
+
+  .su-siralar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .su-grup {
+    display: grid;
+    gap: var(--aralik-3);
+  }
+
+  .su-grup li {
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+
+  .su-grup li + li {
+    margin-block-start: 0.5rem;
+  }
+
+  /* ——— Araç kutusu ——— */
+  .arac-kutusu {
+    margin-block-end: clamp(3rem, 6vw, 6rem);
+  }
+
+  .arac {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .arac-grup {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+
+  .arac-grup h3 {
+    font-size: 1.25rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .sakin-etiketler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-block-start: 0.4rem;
+  }
+
+  .sakin-etiketler li {
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--cizgi);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  /* ——— Özgeçmişin tamamı ——— */
+  .tam-bas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--aralik-3) var(--aralik-5);
+  }
+
+  .tam-bas .bolum-baslik {
+    margin-block-end: 0;
+  }
+
+  .tam-bas p {
+    margin: 0;
+  }
+
+  /* Sakin bağlantı görünümlü düğme: tek stil, bağlantı gibi altı çizili */
+  .baglanti-dugme {
+    padding: 0.4rem 0;
+    border: 0;
     background: transparent;
     color: var(--murekkep);
     font: inherit;
     font-family: var(--font-baslik-yigin);
-    font-size: 1rem;
+    font-size: 1.0625rem;
     font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--vurgu);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
     cursor: pointer;
-    transition:
-      background 0.2s var(--ease),
-      color 0.2s var(--ease);
   }
 
-  .dugme:hover {
-    background: var(--murekkep);
-    color: var(--zemin);
+  .baglanti-dugme:hover {
+    text-decoration-color: var(--murekkep);
   }
 
-  .yan p {
-    margin: 0;
+  .ozgecmis {
+    margin-block-start: clamp(1.25rem, 2.5vw, 2rem);
+    border-block: 1px solid var(--murekkep);
   }
 
-  .ana section {
-    padding-block: 1rem 2rem;
-    border-block-start: 1px solid var(--murekkep);
+  .ozgecmis summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aralik-3);
+    padding-block: 1rem;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
   }
 
-  .ana h2 {
-    margin-block-end: 1.2rem;
-    font-size: 1.375rem;
+  .ozgecmis summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ozgecmis summary::after {
+    content: '+';
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .ozgecmis[open] summary::after {
+    content: '–';
+  }
+
+  .cv-ic {
+    max-width: 62rem;
+    padding-block: 0.5rem 2rem;
+  }
+
+  .cv-yazdir {
+    display: none;
+  }
+
+  .cv-ic section {
+    padding-block-start: 2rem;
+  }
+
+  .cv-baslik {
+    margin-block-end: 1rem;
+    font-size: 1.5rem;
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
@@ -252,7 +609,7 @@ const iletisim = cv
     margin-block-start: 1.6rem;
   }
 
-  .kurum h3 {
+  .kurum h4 {
     font-size: 1.125rem;
     line-height: 1.3;
     letter-spacing: 0;
@@ -280,12 +637,10 @@ const iletisim = cv
     grid-template-columns: 9rem minmax(0, 1fr);
     gap: 0.4rem 1.4rem;
     padding-block: 0.9rem;
-    border-block-start: 1px solid var(--cizgi);
   }
 
   .kayit:first-of-type {
     padding-block-start: 0;
-    border-block-start: 0;
   }
 
   .donem {
@@ -295,8 +650,7 @@ const iletisim = cv
     color: var(--soluk);
   }
 
-  .kayit h3,
-  .kayit h4 {
+  .kayit h5 {
     font-size: 1.0625rem;
     line-height: 1.3;
     letter-spacing: 0;
@@ -338,13 +692,32 @@ const iletisim = cv
   }
 
   @media (max-width: 52rem) {
-    .cv {
+    .kapak-ic {
       grid-template-columns: 1fr;
     }
 
-    .yan {
-      position: static;
-      margin-block-end: 1.6rem;
+    .hikaye {
+      grid-column: 1;
+    }
+
+    /* Yol: dikey */
+    .yol {
+      grid-auto-flow: row;
+      grid-auto-columns: auto;
+      gap: 2rem 0;
+      padding-block-start: 0;
+      padding-inline-start: 5px;
+      overflow-x: visible;
+    }
+
+    .durak {
+      padding: 0 0 0 1.5rem;
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--murekkep);
+    }
+
+    .durak::before {
+      inset: 0.35rem auto auto -5px;
     }
 
     .kayit,
@@ -353,39 +726,66 @@ const iletisim = cv
     }
   }
 
-  /* A4 özgeçmiş: tarayıcıdan "PDF olarak kaydet". Nav, footer, düğme, animasyon, çerçeve ve arka plan yok; bölümler bölünmez. */
+  /* A4 özgeçmiş: tarayıcıdan "PDF olarak kaydet". Yalnızca <details> içeriği basılır (açık); kapak, yol, sayılar, şu sıralar,
+     araç kutusu ve düğmeler `.yazdirma-gizle` ile gizlidir. Nav, footer, çerçeve, animasyon ve arka plan yok; kayıtlar bölünmez. */
   @media print {
-    .cv-bandi {
-      padding: 0;
+    .kap {
+      padding-inline: 0;
     }
 
-    .cv {
+    .tam,
+    .cv-ic {
+      max-width: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .ozgecmis {
+      margin: 0;
+      border: 0;
+    }
+
+    /* Kapalı <details> içeriği de basılsın (::details-content destekleyen tarayıcılar; diğerleri için beforeprint betiği). */
+    .ozgecmis::details-content {
+      content-visibility: visible;
       display: block;
     }
 
-    .yan {
-      position: static;
-      margin: 0 0 4mm;
+    .cv-yazdir {
+      display: grid;
       gap: 2mm;
+      margin: 0 0 4mm;
     }
 
-    .yan .h1 {
+    .cv-yazdir p {
+      margin: 0;
+    }
+
+    .cv-ad {
+      font-family: var(--font-baslik-yigin);
       font-size: 26pt;
+      font-weight: 650;
       line-height: 1.05;
+      letter-spacing: -0.03em;
     }
 
-    .unvan {
+    .cv-unvan {
       font-size: 11pt;
     }
 
-    .ana section {
+    .cv-ic section {
       padding: 0;
       margin: 6mm 0 0;
-      border: 0;
       break-inside: avoid;
     }
 
-    .ana h2 {
+    /* Kontrollü kırılım: 1. sayfa kimlik, deneyim, projeler, eğitim; 2. sayfa beceriler, diller, iletişim. */
+    .cv-ic .yeni-sayfa {
+      break-before: page;
+      margin-block-start: 0;
+    }
+
+    .cv-baslik {
       margin: 0 0 2.5mm;
       padding-block-end: 1mm;
       border-block-end: 0.5pt solid #000;
@@ -393,30 +793,11 @@ const iletisim = cv
       break-after: avoid;
     }
 
-    .kayit {
-      grid-template-columns: 30mm 1fr;
-      margin: 0 0 3.5mm;
-      padding: 0;
-      border: 0;
-      break-inside: avoid;
-    }
-
-    .ikili {
-      grid-template-columns: 30mm 1fr;
-      gap: 1mm 4mm;
-    }
-
-    /* Kontrollü kırılım: 1. sayfa kimlik, deneyim, projeler, eğitim; 2. sayfa beceriler, diller, iletişim. */
-    .ana .yeni-sayfa {
-      break-before: page;
-      margin-block-start: 0;
-    }
-
     .kurum + .kurum {
       margin-block-start: 4mm;
     }
 
-    .kurum h3 {
+    .kurum h4 {
       font-size: 10.5pt;
       break-after: avoid;
     }
@@ -431,19 +812,38 @@ const iletisim = cv
       color: #444;
     }
 
-    .ana,
-    .ana p,
-    .ana li,
-    .ana dd,
-    .ana dt,
-    .ozet,
-    .unvan {
+    .kayit {
+      grid-template-columns: 30mm 1fr;
+      margin: 0 0 3.5mm;
+      padding: 0;
+      break-inside: avoid;
+    }
+
+    .ikili {
+      grid-template-columns: 30mm 1fr;
+      gap: 1mm 4mm;
+    }
+
+    .cv-ic,
+    .cv-ic p,
+    .cv-ic li,
+    .cv-ic dd,
+    .cv-ic dt,
+    .cv-ozet {
       font-size: 9.5pt;
       line-height: 1.4;
       color: #000;
     }
 
-    .ana .soluk,
+    .cv-ic .cv-ad {
+      font-size: 26pt;
+    }
+
+    .cv-ic .cv-unvan {
+      font-size: 11pt;
+    }
+
+    .cv-ic .soluk,
     .donem,
     .ikili dt {
       color: #444;

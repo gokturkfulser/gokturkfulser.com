@@ -1,6 +1,6 @@
 ---
 interface Sayi {
-  deger: number;
+  deger: number | string;
   etiket: string;
   not?: string;
 }
@@ -8,19 +8,20 @@ interface Sayi {
 interface Props {
   sayilar: Sayi[];
   ton?: 'koyu' | 'acik';
+  etiket?: string;
 }
 
-const { sayilar, ton = 'koyu' } = Astro.props;
+const { sayilar, ton = 'koyu', etiket = 'Sayılarla site' } = Astro.props;
 ---
 
-<section class={`bant bant--${ton}`} aria-label="Sayılarla site">
+<section class={`bant bant--${ton}`} aria-label={etiket}>
   <div class="kap">
     <dl class="sayilar">
       {
         sayilar.map((s) => (
           <div>
             <dt>{s.etiket}</dt>
-            <dd class="sayi">{s.deger.toLocaleString('tr-TR')}</dd>
+            <dd class="sayi">{typeof s.deger === 'number' ? s.deger.toLocaleString('tr-TR') : s.deger}</dd>
             {s.not && <dd class="not">{s.not}</dd>}
           </div>
         ))
@@ -42,7 +43,7 @@ const { sayilar, ton = 'koyu' } = Astro.props;
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
-    gap: var(--aralik-2);
+    gap: var(--aralik-3);
     padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 2vw, 2rem) clamp(1.5rem, 3vw, 3rem) 0;
   }
 

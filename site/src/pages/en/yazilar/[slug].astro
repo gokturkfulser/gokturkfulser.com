@@ -1,0 +1,16 @@
+---
+// İngilizce çeviriler: /en/yazilar/<slug>/ (asıl yazı /yazilar/<slug>/). Site kabuğu Türkçe kalır (Base `dil="en"` ile işaretler).
+import BasketbolYazisi from '../../../components/yazi/BasketbolYazisi.astro';
+import { asilId, basketbolCevirileri } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  return (await basketbolCevirileri()).map((entry) => ({
+    params: { slug: asilId(entry.id) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+---
+
+<BasketbolYazisi entry={entry} diger={{ dil: 'tr', href: `/yazilar/${asilId(entry.id)}/` }} />

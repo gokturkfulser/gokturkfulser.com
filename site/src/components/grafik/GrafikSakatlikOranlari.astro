@@ -1,0 +1,153 @@
+---
+// "2005-06 vs bugün": dört küçük eşleştirilmiş çubuk grafiği (small multiples). Her panelin ölçeği ayrıdır,
+// birimler değer etiketindedir. Veri: src/data/nba-sakatlik.json > sutterer.
+import GrafikKutu from './GrafikKutu.astro';
+import veri from '../../data/nba-sakatlik.json';
+import type { Dil } from '../../lib/format';
+import { birimliYaz, sayiYaz } from '../../lib/grafik';
+
+interface Props {
+  dil?: Dil;
+}
+const { dil = 'tr' } = Astro.props;
+const en = dil === 'en';
+
+const t = en
+  ? {
+      baslik: '2005-06 vs today',
+      once: '2005-06',
+      simdi: 'Today',
+      kaynak: 'Source: Brian Sutterer’s analysis via Dunkest, 28 October 2026 (see',
+      kaynakBag: 'Sources',
+      kaynakSon: '). Each panel has its own scale; bar heights are not comparable across panels.',
+    }
+  : {
+      baslik: '2005-06 ve bugün',
+      once: '2005-06',
+      simdi: 'Bugün',
+      kaynak: 'Kaynak: Brian Sutterer’in analizi, Dunkest, 28 Ekim 2026 (bkz.',
+      kaynakBag: 'Kaynaklar',
+      kaynakSon: '). Her panelin ölçeği ayrıdır; çubuk yükseklikleri paneller arasında karşılaştırılamaz.',
+    };
+
+// Panel: 168×146 birim; iki sütun yan yana telefonda ~1:1 ölçekle okunur.
+const W = 168;
+const H = 146;
+const TABAN = 116;
+const MAX_H = 58;
+const SUTUN = 56;
+const X0 = 18;
+const X1 = W - 18 - SUTUN;
+
+const paneller = veri.sutterer.map((p, i) => {
+  const birim = en ? p.unitEn : p.unit;
+  const baslik = en ? p.labelEn : p.label;
+  const maks = Math.max(p.then, p.now);
+  const sutunlar = [
+    { ad: t.once, deger: p.then, x: X0, sinif: 'once' },
+    { ad: t.simdi, deger: p.now, x: X1, sinif: 'simdi' },
+  ].map((s) => {
+    const h = (s.deger / maks) * MAX_H;
+    const yuzde = birim === '%';
+    return {
+      ...s,
+      h,
+      y: TABAN - h,
+      orta: s.x + SUTUN / 2,
+      // % değerin içinde yazılır; diğer birimler değerin altında ayrı satırda.
+      metin: yuzde ? birimliYaz(s.deger, birim, dil) : sayiYaz(s.deger, dil),
+      birim: yuzde ? null : birim,
+    };
+  });
+  return {
+    id: `g-oran-${i}`,
+    baslik,
+    sutunlar,
+    etiket: `${baslik}: ${sutunlar.map((s) => `${s.ad}, ${birimliYaz(s.deger, birim, dil)}`).join('; ')}.`,
+  };
+});
+---
+
+<GrafikKutu id="g-oranlar" baslik={t.baslik}>
+  <div class="paneller" role="group" aria-labelledby="g-oranlar-baslik">
+    {
+      paneller.map((p) => (
+        <div class="panel">
+          <p class="panel-baslik">{p.baslik}</p>
+          <svg class="svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={p.etiket}>
+            <title>{p.etiket}</title>
+            <line class="taban" x1="0" x2={W} y1={TABAN} y2={TABAN} aria-hidden="true"></line>
+            {
+              p.sutunlar.map((s) => (
+                <g>
+                  <rect class={s.sinif} x={s.x} y={s.y} width={SUTUN} height={s.h} />
+                  {s.birim && <text class="birim" x={s.orta} y={s.y - 6} text-anchor="middle">{s.birim}</text>}
+                  <text class="deger" x={s.orta} y={s.y - (s.birim ? 20 : 7)} text-anchor="middle">{s.metin}</text>
+                  <text class="sezon" x={s.orta} y={TABAN + 20} text-anchor="middle">{s.ad}</text>
+                </g>
+              ))
+            }
+          </svg>
+        </div>
+      ))
+    }
+  </div>
+  <Fragment slot="kaynak">{t.kaynak}{' '}<a href={en ? '#sources' : '#kaynaklar'}>{t.kaynakBag}</a>{t.kaynakSon}</Fragment>
+</GrafikKutu>
+
+<style>
+  .paneller {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--aralik-4) var(--aralik-3);
+  }
+
+  .panel-baslik {
+    margin: 0 0 var(--aralik-2);
+    min-block-size: 2.6em; /* tek satırlık başlık da iki satır yer tutar: paneller aynı hizada kalır */
+    font-size: var(--yazi-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--murekkep);
+    hyphens: manual;
+  }
+
+  .svg {
+    display: block;
+    width: 100%;
+    max-width: 13rem;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  .taban {
+    stroke: var(--cizgi);
+    stroke-width: 1.5;
+  }
+
+  .once {
+    fill: var(--soluk);
+  }
+
+  .simdi {
+    fill: var(--dunya-metin);
+  }
+
+  .deger {
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    fill: var(--murekkep);
+  }
+
+  .birim {
+    font-size: 12px;
+    fill: var(--soluk);
+  }
+
+  .sezon {
+    font-size: 13px;
+    fill: var(--soluk);
+  }
+</style>

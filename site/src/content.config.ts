@@ -7,11 +7,15 @@ import { taslakKlasorDesenleri } from './lib/taslak-loader';
 
 // Her içerik kendi klasöründe: <koleksiyon>/<slug>/index.mdx + görseller.
 // id, klasör adının Türkçe transliterasyonlu slug'ıdır. Production'da taslak klasörleri desenden çıkar.
-const klasorLoader = (base: string) =>
+// `ceviri: true` olan koleksiyonda aynı klasördeki `index.en.mdx` İngilizce çevirisidir; id'si `<slug>--en`.
+const klasorLoader = (base: string, { ceviri = false } = {}) =>
   glob({
     base,
-    pattern: ['*/index.{md,mdx}', ...taslakKlasorDesenleri(base)],
-    generateId: ({ entry }) => slugify(entry.split('/')[0] ?? entry),
+    pattern: ['*/index.{md,mdx}', ...(ceviri ? ['*/index.en.mdx'] : []), ...taslakKlasorDesenleri(base)],
+    generateId: ({ entry }) => {
+      const [klasor = entry, dosya = ''] = entry.split('/');
+      return slugify(klasor) + (dosya.startsWith('index.en.') ? '--en' : '');
+    },
   });
 
 const sinema = defineCollection({
@@ -40,9 +44,11 @@ const sinema = defineCollection({
 });
 
 const basketbol = defineCollection({
-  loader: klasorLoader('./src/content/basketbol'),
+  loader: klasorLoader('./src/content/basketbol', { ceviri: true }),
   schema: ({ image }) =>
     z.object({
+      // `en` olan kayıt, aynı klasördeki Türkçe yazının çevirisidir: listelerde/RSS'te yer almaz, /en/yazilar/<slug>/ adresinde yayımlanır.
+      dil: z.enum(['tr', 'en']).default('tr'),
       baslik: z.string(),
       tarih: z.coerce.date(),
       ozet: z.string(),
@@ -149,6 +155,8 @@ const ozgecmis = defineCollection({
                 bitis,
                 // Unvanın altında küçük bir satır olarak gösterilir.
                 not: yerel.optional(),
+                // "Yol" zaman çizelgesindeki tek cümle.
+                kisa: yerel.optional(),
                 maddeler: z.array(yerel).default([]),
               }),
             )
@@ -165,14 +173,52 @@ const ozgecmis = defineCollection({
           web: z.union([z.url(), z.literal('')]).optional(),
           baslangic: tarih,
           bitis,
+          kisa: yerel.optional(),
+        }),
+      )
+      .default([]),
+    // "Yol" zaman çizelgesinde deneyim ve eğitimin dışında kalan duraklar.
+    duraklar: z
+      .array(
+        z.object({
+          kurum: yerel,
+          baslangic: tarih,
+          bitis,
+          // Site içi adres (isteğe bağlı).
+          href: z.string().startsWith('/').optional(),
+          kisa: yerel,
+        }),
+      )
+      .default([]),
+    // Elle girilen büyük sayılar (yayındaki proje ve yazı sayısı otomatiktir). Boş/sıfır olan gösterilmez.
+    sayilar: z
+      .array(z.object({ deger: z.union([z.number(), z.string().trim()]), etiket: yerel, not: yerel.optional() }))
+      .default([]),
+    // "Şu sıralar": boş gruplar gösterilmez.
+    su_siralar: z
+      .array(
+        z.object({
+          baslik: yerel,
+          ogeler: z.array(z.object({ metin: yerel, slug: z.string().optional() })).default([]),
         }),
       )
       .default([]),
     // Site içi proje slug'ları (src/content/projeler/<slug>); bulunamayan ya da taslak olan atlanır.
     projeler: z.array(z.object({ slug: z.string() })).default([]),
     diller: z.array(z.object({ ad: yerel, seviye: yerel })).default([]),
-    beceriler: z.array(z.object({ grup: yerel, ogeler: z.array(z.string()).min(1) })).default([]),
+    beceriler: z.array(z.object({ grup: yerel, cumle: yerel.optional(), ogeler: z.array(z.string()).min(1) })).default([]),
   }),
 });
 
-export const collections = { sinema, basketbol, projeler, ozgecmis };
+// /hakkimda/ kapak metni: src/content/hakkimda.<dil>.md (frontmatter `baslik` = büyük cümle, gövde = birinci tekil şahıs paragrafları).
+// id dildir (`tr`, `en`). Başlık ya da gövde boşsa kapak bandı hiç render edilmez.
+const hakkimda = defineCollection({
+  loader: glob({
+    base: './src/content',
+    pattern: 'hakkimda.{tr,en}.md',
+    generateId: ({ entry }) => entry.split('.')[1] ?? entry,
+  }),
+  schema: z.object({ baslik: z.string().trim().default('') }),
+});
+
+export const collections = { sinema, basketbol, projeler, ozgecmis, hakkimda };

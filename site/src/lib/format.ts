@@ -30,3 +30,11 @@ export const donemYaz = (baslangic: string, bitis?: string | null, dil: Dil = 't
   const bicim = (d: string) => (d.length === 4 ? d : ayYilBicimleri[dil].format(new Date(`${d}-01T00:00:00Z`)));
   return `${bicim(baslangic)} – ${bitis ? bicim(bitis) : SURUYOR[dil]}`;
 };
+
+/** Zaman çizelgesi için yıl aralığı: "2016 – 2024" / "2023 –" (bitiş yok/null = süren). Aynı yıl tek yıl yazılır. */
+export const yilAraligi = (baslangic: string, bitis?: string | null) => {
+  const b = baslangic.slice(0, 4);
+  if (!bitis) return `${b} –`;
+  const s = bitis.slice(0, 4);
+  return b === s ? b : `${b} – ${s}`;
+};

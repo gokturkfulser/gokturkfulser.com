@@ -24,9 +24,26 @@ export async function sinemaYazilari() {
   return (await getCollection('sinema', gorunur)).sort(yeniden);
 }
 
+/** Listeler, RSS, etiketler ve ana sayfa yalnızca Türkçe (asıl) yazıları görür; çeviriler `basketbolCevirileri`'nde. */
 export async function basketbolYazilari() {
-  return (await getCollection('basketbol', gorunur)).sort(yeniden);
+  return (await getCollection('basketbol', (e) => gorunur(e) && e.data.dil === 'tr')).sort(yeniden);
 }
+
+/** İngilizce çeviriler (`<slug>/index.en.mdx`, id `<slug>--en`). */
+export async function basketbolCevirileri() {
+  return (await getCollection('basketbol', (e) => gorunur(e) && e.data.dil === 'en')).sort(yeniden);
+}
+
+/** Çevirinin asıl yazısının id'si: "slug--en" → "slug". */
+export const asilId = (id: string) => id.replace(/--en$/, '');
+
+/** Bir yazının İngilizce çevirisi (yoksa undefined). */
+export async function basketbolCevirisi(id: string) {
+  return (await basketbolCevirileri()).find((e) => e.id === `${id}--en`);
+}
+
+/** Çevirilerin adresi: /en/yazilar/<slug>/. */
+export const cevirilenYaziUrl = (id: string) => `/en/yazilar/${asilId(id)}/`;
 
 /** /yazilar/<slug>/ tek bir alan adı uzayıdır; bu adlar bölüm sayfalarına ve feed'e ayrılmıştır. */
 const AYRILMIS_SLUGLAR = new Set(['sinema', 'basketbol']);

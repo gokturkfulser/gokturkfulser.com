@@ -1,0 +1,27 @@
+{
+  "_not": "Tüm rakamlar yazıdaki kaynaklardan. minWeeks/maxWeeks takımların açıkladığı tahmini süreler; 'openEnded' = 'en az X hafta' ya da 'sezonun çoğu'. Williams ve Wallace için takım hafta vermedi; 20-26 ve 18-24 hafta, 'sezonun çoğu' ifadesine göre benim yaklaşık değerim, grafikte 'sezon sonuna kadar' diye etiketlenmeli.",
+  "injuries": [
+    { "player": "Jalen Williams", "team": "OKC", "injury": "Kırık fibula + çıkık ayak bileği", "minWeeks": 20, "maxWeeks": 26, "openEnded": true },
+    { "player": "Cason Wallace", "team": "OKC", "injury": "Omuz labrum yırtığı", "minWeeks": 18, "maxWeeks": 24, "openEnded": true },
+    { "player": "Anthony Edwards", "team": "MIN", "injury": "Diz ameliyatı", "minWeeks": 8, "maxWeeks": 9, "openEnded": false },
+    { "player": "Jaren Jackson Jr.", "team": null, "injury": "MCL yırtığı", "minWeeks": 6, "maxWeeks": 8, "openEnded": false },
+    { "player": "Paolo Banchero", "team": "ORL", "injury": "Yüksek ayak bileği burkulması", "minWeeks": 4, "maxWeeks": 6, "openEnded": false },
+    { "player": "Ja Morant", "team": "POR", "injury": "2. derece hamstring", "minWeeks": 4, "maxWeeks": 5, "openEnded": true },
+    { "player": "Kawhi Leonard", "team": "LAC", "injury": "Diz şişliği", "minWeeks": 3, "maxWeeks": 4, "openEnded": false },
+    { "player": "Tyrese Haliburton", "team": "IND", "injury": "Hamstring", "minWeeks": 2, "maxWeeks": 2, "openEnded": true },
+    { "player": "Jalen Duren", "team": "DET", "injury": "Hamstring", "minWeeks": 2, "maxWeeks": 2, "openEnded": true },
+    { "player": "Jalen Suggs", "team": "ORL", "injury": "Dizde kemik ödemi", "minWeeks": 2, "maxWeeks": 2, "openEnded": true }
+  ],
+  "first8Weeks": [
+    { "season": "2023-24", "gamesLost": 1579 },
+    { "season": "2024-25", "gamesLost": 1962 },
+    { "season": "2025-26", "gamesLost": 2062 },
+    { "season": "2026-27", "gamesLost": null, "note": "Kasım sonunda belli olacak" }
+  ],
+  "sutterer": [
+    { "label": "Kas-iskelet sorunlarıyla kaçırılan maç oranı", "then": 10.8, "now": 21.2, "unit": "%" },
+    { "label": "20+ dk oyuncunun sezonluk kaçırdığı maç", "then": 7.5, "now": 15.4, "unit": "maç" },
+    { "label": "Oyuncu başına sezonluk sakatlık sayısı", "then": 0.9, "now": 3.2, "unit": "adet" },
+    { "label": "Ortalama sakatlık süresi", "then": 8, "now": 4.4, "unit": "maç" }
+  ]
+}

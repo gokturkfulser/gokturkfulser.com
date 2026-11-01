@@ -1,0 +1,11 @@
+---
+// MDX'te `[metin](url)` bağlantıları için: dış bağlantı (http/https, başka alan adı) yeni sekmede açılır, site içi olanlar olduğu gibi kalır.
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, ...oznitelikler } = Astro.props;
+const dis = typeof href === 'string' && /^https?:\/\//i.test(href) && new URL(href).host !== Astro.site?.host;
+---
+
+<a {href} {...oznitelikler} target={dis ? '_blank' : oznitelikler.target} rel={dis ? 'noopener noreferrer' : oznitelikler.rel}><slot /></a>

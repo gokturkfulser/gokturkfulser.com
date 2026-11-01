@@ -55,3 +55,11 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 | `src/lib/site.ts` | `PROFILLER` yalnızca GitHub + RSS (Letterboxd vb. eklenecek). **`HERO_CUMLESI` ve `KISACA_METNI`: isteğe bağlı, boş bırakılabilir.** Boşken hero cümlesi ve "Kısaca" bölümü hiç render edilmez; metin yazılınca kendiliğinden görünür. |
 | `src/pages/index.astro` | Yer tutucu metin yok (hero cümlesi ve "Kısaca" `site.ts`'ten gelir, şimdilik boş). Hero görseli kalıcı: `HeroSahne` SVG; portre fotoğrafı kullanılmaz. |
 | `src/pages/hakkimda.astro` | `deneyim` listesi yalnızca `SHOW_DRAFTS` iken uydurma; gerçek deneyim girilince `SHOW_DRAFTS` koşulu kalkar. |
+
+## 5. /hakkimda/ hikâye düzeni
+
+| Alan | Durum |
+| --- | --- |
+| `src/content/hakkimda.en.md` | İngilizce metin Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
+| `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
+| `ozgecmis.yaml` → `su_siralar` | Yalnızca "Üzerinde çalıştığım" dolu (Cities of Anatolia). "Takip ettiğim" boş: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |

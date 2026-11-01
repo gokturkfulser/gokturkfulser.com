@@ -15,6 +15,7 @@ type MakaleGirdi = {
   etiketler: string[];
   kelime: number;
   dakika: number;
+  dil?: 'tr' | 'en';
 };
 
 export function makaleLd(g: MakaleGirdi) {
@@ -24,7 +25,7 @@ export function makaleLd(g: MakaleGirdi) {
     description: g.ozet,
     datePublished: g.tarih.toISOString(),
     dateModified: g.tarih.toISOString(),
-    inLanguage: 'tr-TR',
+    inLanguage: g.dil === 'en' ? 'en' : 'tr-TR',
     author: YAZAR,
     publisher: YAZAR,
     image: [g.gorsel],

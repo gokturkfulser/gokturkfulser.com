@@ -8,10 +8,17 @@ import { tarihIso, tarihYaz } from '../../lib/format';
 interface Props {
   yazi: Yazi;
   dakika: number;
+  /** İçerik dili; `en` iken tarih, bölüm adı ve okuma süresi İngilizce yazılır. */
+  dil?: 'tr' | 'en';
 }
 
-const { yazi, dakika } = Astro.props;
+const { yazi, dakika, dil = 'tr' } = Astro.props;
 const { data } = yazi.entry;
+const en = dil === 'en';
+const tarihMetni = en
+  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(data.tarih)
+  : tarihYaz(data.tarih);
+const bolumAdi = en ? { sinema: 'Cinema', basketbol: 'Basketball' }[yazi.bolum] : BOLUM_ADLARI[yazi.bolum];
 ---
 
 <header class="kapak" data-dunya={yazi.bolum}>
@@ -19,12 +26,12 @@ const { data } = yazi.entry;
     <YaziKapagi {yazi} oran="kapak" width={1920} oncelikli />
   </div>
   <div class="kap kapak-ic">
-    <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
+    <p class="etiket">{bolumAdi}</p>
     <h1 class="h1">{data.baslik}</h1>
     <p class="lede">{data.ozet}</p>
     <p class="meta">
-      <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
-      <span>{dakika} dakikalık okuma</span>
+      <time datetime={tarihIso(data.tarih)}>{tarihMetni}</time>
+      <span>{en ? `${dakika} min read` : `${dakika} dakikalık okuma`}</span>
       <slot name="meta" />
     </p>
   </div>

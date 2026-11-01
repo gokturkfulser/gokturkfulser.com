@@ -1,0 +1,96 @@
+---
+// Letterboxd şeridinin küçük, durağan sürümü ("Şu sıralar" için): akış/animasyon ve durdurma düğmesi yok.
+// Veri ve afiş kaynağı büyük şeritle aynıdır (build'de alınan RSS, yerelde indirilmiş TMDB afişleri); film yoksa hiç render edilmez.
+import Medya from './Medya.astro';
+import type { Izlenen } from '../lib/letterboxd';
+import { letterboxdAfisi } from '../lib/letterboxd-afis';
+
+interface Props {
+  filmler: Izlenen[];
+  baslik: string;
+}
+const { filmler, baslik } = Astro.props;
+---
+
+{
+  filmler.length > 0 && (
+    <div class="kucuk-serit" data-dunya="sinema">
+      <h3 class="alt-baslik">{baslik}</h3>
+      <ul class="lista afisler">
+        {filmler.map((f) => {
+          const afis = letterboxdAfisi(f.tmdbId);
+          return (
+            <li class="film">
+              {afis && (
+                <a class="afis" href={f.link} tabindex="-1" aria-hidden="true">
+                  <Medya src={afis} oran="afis" alt="" width={200} />
+                </a>
+              )}
+              <p class="ad">
+                <a href={f.link}>{f.film}</a>
+              </p>
+              {f.yil && <p class="yil">{f.yil}</p>}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .kucuk-serit {
+    display: grid;
+    gap: var(--aralik-3);
+  }
+
+  .alt-baslik {
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--soluk);
+  }
+
+  .afisler {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 6.5rem));
+    gap: var(--aralik-4) var(--aralik-3);
+  }
+
+  .film p {
+    margin: 0;
+  }
+
+  .afis {
+    display: block;
+    margin-block-end: var(--aralik-2);
+    text-decoration: none;
+  }
+
+  .afis :global(.medya-kalip) {
+    display: block;
+  }
+
+  .ad {
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .ad a {
+    text-decoration-color: transparent;
+  }
+
+  .ad a:hover,
+  .ad a:focus-visible {
+    text-decoration-color: var(--vurgu);
+  }
+
+  .yil {
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+// Grafik çerçevesi: başlık, gövde (SVG), isteğe bağlı gösterge ve altta kaynak satırı (figcaption).
+// Renkler bant token'larından gelir (--murekkep, --soluk, --cizgi, --dunya-metin); sabit renk yok.
+interface Props {
+  id: string;
+  baslik: string;
+}
+const { id, baslik } = Astro.props;
+---
+
+<figure class="grafik" aria-labelledby={`${id}-baslik`}>
+  <p class="grafik-baslik" id={`${id}-baslik`}>{baslik}</p>
+  <slot />
+  <figcaption class="grafik-kaynak"><slot name="kaynak" /></figcaption>
+</figure>
+
+<style>
+  .grafik {
+    margin-inline: 0;
+    margin-block: 1.8em;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  .grafik-baslik {
+    margin: 0 0 var(--aralik-3);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--murekkep);
+  }
+
+  .grafik-kaynak {
+    margin-block-start: var(--aralik-3);
+    font-size: var(--yazi-xs);
+    line-height: 1.45;
+    color: var(--soluk);
+  }
+
+  .grafik-kaynak :global(a) {
+    color: inherit;
+    text-decoration-line: underline;
+  }
+</style>
