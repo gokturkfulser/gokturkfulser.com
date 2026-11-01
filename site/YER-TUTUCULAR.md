@@ -21,6 +21,7 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 | Klasör | Uydurma olanlar |
 | --- | --- |
+| `perde-perde-anadolu/` | Geçici olarak **"Cities of Anatolia"** adıyla, `durum: yakinda` ("Yakında, henüz yayında değil" notu; canlı bağlantı gizli) listeleniyor, `taslak: false`. Adres: `citiesofanatolia.gokturkfulser.com`. Yayına alınırken: `ad` ("Perde Perde Anadolu"), `ozet` (geçici cümle), `durum: yayinda`, `stack` ve vaka metinleri (`vaka.ne|neden|nasil`) gerçekle doldurulur. Klasör adı (slug) bilerek `perde-perde-anadolu`; özgeçmiş bu slug'a bağlanır. `kapak.png` oyunun başlangıç ekranından alınmış gerçek ekran görüntüsüdür. |
 | `dakika/` | Servis yok. `repo: github.com/gokturkfulser/dakika` (yok), **`demoVideo`: MDN'in `flower.mp4` örnek videosu** (konuyla ilgisiz), metin, `kapak.svg`. |
 | `salon-rehberi/` | Site yok. `url: gokturkfulser.github.io/salon-rehberi/` (yok), `repo` (yok), metin, `kapak.svg`. |
 | `eski-portfoy/` | `url: gokturkfulser.github.io/` (belirsiz), metin, `kapak.svg`. |
@@ -30,7 +31,7 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 | Dosya | Durum |
 | --- | --- |
 | `src/pages/hakkimda.astro` | Sayfa artık `ozgecmis.yaml`'ı okur (yukarıdaki satır). `taslak: true` iken production'da "Bu sayfa hazırlanıyor" yazar, nav bağlantısı kalır; `SHOW_DRAFTS=true`'da yer tutucu özgeçmiş görünür. Gerçek veri girilince `taslak` satırı silinir. |
-| `src/content/ozgecmis.yaml` | **Tamamı uydurma**: ad dışında her alan (unvan, konum, özet, iki deneyim, eğitim, beceriler, diller; bağlantılardaki e-posta `merhaba@…` geneldir). `taslak: true` olduğu sürece yalnızca `SHOW_DRAFTS=true` ile görünür; gerçek veri girilince o satır silinir. |
+| `src/content/ozgecmis.yaml` | **Gerçek veri** (`taslak: false`); yer tutucu değil. Alanlar `{ en, tr }` iki dilli, sayfa şimdilik `tr` gösterir. |
 | `public/favicon.svg` | Geçici "G" işareti. |
 | Tüm `*.svg` kapak/ekran görüntüleri | Düz renk + daire. Gerçek görsellerle (jpg/png/webp) değiştirilmeli. |
 | `src/data/tmdb-cache.json` | Boş (`{}`): yer tutucu değil, `pnpm site:tmdb` ile dolacak. |

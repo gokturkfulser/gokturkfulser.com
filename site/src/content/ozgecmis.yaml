@@ -1,50 +1,186 @@
-# /hakkimda/ sayfasının kendisi özgeçmiştir; bu dosya tek kaynaktır (şema: src/content.config.ts → ozgecmis).
-# Aşağıdaki her şey UYDURMA yer tutucudur (bkz. YER-TUTUCULAR.md). Gerçek veri girilince `taslak: true` satırı silinir.
-# Tarihler "YYYY-AA" ya da "YYYY"; `bitis` yoksa süren bir kayıttır.
-ozgecmis:
-  taslak: true
+# site/src/content/ozgecmis.yaml
+# Kaynak: Resume_without_table_official.pdf + DevOps işleri + Göktürk'ün
+# netleştirmeleri. Herkese açık sayfa olduğu için doğum tarihi, telefon ve
+# uyruk bilerek yok.
+
+taslak: false
+
+kimlik:
   ad: Göktürk Fulser
-  unvan: Yazılım geliştirici
-  konum: Türkiye
-  ozet: >-
-    Yer tutucu özet: web ve servis tarafında çalışan, film ve basketbol üzerine yazan bir yazılım geliştirici.
-    Küçük, net ve bakımı kolay şeyler yapmayı sever.
-  deneyim:
-    - kurum: Örnek Şirket
-      rol: Yazılım geliştirici
-      konum: Uzaktan
-      baslangic: "2024-03"
-      maddeler:
-        - "Yer tutucu: ürün ekibiyle birlikte web arayüzlerini ve servislerini geliştirdi."
-        - "Yer tutucu: derleme ve yayın sürecini yeniden kurarak yayın süresini kısalttı."
-    - kurum: Örnek Kurum
-      rol: Yazılım mühendisi
-      konum: İstanbul
-      baslangic: "2020-09"
-      bitis: "2024-02"
-      maddeler:
-        - "Yer tutucu: iç araçlar ve raporlama servisleri üzerinde çalıştı."
-        - "Yer tutucu: yeni gelen ekip arkadaşları için kod inceleme rehberi yazdı."
-  egitim:
-    - kurum: Örnek Üniversite
-      bolum: Bilgisayar Mühendisliği
-      derece: Lisans
-      baslangic: "2016"
-      bitis: "2020"
-  beceriler:
-    - grup: Diller
-      ogeler: [TypeScript, Python, SQL]
-    - grup: Web
-      ogeler: [Astro, Cloudflare Workers, CSS]
-    - grup: Altyapı
-      ogeler: [Docker, Linux, GitHub Actions]
-  diller:
-    - dil: Türkçe
-      seviye: Ana dil
-    - dil: İngilizce
-      seviye: İleri
+  unvan:
+    en: AI Engineer
+    tr: Yapay Zekâ Mühendisi
+  konum:
+    en: Ankara, Türkiye
+    tr: Ankara, Türkiye
+  # Gelen kutusu aynı: Cloudflare Email Routing ile Gmail'e düşer.
+  eposta: merhaba@gokturkfulser.com
   baglantilar:
+    - ad: LinkedIn
+      url: https://www.linkedin.com/in/gokturk-fulser/
     - ad: GitHub
-      href: https://github.com/gokturkfulser
-    - ad: E-posta
-      href: mailto:merhaba@gokturkfulser.com
+      url: https://github.com/gokturkfulser
+    - ad: Web
+      url: https://gokturkfulser.com
+
+ozet:
+  en: >-
+    AI engineer building LLM-powered products end to end, from retrieval
+    systems and agents to the container infrastructure that runs them in
+    production.
+  tr: >-
+    Büyük dil modelleriyle çalışan ürünleri uçtan uca geliştiren bir yapay
+    zekâ mühendisi; arama sistemlerinden ajanlara, bunları üretimde
+    çalıştıran container altyapısına kadar.
+
+deneyim:
+  - kurum: Enocta
+    konum: Ankara
+    web: https://www.enocta.com/
+    roller:
+      - unvan:
+          en: AI Engineer
+          tr: Yapay Zekâ Mühendisi
+        baslangic: 2023-07
+        bitis: null
+        not:
+          en: Joined as an AI engineering intern.
+          tr: Yapay zekâ mühendisliği stajyeri olarak başladım.
+        maddeler:
+          - en: >-
+              Build AI features for Enocta's learning platform, including
+              course assistants, persona assessments, transcription, a
+              podcast studio and a slide studio.
+            tr: >-
+              Enocta'nın öğrenme platformu için yapay zekâ özellikleri
+              geliştiriyorum: kurs asistanları, persona değerlendirmeleri,
+              transkripsiyon, podcast stüdyosu ve slayt stüdyosu.
+          - en: >-
+              Design and ship company-specific applications on LLMs from
+              OpenAI, Anthropic and Google.
+            tr: >-
+              OpenAI, Anthropic ve Google modelleri üzerinde şirkete özel
+              uygulamalar tasarlayıp yayına alıyorum.
+          - en: >-
+              Build and tune RAG systems on Weaviate and FAISS vector
+              databases for semantic search and retrieval.
+            tr: >-
+              Anlamsal arama için Weaviate ve FAISS vektör veritabanları
+              üzerinde RAG sistemleri kurup iyileştiriyorum.
+          - en: >-
+              Develop AI agents and multi-agent workflows with CrewAI and
+              smolagents.
+            tr: >-
+              CrewAI ve smolagents ile yapay zekâ ajanları ve çok ajanlı iş
+              akışları geliştiriyorum.
+          - en: >-
+              Build multimodal features with speech-to-text (Whisper),
+              text-to-speech (ElevenLabs, OpenAI TTS) and generative media
+              models served through fal and Groq.
+            tr: >-
+              Konuşmadan metne (Whisper), metinden konuşmaya (ElevenLabs,
+              OpenAI TTS) ve fal ile Groq üzerinden sunulan üretken medya
+              modelleriyle çok modlu özellikler geliştiriyorum.
+          - en: >-
+              Run a production Docker Swarm environment of 15–20 FastAPI
+              microservices, with CI/CD on Jenkins, images on Nexus and
+              routing through Nginx Proxy Manager.
+            tr: >-
+              15–20 FastAPI mikroservisinden oluşan üretim Docker Swarm
+              ortamını yönetiyorum; CI/CD için Jenkins, imajlar için Nexus,
+              yönlendirme için Nginx Proxy Manager.
+          - en: >-
+              Work across the data and messaging layer with SQL Server,
+              SQLAlchemy and RabbitMQ.
+            tr: >-
+              Veri ve mesajlaşma katmanında SQL Server, SQLAlchemy ve
+              RabbitMQ ile çalışıyorum.
+          - en: >-
+              Prototype quickly with Python, Pydantic, Instructor and
+              Streamlit, and run local inference with Ollama and LM Studio.
+            tr: >-
+              Python, Pydantic, Instructor ve Streamlit ile hızlı prototip
+              geliştiriyor; Ollama ve LM Studio ile yerel çıkarım
+              yapıyorum.
+
+  - kurum: Roar Games Studio
+    konum: Ankara
+    web: ""
+    roller:
+      - unvan:
+          en: Game Developer
+          tr: Oyun Geliştirici
+        baslangic: 2021-07
+        bitis: 2022-08
+        maddeler:
+          - en: >-
+              Built game mechanics and core gameplay systems in Unity3D and
+              C#.
+            tr: >-
+              Unity3D ve C# ile oyun mekanikleri ve temel oynanış sistemleri
+              geliştirdim.
+          - en: >-
+              Worked with artists and designers to integrate assets and
+              optimize performance across platforms and devices.
+            tr: >-
+              Sanatçı ve tasarımcılarla birlikte görselleri oyuna entegre
+              edip farklı platform ve cihazlarda performansı iyileştirdim.
+          - en: >-
+              Wrote and maintained clean code through code reviews and
+              debugging sessions.
+            tr: >-
+              Kod incelemeleri ve hata ayıklama oturumlarıyla temiz ve
+              bakımı kolay kod yazdım.
+
+egitim:
+  - kurum:
+      en: Middle East Technical University
+      tr: Orta Doğu Teknik Üniversitesi
+    derece:
+      en: BSc in Computer Engineering
+      tr: Bilgisayar Mühendisliği, Lisans
+    konum: Ankara
+    web: https://www.metu.edu.tr/
+    baslangic: 2016
+    bitis: 2024
+
+projeler:
+  # Site içindeki proje sayfalarına bağlanır (slug).
+  - slug: perde-perde-anadolu
+  - slug: kelime-avi
+
+diller:
+  - ad:
+      en: Turkish
+      tr: Türkçe
+    seviye:
+      en: Native
+      tr: Ana dil
+  - ad:
+      en: English
+      tr: İngilizce
+    seviye:
+      en: Professional
+      tr: Profesyonel
+
+beceriler:
+  - grup:
+      en: AI & LLM
+      tr: Yapay zekâ ve LLM
+    ogeler: [Generative AI, RAG, Prompt engineering, AI agents, CrewAI, smolagents, Instructor, Local inference]
+  - grup:
+      en: Retrieval & data
+      tr: Arama ve veri
+    ogeler: [Weaviate, FAISS, Semantic search, Vector databases, SQL, SQL Server, SQLAlchemy]
+  - grup:
+      en: Speech & media
+      tr: Ses ve medya
+    ogeler: [Speech-to-text, Text-to-speech, Whisper, ElevenLabs, fal, Groq]
+  - grup:
+      en: Backend & infrastructure
+      tr: Backend ve altyapı
+    ogeler: [Python, FastAPI, Streamlit, Docker, Docker Swarm, Jenkins, Nexus, Nginx Proxy Manager, RabbitMQ, Linux, Git]
+  - grup:
+      en: Other languages & tools
+      tr: Diğer diller ve araçlar
+    ogeler: [C#, C++, C, Unity3D]

@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { parse as parseYaml } from 'yaml';
 import { slugify } from './lib/slug';
 import { taslakKlasorDesenleri } from './lib/taslak-loader';
 
@@ -110,44 +111,67 @@ const projeler = defineCollection({
     }),
 });
 
-// /hakkimda/ özgeçmişi: tek kayıtlı veri dosyası (kimlik: `ozgecmis`). Tarihler "YYYY-AA" ya da "YYYY"; `bitis` yoksa süren kayıt.
-const tarih = z.string().regex(/^\d{4}(-(0[1-9]|1[0-2]))?$/, 'YYYY ya da YYYY-AA');
+// /hakkimda/ özgeçmişi: tek kayıtlı veri dosyası (kimlik: `ozgecmis`). Dosya düz bir belgedir; yükleyici onu tek kayda sarar.
+// Metin alanları { en, tr } biçiminde iki dilli; i18n gelene kadar sayfa `tr`'yi gösterir (`yerel`, lib/format.ts).
+// Tarihler "YYYY-AA" ya da "YYYY" (YAML `2016`'yı sayı okur, bu yüzden metne çevrilir); `bitis: null` ya da yok = devam ediyor.
+const yerel = z.object({ en: z.string().trim(), tr: z.string().trim() });
+const tarih = z.coerce.string().regex(/^\d{4}(-(0[1-9]|1[0-2]))?$/, 'YYYY ya da YYYY-AA');
+const bitis = tarih.nullish();
 
 const ozgecmis = defineCollection({
-  loader: file('./src/content/ozgecmis.yaml'),
+  loader: file('./src/content/ozgecmis.yaml', {
+    parser: (metin) => [{ id: 'ozgecmis', ...(parseYaml(metin) as Record<string, unknown>) }],
+  }),
   schema: z.object({
     // true iken production'da özgeçmiş görünmez (SHOW_DRAFTS=true ile preview'da görünür).
     taslak: z.boolean().default(false),
-    ad: z.string(),
-    unvan: z.string(),
-    konum: z.string().optional(),
-    ozet: z.string(),
+    kimlik: z.object({
+      ad: z.string(),
+      unvan: yerel,
+      konum: yerel.optional(),
+      eposta: z.email().optional(),
+      baglantilar: z.array(z.object({ ad: z.string(), url: z.url() })).default([]),
+    }),
+    // Boş (en ve tr boş) ise render edilmez.
+    ozet: yerel.optional(),
     deneyim: z
       .array(
         z.object({
           kurum: z.string(),
-          rol: z.string(),
           konum: z.string().optional(),
-          baslangic: tarih,
-          bitis: tarih.optional(),
-          maddeler: z.array(z.string()).default([]),
+          web: z.union([z.url(), z.literal('')]).optional(),
+          // Bir kurumun altında birden çok rol olabilir.
+          roller: z
+            .array(
+              z.object({
+                unvan: yerel,
+                baslangic: tarih,
+                bitis,
+                // Unvanın altında küçük bir satır olarak gösterilir.
+                not: yerel.optional(),
+                maddeler: z.array(yerel).default([]),
+              }),
+            )
+            .min(1),
         }),
       )
       .default([]),
     egitim: z
       .array(
         z.object({
-          kurum: z.string(),
-          bolum: z.string(),
-          derece: z.string().optional(),
+          kurum: yerel,
+          derece: yerel,
+          konum: z.string().optional(),
+          web: z.union([z.url(), z.literal('')]).optional(),
           baslangic: tarih,
-          bitis: tarih.optional(),
+          bitis,
         }),
       )
       .default([]),
-    beceriler: z.array(z.object({ grup: z.string(), ogeler: z.array(z.string()).min(1) })).default([]),
-    diller: z.array(z.object({ dil: z.string(), seviye: z.string() })).default([]),
-    baglantilar: z.array(z.object({ ad: z.string(), href: z.string() })).default([]),
+    // Site içi proje slug'ları (src/content/projeler/<slug>); bulunamayan ya da taslak olan atlanır.
+    projeler: z.array(z.object({ slug: z.string() })).default([]),
+    diller: z.array(z.object({ ad: yerel, seviye: yerel })).default([]),
+    beceriler: z.array(z.object({ grup: yerel, ogeler: z.array(z.string()).min(1) })).default([]),
   }),
 });
 
