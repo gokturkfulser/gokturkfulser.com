@@ -1,8 +1,8 @@
 {
   "_not": "Kaynak: _drafts/nba-sakatlik/data.json (rakamlar aynen; yalnızca İngilizce alanlar ve endLabel eklendi). Tüm rakamlar yazıdaki kaynaklardan. minWeeks/maxWeeks takımların açıkladığı tahmini süreler; 'openEnded' = 'en az X hafta' ya da 'sezonun çoğu'. Williams ve Wallace için takım hafta vermedi; 20-26 ve 18-24 hafta, 'sezonun çoğu' ifadesine göre yazarın yaklaşık değeri, grafikte endLabel ile 'sezon sonuna kadar' diye etiketlenir.",
   "injuries": [
-    { "player": "Jalen Williams", "team": "OKC", "injury": "Kırık fibula + çıkık ayak bileği", "injuryEn": "Broken fibula + dislocated ankle", "minWeeks": 20, "maxWeeks": 26, "openEnded": true, "endLabel": { "tr": "sezon sonuna kadar", "en": "until the end of the season" } },
-    { "player": "Cason Wallace", "team": "OKC", "injury": "Omuz labrum yırtığı", "injuryEn": "Torn shoulder labrum", "minWeeks": 18, "maxWeeks": 24, "openEnded": true, "endLabel": { "tr": "sezon sonuna kadar", "en": "until the end of the season" } },
+    { "player": "Jalen Williams", "team": "OKC", "injury": "Kırık fibula + çıkık ayak bileği", "injuryEn": "Broken fibula + dislocated ankle", "minWeeks": 20, "maxWeeks": 26, "openEnded": true, "endLabel": { "tr": "sezon sonuna kadar", "en": "out for the season" } },
+    { "player": "Cason Wallace", "team": "OKC", "injury": "Omuz labrum yırtığı", "injuryEn": "Torn shoulder labrum", "minWeeks": 18, "maxWeeks": 24, "openEnded": true, "endLabel": { "tr": "sezon sonuna kadar", "en": "out for the season" } },
     { "player": "Anthony Edwards", "team": "MIN", "injury": "Diz ameliyatı", "injuryEn": "Knee surgery", "minWeeks": 8, "maxWeeks": 9, "openEnded": false },
     { "player": "Jaren Jackson Jr.", "team": null, "injury": "MCL yırtığı", "injuryEn": "MCL tear", "minWeeks": 6, "maxWeeks": 8, "openEnded": false },
     { "player": "Paolo Banchero", "team": "ORL", "injury": "Yüksek ayak bileği burkulması", "injuryEn": "High ankle sprain", "minWeeks": 4, "maxWeeks": 6, "openEnded": false },
@@ -10,7 +10,7 @@
     { "player": "Kawhi Leonard", "team": "LAC", "injury": "Diz şişliği", "injuryEn": "Knee swelling", "minWeeks": 3, "maxWeeks": 4, "openEnded": false },
     { "player": "Tyrese Haliburton", "team": "IND", "injury": "Hamstring", "injuryEn": "Hamstring", "minWeeks": 2, "maxWeeks": 2, "openEnded": true },
     { "player": "Jalen Duren", "team": "DET", "injury": "Hamstring", "injuryEn": "Hamstring", "minWeeks": 2, "maxWeeks": 2, "openEnded": true },
-    { "player": "Jalen Suggs", "team": "ORL", "injury": "Dizde kemik ödemi", "injuryEn": "Bone edema in the knee", "minWeeks": 2, "maxWeeks": 2, "openEnded": true }
+    { "player": "Jalen Suggs", "team": "ORL", "injury": "Dizde kemik ödemi", "injuryEn": "Bone bruise in the knee", "minWeeks": 2, "maxWeeks": 2, "openEnded": true }
   ],
   "first8Weeks": [
     { "season": "2023-24", "gamesLost": 1579 },

@@ -18,32 +18,34 @@ const t = en
       ozet: 'Games lost to injury or illness in the first 8 weeks of the season',
       kaynak: 'Source: Jeff Stotts’s data via Front Office Sports (see',
       kaynakBag: 'Sources',
-      kaynakSon: '). The dashed column is a placeholder for a season that has not reached week 8; its height means nothing.',
+      kaynakSon: '). The dashed slot marks a season that has not reached week 8 yet.',
       bekleniyor: 'not known yet',
+      yuvaNotu: 'end of November',
     }
   : {
       baslik: 'İlk 8 haftada kaybedilen maç',
       ozet: 'Sezonun ilk 8 haftasında sakatlık ve hastalık yüzünden kaçırılan maç',
       kaynak: 'Kaynak: Jeff Stotts verisi, Front Office Sports aracılığıyla (bkz.',
       kaynakBag: 'Kaynaklar',
-      kaynakSon: '). Kesikli sütun, 8. haftaya henüz gelmemiş sezonun yer tutucusudur; yüksekliğinin anlamı yoktur.',
+      kaynakSon: '). Kesikli yuva, 8. haftaya henüz gelmemiş sezonu gösterir.',
       bekleniyor: 'henüz belli değil',
+      yuvaNotu: 'kasım sonu',
     };
 
 const W = 400;
-const H = 262;
+const H = 284;
 const TABAN = 222;
 const UST = 36;
 const MAX = 2200; // eksen üst sınırı
 const SUTUN = 72;
 const ARALIK = (W - 8 - veri.first8Weeks.length * SUTUN) / (veri.first8Weeks.length - 1);
 const yukseklik = (v: number) => (v / MAX) * (TABAN - UST);
-const sonDeger = [...veri.first8Weeks].reverse().find((s) => s.gamesLost != null)?.gamesLost ?? 0;
+const YUVA = 26; // değeri olmayan sezonun boş yuvası: sabit, düşük; ölçeğe (MAX) bağlı değildir
 
 const sutunlar = veri.first8Weeks.map((s, i) => {
   const x = 4 + i * (SUTUN + ARALIK);
   const bos = s.gamesLost == null;
-  const h = yukseklik(bos ? sonDeger : (s.gamesLost as number));
+  const h = bos ? YUVA : yukseklik(s.gamesLost as number);
   const not = 'note' in s ? (en ? s.noteEn : s.note) : undefined;
   return { s, x, bos, h, y: TABAN - h, orta: x + SUTUN / 2, not };
 });
@@ -62,12 +64,7 @@ const ariaEtiketi = `${t.baslik}. ${t.ozet}: ${sutunlar
         c.bos ? (
           <g>
             <rect class="bos" x={c.x + 0.75} y={c.y} width={SUTUN - 1.5} height={c.h} rx="2" />
-            <text class="not" x={c.orta} y={c.y + c.h / 2 - 4} text-anchor="middle">
-              {en ? 'end of' : 'kasım'}
-            </text>
-            <text class="not" x={c.orta} y={c.y + c.h / 2 + 14} text-anchor="middle">
-              {en ? 'November' : 'sonunda'}
-            </text>
+            <text class="not" x={c.x + SUTUN} y={TABAN + 42} text-anchor="end">{t.yuvaNotu}</text>
           </g>
         ) : (
           <g>
@@ -96,8 +93,9 @@ const ariaEtiketi = `${t.baslik}. ${t.ozet}: ${sutunlar
     font-family: var(--font-baslik-yigin);
   }
 
+  /* Taban çizgisi anlam taşır: koyu bantta --cizgi (1,6:1) yetmez, --soluk kullanılır */
   .taban {
-    stroke: var(--cizgi);
+    stroke: var(--soluk);
     stroke-width: 1.5;
   }
 

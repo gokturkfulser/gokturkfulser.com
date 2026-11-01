@@ -12,6 +12,7 @@ interface Props {
 }
 const { dil = 'tr' } = Astro.props;
 const en = dil === 'en';
+const SI_URL = 'https://www.si.com/nba/trailblazers/onsi/how-many-games-will-blazers-ja-morant-miss-due-to-injury';
 
 const t = en
   ? {
@@ -20,8 +21,10 @@ const t = en
       dolu: 'Minimum time out',
       aralik: 'Estimated range',
       ok: 'May run longer',
-      kaynak: 'Source: return timelines announced by the teams (see',
-      kaynakSon: '). For Williams and Wallace the teams gave no number; the ranges are my rough estimate from “most of the season”.',
+      kaynak: 'Source: return timelines announced by the teams, and for Morant',
+      kaynakSi: 'Sports Illustrated',
+      kaynakAra: '; more in',
+      kaynakSon: '. For Williams and Wallace the teams gave no number; the ranges are my rough estimate from “most of the season”.',
       kaynakBag: 'Sources',
       ozet: 'Weeks each player is expected to miss',
       belirsiz: 'could be longer',
@@ -33,8 +36,10 @@ const t = en
       dolu: 'En az süre',
       aralik: 'Tahmini aralık',
       ok: 'Uzayabilir',
-      kaynak: 'Kaynak: takımların açıkladığı tahmini süreler (bkz.',
-      kaynakSon: '). Williams ve Wallace için takım süre vermedi; aralıklar “sezonun çoğu” ifadesine göre benim yaklaşık değerimdir.',
+      kaynak: 'Kaynak: takımların açıkladığı tahmini süreler, Morant için',
+      kaynakSi: 'Sports Illustrated',
+      kaynakAra: '; diğerleri için',
+      kaynakSon: '. Williams ve Wallace için takım süre vermedi; aralıklar “sezonun çoğu” ifadesine göre benim yaklaşık değerimdir.',
       kaynakBag: 'Kaynaklar',
       ozet: 'Oyuncuların kaçıracağı tahmini hafta',
       belirsiz: 'uzayabilir',
@@ -120,7 +125,7 @@ const ariaEtiketi = `${t.baslik} ${t.ozet}: ${satirlar.map((s) => s.etiket).join
     <li><span class="ornek aralik-ornek" aria-hidden="true"></span>{t.aralik}</li>
     <li><span class="ornek ok-ornek" aria-hidden="true"></span>{t.ok} (+)</li>
   </ul>
-  <Fragment slot="kaynak">{t.kaynak}{' '}<a href={en ? '#sources' : '#kaynaklar'}>{t.kaynakBag}</a>{t.kaynakSon}</Fragment>
+  <Fragment slot="kaynak">{t.kaynak}{' '}<a href={SI_URL} target="_blank" rel="noopener noreferrer">{t.kaynakSi}</a>{t.kaynakAra}{' '}<a href={en ? '#sources' : '#kaynaklar'}>{t.kaynakBag}</a>{t.kaynakSon}</Fragment>
 </GrafikKutu>
 
 <style>
@@ -166,7 +171,7 @@ const ariaEtiketi = `${t.baslik} ${t.ozet}: ${satirlar.map((s) => s.etiket).join
   }
 
   .aralik {
-    fill: color-mix(in srgb, var(--dunya-metin) 28%, transparent);
+    fill: color-mix(in srgb, var(--dunya-metin) 42%, transparent);
     stroke: var(--dunya-metin);
     stroke-width: 1.5;
   }
@@ -197,7 +202,7 @@ const ariaEtiketi = `${t.baslik} ${t.ozet}: ${satirlar.map((s) => s.etiket).join
   }
 
   .aralik-ornek {
-    background: color-mix(in srgb, var(--dunya-metin) 28%, transparent);
+    background: color-mix(in srgb, var(--dunya-metin) 42%, transparent);
     border: 1.5px solid var(--dunya-metin);
   }
 
