@@ -1,26 +1,26 @@
-/* Yön 1 — "Gece seansı". Değerler site/DESIGN.md'den gelir; orada değişmeden burada değişmez.
-   Koyu bantlar sinema salonu, açık bantlar parke. Aynı token adları iki bantta farklı değer alır:
-   :root koyu bandın değerleridir, `.bant--acik` açık bandınkileri üstüne yazar. */
+/* "Karanlık salonda basılı sayfa". Değerler site/DESIGN.md'den gelir; orada değişmeden burada değişmez.
+   Koyu bantlar sinema salonu, kâğıt bantlar (.bant--acik) basılı sayfa. Aynı token adları iki bantta farklı
+   değer alır: :root koyu bandın değerleridir, `.bant--acik` kâğıt bandınkileri üstüne yazar. */
 :root {
   color-scheme: dark;
 
   /* Ham renkler */
-  --perde: #0a0d12;
-  --perde-2: #121820;
-  --parke: #e8e7e2;
-  --parke-2: #f3f2ee;
+  --perde: #0b0c0e;
+  --perde-2: #131417;
+  --kagit: #f1eee7;
+  --kagit-2: #e8e4da;
   --turkuaz: #0e5e66; /* alan dolgusu (iki bantta aynı) */
   --turuncu: #e2661a; /* alan dolgusu (iki bantta aynı) */
 
   /* Bant değerleri: koyu bant (varsayılan) */
   --zemin: var(--perde);
-  --murekkep: #eef1f4;
-  --soluk: #9aa5b1;
-  --lede-renk: #c4ccd5;
+  --murekkep: #ece8e1;
+  --soluk: #c9c3b8;
+  --lede-renk: #e4dfd6;
   --yuzey: var(--perde-2);
-  --cizgi: #27303b;
-  --turkuaz-metin: #3fc8cf;
-  --turuncu-metin: #ff7a2f;
+  --cizgi: #34353a;
+  --turkuaz-metin: #4fd1d9;
+  --turuncu-metin: #ff8a3d;
   --medya-vinyet-guc: 0.4;
 
   /* Alan içi metin (alan rengi iki modda da sabit) */
@@ -34,22 +34,28 @@
   --dunya-bant: var(--turkuaz-metin);
   --vurgu: var(--turkuaz-metin);
 
-  /* Tipografi: Bricolage Grotesque (başlık/UI) + Newsreader (gövde) */
-  --font-baslik-yigin: var(--font-baslik), Arial, sans-serif;
-  --font-metin-yigin: var(--font-metin), Georgia, serif;
+  /* Tipografi: Hanken Grotesk her yerde; Cormorant yalnızca koyu bantta ve ≥ 24 px başlıkta.
+     --font-bas, bantın tonuna göre başlık ailesini seçer: koyu bantta Cormorant, kâğıtta Hanken. */
+  --font-serif-yigin: var(--font-baslik), Georgia, serif;
+  --font-baslik-yigin: var(--font-metin), Arial, sans-serif; /* UI ve ≤ 24 px yazılar: Hanken */
+  --font-metin-yigin: var(--font-metin), Arial, sans-serif;
+  --font-bas: var(--font-serif-yigin);
+  --bas-agirlik: 500;
+  --bas-aralik: -0.03em;
 
-  --yazi-xs: 0.875rem;
+  /* Boyut taban değerleri: koyu bantta gövde/özet ≥ 16 px, meta ≥ 14 px, nav ≥ 15 px */
+  --yazi-xs: 0.875rem; /* meta: tarih, okuma süresi, etiket, künye (14 px) */
   --yazi-sm: 0.9375rem;
   --yazi-govde: 1.1875rem;
-  --yazi-yazi: 1.3125rem; /* yazı gövdesi */
-  --yazi-lede: clamp(1.25rem, 1rem + 1vw, 1.875rem);
+  --yazi-yazi: 1.1875rem; /* yazı gövdesi (Hanken, kâğıt) */
+  --yazi-lede: clamp(1.5rem, 1.1rem + 1vw, 1.75rem); /* Cormorant ≥ 24 px */
   --yazi-h3: clamp(1.625rem, 1.1rem + 1.7vw, 2.5rem);
-  --yazi-h2: clamp(2.75rem, 1.2rem + 6vw, 7rem);
-  --yazi-h1: clamp(3.5rem, 1rem + 11vw, 10rem);
-  --yazi-dev: clamp(4rem, 0.5rem + 14.5vw, 13rem);
+  --yazi-h2: clamp(2.5rem, 1.2rem + 5vw, 6rem);
+  --yazi-h1: clamp(3.25rem, 1rem + 9.5vw, 9.5rem);
+  --yazi-dev: clamp(4.2rem, 0.5rem + 14.5vw, 17rem);
   --yazi-sayi: clamp(3.75rem, 1rem + 10vw, 9.5rem);
   --satir-govde: 1.7;
-  --satir-baslik: 0.98;
+  --satir-baslik: 0.95;
 
   /* Boşluk */
   --aralik-1: 0.25rem;
@@ -58,31 +64,34 @@
   --aralik-4: 1.5rem;
   --aralik-5: 2.5rem;
   --aralik-6: clamp(2.5rem, 2rem + 3vw, 5rem);
-  --bant: clamp(4.5rem, 2.5rem + 7vw, 10rem);
-  --kenar: clamp(1.25rem, 0.5rem + 3.2vw, 4rem);
+  --bant: clamp(4rem, 2.5rem + 6vw, 8.5rem);
+  --kenar: clamp(1.25rem, 0.5rem + 3.2vw, 3.5rem);
 
   /* Yerleşim */
   --olcu: 68ch;
   --kap: 90rem;
-  --nav: 3.75rem;
+  --nav: 4rem;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Açık bant (parke) */
+/* Kâğıt bandı: basılı sayfa. Başlıklar gövde fontuna döner (kâğıtta serif yok). */
 .bant--acik {
   color-scheme: light;
-  --zemin: var(--parke);
-  --murekkep: #12161c;
-  --soluk: #4b5560;
-  --lede-renk: #3a434d;
-  --yuzey: var(--parke-2);
-  --cizgi: #cbc9c0;
-  --turkuaz-metin: #0e5e66;
-  --turuncu-metin: #a8430a;
+  --zemin: var(--kagit);
+  --murekkep: #15171a;
+  --soluk: #565a5e;
+  --lede-renk: #2a2d31;
+  --yuzey: var(--kagit-2);
+  --cizgi: #c4c0b4;
+  --turkuaz-metin: #0a6670;
+  --turuncu-metin: #b23e08;
   --medya-vinyet-guc: 0.3;
   --dunya-bant: var(--turkuaz-metin);
   --dunya-metin: var(--turkuaz-metin);
   --vurgu: var(--turkuaz-metin);
+  --font-bas: var(--font-baslik-yigin);
+  --bas-agirlik: 650;
+  --bas-aralik: -0.03em;
 }
 
 [data-dunya='sinema'] {

@@ -1,11 +1,11 @@
 ---
 import Medya from '../Medya.astro';
-import YaziKapagi from '../YaziKapagi.astro';
+import YaziBasi from './YaziBasi.astro';
 import { render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Etiketler from '../../components/Etiketler.astro';
 import { mdxBilesenleri } from '../../components/mdx';
-import { puanYaz, tarihIso, tarihYaz } from '../../lib/format';
+import { puanYaz } from '../../lib/format';
 import { filmYorumuLd, grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
 import { tmdbKaydi, tmdbUrl } from '../../lib/tmdb';
@@ -55,184 +55,102 @@ const ld = grafLd(
 );
 ---
 
-<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
+<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld} bindirme>
   <article data-dunya="sinema" data-pagefind-body>
-    <header>
-      <div class="kapak-bant">
-        <YaziKapagi class="kare" yazi={{ bolum: 'sinema', entry }} oran="kapak" width={1920} oncelikli />
-      </div>
-      <div class="bant bant--koyu jenerik">
-        <div class="kap jenerik-ic">
-          <h1 class="h1">{data.baslik}</h1>
-          <p class="ozet">{data.ozet}</p>
-          <div class="kunye-satiri">
-            {
-              tmdb?.afisGorsel && (
-                <Medya
-                  class="afis"
-                  src={tmdb.afisGorsel}
-                  oran="afis"
-                  alt={`${film.ad} filminin afişi`}
-                  width={320}
-                  oncelikli
-                />
-              )
-            }
+    <YaziBasi yazi={{ bolum: 'sinema', entry }} dakika={sure.dakika}>
+      <span slot="meta">{film.yonetmen}, {film.yil}</span>
+    </YaziBasi>
+
+    <!-- Kâğıt bandı: kapaktan sonra okuma alanı basılı sayfaya geçer (sert bant değişimi) -->
+    <div class="bant bant--acik govde">
+      <div class="kap">
+        <div class="yazi-metni">
+          <aside class="kenar-notu" aria-label="Künye">
             <dl>
-              <dt>Film</dt>
-              <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
-              <dt>Yönetmen</dt>
-              <dd>{film.yonetmen}</dd>
-              <dt>Yıl</dt>
-              <dd>{film.yil}</dd>
-              {
-                tmdb?.sure && (
-                  <>
-                    <dt>Süre</dt>
-                    <dd>{tmdb.sure} dakika</dd>
-                  </>
-                )
-              }
-              {
-                tmdb && tmdb.turler.length > 0 && (
-                  <>
-                    <dt>Tür</dt>
-                    <dd>{tmdb.turler.join(', ')}</dd>
-                  </>
-                )
-              }
+              <div>
+                <dt>Film</dt>
+                <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
+              </div>
+              <div>
+                <dt>Yönetmen</dt>
+                <dd>{film.yonetmen}</dd>
+              </div>
+              <div>
+                <dt>Yıl</dt>
+                <dd>{film.yil}</dd>
+              </div>
               {
                 data.puan !== undefined && (
-                  <>
+                  <div>
                     <dt>Puanım</dt>
-                    <dd class="puan">
-                      {puanYaz(data.puan)}{' '}<span>/ 5</span>
-                    </dd>
-                  </>
+                    <dd>{puanYaz(data.puan)} / 5</dd>
+                  </div>
                 )
               }
             </dl>
-          </div>
-          <p class="tarih">
-            <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
-            <span class="okuma">{sure.dakika} dakikalık okuma</span>
-          </p>
-        </div>
-      </div>
-    </header>
-
-    <div class="bant bant--acik govde">
-      <div class="kap">
-        <div class="kolon">
-          <div class="metin">
-            <Content components={mdxBilesenleri} />
-          </div>
+          </aside>
+          <Content components={mdxBilesenleri} />
           <Etiketler etiketler={data.etiketler} />
         </div>
       </div>
     </div>
+
+    <!-- Film künyesi yazının sonunda, jenerik düzeninde (koyu bant) -->
+    <section class="bant bant--koyu jenerik" aria-labelledby="jenerik-baslik">
+      <div class="kap jenerik-ic">
+        <h2 id="jenerik-baslik" class="sr-only">Film künyesi</h2>
+        {
+          tmdb?.afisGorsel && (
+            <Medya class="afis" src={tmdb.afisGorsel} oran="afis" alt={`${film.ad} filminin afişi`} width={320} />
+          )
+        }
+        <dl class="liste">
+          <div>
+            <dt>Film</dt>
+            <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
+          </div>
+          <div>
+            <dt>Yönetmen</dt>
+            <dd>{film.yonetmen}</dd>
+          </div>
+          <div>
+            <dt>Yapım yılı</dt>
+            <dd>{film.yil}</dd>
+          </div>
+          {
+            tmdb?.sure && (
+              <div>
+                <dt>Süre</dt>
+                <dd>{tmdb.sure} dakika</dd>
+              </div>
+            )
+          }
+          {
+            tmdb && tmdb.turler.length > 0 && (
+              <div>
+                <dt>Tür</dt>
+                <dd>{tmdb.turler.join(', ')}</dd>
+              </div>
+            )
+          }
+          {
+            data.puan !== undefined && (
+              <div>
+                <dt>Puanım</dt>
+                <dd class="puan">{puanYaz(data.puan)} <span>/ 5</span></dd>
+              </div>
+            )
+          }
+        </dl>
+      </div>
+    </section>
   </article>
 </Base>
 
 <style>
-  .kapak-bant {
-    width: 100%;
-    background: var(--perde);
-  }
-
-  .kapak-bant :global(.kare) {
-    border-radius: 0;
-  }
-
-  .jenerik {
-    padding-block: clamp(3.5rem, 7vw, 8rem);
-    text-align: center;
-  }
-
-  .jenerik-ic {
-    display: grid;
-    justify-items: center;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-  }
-
-  h1 {
-    max-width: 14ch;
-    font-size: clamp(3rem, 1rem + 8vw, 8.5rem);
-  }
-
-  .ozet {
-    max-width: 34ch;
-    margin: 0;
-    font-family: var(--font-baslik-yigin);
-    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-    line-height: 1.35;
-    letter-spacing: -0.02em;
-    color: var(--lede-renk);
-  }
-
-  .kunye-satiri {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: var(--aralik-5) 3.5rem;
-    width: 100%;
-  }
-
-  .kunye-satiri :global(.afis) {
-    width: 9.5rem;
-  }
-
-  /* Jenerik: ortak eksende, soldaki etiket sağa, sağdaki ad sola yaslı */
-  dl {
-    display: grid;
-    grid-template-columns: auto auto;
-    column-gap: var(--aralik-4);
-    row-gap: var(--aralik-2);
-    margin: 0;
-    font-family: var(--font-baslik-yigin);
-    font-size: 1.0625rem;
-    line-height: 1.4;
-  }
-
-  dt {
-    text-align: end;
-    color: var(--soluk);
-  }
-
-  dd {
-    margin: 0;
-    text-align: start;
-    font-weight: 600;
-  }
-
-  .puan {
-    font-size: 2.5rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    color: var(--turkuaz-metin);
-  }
-
-  .puan span {
-    font-size: 1.125rem;
-    font-weight: 500;
-    color: var(--soluk);
-  }
-
-  .tarih {
-    display: grid;
-    gap: 0.125rem;
-    margin: 0;
-    font-family: var(--font-baslik-yigin);
-    font-size: var(--yazi-sm);
-    font-weight: 500;
-    color: var(--soluk);
-  }
-
-  .govde .kolon {
-    max-width: 46rem;
-    margin-inline: auto;
+  .govde {
+    padding-block-start: calc(var(--bant) * 0.7);
+    padding-block-end: calc(var(--bant) * 0.7);
   }
 
   .govde :global(.etiketler) {
@@ -241,9 +159,75 @@ const ld = grafLd(
     border-block-start: 1px solid var(--cizgi);
   }
 
-  @media (max-width: 36rem) {
-    .kunye-satiri :global(.afis) {
-      width: 7.5rem;
-    }
+  /* Kenar notu (künye): Hanken, kâğıt */
+  .kenar-notu {
+    padding-block-start: 0.6rem;
+    border-block-start: 3px solid var(--dunya-bant);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    line-height: 1.4;
+  }
+
+  .kenar-notu dl {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0;
+  }
+
+  .kenar-notu dt {
+    color: var(--soluk);
+  }
+
+  .kenar-notu dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* Jenerik: ortalı, etiket küçük, değer büyük serif (koyu bantta, ≥ 24 px) */
+  .jenerik {
+    padding-block: clamp(4rem, 8vw, 8rem);
+    text-align: center;
+  }
+
+  .jenerik-ic {
+    display: grid;
+    justify-items: center;
+    gap: var(--aralik-5);
+  }
+
+  .jenerik-ic :global(.afis) {
+    width: 9.5rem;
+  }
+
+  .liste {
+    display: grid;
+    gap: 1.1rem;
+    margin: 0;
+  }
+
+  .liste dt {
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  .liste dd {
+    margin: 0.1rem 0 0;
+    font-family: var(--font-serif-yigin);
+    font-size: clamp(1.625rem, 2.6vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .liste .puan {
+    color: var(--turkuaz-metin);
+  }
+
+  .liste .puan span {
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--soluk);
   }
 </style>

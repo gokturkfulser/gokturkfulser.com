@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Medya from '../Medya.astro';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -7,12 +7,15 @@ interface Props {
   /** Anlam taşıyorsa açıklama; yalnızca süsse boş bırakılır. */
   alt: string;
   altyazi?: string;
+  /** Kenara taşan geniş görsel: sayfa genişliğine yayılır (2,39:1). Varsayılan: metin sütunu (16:10). */
+  genis?: boolean;
 }
-const { src, alt, altyazi } = Astro.props;
+const { src, alt, altyazi, genis = false } = Astro.props;
 ---
 
-<figure class="gorsel">
-  <Image src={src} alt={alt} width={1200} loading="lazy" />
+<!-- Görsel Medya kuralından geçer (oran, köşe, işleme); kaydırınca CSS ile açılır (.ac), JS yok. -->
+<figure class:list={['gorsel', genis && 'genis']}>
+  <Medya {src} {alt} oran={genis ? 'kapak' : 'vitrin'} width={genis ? 1920 : 1200} class="ac" />
   {altyazi && <figcaption>{altyazi}</figcaption>}
 </figure>
 
@@ -21,14 +24,13 @@ const { src, alt, altyazi } = Astro.props;
     margin-block: 1.6em;
   }
 
-  .gorsel img {
-    width: 100%;
-    height: auto;
+  .genis {
+    margin-block: clamp(1.6em, 4vw, 3em);
   }
 
   figcaption {
     margin-block-start: var(--aralik-2);
-    font-size: var(--yazi-sm);
+    font-size: var(--yazi-xs);
     line-height: 1.5;
     color: var(--soluk);
     hyphens: manual;

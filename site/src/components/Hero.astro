@@ -1,128 +1,220 @@
 ---
-// Ana sayfa hero'su: ad bloğu solda, build gününe göre değişen SVG sahne bandın arka planında (sağa yaslı, sola doğru erir).
-// Adın altındaki cümle (lede) isteğe bağlıdır; verilmezse hiç render edilmez.
+// Ana sayfa kapağı: tam ekran koyu sahne, ad dergi logosu gibi, altında iki "kapak satırı" (öne çıkan yazı ve proje).
+// Sahne sağ %70'e oturur ve biraz aşağı iner: saha çizgileri adın bittiği yerden sonra başlar, adın arkası sakin kalır.
+// Üç karartma (üst: nav, alt: kapak satırları, sol: ad) görüntü işlemesidir, süs değil. Kontrast ekran görüntüsünden ölçülür:
+// küçük metin ≥ 7:1, büyük metin ≥ 4,5:1 (DESIGN.md "Hero ve koyu bant okunabilirliği").
+// Adın altındaki cümle (lede) isteğe bağlıdır; verilmezse hiç render edilmez. Kapak satırları yalnızca içerik varsa çizilir.
 import HeroSahne from './HeroSahne.astro';
+import type { CollectionEntry } from 'astro:content';
+import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { tarihIso, tarihYaz } from '../lib/format';
+import { okumaSuresi } from '../lib/okuma-suresi';
 
 interface Props {
   /** Başlığın altındaki tek cümle (isteğe bağlı). */
   cumle?: string;
+  /** Kapak satırı: öne çıkan yazı. */
+  yazi?: Yazi;
+  /** Kapak satırı: öne çıkan proje. */
+  proje?: CollectionEntry<'projeler'>;
 }
 
-const { cumle } = Astro.props;
-// Build günü: sahnenin küçük varyasyonu (ışığın yönü, açısı, toz) için tohum; aynı gün aynı çıktı.
+const { cumle, yazi, proje } = Astro.props;
+// Build günü: sahnenin küçük varyasyonu (ışığın açısı, toz) için tohum; aynı gün aynı çıktı.
 const tohum = Math.floor(Date.now() / 86_400_000);
+const sure = yazi ? okumaSuresi(yazi.entry.body) : undefined;
+const satirSayisi = Number(Boolean(yazi)) + Number(Boolean(proje));
 ---
-<section class="bant bant--koyu hero" aria-labelledby="hero-baslik">
-  <div class="kap hero-izgara">
-    <div class="hero-metin">
-      <h1 id="hero-baslik" class="dev"><span>Göktürk</span> <span>Fulser</span></h1>
+
+<section class="kapak bant--koyu" aria-labelledby="hero-baslik">
+  <div class="zemin" aria-hidden="true">
+    <HeroSahne {tohum} />
+  </div>
+  <div class="kap kapak-ic">
+    <div class="ad-blogu">
+      <h1 id="hero-baslik" class="dev">
+        <span class="satir"><span>Göktürk</span></span>{' '}
+        <span class="satir"><span>Fulser</span></span>
+      </h1>
       {cumle && <p class="lede">{cumle}</p>}
-      <p class="baglantilar">
-        <a href="/yazilar/">Yazılara git</a>
-        <a href="/projeler/">Projelere git</a>
-      </p>
     </div>
-    <div class="hero-gorsel" aria-hidden="true">
-      <HeroSahne {tohum} />
-    </div>
+    {
+      satirSayisi > 0 && (
+        <div class="kapak-satirlari" data-adet={satirSayisi}>
+          {
+            yazi && sure && (
+              <article data-dunya={yazi.bolum}>
+                <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
+                <h2 class="h3">
+                  <a href={yaziUrl(yazi.bolum, yazi.entry.id)}>{yazi.entry.data.baslik}</a>
+                </h2>
+                <p class="meta">
+                  <time datetime={tarihIso(yazi.entry.data.tarih)}>{tarihYaz(yazi.entry.data.tarih)}</time>
+                  <span>{sure.dakika} dakikalık okuma</span>
+                </p>
+              </article>
+            )
+          }
+          {
+            proje && (
+              <article data-dunya="proje">
+                <p class="etiket">Proje</p>
+                <h2 class="h3">
+                  <a href={`/projeler/${proje.id}/`}>{proje.data.ad}</a>
+                </h2>
+                <p class="ozet">{proje.data.ozet}</p>
+              </article>
+            )
+          }
+        </div>
+      )
+    }
   </div>
 </section>
 
 <style>
-  .hero {
+  .kapak {
     position: relative;
     isolation: isolate;
     overflow: hidden;
     display: grid;
     align-items: end;
-    min-height: calc(100svh - var(--nav));
-    padding-block: clamp(2.5rem, 5vw, 5rem) clamp(3rem, 6vw, 6rem);
+    min-height: min(100svh, 62rem);
+    background: var(--perde);
+    color: var(--murekkep);
   }
 
-  .hero-izgara {
+  .zemin {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #07090d;
+  }
+
+  .zemin :global(.sahne) {
+    position: absolute;
+    top: 8%;
+    right: 0;
+    width: 70%;
+    height: 100%;
+  }
+
+  /* Gren: kadrajdan bağımsız sabit piksel boyutlu katman, çok düşük güç. Küçük metnin arkasında görünür doku kalmaz. */
+  .zemin::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-size: 220px 220px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Karartma: üstte nav, altta kapak satırları, solda ad bloğu (saha çizgileri adın arkasında sönük kalır). */
+  .zemin::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      linear-gradient(to bottom, rgb(7 9 13 / 0.9) 0, rgb(7 9 13 / 0.55) 5rem, rgb(7 9 13 / 0) 10rem),
+      linear-gradient(to top, rgb(7 9 13 / 0.96) 0%, rgb(7 9 13 / 0.92) 20%, rgb(7 9 13 / 0.3) 38%, rgb(7 9 13 / 0) 52%),
+      linear-gradient(to right, rgb(7 9 13 / 0.94) 0%, rgb(7 9 13 / 0.86) 34%, rgb(7 9 13 / 0.4) 52%, rgb(7 9 13 / 0) 66%);
+  }
+
+  .kapak-ic {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: end;
+    gap: clamp(1.5rem, 3vw, 2.6rem);
+    padding-block: clamp(7rem, 16vw, 12rem) clamp(1.5rem, 3vw, 2.6rem);
   }
 
-  .hero-metin {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-
-  h1 {
+  .dev {
     font-size: var(--yazi-dev);
-    line-height: 0.96;
-    letter-spacing: -0.058em;
-  }
-
-  h1 span {
-    display: block;
   }
 
   .lede {
-    margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+    margin-block-start: clamp(1.25rem, 2.5vw, 2rem);
+    color: #e4dfd6;
   }
 
-  /* Lede yokken bağlantılar doğrudan adın altında durur */
-  .baglantilar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--aralik-2) var(--aralik-5);
-    margin: var(--aralik-5) 0 0;
+  .kapak-satirlari {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 24rem));
+    gap: 1.5rem clamp(1.4rem, 4vw, 4rem);
+    justify-content: end;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid rgb(236 232 225 / 0.35);
+  }
+
+  .kapak-satirlari[data-adet='1'] {
+    grid-template-columns: minmax(0, 24rem);
+  }
+
+  .kapak-satirlari article {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+  }
+
+  .etiket {
+    margin: 0;
     font-family: var(--font-baslik-yigin);
-    font-size: 1.125rem;
+    font-size: var(--yazi-xs);
     font-weight: 600;
+    color: var(--vurgu);
   }
 
-  .hero-metin {
-    position: relative;
-    z-index: 1;
+  .kapak-satirlari .h3 {
+    font-size: clamp(1.625rem, 2.4vw, 2.1rem);
   }
 
-  /* Sahne bandın arka planıdır: sağa yaslı, sol ve alt kenarı arka plana erir */
-  .hero-gorsel {
-    position: absolute;
-    inset: 0 0 0 auto;
-    z-index: -1;
-    width: min(78%, 72rem);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    mask-image:
-      linear-gradient(to right, transparent, #000 40%),
-      linear-gradient(to bottom, #000 80%, transparent);
-    mask-composite: intersect;
+  .meta {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: #d3cdc2;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    h1 {
-      animation: hero-giris 0.9s var(--ease) both;
-    }
-
-    @keyframes hero-giris {
-      from {
-        opacity: 0;
-        transform: translateY(1.5rem);
-      }
-    }
+  .ozet {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #dcd7ce;
   }
 
-  @media (max-width: 52rem) {
-    .hero {
+  /* Mobil: sahne üstte (nav'ın altında), ad ve kapak satırları sahnenin altındaki sakin bölgede.
+     Lamba nav ve markayla çakışmasın: sahne nav yüksekliğinin altından başlar. */
+  @media (max-width: 47.9375rem) {
+    .kapak {
       min-height: 0;
     }
 
-    /* Mobilde sahne tüm bandın arkasında, metnin okunması için biraz kısık */
-    .hero {
-      min-height: 32rem;
+    .zemin :global(.sahne) {
+      top: 5rem;
+      left: 0;
+      width: 100%;
+      height: 21rem;
     }
 
-    .hero-gorsel {
-      width: 100%;
-      opacity: 0.55;
-      mask-image: linear-gradient(to bottom, #000 40%, transparent);
+    .zemin::after {
+      background:
+        linear-gradient(to bottom, rgb(7 9 13 / 0.9) 0, rgb(7 9 13 / 0.5) 4.5rem, rgb(7 9 13 / 0) 7rem),
+        linear-gradient(to top, rgb(7 9 13 / 0.97) 0, rgb(7 9 13 / 0.95) calc(100% - 26rem), rgb(7 9 13 / 0) calc(100% - 20rem));
+    }
+
+    .kapak-ic {
+      padding-block-start: 25rem;
+    }
+
+    .kapak-satirlari,
+    .kapak-satirlari[data-adet='1'] {
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: stretch;
     }
   }
 </style>

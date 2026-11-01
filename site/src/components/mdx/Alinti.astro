@@ -6,6 +6,7 @@ interface Props {
 const { kaynak } = Astro.props;
 ---
 
+<!-- Büyük alıntı: yazı sayfasında sayfa genişliğine taşar (prose.css `.yazi-metni > .alinti`), vurgu rengiyle çift kenar çizgisi. -->
 <figure class="alinti">
   <blockquote>
     <slot />
@@ -15,19 +16,29 @@ const { kaynak } = Astro.props;
 
 <style>
   .alinti {
+    justify-self: center;
+    width: 100%;
+    max-width: 50rem;
     margin-block: 1.6em;
-    padding-inline-start: var(--aralik-4);
-    border-inline-start: 12px solid var(--dunya);
+    padding-block: 1.1rem;
+    border-block: 4px solid var(--dunya-bant);
   }
 
   .alinti blockquote {
     margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-weight: 600;
+    font-size: clamp(1.625rem, 1.1rem + 2vw, 2.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--murekkep);
+    hyphens: manual;
   }
 
   figcaption {
     margin-block-start: var(--aralik-2);
     font-family: var(--font-metin-yigin);
-    font-size: var(--yazi-sm);
+    font-size: var(--yazi-xs);
     line-height: 1.5;
     color: var(--soluk);
   }

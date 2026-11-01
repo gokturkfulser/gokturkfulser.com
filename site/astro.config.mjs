@@ -38,25 +38,26 @@ export default defineConfig({
     },
   },
   // Fontlar build sırasında indirilip kendi domain'imizden servis edilir.
-  // Türkçe (ğ ş İ) için latin-ext zorunlu. Yön 1: Bricolage Grotesque (başlık/UI) + Newsreader (gövde).
+  // Türkçe (ğ ş İ) için latin-ext zorunlu. Cormorant yalnızca koyu bantta ve ≥ 24 px (başlık);
+  // Hanken Grotesk her yerde (kâğıt yüzeyler ve ≤ 24 px dahil). İki serif aile yoktur (DESIGN.md "Fontlar").
   fonts: [
     {
-      name: 'Bricolage Grotesque',
+      name: 'Cormorant',
       cssVariable: '--font-baslik',
       provider: fontProviders.fontsource(),
-      weights: ['500 800'],
+      weights: ['500', '600'],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
-      fallbacks: ['Arial', 'sans-serif'],
+      fallbacks: ['Georgia', 'serif'],
     },
     {
-      name: 'Newsreader',
+      name: 'Hanken Grotesk',
       cssVariable: '--font-metin',
       provider: fontProviders.fontsource(),
       weights: ['400 700'],
-      styles: ['normal', 'italic'],
+      styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
-      fallbacks: ['Georgia', 'serif'],
+      fallbacks: ['Arial', 'sans-serif'],
     },
   ],
   env: {

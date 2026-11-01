@@ -1,51 +1,354 @@
 ---
+// /hakkimda/: sayfanın kendisi özgeçmiştir (veri: src/content/ozgecmis.yaml, Zod şemalı). Kâğıt bandında, A4 yazdırmaya uygun.
+// `taslak: true` iken production'da "hazırlanıyor" durumu gösterilir (nav bağlantısı kalır); SHOW_DRAFTS=true'da özgeçmiş görünür.
+import { getEntry } from 'astro:content';
 import { SHOW_DRAFTS } from 'astro:env/server';
 import Base from '../layouts/Base.astro';
-import DeneyimZamanCizelgesi from '../components/DeneyimZamanCizelgesi.astro';
+import { donemYaz } from '../lib/format';
 
-// Gerçek deneyim girilince bu liste doldurulur; boşken zaman çizelgesi hiç çizilmez.
-const deneyim = SHOW_DRAFTS
-  ? [
-      { donem: '2024 – şimdi', baslik: 'Yazılım geliştirici', kurum: 'Örnek Şirket', aciklama: 'Yer tutucu: gerçek deneyim girilecek.' },
-      { donem: '2020 – 2024', baslik: 'Yazılım mühendisi', kurum: 'Örnek Kurum', aciklama: 'Yer tutucu: gerçek deneyim girilecek.' },
-    ]
-  : [];
+const kayit = await getEntry('ozgecmis', 'ozgecmis');
+const cv = kayit && (SHOW_DRAFTS || !kayit.data.taslak) ? kayit.data : undefined;
 ---
 
-<Base baslik="Hakkımda" aciklama="Göktürk Fulser kimdir, bu site ne için var.">
-  <section class="bant bant--koyu bant--basi" aria-labelledby="hakkimda-baslik">
-    <div class="kap">
-      <h1 id="hakkimda-baslik" class="h1">Hakkımda</h1>
-    </div>
-  </section>
-  <section class="bant bant--acik" data-pagefind-body>
-    <div class="kap kolon">
-      <div class="metin">
-        {
-          SHOW_DRAFTS ? (
-            <>
-              <p>
-                Ben Göktürk. Yazılım geliştiriyorum; boş zamanlarımda film izliyor, basketbol maçlarını
-                takip ediyor ve küçük projeler yapıyorum.
-              </p>
-              <p>
-                Bu site film yazılarımı, basketbol notlarımı ve projelerimi bir araya getirdiğim kişisel
-                alanım. İçerikler Türkçe.
-              </p>
-            </>
-          ) : (
-            <p>Bu sayfa hazırlanıyor. Yazılar ve projeler için üstteki menüyü kullanabilirsiniz.</p>
-          )
-        }
+<Base baslik="Hakkımda" aciklama="Göktürk Fulser kimdir: özgeçmiş.">
+  {
+    cv ? (
+      <div class="bant bant--acik cv-bandi" data-pagefind-body>
+        <div class="kap cv">
+          <header class="yan">
+            <h1 class="h1">
+              {cv.ad.split(' ').map((kelime) => <span class="satir"><span>{kelime}</span></span>)}
+            </h1>
+            <p class="unvan">{cv.unvan}{cv.konum && <>, {cv.konum}</>}</p>
+            <p class="ozet">{cv.ozet}</p>
+            {
+              cv.baglantilar.length > 0 && (
+                <ul class="lista baglantilar" aria-label="Bağlantılar">
+                  {cv.baglantilar.map((b) => (
+                    <li>
+                      <a href={b.href}>{b.ad}</a>
+                    </li>
+                  ))}
+                </ul>
+              )
+            }
+            <p class="yazdirma-gizle">
+              <button type="button" class="dugme" data-yazdir>Yazdır / PDF</button>
+            </p>
+          </header>
+
+          <div class="ana">
+            {
+              cv.deneyim.length > 0 && (
+                <section aria-labelledby="deneyim-baslik">
+                  <h2 id="deneyim-baslik">Deneyim</h2>
+                  {cv.deneyim.map((d) => (
+                    <div class="kayit">
+                      <p class="donem">{donemYaz(d.baslangic, d.bitis)}</p>
+                      <div>
+                        <h3>{d.rol}, {d.kurum}</h3>
+                        {d.konum && <p class="soluk">{d.konum}</p>}
+                        {d.maddeler.length > 0 && <ul>{d.maddeler.map((m) => <li>{m}</li>)}</ul>}
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              )
+            }
+            {
+              cv.egitim.length > 0 && (
+                <section aria-labelledby="egitim-baslik">
+                  <h2 id="egitim-baslik">Eğitim</h2>
+                  {cv.egitim.map((e) => (
+                    <div class="kayit">
+                      <p class="donem">{donemYaz(e.baslangic, e.bitis)}</p>
+                      <div>
+                        <h3>{e.bolum}, {e.kurum}</h3>
+                        {e.derece && <p class="soluk">{e.derece}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              )
+            }
+            {
+              cv.beceriler.length > 0 && (
+                <section aria-labelledby="beceri-baslik">
+                  <h2 id="beceri-baslik">Beceriler</h2>
+                  <dl class="ikili">
+                    {cv.beceriler.map((b) => (
+                      <>
+                        <dt>{b.grup}</dt>
+                        <dd>{b.ogeler.join(', ')}</dd>
+                      </>
+                    ))}
+                  </dl>
+                </section>
+              )
+            }
+            {
+              cv.diller.length > 0 && (
+                <section aria-labelledby="dil-baslik">
+                  <h2 id="dil-baslik">Diller</h2>
+                  <dl class="ikili">
+                    {cv.diller.map((d) => (
+                      <>
+                        <dt>{d.dil}</dt>
+                        <dd>{d.seviye}</dd>
+                      </>
+                    ))}
+                  </dl>
+                </section>
+              )
+            }
+          </div>
+        </div>
       </div>
-      <DeneyimZamanCizelgesi ogeler={deneyim} />
-    </div>
-  </section>
+    ) : (
+      <section class="bant bant--acik bant--basi" aria-labelledby="hakkimda-baslik">
+        <div class="kap hazirlaniyor">
+          <h1 id="hakkimda-baslik" class="h1"><span class="satir"><span>Hakkımda</span></span></h1>
+          <p class="lede">Bu sayfa hazırlanıyor. Yazılar ve projeler için üstteki menüyü kullanabilirsiniz.</p>
+        </div>
+      </section>
+    )
+  }
 </Base>
 
+{
+  cv && (
+    <script>
+      // Paketlenmiş (hash'li) betik: CSP 'unsafe-inline' gerektirmez; yalnızca bu sayfaya girer.
+      document.querySelector('[data-yazdir]')?.addEventListener('click', () => window.print());
+    </script>
+  )
+}
+
 <style>
-  .kolon {
-    max-width: 62rem;
-    margin-inline: auto;
+  .cv-bandi {
+    padding-block: calc(var(--bant) * 0.8);
+  }
+
+  .cv {
+    display: grid;
+    grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+    gap: 0 clamp(1.5rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .yan {
+    position: sticky;
+    top: 1.6rem;
+    display: grid;
+    gap: 1.2rem;
+    font-size: 1rem;
+  }
+
+  .yan .h1 {
+    font-size: clamp(2.8rem, 1rem + 4.2vw, 4.6rem);
+    line-height: 0.95;
+  }
+
+  .unvan {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .ozet {
+    margin: 0;
+    color: var(--soluk);
+  }
+
+  .baglantilar li + li {
+    margin-block-start: 0.2rem;
+  }
+
+  .dugme {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--murekkep);
+    background: transparent;
+    color: var(--murekkep);
+    font: inherit;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .dugme:hover {
+    background: var(--murekkep);
+    color: var(--zemin);
+  }
+
+  .yan p {
+    margin: 0;
+  }
+
+  .ana section {
+    padding-block: 1rem 2rem;
+    border-block-start: 1px solid var(--murekkep);
+  }
+
+  .ana h2 {
+    margin-block-end: 1.2rem;
+    font-size: 1.375rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .kayit {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 0.4rem 1.4rem;
+    padding-block: 0.9rem;
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .kayit:first-of-type {
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+
+  .donem {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  .kayit h3 {
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  .kayit p {
+    margin: 0;
+  }
+
+  .kayit ul {
+    margin: 0.4rem 0 0;
+    padding-inline-start: 1.1rem;
+  }
+
+  .kayit li + li {
+    margin-block-start: 0.25rem;
+  }
+
+  .ikili {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 0.5rem 1.4rem;
+    margin: 0;
+  }
+
+  .ikili dt {
+    color: var(--soluk);
+  }
+
+  .ikili dd {
+    margin: 0;
+  }
+
+  .hazirlaniyor {
+    display: grid;
+    gap: var(--aralik-3);
+    min-height: 40svh;
+    align-content: center;
+  }
+
+  @media (max-width: 52rem) {
+    .cv {
+      grid-template-columns: 1fr;
+    }
+
+    .yan {
+      position: static;
+      margin-block-end: 1.6rem;
+    }
+
+    .kayit,
+    .ikili {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* A4 özgeçmiş: tarayıcıdan "PDF olarak kaydet". Nav, footer, düğme, animasyon, çerçeve ve arka plan yok; bölümler bölünmez. */
+  @media print {
+    .cv-bandi {
+      padding: 0;
+    }
+
+    .cv {
+      display: block;
+    }
+
+    .yan {
+      position: static;
+      margin: 0 0 4mm;
+      gap: 2mm;
+    }
+
+    .yan .h1 {
+      font-size: 26pt;
+      line-height: 1.05;
+    }
+
+    .unvan {
+      font-size: 11pt;
+    }
+
+    .ana section {
+      padding: 0;
+      margin: 6mm 0 0;
+      border: 0;
+      break-inside: avoid;
+    }
+
+    .ana h2 {
+      margin: 0 0 2.5mm;
+      padding-block-end: 1mm;
+      border-block-end: 0.5pt solid #000;
+      font-size: 13pt;
+      break-after: avoid;
+    }
+
+    .kayit {
+      grid-template-columns: 30mm 1fr;
+      margin: 0 0 3.5mm;
+      padding: 0;
+      border: 0;
+      break-inside: avoid;
+    }
+
+    .ikili {
+      grid-template-columns: 30mm 1fr;
+      gap: 1mm 4mm;
+    }
+
+    .ana,
+    .ana p,
+    .ana li,
+    .ana dd,
+    .ana dt,
+    .ozet,
+    .unvan {
+      font-size: 9.5pt;
+      line-height: 1.4;
+      color: #000;
+    }
+
+    .ana .soluk,
+    .donem,
+    .ikili dt {
+      color: #444;
+    }
   }
 </style>

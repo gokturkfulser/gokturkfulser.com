@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import YaziKarti from '../components/YaziKarti.astro';
+import YaziSahnesi from '../components/YaziSahnesi.astro';
 import ProjeVitrin from '../components/ProjeVitrin.astro';
 import SayilarSeridi from '../components/SayilarSeridi.astro';
 import SonIzlenenler from '../components/SonIzlenenler.astro';
@@ -18,7 +19,7 @@ const izlenenler = await sonIzlenenler(LETTERBOXD_RSS);
 const vitrinProjeler = (() => {
   const aktif = tumProjeler.filter((p) => p.data.durum !== 'arsiv');
   const secili = aktif.filter((p) => p.data.oneCikan);
-  return (secili.length > 0 ? secili : aktif).slice(0, 3);
+  return (secili.length > 0 ? secili : aktif).slice(0, 4);
 })();
 
 const sayilar = [
@@ -27,49 +28,37 @@ const sayilar = [
 ].filter((s) => s.deger > 0); // sıfır sayı gösterilmez
 // Tek başına kalan bir sayı şerit olmaz: en az iki sayı varsa çizilir.
 const sayiSeridiVar = sayilar.length >= 2;
-
-// Bant ritmi: hero koyu; sonraki var olan bölümler açık/koyu dönüşür (bölüm yoksa ritim kaymaz).
-const bolumler = [
-  ...(buyukYazi ? ['yazilar'] : []),
-  ...(vitrinProjeler.length > 0 ? ['projeler'] : []),
-  ...(KISACA_METNI ? ['kisaca'] : []),
-  ...(sayiSeridiVar ? ['sayilar'] : []),
-  ...(izlenenler.length > 0 ? ['izlenen'] : []),
-];
-const ton = (ad: string): 'koyu' | 'acik' => (bolumler.indexOf(ad) % 2 === 0 ? 'acik' : 'koyu');
 ---
 
-<Base>
-  <Hero cumle={HERO_CUMLESI || undefined} />
+<Base bindirme>
+  <Hero cumle={HERO_CUMLESI || undefined} yazi={buyukYazi} proje={vitrinProjeler[0]} />
+
+  {vitrinProjeler.length > 0 && <ProjeVitrin projeler={vitrinProjeler} ton="koyu" />}
 
   {
     buyukYazi && (
-      <section class={`bant bant--${ton('yazilar')}`} aria-labelledby="yazilar-baslik">
-        <div class="kap">
+      <section class="yazilar" aria-labelledby="yazilar-baslik">
+        <div class="kap bas-bandi">
           <div class="bas-satiri">
             <h2 id="yazilar-baslik" class="h2">Yazılar</h2>
             <a href="/yazilar/">Tüm yazılar</a>
           </div>
-          <div class="yazi-izgara">
-            <YaziKarti yazi={buyukYazi} boyut="buyuk" oncelikli />
-            {digerYazilar.length > 0 && (
-              <div class="yan-yazilar">
-                {digerYazilar.map((y) => (
-                  <YaziKarti yazi={y} />
-                ))}
-              </div>
-            )}
-          </div>
         </div>
+        <YaziSahnesi yazi={buyukYazi} />
+        {digerYazilar.length > 0 && (
+          <div class="kap yan-yazilar">
+            {digerYazilar.map((y) => (
+              <YaziKarti yazi={y} />
+            ))}
+          </div>
+        )}
       </section>
     )
   }
 
-  {vitrinProjeler.length > 0 && <ProjeVitrin projeler={vitrinProjeler} ton={ton('projeler')} />}
-
   {
     KISACA_METNI && (
-      <section class={`bant bant--${ton('kisaca')}`} aria-labelledby="kisaca-baslik">
+      <section class="bant bant--koyu" aria-labelledby="kisaca-baslik">
         <div class="kap kisaca">
           <h2 id="kisaca-baslik" class="h3">Kısaca</h2>
           <div>
@@ -81,32 +70,26 @@ const ton = (ad: string): 'koyu' | 'acik' => (bolumler.indexOf(ad) % 2 === 0 ? '
     )
   }
 
-  {sayiSeridiVar && <SayilarSeridi {sayilar} ton={ton('sayilar')} />}
+  {sayiSeridiVar && <SayilarSeridi {sayilar} ton="koyu" />}
 
-  <SonIzlenenler filmler={izlenenler} ton={ton('izlenen')} />
+  <SonIzlenenler filmler={izlenenler} ton="koyu" />
 </Base>
 
 <style>
-  .yazi-izgara {
-    display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-    gap: var(--aralik-5) clamp(2rem, 4vw, 5rem);
-    align-items: start;
+  .yazilar {
+    background: var(--perde);
+    padding-block-start: var(--bant);
   }
 
-  .yazi-izgara:has(> :only-child) {
-    grid-template-columns: minmax(0, 60rem);
+  .bas-bandi .bas-satiri {
+    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
   }
 
   .yan-yazilar {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
     gap: clamp(2rem, 4vw, 3.5rem);
-  }
-
-  @media (max-width: 52rem) {
-    .yazi-izgara {
-      grid-template-columns: 1fr;
-    }
+    padding-block-start: clamp(2rem, 4vw, 3.5rem);
   }
 
   .kisaca {
@@ -116,11 +99,11 @@ const ton = (ad: string): 'koyu' | 'acik' => (bolumler.indexOf(ad) % 2 === 0 ? '
   }
 
   .kisaca-metin {
-    font-family: var(--font-baslik-yigin);
+    font-family: var(--font-serif-yigin);
     font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3.25rem);
     font-weight: 500;
-    line-height: 1.12;
-    letter-spacing: -0.035em;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     text-wrap: pretty;
   }
 

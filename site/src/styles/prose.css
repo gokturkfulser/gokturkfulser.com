@@ -1,77 +1,133 @@
-/* Yazı gövdesi (.metin): MDX çıktısı ve MDX bileşenleri. Satır en fazla ~70 karakter. */
-.metin {
-  max-width: 46rem;
+/* Yazı gövdesi. İki biçim:
+   .metin       — tek sütun (proje sayfası gövdesi), en çok ~46 rem.
+   .yazi-metni  — dergi yayılımı (yazı sayfaları): künye kenar notu solda, metin ortada, alıntı ve geniş görsel sayfa genişliğine taşar.
+   Kâğıt bandında (.bant--acik) yazılır: gövde ve başlıklar Hanken Grotesk, drop cap Hanken. Sıfır client JS. */
+:is(.metin, .yazi-metni) {
   font-size: var(--yazi-yazi);
-  line-height: 1.65;
+  line-height: 1.7;
   hyphens: auto;
   overflow-wrap: break-word;
 }
 
-.metin > * + * {
+.metin {
+  max-width: 46rem;
+}
+
+.yazi-metni {
+  display: grid;
+  grid-template-columns: minmax(0, 13rem) minmax(0, 40rem) minmax(0, 1fr);
+  column-gap: clamp(1.4rem, 3.5vw, 3.5rem);
+}
+
+.yazi-metni > * {
+  grid-column: 2;
+}
+
+:is(.metin, .yazi-metni) > * {
+  margin: 0;
+}
+
+:is(.metin, .yazi-metni) > * + * {
   margin-block-start: 1.25em;
 }
 
-.metin :is(h2, h3) {
+/* Künye: kenar notu */
+.yazi-metni > .kenar-notu {
+  grid-column: 1;
+  grid-row: 1 / span 40;
+  align-self: start;
+  position: sticky;
+  top: 1.6rem;
+  margin: 0;
+}
+
+/* Alinti ve geniş görsel sayfa genişliğine taşar */
+.yazi-metni > :is(.alinti, blockquote, .genis) {
+  grid-column: 1 / -1;
+}
+
+:is(.metin, .yazi-metni) :is(h2, h3) {
   hyphens: manual;
   margin-block-start: 2em;
-  color: var(--dunya-metin);
+  color: var(--murekkep);
 }
 
-.metin h2 {
-  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
-  line-height: 1.02;
-  letter-spacing: -0.045em;
+:is(.metin, .yazi-metni) h2 {
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.125rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
 }
 
-.metin h3 {
-  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
-  line-height: 1.08;
+:is(.metin, .yazi-metni) h3 {
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
-.metin :is(h2, h3) + * {
+:is(.metin, .yazi-metni) :is(h2, h3) + * {
   margin-block-start: 0.6em;
 }
 
-.metin a {
+:is(.metin, .yazi-metni) a {
   color: var(--dunya-metin);
 }
 
-.metin :is(ul, ol) {
+:is(.metin, .yazi-metni) :is(ul, ol) {
   padding-inline-start: 1.25em;
 }
 
-.metin li + li {
+:is(.metin, .yazi-metni) li + li {
   margin-block-start: 0.5em;
 }
 
-.metin li::marker {
+:is(.metin, .yazi-metni) li::marker {
   color: var(--dunya-metin);
 }
 
-.metin hr {
+:is(.metin, .yazi-metni) hr {
   border: 0;
   height: 6px;
   width: 4rem;
   background: var(--dunya-bant);
 }
 
-/* Düz Markdown alıntısı (> ...) Alinti bileşeniyle aynı görünür */
-.metin blockquote {
+/* Drop cap: yalnızca yazı sayfasının ilk paragrafı (Hanken, kâğıt yüzeyde) */
+.yazi-metni > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.06em 0.09em 0 0;
+  font-family: var(--font-baslik-yigin);
+  font-size: 5.2em;
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: var(--dunya-metin);
+}
+
+/* Büyük alıntı bileşeni: Alinti.astro ve düz Markdown alıntısı (> ...) aynı görünür */
+:is(.metin, .yazi-metni) blockquote {
   margin-block: 1.4em;
   font-family: var(--font-baslik-yigin);
   font-weight: 600;
-  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
-  line-height: 1.2;
+  font-size: clamp(1.625rem, 1.1rem + 2vw, 2.5rem);
+  line-height: 1.12;
   letter-spacing: -0.03em;
   color: var(--murekkep);
   hyphens: manual;
 }
 
-.metin blockquote p {
+.yazi-metni > blockquote {
+  justify-self: center;
+  width: 100%;
+  max-width: 50rem;
+  padding-block: 1.1rem;
+  border-block: 4px solid var(--dunya-bant);
+}
+
+:is(.metin, .yazi-metni) blockquote p {
   text-wrap: balance;
 }
 
-.metin code {
+:is(.metin, .yazi-metni) code {
   font-size: 0.9em;
   padding: 0.1em 0.3em;
   background: var(--yuzey);
@@ -95,4 +151,21 @@
 .etiketler a:hover,
 .etiketler a:focus-visible {
   color: var(--murekkep);
+}
+
+@media (max-width: 62rem) {
+  .yazi-metni {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yazi-metni > * {
+    grid-column: 1;
+  }
+
+  .yazi-metni > .kenar-notu {
+    grid-row: auto;
+    position: static;
+    order: -1;
+    margin-block-end: var(--aralik-4);
+  }
 }

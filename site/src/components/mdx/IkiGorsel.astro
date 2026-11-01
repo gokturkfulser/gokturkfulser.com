@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import Medya from '../Medya.astro';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -15,8 +15,8 @@ const { sol, solAlt, sag, sagAlt, altyazi } = Astro.props;
 
 <figure class="iki">
   <div class="cift">
-    <Image src={sol} alt={solAlt} width={800} loading="lazy" />
-    <Image src={sag} alt={sagAlt} width={800} loading="lazy" />
+    <Medya src={sol} alt={solAlt} oran="proje" width={800} class="ac" />
+    <Medya src={sag} alt={sagAlt} oran="proje" width={800} class="ac" />
   </div>
   {altyazi && <figcaption>{altyazi}</figcaption>}
 </figure>
@@ -32,16 +32,9 @@ const { sol, solAlt, sag, sagAlt, altyazi } = Astro.props;
     gap: var(--aralik-2);
   }
 
-  .cift :global(img) {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-  }
-
   figcaption {
     margin-block-start: var(--aralik-2);
-    font-size: var(--yazi-sm);
+    font-size: var(--yazi-xs);
     line-height: 1.5;
     color: var(--soluk);
     hyphens: manual;
@@ -50,10 +43,6 @@ const { sol, solAlt, sag, sagAlt, altyazi } = Astro.props;
   @media (max-width: 36rem) {
     .cift {
       grid-template-columns: 1fr;
-    }
-
-    .cift :global(img) {
-      aspect-ratio: 4 / 3;
     }
   }
 </style>

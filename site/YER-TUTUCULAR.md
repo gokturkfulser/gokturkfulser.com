@@ -17,7 +17,7 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 ## 2. Projeler (`src/content/projeler/`)
 
-> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. Aşağıdaki liste kalan yer tutucuları kapsar.
+> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. **Tek istisna:** frontmatter'daki `vaka.ne`, `vaka.neden` ve `vaka.nasil` metinleri (proje sayfasındaki Ne / Neden / Nasıl modülleri) **uydurmadır**; gerçek metinle değiştirilmeli ya da alanlar silinmeli (boş modül hiç render edilmez). Aşağıdaki liste kalan yer tutucuları kapsar.
 
 | Klasör | Uydurma olanlar |
 | --- | --- |
@@ -29,7 +29,8 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 | Dosya | Durum |
 | --- | --- |
-| `src/pages/hakkimda.astro` | Biyografi metni uydurmadır; yalnızca `SHOW_DRAFTS=true` iken görünür. Production'da "Bu sayfa hazırlanıyor" yazar. Gerçek metin yazılınca `SHOW_DRAFTS` koşulu kaldırılmalı. |
+| `src/pages/hakkimda.astro` | Sayfa artık `ozgecmis.yaml`'ı okur (yukarıdaki satır). `taslak: true` iken production'da "Bu sayfa hazırlanıyor" yazar, nav bağlantısı kalır; `SHOW_DRAFTS=true`'da yer tutucu özgeçmiş görünür. Gerçek veri girilince `taslak` satırı silinir. |
+| `src/content/ozgecmis.yaml` | **Tamamı uydurma**: ad dışında her alan (unvan, konum, özet, iki deneyim, eğitim, beceriler, diller; bağlantılardaki e-posta `merhaba@…` geneldir). `taslak: true` olduğu sürece yalnızca `SHOW_DRAFTS=true` ile görünür; gerçek veri girilince o satır silinir. |
 | `public/favicon.svg` | Geçici "G" işareti. |
 | Tüm `*.svg` kapak/ekran görüntüleri | Düz renk + daire. Gerçek görsellerle (jpg/png/webp) değiştirilmeli. |
 | `src/data/tmdb-cache.json` | Boş (`{}`): yer tutucu değil, `pnpm site:tmdb` ile dolacak. |

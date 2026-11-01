@@ -1,4 +1,4 @@
-// OG görseli: Satori (SVG) + resvg (PNG). Renk ve fontlar DESIGN.md Yön 1 token'larıyla aynı (koyu perde + vurgu çizgisi).
+// OG görseli: Satori (SVG) + resvg (PNG). Renk ve fontlar DESIGN.md token'larıyla aynı (koyu perde + vurgu çizgisi; başlık Cormorant ≥ 24 px, yazı Hanken Grotesk).
 // Satori woff2 okuyamaz; @fontsource'un statik woff dosyaları kullanılır. Türkçe (ğ ş İ) için
 // her fontun latin + latin-ext dosyası ayrı aile adıyla verilir ('… Ext'); fontFamily listesi
 // ("Ana, Ana Ext") eksik glifi latin-ext dosyasından alır. Aynı ad iki kez verilirse yedek çalışmaz.
@@ -19,13 +19,13 @@ type Girdi = {
 };
 
 const RENK = {
-  sinema: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#3fc8cf' },
-  basketbol: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#ff7a2f' },
-  varsayilan: { zemin: '#0a0d12', metin: '#eef1f4', soluk: '#9aa5b1', vurgu: '#3fc8cf' },
+  sinema: { zemin: '#0b0c0e', metin: '#ece8e1', soluk: '#c9c3b8', vurgu: '#4fd1d9' },
+  basketbol: { zemin: '#0b0c0e', metin: '#ece8e1', soluk: '#c9c3b8', vurgu: '#ff8a3d' },
+  varsayilan: { zemin: '#0b0c0e', metin: '#ece8e1', soluk: '#c9c3b8', vurgu: '#4fd1d9' },
 } as const;
 
 let fontlar: Promise<
-  { name: string; data: Buffer; weight: 400 | 800; style: 'normal' }[]
+  { name: string; data: Buffer; weight: 400 | 500; style: 'normal' }[]
 > | null = null;
 
 function fontlariYukle() {
@@ -33,18 +33,18 @@ function fontlariYukle() {
     const dosya = (paket: string, ad: string) =>
       readFile(join(process.cwd(), 'node_modules/@fontsource', paket, 'files', ad));
     return [
-      { name: 'Bricolage Grotesque', data: await dosya('bricolage-grotesque', 'bricolage-grotesque-latin-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
-      { name: 'Bricolage Grotesque Ext', data: await dosya('bricolage-grotesque', 'bricolage-grotesque-latin-ext-800-normal.woff'), weight: 800 as const, style: 'normal' as const },
-      { name: 'Newsreader', data: await dosya('newsreader', 'newsreader-latin-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
-      { name: 'Newsreader Ext', data: await dosya('newsreader', 'newsreader-latin-ext-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
+      { name: 'Cormorant', data: await dosya('cormorant', 'cormorant-latin-500-normal.woff'), weight: 500 as const, style: 'normal' as const },
+      { name: 'Cormorant Ext', data: await dosya('cormorant', 'cormorant-latin-ext-500-normal.woff'), weight: 500 as const, style: 'normal' as const },
+      { name: 'Hanken Grotesk', data: await dosya('hanken-grotesk', 'hanken-grotesk-latin-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
+      { name: 'Hanken Grotesk Ext', data: await dosya('hanken-grotesk', 'hanken-grotesk-latin-ext-400-normal.woff'), weight: 400 as const, style: 'normal' as const },
     ];
   })();
   return fontlar;
 }
 
 // Satori JSX yerine düz nesne ağacı kabul eder.
-const BASLIK_AILESI = 'Bricolage Grotesque, Bricolage Grotesque Ext';
-const METIN_AILESI = 'Newsreader, Newsreader Ext';
+const BASLIK_AILESI = 'Cormorant, Cormorant Ext';
+const METIN_AILESI = 'Hanken Grotesk, Hanken Grotesk Ext';
 
 const el = (type: string, style: Record<string, unknown>, children?: unknown) => ({
   type,
@@ -79,7 +79,7 @@ export async function ogPng({ dunya, baslik, altBilgi, bolumAdi }: Girdi): Promi
     },
     [
       el('div', { display: 'flex', justifyContent: 'space-between', fontSize: 34 }, [
-        el('div', { display: 'flex', fontFamily: BASLIK_AILESI, fontWeight: 800, fontSize: 48, letterSpacing: -2 }, 'Göktürk Fulser'),
+        el('div', { display: 'flex', fontFamily: BASLIK_AILESI, fontWeight: 500, fontSize: 52, letterSpacing: -1 }, 'Göktürk Fulser'),
         el('div', { display: 'flex', color: soluk }, bolumAdi ?? ''),
       ]),
       el(
@@ -87,17 +87,17 @@ export async function ogPng({ dunya, baslik, altBilgi, bolumAdi }: Girdi): Promi
         {
           display: 'flex',
           fontFamily: BASLIK_AILESI,
-          fontWeight: 800,
-          fontSize: baslikBoyutu(baslik),
-          lineHeight: 1,
-          letterSpacing: -5,
+          fontWeight: 500,
+          fontSize: baslikBoyutu(baslik) + 14,
+          lineHeight: 0.98,
+          letterSpacing: -3,
         },
         baslik,
       ),
       varsayilan
         ? el('div', { display: 'flex', width: '100%', height: 12 }, [
-            el('div', { display: 'flex', flex: 1, background: '#3fc8cf' }),
-            el('div', { display: 'flex', flex: 1, background: '#ff7a2f' }),
+            el('div', { display: 'flex', flex: 1, background: '#4fd1d9' }),
+            el('div', { display: 'flex', flex: 1, background: '#ff8a3d' }),
           ])
         : el('div', { display: 'flex', flexDirection: 'column', gap: 24 }, [
             el('div', { display: 'flex', width: '100%', height: 8, background: vurgu }),

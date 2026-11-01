@@ -1,0 +1,108 @@
+---
+// Yazı kapağı: tam genişlik koyu görüntü, başlık görselin üstüne biner (karartma ile). Sinema ve basketbol yazısı için ortak.
+// Görsel Medya kuralından geçer (kendi kapağı → TMDB backdrop → görselsiz yedek: YaziKapagi). Tarih ve okuma süresi ayrı öğe.
+import YaziKapagi from '../YaziKapagi.astro';
+import { BOLUM_ADLARI, type Yazi } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+
+interface Props {
+  yazi: Yazi;
+  dakika: number;
+}
+
+const { yazi, dakika } = Astro.props;
+const { data } = yazi.entry;
+---
+
+<header class="kapak" data-dunya={yazi.bolum}>
+  <div class="arka" aria-hidden="true">
+    <YaziKapagi {yazi} oran="kapak" width={1920} oncelikli />
+  </div>
+  <div class="kap kapak-ic">
+    <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
+    <h1 class="h1">{data.baslik}</h1>
+    <p class="lede">{data.ozet}</p>
+    <p class="meta">
+      <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+      <span>{dakika} dakikalık okuma</span>
+      <slot name="meta" />
+    </p>
+  </div>
+</header>
+
+<style>
+  .kapak {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    align-items: end;
+    min-height: min(92svh, 60rem);
+    background: var(--perde);
+    color: #ece8e1;
+    /* Kapak her zaman koyu tonlarla çözülür */
+    --murekkep: #ece8e1;
+    --soluk: #c9c3b8;
+    --turkuaz-metin: #4fd1d9;
+    --turuncu-metin: #ff8a3d;
+  }
+
+  .arka {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .arka :global(.medya-kalip) {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+
+  /* Karartma: başlık görselin üstünde okunsun (görüntü işlemesi) */
+  .kapak::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(to top, rgb(11 12 14 / 0.94) 0%, rgb(11 12 14 / 0.8) 40%, rgb(11 12 14 / 0.25) 72%, rgb(11 12 14 / 0.55) 100%);
+  }
+
+  .kapak-ic {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    padding-block: clamp(9rem, 26vw, 20rem) clamp(1.6rem, 3.5vw, 3rem);
+  }
+
+  .etiket {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    font-weight: 600;
+    color: var(--vurgu);
+  }
+
+  h1 {
+    max-width: 16ch;
+    font-size: clamp(2.75rem, 1rem + 8vw, 8.5rem);
+  }
+
+  .lede {
+    max-width: 38ch;
+    margin: 0;
+    color: #e4dfd6;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem 1.2rem;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: #d3cdc2;
+  }
+</style>

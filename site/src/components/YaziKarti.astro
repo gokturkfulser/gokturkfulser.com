@@ -22,6 +22,7 @@ const href = yaziUrl(yazi.bolum, id);
       oran={boyut === 'buyuk' ? 'kapak' : 'vitrin'}
       width={boyut === 'buyuk' ? 1400 : 800}
       {oncelikli}
+      class="ac"
     />
   </a>
   <p class="bolum">
@@ -79,9 +80,7 @@ const href = yaziUrl(yazi.bolum, id);
 
   .buyuk h3 {
     font-size: clamp(2.25rem, 1.2rem + 3.6vw, 4.5rem);
-    font-weight: 800;
-    letter-spacing: -0.045em;
-    line-height: 1;
+    line-height: 0.95;
   }
 
   .ozet {

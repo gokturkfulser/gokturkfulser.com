@@ -1,4 +1,8 @@
 ---
+// Son izlediklerim: yavaş akan afiş bandı (saf CSS; içerik iki kez, ikincisi aria-hidden + inert).
+// WCAG 2.2.2 (Duraklat, durdur, gizle): hover/klavye odağında durur ve yanında görünür bir "Akışı durdur / Akışı oynat"
+// düğmesi vardır. Düğme JS'siz: klavyeyle odaklanabilen onay kutusu (sabit aria-label; işaretli = durdurulmuş) + görsel etiket; `:checked ~ .akis` ile animation-play-state: paused.
+// prefers-reduced-motion'da bant hiç akmaz, düğme gizlenir, bant yatay kaydırılabilir olur ve kopya gizlenir.
 import Medya from './Medya.astro';
 import type { Izlenen } from '../lib/letterboxd';
 import { letterboxdAfisi } from '../lib/letterboxd-afis';
@@ -8,7 +12,8 @@ interface Props {
   filmler: Izlenen[];
   ton?: 'koyu' | 'acik';
 }
-const { filmler, ton = 'acik' } = Astro.props;
+const { filmler, ton = 'koyu' } = Astro.props;
+const kopyalar = [false, true];
 ---
 
 {
@@ -21,36 +26,122 @@ const { filmler, ton = 'acik' } = Astro.props;
             Veriler <a href="https://letterboxd.com/">Letterboxd</a> günlüğümden, build sırasında alınır.
           </p>
         </div>
-        <ul class="lista afisler">
-          {filmler.map((f) => {
-            const afis = letterboxdAfisi(f.tmdbId);
-            return (
-            <li class="film">
-              {afis && (
-                <a class="afis" href={f.link} tabindex="-1" aria-hidden="true">
-                  <Medya src={afis} oran="afis" alt="" width={300} />
-                </a>
-              )}
-              <p class="ad">
-                <a href={f.link}>{f.film}</a>
-              </p>
-              {f.yil && <p class="kucuk">{f.yil}</p>}
-              {f.puan !== undefined && <p class="puan">{puanYaz(f.puan)} / 5</p>}
-              {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="kucuk">{tarihYaz(f.tarih)}</p>}
-            </li>
-            );
-          })}
-        </ul>
+      </div>
+      <div class="bolge">
+        <input type="checkbox" id="akis-durdur" class="durdur-girdi" aria-label="Afiş akışını durdur" />
+        <label for="akis-durdur" class="durdur">
+          <span class="durdur-dur" aria-hidden="true">Akışı durdur</span>
+          <span class="durdur-oynat" aria-hidden="true">Akışı oynat</span>
+        </label>
+        <div class="akis" role="group" aria-label="Son izlediğim filmler">
+          <div class="iz">
+            {kopyalar.map((kopya) => (
+              <ul class="lista afisler" aria-hidden={kopya ? 'true' : undefined} inert={kopya ? true : undefined} data-kopya={kopya ? '' : undefined}>
+                {filmler.map((f) => {
+                  const afis = letterboxdAfisi(f.tmdbId);
+                  return (
+                    <li class="film">
+                      {afis && (
+                        <a class="afis" href={f.link} tabindex="-1" aria-hidden="true">
+                          <Medya src={afis} oran="afis" alt="" width={300} />
+                        </a>
+                      )}
+                      <p class="ad">
+                        <a href={f.link}>{f.film}</a>
+                      </p>
+                      {f.yil && <p class="kucuk">{f.yil}</p>}
+                      {f.puan !== undefined && <p class="puan">{puanYaz(f.puan)} / 5</p>}
+                      {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="kucuk">{tarihYaz(f.tarih)}</p>}
+                    </li>
+                  );
+                })}
+              </ul>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )
 }
 
 <style>
+  .bolge {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Onay kutusu görsel olarak gizli ama klavyeyle odaklanır ve Boşluk tuşuyla değişir */
+  .durdur-girdi {
+    position: absolute;
+    top: 0;
+    inset-inline-end: var(--kenar);
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+
+  .durdur {
+    align-self: flex-end;
+    margin-inline-end: var(--kenar);
+    margin-block-end: var(--aralik-2);
+    padding: 0.55rem 1rem;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--murekkep);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .durdur:hover {
+    background: var(--murekkep);
+    color: var(--zemin);
+  }
+
+  .durdur-girdi:focus-visible + .durdur {
+    outline: 3px solid var(--vurgu);
+    outline-offset: 3px;
+  }
+
+  .durdur-oynat,
+  .durdur-girdi:checked + .durdur .durdur-dur {
+    display: none;
+  }
+
+  .durdur-girdi:checked + .durdur .durdur-oynat {
+    display: inline;
+  }
+
+  .akis {
+    overflow: hidden;
+    border-block: 1px solid var(--cizgi);
+    padding-block: var(--aralik-3);
+  }
+
+  .iz {
+    display: flex;
+    width: max-content;
+  }
+
   .afisler {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    display: flex;
+    flex: none;
+    gap: var(--aralik-3);
+    padding-inline-end: var(--aralik-3);
+  }
+
+  .film {
+    flex: none;
+    width: clamp(7rem, 11vw, 9.5rem);
   }
 
   .film p {
@@ -59,11 +150,11 @@ const { filmler, ton = 'acik' } = Astro.props;
 
   .afis {
     display: block;
-    margin-block-end: var(--aralik-3);
+    margin-block-end: var(--aralik-2);
     text-decoration: none;
   }
 
-  .afis .medya-kalip {
+  .afis :global(.medya-kalip) {
     display: block;
   }
 
@@ -86,14 +177,42 @@ const { filmler, ton = 'acik' } = Astro.props;
 
   .puan {
     font-family: var(--font-baslik-yigin);
-    font-size: var(--yazi-sm);
+    font-size: var(--yazi-xs);
     font-weight: 600;
     color: var(--turkuaz-metin);
   }
 
-  @media (max-width: 52rem) {
-    .afisler {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (prefers-reduced-motion: no-preference) {
+    .iz {
+      animation: akis 110s linear infinite;
+    }
+
+    /* Hover, klavye odağı ya da düğme: akış durur */
+    .akis:hover .iz,
+    .akis:focus-within .iz,
+    .durdur-girdi:checked ~ .akis .iz {
+      animation-play-state: paused;
+    }
+
+    @keyframes akis {
+      to {
+        transform: translateX(-50%);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .durdur-girdi,
+    .durdur {
+      display: none;
+    }
+
+    .akis {
+      overflow-x: auto;
+    }
+
+    [data-kopya] {
+      display: none;
     }
   }
 </style>

@@ -1,7 +1,9 @@
 ---
 // /yazilar/, /yazilar/sinema/, /yazilar/basketbol/ için ortak sayfa. Sekmeler JS'siz: her biri kendi URL'inde.
-// Düzen: koyu sayfa başı bandı (başlık + sekmeler), açık liste bandı (arama, etiketler, yıl grupları).
+// Düzen (hepsi koyu): manşet (en yeni yazı, tam genişlik görüntü + sayfa başlığı), araçlar (sekmeler, arama, etiketler),
+// bölüm girişleri (Sinema turkuaz, Basketbol turuncu çizgili) ve yazı satırları.
 import Base from '../layouts/Base.astro';
+import YaziSahnesi from './YaziSahnesi.astro';
 import YaziSatiri from './YaziSatiri.astro';
 import { BOLUM_ADLARI, BOLUM_URL, tumYazilar, yillaraGore, type Bolum } from '../lib/content';
 import { slugify } from '../lib/slug';
@@ -13,7 +15,7 @@ interface Props {
 const { bolum } = Astro.props;
 const hepsi = await tumYazilar();
 const yazilar = bolum ? hepsi.filter((y) => y.bolum === bolum) : hepsi;
-const yillar = yillaraGore(yazilar);
+const [manset, ...digerleri] = yazilar;
 
 const sekmeler = [
   { ad: 'Tümü', href: '/yazilar/', adet: hepsi.length, aktif: !bolum },
@@ -41,14 +43,38 @@ const aciklama = {
   sinema: 'İzlediğim filmler üzerine yazılar ve puanlar.',
   basketbol: 'Maçlar, taktikler ve sezon notları.',
 }[bolum ?? 'tumu'];
+const bolumAciklama: Record<Bolum, string> = {
+  sinema: 'Filmler, yönetmenler ve izleme notları. Puan, künye ve jenerik her yazının sonunda.',
+  basketbol: 'Taktik notları, sezon başlangıçları ve sayılarla okunan maçlar.',
+};
 const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
+
+// Bölümler: "Tümü"de her bölüm kendi girişiyle (yalnızca yazısı kalan bölüm çizilir); bölüm sayfasında tek bölüm.
+const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
+  .map((b) => ({ bolum: b, yazilar: digerleri.filter((y) => y.bolum === b) }))
+  .filter((b) => b.yazilar.length > 0);
 ---
 
-<Base baslik={bolum ? `Yazılar · ${baslik}` : 'Yazılar'} aciklama={aciklama}>
-  <section class="bant bant--koyu bant--basi" data-dunya={bolum} aria-labelledby="yazilar-baslik">
+<Base baslik={bolum ? `Yazılar · ${baslik}` : 'Yazılar'} aciklama={aciklama} bindirme={Boolean(manset)}>
+  {
+    manset ? (
+      <YaziSahnesi yazi={manset} baslikEtiketi="h2" ozetli uzun oncelikli>
+        <h1 id="yazilar-baslik" class="sayfa-h1" data-dunya={bolum}>
+          <span class="satir"><span>{baslik}</span></span>
+        </h1>
+      </YaziSahnesi>
+    ) : (
+      <section class="bant bant--koyu bant--basi" data-dunya={bolum} aria-labelledby="yazilar-baslik">
+        <div class="kap">
+          <h1 id="yazilar-baslik" class="h1"><span class="satir"><span>{baslik}</span></span></h1>
+          <p class="lede">{aciklama}</p>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="bant bant--koyu araclar-bandi" aria-label="Yazıları süz ve ara">
     <div class="kap">
-      <h1 id="yazilar-baslik" class="h1">{baslik}</h1>
-      <p class="lede">{aciklama}</p>
       <nav class="sekmeler" aria-label="Yazı bölümleri">
         {
           sekmeler.map((s) => (
@@ -58,11 +84,6 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
           ))
         }
       </nav>
-    </div>
-  </section>
-
-  <section class="bant bant--acik liste-bandi" aria-label="Yazı listesi">
-    <div class="kap">
       <div class="araclar">
         <form class="ara-formu" action="/arama/" method="get" role="search">
           <label class="sr-only" for="yazi-ara">Yazılarda ara</label>
@@ -93,27 +114,49 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
           </p>
         )
       }
-      {
-        yillar.map(({ yil, yazilar: liste }) => (
-          <section class="yil" aria-labelledby={`yil-${yil}`}>
-            <h2 id={`yil-${yil}`}>{yil}</h2>
-            <ul class="lista">
-              {liste.map((yazi) => (
-                <li>
-                  <YaziSatiri yazi={yazi} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
-      }
     </div>
   </section>
+
+  {
+    bolumler.map((b) => (
+      <section class="bant bant--koyu bolum-bandi" data-dunya={b.bolum} aria-labelledby={`bolum-${b.bolum}`}>
+        <div class="kap">
+          <div class="giris">
+            <h2 id={`bolum-${b.bolum}`} class="h2">{BOLUM_ADLARI[b.bolum]}</h2>
+            <p>{bolumAciklama[b.bolum]}</p>
+          </div>
+          {yillaraGore(b.yazilar).map(({ yil, yazilar: liste }) => (
+            <section class="yil" aria-labelledby={`yil-${b.bolum}-${yil}`}>
+              <h3 id={`yil-${b.bolum}-${yil}`}>{yil}</h3>
+              <ul class="lista">
+                {liste.map((yazi) => (
+                  <li>
+                    <YaziSatiri yazi={yazi} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </section>
+    ))
+  }
 </Base>
 
 <style>
-  .liste-bandi {
-    padding-block-start: clamp(2.5rem, 5vw, 4.5rem);
+  .sayfa-h1 {
+    font-size: clamp(2.75rem, 1rem + 7vw, 8rem);
+    line-height: 0.9;
+    margin-block-end: 0.4rem;
+  }
+
+  .araclar-bandi {
+    padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .araclar-bandi .sekmeler {
+    margin-block-start: 0;
+    margin-block-end: var(--aralik-4);
   }
 
   .araclar {
@@ -134,7 +177,7 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
     min-width: 0;
     padding: 0.75rem var(--aralik-3);
     border: 1px solid var(--murekkep);
-    border-radius: var(--medya-kose) 0 0 var(--medya-kose);
+    border-radius: 0;
     background: transparent;
     color: inherit;
     font: inherit;
@@ -150,7 +193,7 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
   .ara-formu button {
     padding: 0.75rem var(--aralik-4);
     border: 1px solid var(--murekkep);
-    border-radius: 0 var(--medya-kose) var(--medya-kose) 0;
+    border-radius: 0;
     background: var(--murekkep);
     color: var(--zemin);
     font-family: var(--font-baslik-yigin);
@@ -170,7 +213,7 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
     display: flex;
     flex-wrap: wrap;
     gap: var(--aralik-2) var(--aralik-4);
-    margin-block: var(--aralik-4) var(--aralik-5);
+    margin-block: var(--aralik-4) 0;
     font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-xs);
     font-weight: 500;
@@ -193,19 +236,49 @@ const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
 
   .bos {
     max-width: var(--olcu);
-    font-size: var(--yazi-lede);
+    margin-block-start: var(--aralik-4);
+    font-size: 1.125rem;
     line-height: 1.5;
   }
 
-  .yil + .yil {
-    margin-block-start: clamp(3rem, 6vw, 6rem);
+  .bolum-bandi {
+    padding-block: clamp(2.5rem, 5vw, 5rem);
   }
 
-  .yil h2 {
-    padding-block-end: var(--aralik-3);
-    border-block-end: 1px solid var(--cizgi);
-    font-size: clamp(2rem, 1.2rem + 3vw, 4rem);
-    letter-spacing: -0.05em;
+  /* Bölüm girişi: dev bölüm adı + tek cümle; alt çizgi dünyanın rengi (Sinema turkuaz, Basketbol turuncu) */
+  .giris {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--aralik-3) clamp(1.5rem, 5vw, 5rem);
+    align-items: end;
+    margin-block-end: var(--aralik-5);
+    padding-block-end: 1.2rem;
+    border-block-end: 1px solid var(--vurgu);
+  }
+
+  .giris p {
+    max-width: 40ch;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.0625rem;
     color: var(--soluk);
+  }
+
+  .yil + .yil {
+    margin-block-start: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .yil h3 {
+    padding-block-end: var(--aralik-2);
+    border-block-end: 1px solid var(--cizgi);
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+    letter-spacing: -0.02em;
+    color: var(--soluk);
+  }
+
+  @media (max-width: 52rem) {
+    .giris {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

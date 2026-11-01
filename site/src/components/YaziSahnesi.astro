@@ -1,0 +1,128 @@
+---
+// Tam genişlik görüntü sahnesi: görsel arka plandır, başlık görselin üstüne biner (karartma ile). Ana sayfada öne çıkan yazı,
+// /yazilar/ manşeti ve (kendi sayfa başlığıyla) yazı kapağı için ortak yapı. Görsel Medya kuralından geçer (YaziKapagi).
+import YaziKapagi from './YaziKapagi.astro';
+import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { tarihIso, tarihYaz } from '../lib/format';
+import { okumaSuresi } from '../lib/okuma-suresi';
+
+interface Props {
+  yazi: Yazi;
+  /** Başlık etiketi: ana sayfada h3 (üstünde bölüm başlığı var), manşette h2 (sayfa h1'i slot'ta). */
+  baslikEtiketi?: 'h2' | 'h3';
+  /** Özeti de göster (manşet). */
+  ozetli?: boolean;
+  oncelikli?: boolean;
+  /** Daha yüksek sahne (manşet). */
+  uzun?: boolean;
+}
+
+const { yazi, baslikEtiketi = 'h3', ozetli = false, oncelikli = false, uzun = false } = Astro.props;
+const { data, id } = yazi.entry;
+const href = yaziUrl(yazi.bolum, id);
+const sure = okumaSuresi(yazi.entry.body);
+const Baslik = baslikEtiketi;
+---
+
+<article class:list={['sahne', uzun && 'uzun']} data-dunya={yazi.bolum}>
+  <a class="gorsel" href={href} tabindex="-1" aria-hidden="true">
+    <YaziKapagi {yazi} oran="kapak" width={1920} {oncelikli} class="ac" />
+  </a>
+  <div class="kap sahne-ic">
+    <slot />
+    <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
+    <Baslik class="bas"><a href={href}>{data.baslik}</a></Baslik>
+    {ozetli && <p class="lede">{data.ozet}</p>}
+    <p class="meta">
+      <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+      <span>{sure.dakika} dakikalık okuma</span>
+    </p>
+  </div>
+</article>
+
+<style>
+  .sahne {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    align-items: end;
+    min-height: 72svh;
+    background: var(--perde);
+    color: #ece8e1;
+    /* Sahne her zaman koyu tonlarla çözülür */
+    --murekkep: #ece8e1;
+    --soluk: #c9c3b8;
+    --turkuaz-metin: #4fd1d9;
+    --turuncu-metin: #ff8a3d;
+  }
+
+  .sahne.uzun {
+    min-height: min(92svh, 60rem);
+  }
+
+  .gorsel {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    display: block;
+    text-decoration: none;
+  }
+
+  .gorsel :global(.medya-kalip) {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+
+  /* Karartma: başlık görselin üstünde okunsun (görüntü işlemesi) */
+  .sahne::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(to top, rgb(11 12 14 / 0.93) 0%, rgb(11 12 14 / 0.78) 38%, rgb(11 12 14 / 0.2) 72%, rgb(11 12 14 / 0.35) 100%);
+  }
+
+  .sahne-ic {
+    display: grid;
+    gap: 0.9rem;
+    justify-items: start;
+    padding-block: clamp(10rem, 28vw, 22rem) clamp(1.4rem, 3vw, 2.6rem);
+  }
+
+  .bas {
+    max-width: 18ch;
+    font-size: clamp(2.5rem, 1rem + 6.5vw, 7rem);
+    line-height: 0.92;
+  }
+
+  .bas a {
+    text-decoration-color: transparent;
+  }
+
+  .etiket {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    font-weight: 600;
+    color: var(--vurgu);
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 40ch;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem 1.2rem;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: #d3cdc2;
+  }
+</style>

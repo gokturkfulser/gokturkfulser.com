@@ -1,4 +1,7 @@
 ---
+// Proje sayfası = vaka çalışması düzeni (tüm projelerin varsayılanı): koyu üst (ad, özet, eylemler), kâğıt bandında Swiss modüller:
+// oyna/görsel, künye, ne, neden, nasıl, bağlantılar, (varsa) ekran görüntüleri; altında MDX gövdesi.
+// ne/neden/nasıl frontmatter'daki `vaka` alanından gelir; boş olan modül hiç render edilmez.
 import { Image } from 'astro:assets';
 import Medya from '../../components/Medya.astro';
 import { render } from 'astro:content';
@@ -34,110 +37,160 @@ const canliUrl = yakinda ? undefined : data.url;
 const oynat = !yakinda && data.embedUrl;
 // Yakında + demo videosu: video kapak görselinin yerine öne çıkar.
 const videoOnde = yakinda && data.demoVideo;
+const canliEtiket = data.tur === 'oyun' ? 'Oyna' : 'Aç';
+
+// Vaka modülleri: boş metin render edilmez.
+const vakaMetinleri = [
+  { baslik: 'Ne', metin: data.vaka?.ne },
+  { baslik: 'Neden', metin: data.vaka?.neden },
+  { baslik: 'Nasıl', metin: data.vaka?.nasil },
+].filter((m): m is { baslik: string; metin: string } => Boolean(m.metin?.length));
+const baglantilar = [
+  ...(canliUrl ? [{ ad: oynat ? 'Yeni sekmede aç' : canliEtiket, href: canliUrl }] : []),
+  ...(data.repo ? [{ ad: 'Kaynak kod', href: data.repo }] : []),
+  ...(data.demoVideo && !videoOnde ? [{ ad: 'Demo videosu', href: '#demo' }] : []),
+  ...storeLinkleri.map(([anahtar, href]) => ({ ad: STORE[anahtar] ?? anahtar, href })),
+];
+// Sağ sütundaki küçük modül sayısı → sol "oyna/görsel" modülünün kaç satıra yayılacağı (boşluk kalmasın)
+const kucukModul = vakaMetinleri.length + (baglantilar.length > 0 ? 1 : 0);
+const satirSayisi = Math.min(4, 1 + Math.ceil(kucukModul / 2));
+const govdeVar = Boolean(entry.body?.trim());
 ---
 
-<Base baslik={data.ad} aciklama={data.ozet}>
+<Base baslik={data.ad} aciklama={data.ozet} bindirme>
   <article data-dunya="proje" data-pagefind-body>
-    <header class="bant bant--koyu bant--basi">
+    <header class="bant bant--koyu vaka-ust">
       <div class="kap ust">
-        <div class="ust-metin">
-          <h1 class="h1">{data.ad}</h1>
-          <p class="lede">{data.ozet}</p>
-          {
-            yakinda && (
-              <p class="not yakinda" role="note">
-                <strong>Yakında.</strong> Henüz yayında değil.
-                {vps && ' Servis yayına alındığında kendi adresinde, VPS üzerinde çalışacak.'}
-              </p>
-            )
-          }
-          {arsiv && <p class="not" role="note"><strong>Arşiv.</strong> Artık geliştirilmiyor.</p>}
-          <dl class="bilgi">
-            <div>
-              <dt>Tür</dt>
-              <dd>{TUR[data.tur]}</dd>
-            </div>
-            <div>
-              <dt>Durum</dt>
-              <dd>{DURUM[data.durum]}</dd>
-            </div>
-            <div>
-              <dt>Barındırma</dt>
-              <dd>{BARINDIRMA[data.barindirma]}</dd>
-            </div>
-          </dl>
-          <ul class="lista baglantilar">
-            {canliUrl && <li><a href={canliUrl}>Projeyi aç</a></li>}
-            {data.repo && <li><a href={data.repo}>Kaynak kod</a></li>}
-            {data.demoVideo && !videoOnde && <li><a href="#demo">Demo videosu</a></li>}
-            {storeLinkleri.map(([anahtar, href]) => <li><a href={href}>{STORE[anahtar]}</a></li>)}
-          </ul>
-        </div>
+        <h1 class="h1"><span class="satir"><span>{data.ad}</span></span></h1>
+        <p class="lede">{data.ozet}</p>
         {
-          videoOnde ? (
-            <div class="medya-kutu" id="demo">
-              <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
-            </div>
-          ) : (
-            <Medya class="medya-kutu" src={data.gorsel} oran="proje" width={1200} oncelikli />
+          yakinda && (
+            <p class="not yakinda" role="note">
+              <strong>Yakında.</strong> Henüz yayında değil.
+              {vps && ' Servis yayına alındığında kendi adresinde, VPS üzerinde çalışacak.'}
+            </p>
+          )
+        }
+        {arsiv && <p class="not" role="note"><strong>Arşiv.</strong> Artık geliştirilmiyor.</p>}
+        {
+          canliUrl && (
+            <p class="eylemler">
+              <a class="dugme" href={oynat ? '#oyna' : canliUrl}>{canliEtiket}</a>
+              {oynat && <a href={canliUrl}>Yeni sekmede aç</a>}
+            </p>
           )
         }
       </div>
     </header>
 
     <div class="bant bant--acik govde">
-      <div class="kap sayfa">
-        {
-          oynat && (
-            <section class="oyun-bolumu" aria-labelledby="oyun-baslik">
-              <h2 id="oyun-baslik" class="h3">{data.tur === 'oyun' ? 'Burada oyna' : 'Burada dene'}</h2>
-              <OyunKutusu
-                baslik={data.ad}
-                kapak={data.gorsel}
-                embedUrl={data.embedUrl!}
-                etiket={data.tur === 'oyun' ? 'Oyna' : 'Dene'}
-              />
-            </section>
-          )
-        }
+      <div class="kap">
+        <div class="vaka-modulleri">
+          <!-- Oyna / görsel -->
+          <section class="modul iki sol" data-satir={satirSayisi} aria-labelledby="oyun-baslik">
+            {
+              oynat ? (
+                <>
+                  <h2 id="oyun-baslik">{data.tur === 'oyun' ? 'Burada oyna' : 'Burada dene'}</h2>
+                  <div id="oyna">
+                    <OyunKutusu
+                      baslik={data.ad}
+                      kapak={data.gorsel}
+                      embedUrl={data.embedUrl!}
+                      etiket={data.tur === 'oyun' ? 'Oyna' : 'Dene'}
+                    />
+                  </div>
+                </>
+              ) : videoOnde ? (
+                <>
+                  <h2 id="oyun-baslik">Demo videosu</h2>
+                  <div id="demo">
+                    <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 id="oyun-baslik" class="sr-only">Görsel</h2>
+                  <Medya src={data.gorsel} oran="proje" width={1200} oncelikli />
+                </>
+              )
+            }
+          </section>
 
-        {
-          data.demoVideo && !videoOnde && (
-            <section id="demo" aria-labelledby="demo-baslik">
-              <h2 id="demo-baslik" class="h3">Demo videosu</h2>
-              <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
-            </section>
-          )
-        }
+          <!-- Künye -->
+          <section class="modul iki" aria-labelledby="kunye-baslik">
+            <h2 id="kunye-baslik">Künye</h2>
+            <dl>
+              <dt>Tür</dt>
+              <dd>{TUR[data.tur]}</dd>
+              <dt>Durum</dt>
+              <dd>{DURUM[data.durum]}</dd>
+              <dt>Barındırma</dt>
+              <dd>{BARINDIRMA[data.barindirma]}</dd>
+              {
+                data.stack.length > 0 && (
+                  <>
+                    <dt>Teknoloji</dt>
+                    <dd>{data.stack.join(', ')}</dd>
+                  </>
+                )
+              }
+            </dl>
+          </section>
 
-        <div class="metin">
-          <Content components={mdxBilesenleri} />
+          {
+            vakaMetinleri.map((m) => (
+              <section class="modul" aria-labelledby={`vaka-${m.baslik.toLowerCase()}`}>
+                <h2 id={`vaka-${m.baslik.toLowerCase()}`}>{m.baslik}</h2>
+                <p>{m.metin}</p>
+              </section>
+            ))
+          }
+
+          {
+            baglantilar.length > 0 && (
+              <section class="modul" aria-labelledby="baglanti-baslik">
+                <h2 id="baglanti-baslik">Bağlantılar</h2>
+                <ul class="lista">
+                  {baglantilar.map((b) => <li><a href={b.href}>{b.ad}</a></li>)}
+                </ul>
+              </section>
+            )
+          }
+
+          {
+            data.demoVideo && !videoOnde && (
+              <section id="demo" class="modul tum" aria-labelledby="demo-baslik">
+                <h2 id="demo-baslik">Demo videosu</h2>
+                <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
+              </section>
+            )
+          }
+
+          {
+            data.ekranGoruntuleri.length > 0 && (
+              <section class="modul tum" aria-labelledby="ekran-baslik">
+                <h2 id="ekran-baslik">Ekran görüntüleri</h2>
+                <ul class="lista ekranlar">
+                  {data.ekranGoruntuleri.map((e) => (
+                    <li>
+                      <figure>
+                        <Image src={e.gorsel} alt={e.alt} width={900} loading="lazy" />
+                        {e.altyazi && <figcaption>{e.altyazi}</figcaption>}
+                      </figure>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
         </div>
 
         {
-          data.ekranGoruntuleri.length > 0 && (
-            <section aria-labelledby="ekran-baslik">
-              <h2 id="ekran-baslik" class="h3">Ekran görüntüleri</h2>
-              <ul class="lista ekranlar">
-                {data.ekranGoruntuleri.map((e) => (
-                  <li>
-                    <figure>
-                      <Image src={e.gorsel} alt={e.alt} width={900} loading="lazy" />
-                      {e.altyazi && <figcaption>{e.altyazi}</figcaption>}
-                    </figure>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-
-        {
-          data.stack.length > 0 && (
-            <section aria-labelledby="stack-baslik">
-              <h2 id="stack-baslik" class="h3">Kullanılan teknolojiler</h2>
-              <ul class="lista teknolojiler">{data.stack.map((s) => <li>{s}</li>)}</ul>
-            </section>
+          govdeVar && (
+            <div class="metin">
+              <Content components={mdxBilesenleri} />
+            </div>
           )
         }
       </div>
@@ -146,20 +199,14 @@ const videoOnde = yakinda && data.demoVideo;
 </Base>
 
 <style>
+  .vaka-ust {
+    padding-block: clamp(8rem, 18vw, 13rem) clamp(2rem, 4vw, 3.4rem);
+  }
+
   .ust {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    gap: clamp(2rem, 4vw, 5rem);
-    align-items: end;
-  }
-
-  .ust-metin {
-    display: grid;
     gap: var(--aralik-4);
-  }
-
-  h1 {
-    letter-spacing: -0.055em;
+    justify-items: start;
   }
 
   .not {
@@ -175,47 +222,114 @@ const videoOnde = yakinda && data.demoVideo;
     border-inline-start-color: var(--turuncu-metin);
   }
 
-  .bilgi {
+  .eylemler {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--aralik-2) var(--aralik-5);
+    align-items: center;
+    gap: var(--aralik-3) var(--aralik-4);
     margin: 0;
     font-family: var(--font-baslik-yigin);
+    font-size: 1.0625rem;
+    font-weight: 600;
   }
 
-  .bilgi dt {
-    font-size: var(--yazi-xs);
+  .dugme {
+    display: inline-block;
+    padding: 0.85rem 1.5rem;
+    background: var(--murekkep);
+    color: var(--zemin);
+    font-size: 1.0625rem;
+    text-decoration: none;
+  }
+
+  .dugme:hover {
+    background: transparent;
+    color: var(--murekkep);
+    outline: 1px solid var(--murekkep);
+  }
+
+  .govde {
+    padding-block: calc(var(--bant) * 0.7);
+  }
+
+  /* Swiss modüller: ortak çizgili ızgara; kart yok, köşe yok */
+  .vaka-modulleri {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    border-block-start: 1px solid var(--murekkep);
+    border-inline-start: 1px solid var(--murekkep);
+    margin-block: 1.6rem;
+  }
+
+  .modul {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    min-width: 0;
+    padding: clamp(0.9rem, 1.6vw, 1.4rem);
+    border-inline-end: 1px solid var(--murekkep);
+    border-block-end: 1px solid var(--murekkep);
+  }
+
+  .modul.iki {
+    grid-column: span 2;
+  }
+
+  .modul.tum {
+    grid-column: 1 / -1;
+  }
+
+  .modul.sol[data-satir='2'] {
+    grid-row: span 2;
+  }
+
+  .modul.sol[data-satir='3'] {
+    grid-row: span 3;
+  }
+
+  .modul.sol[data-satir='4'] {
+    grid-row: span 4;
+  }
+
+  .modul h2 {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .modul p {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 1rem;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+  }
+
+  dt {
     color: var(--soluk);
   }
 
-  .bilgi dd {
+  dd {
     margin: 0;
-    font-weight: 600;
   }
 
-  .baglantilar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--aralik-2) var(--aralik-4);
-    font-family: var(--font-baslik-yigin);
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  .sayfa {
+  .modul ul {
     display: grid;
-    gap: var(--aralik-6);
+    gap: 0.4rem;
+    font-family: var(--font-baslik-yigin);
+    font-weight: 600;
   }
 
-  .sayfa h2 {
-    margin-block-end: var(--aralik-3);
-  }
-
-  .govde :global(.metin) {
-    max-width: 46rem;
-  }
-
-  .ekranlar {
+  .modul .ekranlar {
     display: flex;
     flex-wrap: wrap;
     gap: var(--aralik-4);
@@ -223,8 +337,8 @@ const videoOnde = yakinda && data.demoVideo;
   }
 
   .ekranlar li {
-    flex: 1 1 20rem;
-    max-width: 36rem;
+    flex: 1 1 14rem;
+    max-width: 22rem;
   }
 
   .ekranlar figure {
@@ -234,31 +348,36 @@ const videoOnde = yakinda && data.demoVideo;
   .ekranlar img {
     width: 100%;
     height: auto;
-    border-radius: var(--medya-kose);
   }
 
   .ekranlar figcaption {
     margin-block-start: var(--aralik-2);
     font-family: var(--font-baslik-yigin);
-    font-size: var(--yazi-sm);
+    font-size: var(--yazi-xs);
     color: var(--soluk);
   }
 
-  .teknolojiler {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--aralik-2) var(--aralik-4);
-    font-family: var(--font-baslik-yigin);
-    font-weight: 500;
+  .govde > .kap > :global(.metin) {
+    margin-block-start: clamp(2rem, 4vw, 4rem);
   }
 
-  @media (max-width: 52rem) {
-    .ust {
+  @media (max-width: 62rem) {
+    .vaka-modulleri {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .modul.sol[data-satir] {
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .vaka-modulleri {
       grid-template-columns: 1fr;
     }
 
-    .ust :global(.medya-kutu) {
-      order: -1;
+    .modul.iki {
+      grid-column: auto;
     }
   }
 </style>

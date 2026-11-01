@@ -1,10 +1,9 @@
 ---
-import YaziKapagi from '../YaziKapagi.astro';
+import YaziBasi from './YaziBasi.astro';
 import { render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Etiketler from '../../components/Etiketler.astro';
 import { mdxBilesenleri } from '../../components/mdx';
-import { tarihIso, tarihYaz } from '../../lib/format';
 import { grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
 
@@ -39,104 +38,99 @@ const bilgi = [
 ].filter((b): b is { ad: string; deger: string } => Boolean(b));
 ---
 
-<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld}>
+<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld} bindirme>
   <article data-dunya="basketbol" data-pagefind-body>
-    <header>
-      <div class="bant bant--koyu bant--basi">
-        <div class="kap baslik-ic">
-          <h1 class="h1">{data.baslik}</h1>
-          <p class="lede">{data.ozet}</p>
-          {
-            bilgi.length > 0 && (
-              <dl class="bilgi">
-                {bilgi.map((b) => (
-                  <div>
-                    <dt>{b.ad}</dt>
-                    <dd>{b.deger}</dd>
-                  </div>
-                ))}
-              </dl>
-            )
-          }
-          {
-            data.istatistik && (
-              <dl class="skor" aria-label="Maç istatistikleri">
-                {data.istatistik.map((s) => (
-                  <div>
-                    <dt>{s.etiket}</dt>
-                    <dd>{s.deger}</dd>
-                  </div>
-                ))}
-              </dl>
-            )
-          }
-          <p class="tarih">
-            <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
-            <span class="okuma">{sure.dakika} dakikalık okuma</span>
-          </p>
-        </div>
-      </div>
-      <div class="bant--koyu kapak-bant">
-        <div class="kap">
-          <YaziKapagi yazi={{ bolum: 'basketbol', entry }} oran="kapak" width={1600} oncelikli />
-        </div>
-      </div>
-    </header>
+    <YaziBasi yazi={{ bolum: 'basketbol', entry }} dakika={sure.dakika} />
 
+    <!-- Kâğıt bandı: kapaktan sonra okuma alanı basılı sayfaya geçer (sert bant değişimi) -->
     <div class="bant bant--acik govde">
       <div class="kap">
-        <div class="kolon">
-          <div class="metin">
-            <Content components={mdxBilesenleri} />
-          </div>
+        <div class="yazi-metni">
+          {
+            bilgi.length > 0 && (
+              <aside class="kenar-notu" aria-label="Künye">
+                <dl>
+                  {bilgi.map((b) => (
+                    <div>
+                      <dt>{b.ad}</dt>
+                      <dd>{b.deger}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </aside>
+            )
+          }
+          <Content components={mdxBilesenleri} />
           <Etiketler etiketler={data.etiketler} />
         </div>
       </div>
     </div>
+
+    {
+      data.istatistik && (
+        <section class="bant bant--koyu skorbord" aria-labelledby="skor-baslik">
+          <div class="kap">
+            <h2 id="skor-baslik" class="sr-only">Maç istatistikleri</h2>
+            <dl class="skor">
+              {data.istatistik.map((s) => (
+                <div>
+                  <dt>{s.etiket}</dt>
+                  <dd>{s.deger}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )
+    }
   </article>
 </Base>
 
 <style>
-  .baslik-ic {
-    display: grid;
-    gap: var(--aralik-4);
+  .govde {
+    padding-block-start: calc(var(--bant) * 0.7);
+    padding-block-end: calc(var(--bant) * 0.7);
   }
 
-  h1 {
-    max-width: 14ch;
+  .govde :global(.etiketler) {
+    margin-block-start: var(--aralik-5);
+    padding-block-start: var(--aralik-4);
+    border-block-start: 1px solid var(--cizgi);
   }
 
-  .lede {
-    max-width: 40ch;
-  }
-
-  .bilgi {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--aralik-2) var(--aralik-5);
-    margin: 0;
+  .kenar-notu {
+    padding-block-start: 0.6rem;
+    border-block-start: 3px solid var(--dunya-bant);
     font-family: var(--font-baslik-yigin);
-    font-size: 1.0625rem;
+    font-size: var(--yazi-xs);
+    line-height: 1.4;
   }
 
-  .bilgi dt {
-    font-size: var(--yazi-xs);
+  .kenar-notu dl {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0;
+  }
+
+  .kenar-notu dt {
     color: var(--soluk);
   }
 
-  .bilgi dd {
+  .kenar-notu dd {
     margin: 0;
     font-weight: 600;
   }
 
-  /* Skorbord: sayılar büyük, etiket küçük; veri frontmatter'dan gelir */
+  /* Skorbord (koyu bant, yazının sonunda): sayılar büyük serif, etiket küçük; veri frontmatter'dan gelir */
+  .skorbord {
+    padding-block: clamp(3.5rem, 7vw, 7rem);
+  }
+
   .skor {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--aralik-3) var(--aralik-5);
+    gap: var(--aralik-4) var(--aralik-5);
     margin: 0;
-    padding-block-start: var(--aralik-4);
-    border-block-start: 1px solid var(--cizgi);
   }
 
   .skor > div {
@@ -147,11 +141,11 @@ const bilgi = [
 
   .skor dd {
     margin: 0;
-    font-family: var(--font-baslik-yigin);
-    font-weight: 800;
-    font-size: clamp(3rem, 2rem + 4vw, 6rem);
+    font-family: var(--font-serif-yigin);
+    font-weight: 500;
+    font-size: clamp(3.5rem, 2rem + 5vw, 7rem);
     line-height: 0.95;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
     color: var(--turuncu-metin);
   }
@@ -160,31 +154,5 @@ const bilgi = [
     font-family: var(--font-baslik-yigin);
     font-size: var(--yazi-sm);
     color: var(--soluk);
-  }
-
-  .tarih {
-    display: grid;
-    gap: 0.125rem;
-    margin: 0;
-    font-family: var(--font-baslik-yigin);
-    font-size: var(--yazi-sm);
-    font-weight: 500;
-    color: var(--soluk);
-  }
-
-  .kapak-bant {
-    width: 100%;
-    padding-block-end: var(--bant);
-  }
-
-  .govde .kolon {
-    max-width: 46rem;
-    margin-inline: auto;
-  }
-
-  .govde :global(.etiketler) {
-    margin-block-start: var(--aralik-5);
-    padding-block-start: var(--aralik-4);
-    border-block-start: 1px solid var(--cizgi);
   }
 </style>

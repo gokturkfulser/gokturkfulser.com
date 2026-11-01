@@ -7,6 +7,7 @@ import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/prose.css';
 import '../styles/medya.css';
+import '../styles/yazdir.css';
 import { jsonLdMetni } from '../lib/jsonld';
 import { projeler } from '../lib/content';
 import { EPOSTA, MENU, PROFILLER, SITE_ADI } from '../lib/site';
@@ -20,6 +21,8 @@ interface Props {
   ogGorsel?: string;
   /** schema.org verisi (JSON-LD). */
   jsonLd?: unknown;
+  /** Üst çubuk ilk (koyu, görselli) bandın üstüne biner; verilmezse kendi koyu şeridinde durur. */
+  bindirme?: boolean;
 }
 
 const VARSAYILAN_ACIKLAMA = 'Sinema, basketbol ve yaptığım projeler üzerine kişisel site.';
@@ -30,6 +33,7 @@ const {
   tur = 'website',
   ogGorsel = '/og/varsayilan.png',
   jsonLd,
+  bindirme = false,
 } = Astro.props;
 const tamBaslik = baslik ? `${baslik} · ${SITE_ADI}` : SITE_ADI;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -64,7 +68,7 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#0a0d12" />
+    <meta name="theme-color" content="#0b0c0e" />
     {SHOW_DRAFTS && <meta name="robots" content="noindex, nofollow" />}
     <meta name="generator" content={Astro.generator} />
     <Font cssVariable="--font-baslik" preload />
@@ -73,7 +77,7 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
   </head>
   <body>
     <a class="atla" href="#icerik">İçeriğe geç</a>
-    <header class="ust">
+    <header class:list={['ust', bindirme && 'bindirme']}>
       <div class="kap ust-ic">
         <a href="/" class="marka">{SITE_ADI}</a>
         <nav class="menu" aria-label="Ana menü">
@@ -190,20 +194,25 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
 </html>
 
 <style>
-  /* Nav: sabit, yarı saydam, bulanık; her sayfada koyu (altındaki açık bant bulanıklıktan sızar). */
+  /* Üst çubuk: her zaman koyu, sabit değil (sayfayla kayar). Görselli sayfa başlarında ilk bandın üstüne biner;
+     o bandın arkasında karartma (scrim) vardır, kontrast ekran görüntüsünden ölçülür. */
   .ust {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 30;
-    background: rgb(10 13 18 / 0.72);
-    -webkit-backdrop-filter: saturate(1.8) blur(20px);
-    backdrop-filter: saturate(1.8) blur(20px);
-    border-block-end: 1px solid rgb(255 255 255 / 0.07);
-    color: #eef1f4;
+    background: var(--perde);
+    border-block-end: 1px solid #34353a;
+    color: #ece8e1;
     /* Üst çubuk her zaman koyu bant tonlarını kullanır */
-    --vurgu: #3fc8cf;
-    --murekkep: #eef1f4;
-    --soluk: #9aa5b1;
+    --vurgu: #4fd1d9;
+    --murekkep: #ece8e1;
+    --soluk: #c9c3b8;
+  }
+
+  .ust.bindirme {
+    position: absolute;
+    inset: 0 0 auto 0;
+    background: transparent;
+    border-block-end: 0;
   }
 
   .ust-ic {
@@ -215,11 +224,12 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
 
   .marka {
     font-family: var(--font-baslik-yigin);
-    font-size: 1.375rem;
-    font-weight: 800;
+    font-size: 1.125rem;
+    font-weight: 600;
     line-height: 1;
-    letter-spacing: -0.04em;
+    letter-spacing: 0.005em;
     text-decoration-line: none;
+    view-transition-name: marka;
   }
 
   .menu {
@@ -275,10 +285,11 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
       align-items: center;
       min-height: 2.5rem;
       padding-inline: 1.125rem;
-      border: 1px solid rgb(255 255 255 / 0.28);
+      border: 1px solid rgb(236 232 225 / 0.45);
       border-radius: 999px;
+      background: rgb(11 12 14 / 0.6);
       font-family: var(--font-baslik-yigin);
-      font-size: 0.9375rem;
+      font-size: 1rem;
       font-weight: 600;
       list-style: none;
       cursor: pointer;
@@ -289,27 +300,25 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     }
 
     .menu-mobil[open] summary {
-      background: #eef1f4;
-      color: #0a0d12;
+      background: #ece8e1;
+      color: #0b0c0e;
     }
 
     .menu-mobil nav {
       position: absolute;
       inset: 100% 0 auto 0;
       padding: var(--aralik-2) var(--kenar) var(--aralik-4);
-      background: rgb(10 13 18 / 0.97);
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
-      border-block-end: 1px solid rgb(255 255 255 / 0.1);
+      background: rgb(11 12 14 / 0.98);
+      border-block-end: 1px solid #34353a;
     }
 
     .menu-mobil nav a {
       display: block;
       padding-block: 0.625rem;
       font-family: var(--font-baslik-yigin);
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
     }
 
     .ara {
@@ -337,14 +346,19 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     display: grid;
     gap: var(--aralik-2);
     align-content: start;
-    max-width: 28ch;
+    max-width: 30ch;
   }
 
+  /* Serif yalnızca ≥ 24 px: footer adı 2 rem (32 px) */
   .alt-marka .marka {
     justify-self: start;
     margin-block-end: var(--aralik-2);
-    font-size: 2rem;
+    font-family: var(--font-serif-yigin);
+    font-size: 2.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
     color: var(--murekkep);
+    view-transition-name: none;
   }
 
   .alt-marka p {

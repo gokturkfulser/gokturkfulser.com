@@ -1,0 +1,50 @@
+# /hakkimda/ sayfasının kendisi özgeçmiştir; bu dosya tek kaynaktır (şema: src/content.config.ts → ozgecmis).
+# Aşağıdaki her şey UYDURMA yer tutucudur (bkz. YER-TUTUCULAR.md). Gerçek veri girilince `taslak: true` satırı silinir.
+# Tarihler "YYYY-AA" ya da "YYYY"; `bitis` yoksa süren bir kayıttır.
+ozgecmis:
+  taslak: true
+  ad: Göktürk Fulser
+  unvan: Yazılım geliştirici
+  konum: Türkiye
+  ozet: >-
+    Yer tutucu özet: web ve servis tarafında çalışan, film ve basketbol üzerine yazan bir yazılım geliştirici.
+    Küçük, net ve bakımı kolay şeyler yapmayı sever.
+  deneyim:
+    - kurum: Örnek Şirket
+      rol: Yazılım geliştirici
+      konum: Uzaktan
+      baslangic: "2024-03"
+      maddeler:
+        - "Yer tutucu: ürün ekibiyle birlikte web arayüzlerini ve servislerini geliştirdi."
+        - "Yer tutucu: derleme ve yayın sürecini yeniden kurarak yayın süresini kısalttı."
+    - kurum: Örnek Kurum
+      rol: Yazılım mühendisi
+      konum: İstanbul
+      baslangic: "2020-09"
+      bitis: "2024-02"
+      maddeler:
+        - "Yer tutucu: iç araçlar ve raporlama servisleri üzerinde çalıştı."
+        - "Yer tutucu: yeni gelen ekip arkadaşları için kod inceleme rehberi yazdı."
+  egitim:
+    - kurum: Örnek Üniversite
+      bolum: Bilgisayar Mühendisliği
+      derece: Lisans
+      baslangic: "2016"
+      bitis: "2020"
+  beceriler:
+    - grup: Diller
+      ogeler: [TypeScript, Python, SQL]
+    - grup: Web
+      ogeler: [Astro, Cloudflare Workers, CSS]
+    - grup: Altyapı
+      ogeler: [Docker, Linux, GitHub Actions]
+  diller:
+    - dil: Türkçe
+      seviye: Ana dil
+    - dil: İngilizce
+      seviye: İleri
+  baglantilar:
+    - ad: GitHub
+      href: https://github.com/gokturkfulser
+    - ad: E-posta
+      href: mailto:merhaba@gokturkfulser.com

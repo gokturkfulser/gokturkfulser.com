@@ -41,7 +41,7 @@ html {
   font-family: var(--font-metin-yigin);
   font-size: 100%;
   line-height: var(--satir-govde);
-  scrollbar-color: #4b5663 var(--perde);
+  scrollbar-color: #4a4b50 var(--perde);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -74,21 +74,21 @@ iframe {
 }
 
 /* ——— Başlıklar ——— */
+/* Koyu bantta Cormorant (yalnızca ≥ 24 px: bkz. DESIGN.md "Fontlar"), kâğıtta Hanken Grotesk (--font-bas). */
 h1,
 h2,
 h3 {
-  font-family: var(--font-baslik-yigin);
-  font-weight: 800;
+  font-family: var(--font-bas);
+  font-weight: var(--bas-agirlik);
   line-height: var(--satir-baslik);
-  letter-spacing: -0.05em;
+  letter-spacing: var(--bas-aralik);
   text-wrap: balance;
   hyphens: manual;
 }
 
 h3 {
-  font-weight: 700;
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.015em;
 }
 
 p,
@@ -148,8 +148,27 @@ a:hover {
   background: var(--perde);
 }
 
+/* Kâğıt bandı: basılı sayfa. İnce çerçeve ve üstte çift çizgi bilgi taşır (bölüm sınırı); gradient yok. */
 .bant--acik {
-  background: var(--parke);
+  position: relative;
+  background: var(--kagit);
+}
+
+.bant--acik::before {
+  content: '';
+  position: absolute;
+  inset: 0.55rem;
+  border: 1px solid var(--murekkep);
+  pointer-events: none;
+}
+
+.bant--acik::after {
+  content: '';
+  position: absolute;
+  inset: clamp(1.1rem, 2.2vw, 1.8rem) clamp(1.1rem, 2.2vw, 1.8rem) auto;
+  height: 5px;
+  border-block: 1px solid var(--murekkep);
+  pointer-events: none;
 }
 
 /* Aynı tonda iki bant yan yana gelirse ince çizgiyle ayrılır */
@@ -175,20 +194,20 @@ a:hover {
 /* ——— Tip sınıfları ——— */
 .dev {
   font-size: var(--yazi-dev);
-  line-height: 0.96;
-  letter-spacing: -0.058em;
+  line-height: 0.84;
+  letter-spacing: -0.04em;
 }
 
 .h1 {
   font-size: var(--yazi-h1);
-  line-height: 0.98;
-  letter-spacing: -0.055em;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
 }
 
 .h2 {
   font-size: var(--yazi-h2);
-  line-height: 1;
-  letter-spacing: -0.05em;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
 }
 
 .h3 {
@@ -197,12 +216,17 @@ a:hover {
 
 .lede {
   max-width: 34ch;
-  font-family: var(--font-baslik-yigin);
+  font-family: var(--font-bas);
   font-size: var(--yazi-lede);
   font-weight: 400;
-  line-height: 1.32;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--lede-renk);
+}
+
+/* Büyük başlığın alt kuyrukları (g, j, y) altındaki cümleye değmesin */
+:is(h1, h2) + .lede {
+  margin-block-start: clamp(1rem, 2.2vw, 1.75rem);
 }
 
 .kucuk {
@@ -301,11 +325,55 @@ a:hover {
   top: var(--aralik-2);
   z-index: 40;
   padding: var(--aralik-2) var(--aralik-3);
-  background: var(--parke);
-  color: #12161c;
+  background: var(--kagit);
+  color: #15171a;
   transform: translateY(-300%);
 }
 
 .atla:focus {
   transform: none;
+}
+
+/* ——— Hareket (izinli küme; DESIGN.md "Animasyon ilkeleri") ———
+   Saf CSS. Desteklemeyen tarayıcıda ya da reduced-motion'da içerik animasyonsuz ve eksiksiz görünür. */
+.satir {
+  display: block;
+  overflow: hidden;
+  /* Büyük İ noktası ve g/y kuyrukları kırpılmasın */
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+}
+
+.satir > span {
+  display: block;
+}
+
+/* Satır satır belirme: gizleyen kuralın tamamı hem `no-preference` hem `@supports (animation-timeline: view())` içindedir;
+   desteklemeyen tarayıcıda (ya da hareket azaltma açıkken) başlık animasyonsuz ve tam görünür. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .satir > span {
+      animation: satir-gir 1.3s var(--ease) both;
+    }
+
+    .satir:nth-child(2) > span {
+      animation-delay: 0.14s;
+    }
+
+    .satir:nth-child(3) > span {
+      animation-delay: 0.28s;
+    }
+
+    @keyframes satir-gir {
+      from {
+        transform: translateY(104%);
+      }
+    }
+  }
+}
+
+@media print {
+  @view-transition {
+    navigation: none;
+  }
 }
