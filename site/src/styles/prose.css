@@ -91,10 +91,11 @@
   background: var(--dunya-bant);
 }
 
-/* Düz Markdown tablosu (| a | b |): IstatistikTablosu ile aynı dil; dar ekranda yatay kayar */
+/* Düz Markdown tablosu (| a | b |): IstatistikTablosu ile aynı dil. Sütunlar sütun genişliğine sığar, başlıklar alt satıra kayar
+   (yatay kaydırma yok; son sütun kesilmesin). */
 .yazi-metni > table {
-  display: block;
-  overflow-x: auto;
+  display: table;
+  width: 100%;
   font-family: var(--font-baslik-yigin);
   font-size: var(--yazi-sm);
   line-height: 1.4;
@@ -110,6 +111,16 @@
 
 .yazi-metni > table td:first-child {
   white-space: nowrap;
+}
+
+@media (max-width: 30rem) {
+  .yazi-metni > table {
+    font-size: var(--yazi-xs);
+  }
+
+  .yazi-metni > table :is(th, td) {
+    padding-inline: 0.3rem;
+  }
 }
 
 .yazi-metni > table th {
