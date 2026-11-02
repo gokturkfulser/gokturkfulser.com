@@ -34,3 +34,20 @@ export function taslakKlasorDesenleri(base: string, anaDosyalar: string[], basti
   }
   return desenler;
 }
+
+/**
+ * Tek tek veri dosyaları için aynısı (`<base>/<alt klasör>/*.yaml`): production'da `taslak: true` olan dosyayı
+ * `!<alt klasör>/<dosya>` olarak desenden çıkarır, dosya hiç yüklenmez. Preview'da (SHOW_DRAFTS=true) boş döner.
+ */
+export function taslakDosyaDesenleri(base: string): string[] {
+  if (taslakGoster() || !existsSync(base)) return [];
+  const desenler: string[] = [];
+  for (const klasor of readdirSync(base, { withFileTypes: true })) {
+    if (!klasor.isDirectory()) continue;
+    for (const dosya of readdirSync(join(base, klasor.name))) {
+      if (!dosya.endsWith('.yaml')) continue;
+      if (TASLAK_SATIRI.test(readFileSync(join(base, klasor.name, dosya), 'utf8'))) desenler.push(`!${klasor.name}/${dosya}`);
+    }
+  }
+  return desenler;
+}

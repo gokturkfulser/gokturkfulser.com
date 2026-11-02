@@ -3,7 +3,8 @@ import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { parse as parseYaml } from 'yaml';
 import { slugify } from './lib/slug';
-import { taslakKlasorDesenleri } from './lib/taslak-loader';
+import { taslakDosyaDesenleri, taslakKlasorDesenleri } from './lib/taslak-loader';
+import { dosyaYoluHatasi, siraHatasi, videoAdresiMi } from './lib/top10';
 
 // Her içerik kendi klasöründe: <koleksiyon>/<slug>/index.mdx + görseller.
 // id, klasör adının Türkçe transliterasyonlu slug'ıdır. Production'da taslak klasörleri desenden çıkar.
@@ -254,4 +255,45 @@ const hakkimda = defineCollection({
   schema: z.object({ baslik: z.string().trim().default('') }),
 });
 
-export const collections = { sinema, basketbol, projeler, projeMetinleri, ozgecmis, hakkimda };
+// "İnsan highlight makarası": NBA Top 10 gecelerinin verisi. Her gece bir dosya: top10/<sezon>/<YYYY-AA-GG>.yaml (tarih = maçların ABD gecesi).
+// Puanlama ve doğrulama kuralları lib/top10.ts'te. Doğrulama build'i durdurur: şema (sıralar 1..N, tekil, eksiksiz; video adresi) ve
+// yükleyicinin kimlik üretimi (dosya adı ile `tarih` aynı gün). id: `<sezon>/<YYYY-AA-GG>`. `taslak: true` dosyalar production'da
+// yüklenmez (içerik taslak sistemiyle aynı üç katman: yükleyici deseni, lib/content.ts süzgeci, sayfada getCollection yok).
+const top10Klasoru = './src/content/top10';
+const top10 = defineCollection({
+  loader: glob({
+    base: top10Klasoru,
+    pattern: ['*/*.yaml', ...taslakDosyaDesenleri(top10Klasoru)],
+    generateId: ({ entry, data }) => {
+      const hata = dosyaYoluHatasi(entry, data.tarih);
+      if (hata) throw new Error(`top10: ${hata}`);
+      return entry.replace(/\.yaml$/, '');
+    },
+  }),
+  schema: z
+    .object({
+      tarih: z.coerce.date(),
+      video: z.url().refine(videoAdresiMi, 'video bağlantısı https ile youtube.com ya da nba.com üzerinde olmalı'),
+      tur: z.enum(['top10', 'top5']).default('top10'),
+      oyunlar: z
+        .array(
+          z.object({
+            sira: z.number().int(),
+            oyuncu: z.string().trim().min(1),
+            // NBA takım kısaltması: 3 büyük harf (SAS, OKC…)
+            takim: z.string().regex(/^[A-Z]{3}$/, 'takım 3 büyük harf olmalı (ör. SAS)'),
+            asist: z.string().trim().min(1).optional(),
+            not: z.string().trim().min(1).optional(),
+          }),
+        )
+        .min(1),
+      // true ise production'da görünmez (SHOW_DRAFTS=true ile preview'da görünür). Örnek veriler taslaktır.
+      taslak: z.boolean().default(false),
+    })
+    .superRefine((gece, ctx) => {
+      const hata = siraHatasi(gece.tur, gece.oyunlar);
+      if (hata) ctx.addIssue({ code: 'custom', message: hata, path: ['oyunlar'] });
+    }),
+});
+
+export const collections = { sinema, basketbol, projeler, projeMetinleri, ozgecmis, hakkimda, top10 };

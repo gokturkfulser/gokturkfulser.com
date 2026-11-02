@@ -1,0 +1,138 @@
+---
+// En yeni gecenin listesi: sıra, oyuncu, takım, puan (asist ve not varsa altında). Video yalnızca düz metin bağlantıdır (iframe yok).
+// `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum.
+import Top10Bos from './Top10Bos.astro';
+import { top10Geceleri } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+import { puan, sonGece } from '../../lib/top10';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { geceler } = await top10Geceleri(Astro.props.sezon);
+const gece = sonGece(geceler);
+const oyunlar = gece ? [...gece.oyunlar].sort((a, b) => a.sira - b.sira) : [];
+const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '';
+---
+
+{
+  !gece ? (
+    <Top10Bos />
+  ) : (
+    <section class="kutu" data-dunya="basketbol" aria-label={s.sonGece}>
+      <div class="ust">
+        <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
+        <span>{s.tur[gece.tur]}</span>
+      </div>
+      <ol>
+        {oyunlar.map((o) => (
+          <li>
+            <div class="satir">
+            <span class="ad">{o.oyuncu}</span>{' '}
+            <span class="takim">{o.takim}</span>{' '}
+            <span class="puan">{s.puanlar(puan(o.sira))}</span>
+            {o.asist && (
+              <span class="ek">
+                {s.asist}: {o.asist}
+              </span>
+            )}
+            {o.not && <span class="ek">{o.not}</span>}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="video">
+        <a href={gece.video} rel="noopener noreferrer">{s.video(videoAlani)}</a>
+      </p>
+    </section>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .ust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--aralik-1) var(--aralik-3);
+    padding-block-end: var(--aralik-2);
+    border-block-end: 3px solid var(--dunya-bant);
+    font-size: var(--yazi-sm);
+  }
+
+  /* Gecenin tarihi başlık yerine geçer: kâğıtta Hanken, ≥ 24 px */
+  time {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  ol {
+    margin: 0;
+    padding-inline-start: 2.2em;
+    list-style: decimal;
+    font-size: var(--yazi-sm);
+    line-height: 1.4;
+  }
+
+  li {
+    padding-inline-start: 0.4em;
+    border-block-end: 1px solid var(--cizgi);
+  }
+
+  /* li list-item kalır (sıra numarası işareti); satır düzeni içteki kapta */
+  .satir {
+    padding-block: var(--aralik-2);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--aralik-2);
+    align-items: baseline;
+  }
+
+  li + li {
+    margin-block-start: 0;
+  }
+
+  /* Sıra numarası liste işaretidir; kâğıt bandında ink rengi (turuncu işaret < 7:1 olurdu) */
+  .kutu ol > li::marker {
+    color: var(--murekkep);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ad {
+    font-weight: 700;
+  }
+
+  .puan {
+    margin-inline-start: auto;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .ek {
+    flex-basis: 100%;
+    font-size: var(--yazi-xs);
+  }
+
+  .video {
+    margin-block-start: var(--aralik-3);
+    font-size: var(--yazi-sm);
+  }
+
+  /* Bağlantı: ink metin, vurgu renkli alt çizgi (turuncu metin < 7:1 olurdu) */
+  .video a {
+    color: var(--murekkep);
+    font-weight: 600;
+  }
+</style>

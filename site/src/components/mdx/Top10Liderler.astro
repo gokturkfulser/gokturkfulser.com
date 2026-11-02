@@ -1,0 +1,106 @@
+---
+// Lider değişimleri: yalnızca liderin değiştiği geceler (ilk gece dahil), eskiden yeniye. `sezon` verilmezse en yeni sezon.
+// Gece verisi yoksa boş durum.
+import Top10Bos from './Top10Bos.astro';
+import { top10Geceleri } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+import { liderGecmisi } from '../../lib/top10';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
+const degisimler = liderGecmisi(geceler);
+---
+
+{
+  degisimler.length === 0 ? (
+    <Top10Bos />
+  ) : (
+    <section class="kutu" data-dunya="basketbol" aria-label={s.liderler(sezon ?? '')}>
+      <ul role="list">
+        {degisimler.map((d) => (
+          <li>
+            <time datetime={tarihIso(d.tarih)}>{tarihYaz(d.tarih, dil)}</time>
+            <span class="kim">
+              <span class="ad">{d.lider.oyuncu}</span>{' '}
+              <span class="takim">{d.lider.takim}</span>
+            </span>
+            <span class="puan">{s.puanlar(d.lider.puan)}</span>
+            <span class="ek">{d.onceki ? `${s.onceki}: ${d.onceki.oyuncu}` : s.ilkLider}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    line-height: 1.4;
+    color: var(--murekkep);
+    border-block-start: 3px solid var(--dunya-bant);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(8.5rem, 11rem) minmax(0, 1fr) auto;
+    column-gap: var(--aralik-3);
+    row-gap: 0.15rem;
+    align-items: baseline;
+    padding-block: var(--aralik-2);
+    padding-inline: 0;
+    border-block-end: 1px solid var(--cizgi);
+  }
+
+  li + li {
+    margin-block-start: 0;
+  }
+
+  time {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ad {
+    font-weight: 700;
+  }
+
+  .puan {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    text-align: end;
+  }
+
+  .ek {
+    grid-column: 2 / -1;
+    font-size: var(--yazi-xs);
+  }
+
+  @media (max-width: 36rem) {
+    li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    time {
+      grid-column: 1 / -1;
+    }
+
+    .ek {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

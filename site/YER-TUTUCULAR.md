@@ -41,3 +41,17 @@ Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden h
 | `src/content/hakkimda.en.md` | İngilizce metin (ve tüm İngilizce arayüz sözlüğü `src/i18n/en.ts`) Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
 | `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
 | `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Perde Perde Anadolu yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |
+
+## 6. Top 10 ("İnsan highlight makarası") örnek verisi
+
+Hepsi uydurmadır (oyuncular ve video adresleri gerçek değil) ve `taslak: true`'dur; production'da yüklenmez, yazı da taslaktır. Gerçek veri girilince silinir.
+
+| Dosya | Durum |
+| --- | --- |
+| `src/content/top10/2026-27/2026-10-28.yaml` | Uydurma Top 10 gecesi (aynı oyuncu bir gecede iki oyunla). |
+| `src/content/top10/2026-27/2026-10-30.yaml` | Uydurma **Top 5** gecesi. |
+| `src/content/top10/2026-27/2026-11-01.yaml` | Uydurma Top 10 gecesi (eşitlikte 1 numara kırıcısı, takım değişikliği). |
+| `src/content/basketbol/insan-highlight-makarasi/index.mdx` | Taslak yazı (tr); giriş metni yer tutucu, yazılacak. |
+| `src/content/basketbol/human-highlight-reel/index.mdx` | Taslak çeviri (en); giriş metni yer tutucu. |
+
+Kontrol: production `dist/` içinde `Veltri`, `Kofi Adebayo`, `Ilse Brandt`, `yer-tutucu-`, `insan-highlight`, `human-highlight` bulunmamalı (`dist/pagefind*` ve bileşen CSS'i dışında; Top 10 bileşenlerinin stil kuralları paylaşılan `mdx.*.css` paketinde yer alır, veri değildir). Gerçeğe çevirirken `src/content/top10/2026-27/` altındaki üç dosyayı silin, iki yazıdan `taslak: true` satırını kaldırın.

@@ -1,0 +1,37 @@
+# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular ve videolar gerçek değildir. site/YER-TUTUCULAR.md
+tarih: 2026-11-01
+video: https://www.youtube.com/watch?v=yer-tutucu-3
+taslak: true
+oyunlar:
+  - sira: 1
+    oyuncu: Tomas Veltri
+    takim: SAS
+  - sira: 2
+    oyuncu: Rafael Quintero
+    takim: LAL
+    not: "Alley-oop"
+  - sira: 3
+    oyuncu: Kofi Adebayo
+    takim: OKC
+    asist: Jun Takeda
+  - sira: 4
+    oyuncu: Ilse Brandt
+    takim: DEN
+  - sira: 5
+    oyuncu: Leo Marchetti
+    takim: NYK
+  - sira: 6
+    oyuncu: Jun Takeda
+    takim: GSW
+  - sira: 7
+    oyuncu: Nils Haugen
+    takim: MIN
+  - sira: 8
+    oyuncu: Amara Osei
+    takim: BOS
+  - sira: 9
+    oyuncu: Dario Fenn
+    takim: PHX
+  - sira: 10
+    oyuncu: Mirko Daval
+    takim: SAS

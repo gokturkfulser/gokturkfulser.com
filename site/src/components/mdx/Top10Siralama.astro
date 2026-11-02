@@ -1,0 +1,153 @@
+---
+// Genel sıralama tablosu (sezonluk): oyuncu, son takım, toplam puan, gece sayısı, 1 numara sayısı. Veri `top10` koleksiyonu,
+// hesap lib/top10.ts. `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum. Sıfır JS; geniş tablo yalnızca kendi kabında kayar.
+import Top10Bos from './Top10Bos.astro';
+import { top10Geceleri } from '../../lib/content';
+import { sayiYaz } from '../../lib/format';
+import { sezonTablosu } from '../../lib/top10';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  /** Sezon klasörü adı (ör. "2026-27"); yoksa en yeni sezon. */
+  sezon?: string;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
+const tablo = sezonTablosu(geceler);
+const baslik = s.siralama(sezon ?? '');
+---
+
+{
+  tablo.length === 0 ? (
+    <Top10Bos />
+  ) : (
+    <div class="kutu" data-dunya="basketbol">
+      <div class="sarmal" role="region" aria-label={baslik} tabindex="0">
+        <table>
+          <caption>{baslik}</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="sayi">{s.sutun.sira}</th>
+              <th scope="col">{s.sutun.oyuncu}</th>
+              <th scope="col">{s.sutun.takim}</th>
+              <th scope="col" class="sayi">{s.sutun.puan}</th>
+              <th scope="col" class="sayi">{s.sutun.gece}</th>
+              <th scope="col" class="sayi">{s.sutun.birinci}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tablo.map((satir, i) => (
+              <tr>
+                <td class="sayi">{sayiYaz(i + 1, dil)}</td>
+                <th scope="row">{satir.oyuncu}</th>
+                <td>{satir.takim}</td>
+                <td class="sayi puan">{sayiYaz(satir.puan, dil)}</td>
+                <td class="sayi">{sayiYaz(satir.gece, dil)}</td>
+                <td class="sayi">{sayiYaz(satir.birinci, dil)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="not">{s.puanNotu}</p>
+    </div>
+  )
+}
+
+<style>
+  /* Kâğıt bandında okunur: küçük metin yalnızca --murekkep (≥ 7:1); turuncu yalnızca çizgi ve dolgu (≥ 3:1). */
+  .kutu {
+    margin-block: 1.6em;
+  }
+
+  .sarmal {
+    overflow-x: auto;
+    background: var(--yuzey);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    line-height: 1.35;
+    color: var(--murekkep);
+    hyphens: manual;
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    padding: var(--aralik-3) var(--aralik-3) var(--aralik-2);
+    text-align: start;
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    color: var(--murekkep);
+  }
+
+  th,
+  td {
+    padding: var(--aralik-2) clamp(0.4rem, 2vw, var(--aralik-3));
+    text-align: start;
+    vertical-align: baseline;
+  }
+
+  thead th {
+    font-weight: 700;
+    border-block-end: 3px solid var(--dunya-bant);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  /* Satır başında 4 px'lik işaret şeridi (hizayı korumak için hepsinde var, yalnızca lider satırda turuncu) */
+  :is(thead, tbody) tr > :first-child {
+    border-inline-start: 4px solid transparent;
+  }
+
+  tbody tr:first-child > :first-child {
+    border-inline-start-color: var(--dunya-bant);
+  }
+
+  tbody tr:first-child :is(th, .puan) {
+    font-weight: 800;
+  }
+
+  tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--dunya-bant) 8%, transparent);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+
+  .puan {
+    font-weight: 700;
+  }
+
+  .not {
+    margin-block-start: var(--aralik-2);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+    color: var(--murekkep);
+  }
+
+  @media (max-width: 30rem) {
+    table {
+      font-size: var(--yazi-xs);
+    }
+
+    caption {
+      font-size: 1.25rem;
+    }
+
+    th,
+    td {
+      padding-inline: 0.35rem;
+    }
+  }
+</style>

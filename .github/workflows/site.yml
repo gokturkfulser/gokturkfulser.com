@@ -34,6 +34,9 @@ jobs:
       - name: Astro check
         run: pnpm --filter site check
 
+      - name: Birim testleri
+        run: pnpm --filter site test
+
       # Production build: taslaklar hiçbir yerde olmamalı.
       - name: Build (production)
         run: pnpm --filter site build

@@ -1,0 +1,21 @@
+# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular ve videolar gerçek değildir. site/YER-TUTUCULAR.md
+tarih: 2026-10-30
+video: https://www.youtube.com/watch?v=yer-tutucu-2
+tur: top5
+taslak: true
+oyunlar:
+  - sira: 1
+    oyuncu: Kofi Adebayo
+    takim: OKC
+  - sira: 2
+    oyuncu: Jun Takeda
+    takim: GSW
+  - sira: 3
+    oyuncu: Amara Osei
+    takim: BOS
+  - sira: 4
+    oyuncu: Tomas Veltri
+    takim: SAS
+  - sira: 5
+    oyuncu: Dario Fenn
+    takim: PHX

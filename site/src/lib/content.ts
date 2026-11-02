@@ -4,6 +4,7 @@ import type { ImageMetadata } from 'astro';
 import { digerDil, slugify, type Dil } from '../i18n';
 import { yol, type Bolum } from '../i18n/yollar';
 import { tmdbKaydi } from './tmdb';
+import { benzerAdlar, yinelenenTarihler, type Gece } from './top10';
 
 export type { Bolum };
 
@@ -157,4 +158,33 @@ export async function etiketHaritasi() {
     }
   }
   return harita;
+}
+
+// ——— Top 10 (İnsan highlight makarası) ———
+
+const top10Uyarilan = new Set<string>();
+
+/**
+ * Bir sezonun (verilmezse en yeni sezonun) görünür geceleri, eskiden yeniye; veri yoksa `geceler` boştur.
+ * Production'da `taslak: true` geceler elenir. Aynı güne iki gece yazılmışsa build durur (puanlar iki kez sayılırdı);
+ * slug'ları farklı ama çok benzeyen oyuncu adları (yazım hatası şüphesi) build günlüğüne uyarı olarak yazılır.
+ */
+export async function top10Geceleri(sezon?: string): Promise<{ sezon: string | undefined; geceler: Gece[] }> {
+  const girdiler = (await getCollection('top10', gorunur)).map((g) => ({ sezon: g.id.split('/')[0]!, gece: g.data as Gece }));
+  const yinelenen = yinelenenTarihler(girdiler.map((g) => g.gece));
+  if (yinelenen.length > 0) throw new Error(`top10: aynı güne birden fazla gece yazılmış: ${yinelenen.join(', ')}.`);
+  for (const { a, b } of benzerAdlar(girdiler.map((g) => g.gece))) {
+    const mesaj = `top10: "${a.oyuncu}" ile "${b.oyuncu}" çok benzer ama slug'ları farklı (${a.kimlik} / ${b.kimlik}); yazım hatası olabilir.`;
+    if (!top10Uyarilan.has(mesaj)) {
+      top10Uyarilan.add(mesaj);
+      console.warn(`[uyarı] ${mesaj}`);
+    }
+  }
+  const sezonlar = [...new Set(girdiler.map((g) => g.sezon))].sort().reverse();
+  const secilen = sezon ?? sezonlar[0];
+  const geceler = girdiler
+    .filter((g) => g.sezon === secilen)
+    .map((g) => g.gece)
+    .sort((x, y) => x.tarih.valueOf() - y.tarih.valueOf());
+  return { sezon: secilen, geceler };
 }

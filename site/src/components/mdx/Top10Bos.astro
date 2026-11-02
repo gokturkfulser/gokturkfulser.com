@@ -1,0 +1,19 @@
+---
+// Gece verisi yokken (production'da henüz gerçek veri girilmemişken) Top 10 bileşenlerinin ortak boş durumu.
+import { dilAl, sozluk } from '../../i18n';
+
+const s = sozluk(dilAl(Astro)).top10;
+---
+
+<p class="bos" data-dunya="basketbol">{s.bos}</p>
+
+<style>
+  .bos {
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 3px solid var(--dunya-bant);
+    color: var(--murekkep);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+  }
+</style>

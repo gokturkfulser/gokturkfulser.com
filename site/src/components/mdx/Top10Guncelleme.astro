@@ -1,0 +1,39 @@
+---
+// "Son güncelleme": en yeni gecenin tarihi. Gece verisi yoksa hiçbir şey çizmez (boş durumu tablo bileşenleri gösterir).
+import { top10Geceleri } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+import { sonGece } from '../../lib/top10';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const gece = sonGece((await top10Geceleri(Astro.props.sezon)).geceler);
+---
+
+{
+  gece && (
+    <p class="guncelleme" data-dunya="basketbol">
+      <span>{s.sonGuncelleme}</span>{' '}
+      <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
+    </p>
+  )
+}
+
+<style>
+  .guncelleme {
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 3px solid var(--dunya-bant);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+    color: var(--murekkep);
+  }
+
+  time {
+    font-weight: 700;
+  }
+</style>

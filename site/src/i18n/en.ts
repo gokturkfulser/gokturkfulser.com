@@ -207,6 +207,23 @@ export const en: Sozluk = {
     eposta: 'Email',
     suruyor: 'present',
   },
+  /** "Human highlight reel": season points table built from the NBA Top 10 nights (components/top10). */
+  top10: {
+    bos: 'No nights recorded yet. The first list will appear here once it is added.',
+    siralama: (sezon: string) => `Standings, ${sezon} season`,
+    puanNotu:
+      'Points = 11 − rank: the night’s No. 1 gets 10 points and No. 10 gets 1, the same on Top 5 nights. A player who appears more than once in a night gets the points added together; assists score nothing.',
+    sutun: { sira: 'Rank', oyuncu: 'Player', takim: 'Team', puan: 'Points', gece: 'Nights', birinci: 'No. 1s' },
+    sonGuncelleme: 'Last updated',
+    sonGece: 'Latest night',
+    tur: { top10: 'Top 10', top5: 'Top 5' },
+    video: (alan: string) => `Watch the video on ${alan}`,
+    puanlar: (n: number) => (n === 1 ? '1 point' : `${n} points`),
+    asist: 'Assist',
+    liderler: (sezon: string) => `Lead changes, ${sezon} season`,
+    ilkLider: 'Leader after the first night',
+    onceki: 'Previous leader',
+  },
   rss: {
     ana: { baslik: 'Göktürk Fulser', aciklama: 'Writing on cinema and basketball.' },
     sinema: { baslik: 'Göktürk Fulser · Cinema', aciklama: 'Film writing and watching notes.' },

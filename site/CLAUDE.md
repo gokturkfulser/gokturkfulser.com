@@ -9,6 +9,7 @@ Kök [CLAUDE.md](../CLAUDE.md) (özellikle "Adlar" bölümü) bu klasör için d
 - TypeScript strict (`astro/tsconfigs/strict`), `@astrojs/check`
 - Zod 4: `z` her zaman `astro/zod`'dan içe aktarılır (`astro:content`'ten değil)
 - pnpm workspace paketi adı `site`; Node ve pnpm sürümleri kökte sabit (kök CLAUDE.md "Sürümler"): Node 24.21.0 (`.nvmrc`), pnpm 11.1.2 (`packageManager`)
+- Birim testi: `vitest` (devDependency, yalnızca `src/lib/*.test.ts`; Astro'ya bağlı olmayan saf fonksiyonlar)
 - Görseller `astro:assets` + `sharp` (açıkça bağımlılık; kaldırılmamalı)
 - Fontlar Astro Fonts API ile (`astro.config.mjs` → `fonts`, `<Font />` Base.astro'da); `latin` + `latin-ext` subset zorunlu; web fontu için paket eklenmez. `@fontsource/cormorant` ve `@fontsource/hanken-grotesk` (statik woff) yalnızca OG görseli üretimi için devDependency'dir (Satori woff2 okuyamaz)
 - Türkçe 404: Workers "en yakın 404.html"i arar; Astro iç içe 404'ü `tr/404/index.html` yazar, `scripts/sitemap-hreflang.mjs` onu `tr/404.html`'e taşır (404 sayfalarında canonical yok, `noindex`).
@@ -28,6 +29,18 @@ Kök [CLAUDE.md](../CLAUDE.md) (özellikle "Adlar" bölümü) bu klasör için d
 - `ozgecmis.yaml` da `taslak: true` iken production'da `/hakkimda/` "Bu sayfa hazırlanıyor" durumunda kalır (nav bağlantısı görünür); `SHOW_DRAFTS=true`'da özgeçmiş görünür. Gerçek veri girilince `taslak` satırı silinir.
 - Bugünkü örnek içeriklerin tamamı uydurmadır ve `taslak: true`'dur; listesi ve gerçeğe çevirme adımları `site/YER-TUTUCULAR.md`'dedir. Yeni gerçek içerik `taslak: false` ile eklenir; yer tutucular silinir.
 - Kapak/görsel `alt=""` (süs) kullanılır, çünkü yanında başlık metni vardır. Anlam taşıyan görsel eklenirse gerçek `alt` yazılır.
+
+## Top 10 verisi ("İnsan highlight makarası")
+
+NBA Top 10 gecelerinin verisinden sezonluk puan tablosu. Veri `top10` koleksiyonudur (`src/content/top10/<sezon>/<YYYY-AA-GG>.yaml`, ör. `2026-27/2026-11-01.yaml`); hesap saf fonksiyonlardır (`src/lib/top10.ts`, testi `top10.test.ts`); veriyi `src/lib/content.ts` → `top10Geceleri(sezon?)` getirir (sayfada/bileşende `getCollection` doğrudan çağrılmaz). Yazı `basketbol/insan-highlight-makarasi` (tr) ve `basketbol/human-highlight-reel` (en; çeviri ayrı klasör ve slugtır, `index.en.mdx` değil: yükleyici yalnızca `*/index.{md,mdx}` okur).
+
+- **Şema** (`content.config.ts`): `tarih` (maçların ABD gecesi, videonun başlığındaki tarih), `video` (https, youtube.com ya da nba.com), `tur: 'top10' | 'top5'` (varsayılan `top10`), `oyunlar: [{ sira, oyuncu, takim (3 büyük harf), asist?, not? }]`, `taslak` (varsayılan `false`).
+- **Build'i durduran doğrulama:** `sira` değerleri tekil, 1..N aralığında (N: top10 → 10, top5 → 5), eksik sıra yok; dosya adındaki tarih ile `tarih` aynı gün (yükleyicinin `generateId`'sinde) ve sezon klasörü ardışık yıllar (`2026-27`); aynı güne iki gece yazılamaz. Oyuncu kimliği `slugify(oyuncu)`'dur; slug'ları farklı ama çok benzeyen adlar (düzenleme uzaklığı ≤ 1, her iki slug ≥ 8 karakterse ≤ 2) build günlüğüne `[uyarı] top10: …` olarak yazılır, build durmaz.
+- **Puan kuralı:** puan = 11 − sıra (top5 gecesinde de; 1. sıra her zaman 10). Aynı oyuncu aynı gecede birden çok oyunla gelirse puanlar toplanır (gece tek sayılır). `asist` puan almaz. Tablo: oyuncu, son takım, toplam puan, kaç gece, kaç kez 1 numara. Eşitlikte sırasıyla: daha çok 1 numara, daha çok gece, daha yeni son görünme, ad. Lider geçmişi her geceden sonra lideri hesaplar ve yalnızca liderin değiştiği geceleri (ilk gece dahil) döndürür.
+- **Yeni gece ekleme:** (1) tarihi ABD gecesi olarak belirle; dosyayı `src/content/top10/<sezon>/<YYYY-AA-GG>.yaml` adıyla oluştur (yeni sezonda klasör de yeni: `2027-28`); (2) `tarih`, `video`, gerekirse `tur: top5`, `oyunlar` listesini yaz (her sıra bir satır; aynı oyuncu iki oyunla gelirse iki satır, ad aynı yazılır; `taslak` yazılmaz); (3) `pnpm --filter site build`: doğrulama hataları ve yazım uyarıları burada çıkar; (4) uyarı varsa adı düzelt; (5) tabloyu `pnpm site:dev` ile gözle kontrol et. Sayfadaki bileşenler yeni geceyi kendiliğinden alır, yazıya dokunmak gerekmez.
+- **MDX bileşenleri** (import gerekmez): `<Top10Siralama />` (gerçek `<table>`, `<caption>`, `th scope`), `<Top10SonGece />` (videoya düz metin bağlantı, iframe yok), `<Top10Liderler />`, `<Top10Guncelleme />` (en yeni gecenin tarihi). Hepsi `sezon="2026-27"` alır; verilmezse en yeni sezon. Gece verisi yokken `Top10Bos` boş durumu çıkar (guncelleme hiçbir şey çizmez). Metinler `i18n` → `top10` anahtarlarında (iki dilde). Kâğıt bandında küçük metin yalnızca `--murekkep` (turuncu metin 5,05:1, 7:1'e yetmez); turuncu yalnızca çizgi/işaret. Mobilde tablo sayfayı kaydırmaz, gerekirse kendi kabında kayar.
+- **Taslak:** örnek gece dosyaları `taslak: true`'dur ve production'da yüklenmez (yükleyici deseni `taslakDosyaDesenleri`, `top10Geceleri` süzgeci, yazı da taslak). Gerçek veri girilince örnek dosyalar silinir (`YER-TUTUCULAR.md`).
+- **Testler:** `pnpm --filter site test` (vitest). Puan, eşitlik kırıcıları, top5, çift görünme, boş sezon, sıra/dosya/video doğrulaması ve yazım benzerliği kapsanır.
 
 ## Dil (i18n) kuralları
 
@@ -75,9 +88,10 @@ Sayfa geçişleri yalnızca CSS `@view-transition`; `ClientRouter`/JS eklenmez. 
 ```powershell
 pnpm --filter site build
 pnpm --filter site check   # astro check
+pnpm --filter site test    # vitest (lib/*.test.ts)
 ```
 
-İkisi de hatasız geçmeden görev bitmiş sayılmaz. Gerekirse `pnpm --filter site exec wrangler deploy --dry-run` ile Worker yapılandırması doğrulanır.
+Üçü de hatasız geçmeden görev bitmiş sayılmaz. Gerekirse `pnpm --filter site exec wrangler deploy --dry-run` ile Worker yapılandırması doğrulanır.
 
 ## Ekran görüntüleri
 
