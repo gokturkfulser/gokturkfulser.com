@@ -1,38 +1,54 @@
-# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular ve videolar gerçek değildir. site/YER-TUTUCULAR.md
+# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular, videolar ve açıklamalar gerçek değildir. site/YER-TUTUCULAR.md
 tarih: 2026-10-28
 video: https://www.youtube.com/watch?v=yer-tutucu-1
+kaynak: elle
 taslak: true
 oyunlar:
   - sira: 1
-    oyuncu: Tomas Veltri
-    takim: SAS
-    asist: Mirko Daval
+    eylem: smac
+    etiketler: [ters]
+    katkilar:
+      - { oyuncu: Tomas Veltri, takim: SAS, rol: bitiren }
   - sira: 2
-    oyuncu: Kofi Adebayo
-    takim: OKC
-    not: "Alley-oop"
+    eylem: smac
+    etiketler: [tek_el]
+    katkilar:
+      - { oyuncu: Rafael Quintero, takim: LAL, rol: bitiren }
   - sira: 3
-    oyuncu: Ilse Brandt
-    takim: DEN
+    eylem: alley_oop
+    katkilar:
+      - { oyuncu: Kofi Adebayo, takim: OKC, rol: bitiren }
+      - { oyuncu: Piet Kronen, takim: OKC, rol: pasor }
   - sira: 4
-    oyuncu: Rafael Quintero
-    takim: MIA
+    eylem: turnike
+    etiketler: [and_one]
+    katkilar:
+      - { oyuncu: Ilse Brandt, takim: DEN, rol: bitiren }
   - sira: 5
-    oyuncu: Jun Takeda
-    takim: GSW
+    eylem: smac
+    katkilar:
+      - { oyuncu: Leo Marchetti, takim: NYK, rol: bitiren }
   - sira: 6
-    oyuncu: Dario Fenn
-    takim: PHX
+    eylem: pas
+    etiketler: [sirt_arkasi]
+    katkilar:
+      - { oyuncu: Jun Takeda, takim: GSW, rol: bitiren }
   - sira: 7
-    oyuncu: Nils Haugen
-    takim: MIN
+    eylem: orta_mesafe
+    katkilar:
+      - { oyuncu: Nils Haugen, takim: MIN, rol: bitiren }
   - sira: 8
-    oyuncu: Ilse Brandt
-    takim: DEN
-    not: "Second play of the night"
+    eylem: ucluk
+    etiketler: [yari_saha_ve_otesi]
+    katkilar:
+      - { oyuncu: Amara Osei, takim: BOS, rol: bitiren }
   - sira: 9
-    oyuncu: Amara Osei
-    takim: BOS
+    eylem: turnike
+    etiketler: [bacak_arasi]
+    katkilar:
+      - { oyuncu: Dario Fenn, takim: PHX, rol: bitiren }
   - sira: 10
-    oyuncu: Leo Marchetti
-    takim: NYK
+    eylem: diger
+    etiketler: [crossover]
+    katkilar:
+      - { oyuncu: Mirko Daval, takim: SAS, rol: bitiren }

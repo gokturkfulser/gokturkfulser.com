@@ -1,10 +1,11 @@
 ---
-// En yeni gecenin listesi: sıra, oyuncu, takım, puan (asist ve not varsa altında). Video yalnızca düz metin bağlantıdır (iframe yok).
-// `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum.
+// En yeni gecenin listesi: her oyunda sıra, eylem, katkı sahipleri (rol ve kişi başı puanla), etiketler, varsa açıklama ve rakip.
+// Video yalnızca düz metin bağlantıdır (iframe yok). `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum.
 import Top10Bos from './Top10Bos.astro';
 import { top10Geceleri } from '../../lib/content';
-import { tarihIso, tarihYaz } from '../../lib/format';
-import { puan, sonGece } from '../../lib/top10';
+import { ondalikYaz, tarihIso, tarihYaz } from '../../lib/format';
+import { katkiBirimi, katkiPaylari, PUAN_BIRIMI, sonGece } from '../../lib/top10';
+import { etiketAdi, eylemAdi, rolAdi } from '../../lib/top10-sozluk';
 import { dilAl, sozluk } from '../../i18n';
 
 interface Props {
@@ -29,21 +30,42 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
         <span>{s.tur[gece.tur]}</span>
       </div>
       <ol>
-        {oyunlar.map((o) => (
-          <li>
-            <div class="satir">
-            <span class="ad">{o.oyuncu}</span>{' '}
-            <span class="takim">{o.takim}</span>{' '}
-            <span class="puan">{s.puanlar(puan(o.sira))}</span>
-            {o.asist && (
-              <span class="ek">
-                {s.asist}: {o.asist}
-              </span>
-            )}
-            {o.not && <span class="ek">{o.not}</span>}
-            </div>
-          </li>
-        ))}
+        {oyunlar.map((o) => {
+          const paylar = katkiPaylari(o.katkilar);
+          return (
+            <li>
+              <div class="oyun">
+                {o.eylem && <p class="eylem">{eylemAdi(o.eylem, dil)}</p>}
+                <ul class="katkilar" role="list">
+                  {o.katkilar.map((k, i) => {
+                    const deger = katkiBirimi(o.sira, paylar[i]!) / PUAN_BIRIMI;
+                    return (
+                      <li>
+                        <span class="ad">{k.oyuncu}</span>{' '}
+                        <span class="takim">{k.takim}</span>{' '}
+                        {(o.katkilar.length > 1 || k.rol !== 'bitiren') && <span class="rol">{rolAdi(k.rol, dil)}</span>}
+                        <span class="puan">{s.puanlar(deger, ondalikYaz(deger, dil))}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {o.etiketler && o.etiketler.length > 0 && (
+                  <ul class="oyun-etiketleri" role="list">
+                    {o.etiketler.map((e) => (
+                      <li>{etiketAdi(e, dil)}</li>
+                    ))}
+                  </ul>
+                )}
+                {o.aciklama && <p class="ek">{o.aciklama}</p>}
+                {o.rakip && (
+                  <p class="ek">
+                    {s.rakip}: {o.rakip}
+                  </p>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ol>
       <p class="video">
         <a href={gece.video} rel="noopener noreferrer">{s.video(videoAlani)}</a>
@@ -77,7 +99,7 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     letter-spacing: -0.02em;
   }
 
-  ol {
+  .kutu ol {
     margin: 0;
     padding-inline-start: 2.2em;
     list-style: decimal;
@@ -85,21 +107,13 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     line-height: 1.4;
   }
 
-  li {
+  /* Dıştaki li list-item kalır (sıra numarası işareti); düzen içteki kaplarda. */
+  .kutu ol > li {
     padding-inline-start: 0.4em;
     border-block-end: 1px solid var(--cizgi);
   }
 
-  /* li list-item kalır (sıra numarası işareti); satır düzeni içteki kapta */
-  .satir {
-    padding-block: var(--aralik-2);
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: var(--aralik-2);
-    align-items: baseline;
-  }
-
-  li + li {
+  .kutu ol > li + li {
     margin-block-start: 0;
   }
 
@@ -110,8 +124,45 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     font-variant-numeric: tabular-nums;
   }
 
+  .oyun {
+    display: grid;
+    gap: 0.3rem;
+    padding-block: var(--aralik-2);
+  }
+
+  .kutu .oyun p,
+  .kutu .oyun ul {
+    margin: 0;
+  }
+
+  .eylem {
+    font-weight: 800;
+    font-size: var(--yazi-xs);
+  }
+
+  .kutu .katkilar,
+  .kutu .oyun-etiketleri {
+    padding: 0;
+    list-style: none;
+  }
+
+  /* İç li'ler kendi satırında; dıştaki li kuralları (kenar çizgisi, boşluk) buraya inmez. */
+  .kutu .katkilar > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--aralik-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
   .ad {
     font-weight: 700;
+  }
+
+  .rol {
+    font-size: var(--yazi-xs);
   }
 
   .puan {
@@ -120,8 +171,20 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     font-weight: 600;
   }
 
+  .kutu .oyun-etiketleri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-2);
+    font-size: var(--yazi-xs);
+  }
+
+  .kutu .oyun-etiketleri > li {
+    margin: 0;
+    padding: 0 0.5rem;
+    border: 1px solid var(--cizgi);
+  }
+
   .ek {
-    flex-basis: 100%;
     font-size: var(--yazi-xs);
   }
 

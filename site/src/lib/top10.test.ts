@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   benzerAdlar,
   dosyaYoluHatasi,
+  katkiHatasi,
+  katkiPaylari,
   liderGecmisi,
   puan,
   sezonTablosu,
@@ -10,11 +12,17 @@ import {
   videoAdresiMi,
   yinelenenTarihler,
   type Gece,
+  type Katki,
   type Oyun,
 } from './top10';
 
 const VIDEO = 'https://www.youtube.com/watch?v=x';
-const oyun = (sira: number, oyuncu: string, takim = 'SAS'): Oyun => ({ sira, oyuncu, takim });
+const oyun = (sira: number, oyuncu: string, takim = 'SAS'): Oyun => ({ sira, katkilar: [{ oyuncu, takim, rol: 'bitiren' }] });
+/** Paylı oyun: [ad, pay?] çiftleri (pay verilmezse eşit bölüşüm). */
+const paylisi = (sira: number, ...katkilar: [string, number?][]): Oyun => ({
+  sira,
+  katkilar: katkilar.map(([oyuncu, pay], i): Katki => ({ oyuncu, takim: 'SAS', rol: i === 0 ? 'bitiren' : 'pasor', ...(pay === undefined ? {} : { pay }) })),
+});
 /** Verilen oyuncu adlarıyla 1..N sıralı gece; boşluklar `Dolgu n` ile doldurulur (puan karşılaştırmalarını bozmasın diye ayrı adlı). */
 function gece(tarih: string, tur: 'top10' | 'top5', ...ilkler: [string, string?][]): Gece {
   const n = tur === 'top10' ? 10 : 5;
@@ -53,18 +61,15 @@ describe('sezonTablosu', () => {
     expect(bul(t, 'Ece Beşinci').birinci).toBe(0);
   });
 
-  it('aynı gecede iki oyunla gelen oyuncunun puanları toplanır, gece tek sayılır; asist puan almaz', () => {
+  it('aynı gecede iki oyunla gelen oyuncunun puanları toplanır, gece tek sayılır', () => {
     const g = gece('2026-11-01', 'top10', ['Ada Birinci', 'SAS'], ['Bora İkinci']);
-    g.oyunlar[0] = { ...g.oyunlar[0]!, asist: 'Bora İkinci' };
     g.oyunlar[4] = oyun(5, 'Ada Birinci', 'SAS'); // 1. sıra (10) + 5. sıra (6)
     const t = sezonTablosu([g]);
     const ada = bul(t, 'Ada Birinci');
     expect(ada.puan).toBe(16);
     expect(ada.gece).toBe(1);
     expect(ada.birinci).toBe(1);
-    // Bora yalnızca 2. sıra (9); asist olarak anılması puan getirmez.
     expect(bul(t, 'Bora İkinci').puan).toBe(9);
-    expect(bul(t, 'Bora İkinci').gece).toBe(1);
   });
 
   it('puanlar geceler boyunca birikir; son takım en yeni gecedendir ve yazım slug ile eşleşir', () => {
@@ -129,6 +134,133 @@ describe('sezonTablosu', () => {
       expect([bul(t, 'Ada A').puan, bul(t, 'Zeynep Z').puan]).toEqual([17, 17]);
       expect(sira(t, 'Ada A', 'Zeynep Z')).toEqual(['Ada A', 'Zeynep Z']);
     });
+  });
+});
+
+describe('katkı paylaşımı', () => {
+  /** Verilen sıralardaki oyunlar özel, geri kalanı dolgu olan gece. */
+  const geceOyun = (tarih: string, tur: 'top10' | 'top5', ozel: Oyun[]): Gece => {
+    const g = gece(tarih, tur);
+    return { ...g, oyunlar: g.oyunlar.map((d) => ozel.find((o) => o.sira === d.sira) ?? d) };
+  };
+
+  it('katkiPaylari: pay yoksa eşit bölüşüm (50/50, 34/33/33: fazlalık ilk katkıya)', () => {
+    expect(katkiPaylari([{ oyuncu: 'A' }])).toEqual([100]);
+    expect(katkiPaylari([{ oyuncu: 'A' }, { oyuncu: 'B' }])).toEqual([50, 50]);
+    expect(katkiPaylari([{ oyuncu: 'A' }, { oyuncu: 'B' }, { oyuncu: 'C' }])).toEqual([34, 33, 33]);
+    expect(katkiPaylari([{ oyuncu: 'A', pay: 30 }, { oyuncu: 'B', pay: 70 }])).toEqual([30, 70]);
+  });
+
+  it('tek kişilik oyun: puanın tamamı', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top10', [oyun(3, 'Ada A')])]);
+    expect(bul(t, 'Ada A').puanBirim).toBe(800);
+    expect(bul(t, 'Ada A').puan).toBe(8);
+  });
+
+  it('50/50: 2. sıra (9 puan) kişi başı 4,5', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top10', [paylisi(2, ['Ada A', 50], ['Bora B', 50])])]);
+    expect([bul(t, 'Ada A').puan, bul(t, 'Bora B').puan]).toEqual([4.5, 4.5]);
+  });
+
+  it('70/30: 3. sıra (8 puan) 5,6 ve 2,4; pay yoksa eşit', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top10', [paylisi(3, ['Ada A', 30], ['Bora B', 70])])]);
+    expect([bul(t, 'Ada A').puanBirim, bul(t, 'Bora B').puanBirim]).toEqual([240, 560]);
+    const e = sezonTablosu([geceOyun('2026-11-01', 'top10', [paylisi(3, ['Ada A'], ['Bora B'])])]);
+    expect([bul(e, 'Ada A').puan, bul(e, 'Bora B').puan]).toEqual([4, 4]);
+  });
+
+  it('üçlü eşit bölüşüm ve yuvarlama: 4. sıra (7 puan) 2,38 / 2,31 / 2,31, toplam tam 7', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top10', [paylisi(4, ['Ada A'], ['Bora B'], ['Cem C'])])]);
+    const [a, b, c] = ['Ada A', 'Bora B', 'Cem C'].map((ad) => bul(t, ad));
+    expect([a!.puanBirim, b!.puanBirim, c!.puanBirim]).toEqual([238, 231, 231]);
+    expect(a!.puanBirim + b!.puanBirim + c!.puanBirim).toBe(700);
+  });
+
+  it('kayan nokta birikmez: 3,3 puanlık paylar 3 gecede tam 9,9', () => {
+    // 1. sıra (10 puan) üçlü eşit bölüşüm: 3,4 / 3,3 / 3,3; üç gecede 990 birim.
+    const geceler = ['2026-11-01', '2026-11-02', '2026-11-03'].map((g) => geceOyun(g, 'top5', [paylisi(1, ['Ada A'], ['Bora B'], ['Cem C'])]));
+    const t = sezonTablosu(geceler);
+    expect(bul(t, 'Cem C').puanBirim).toBe(990);
+    expect(bul(t, 'Cem C').puan).toBe(9.9);
+    expect(bul(t, 'Ada A').puanBirim).toBe(1020);
+  });
+
+  it('aynı oyuncunun aynı gecede hem tek başına hem paylı oyunu: puanlar toplanır, gece tek', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top10', [oyun(3, 'Ada A'), paylisi(8, ['Ada A', 50], ['Bora B', 50])])]);
+    const ada = bul(t, 'Ada A');
+    expect(ada.puanBirim).toBe(800 + 150); // 8 + 3 × 0,5
+    expect(ada.gece).toBe(1);
+    expect(bul(t, 'Bora B').puanBirim).toBe(150);
+  });
+
+  it('top5 gecesinde paylı oyun: 2. sıra (9 puan) 70/30', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top5', [paylisi(2, ['Ada A', 70], ['Bora B', 30])])]);
+    expect([bul(t, 'Ada A').puan, bul(t, 'Bora B').puan]).toEqual([6.3, 2.7]);
+  });
+
+  it('1 numaralı oyunun her katkı sahibi 1 numara sayılır; gece, herhangi bir katkıdır', () => {
+    const t = sezonTablosu([geceOyun('2026-11-01', 'top5', [paylisi(1, ['Ada A'], ['Bora B'])])]);
+    expect([bul(t, 'Ada A').birinci, bul(t, 'Bora B').birinci]).toEqual([1, 1]);
+    expect([bul(t, 'Ada A').gece, bul(t, 'Bora B').gece]).toEqual([1, 1]);
+    expect([bul(t, 'Ada A').puan, bul(t, 'Bora B').puan]).toEqual([5, 5]);
+  });
+
+  it('son takım en yeni katkıdaki takımdır', () => {
+    const eski = geceOyun('2026-11-01', 'top5', [{ sira: 1, katkilar: [{ oyuncu: 'Ada A', takim: 'SAS', rol: 'bitiren' }] }]);
+    const yeni = geceOyun('2026-11-02', 'top5', [
+      { sira: 2, katkilar: [{ oyuncu: 'Bora B', takim: 'LAL', rol: 'bitiren' }, { oyuncu: 'Ada A', takim: 'LAL', rol: 'pasor' }] },
+    ]);
+    expect(bul(sezonTablosu([yeni, eski]), 'Ada A').takim).toBe('LAL');
+  });
+
+  it('lider geçmişi ondalıklı puanlarla doğru değişir', () => {
+    // Toplayıcı sıra bütünlüğünü denetlemez (doğrulama şemada); yalnızca 1. sıra oyunlu geceler yeter.
+    const yalniz = (tarih: string, o: Oyun): Gece => ({ ...gece(tarih, 'top5'), oyunlar: [o] });
+    const geceler = [
+      yalniz('2026-11-01', paylisi(1, ['Ada A'], ['Bora B'], ['Cem C'])), // A 3,4  B 3,3  C 3,3
+      yalniz('2026-11-02', paylisi(1, ['Bora B'], ['Cem C'], ['Dolu D'])), // B 6,7  C 6,6
+      yalniz('2026-11-03', paylisi(1, ['Cem C'], ['Ada A'], ['Bora B'])), // C 10  A 6,7  B 10
+    ];
+    // Gece 3: Cem 6,6 + 3,4 = 10 ve Bora 6,7 + 3,3 = 10 tam eşit (1000 birim); 1 numara ve gece eşit, ad kırar: Bora önde kalır.
+    const g = liderGecmisi(geceler);
+    expect(g.map((d) => [d.lider.oyuncu, d.lider.puan])).toEqual([
+      ['Ada A', 3.4],
+      ['Bora B', 6.7],
+    ]);
+    const t = sezonTablosu(geceler);
+    expect([t[0]!.oyuncu, t[0]!.puanBirim, t[1]!.oyuncu, t[1]!.puanBirim]).toEqual(['Bora B', 1000, 'Cem C', 1000]);
+  });
+});
+
+describe('katkiHatasi (build durdurur)', () => {
+  const k = (...paylar: (number | undefined)[]) => paylar.map((pay, i) => ({ oyuncu: `Oyuncu ${String.fromCharCode(65 + i)}`, pay }));
+  it('geçerli bölüşümler: eşit, [100], 50/50, 70/30, 30/70, 34/33/33 ve 50/25/25 permütasyonları', () => {
+    const gecerli = [[undefined], [undefined, undefined], [undefined, undefined, undefined], [100], [50, 50], [70, 30], [30, 70], [34, 33, 33], [33, 34, 33], [33, 33, 34], [50, 25, 25], [25, 50, 25], [25, 25, 50]];
+    for (const paylar of gecerli) expect(katkiHatasi(k(...paylar)), paylar.join('/')).toBeUndefined();
+  });
+  it('pay bazılarında var bazılarında yok: hata', () => {
+    expect(katkiHatasi(k(50, undefined))).toMatch(/bazılarında var/);
+    expect(katkiHatasi(k(undefined, 50))).toMatch(/bazılarında var/);
+  });
+  it('toplam 100 değil: hata', () => {
+    expect(katkiHatasi(k(60, 30))).toMatch(/toplamı 100/);
+    expect(katkiHatasi(k(50))).toMatch(/toplamı 100/);
+    expect(katkiHatasi(k(34, 33, 34))).toMatch(/toplamı 100/);
+  });
+  it('toplam 100 ama izinsiz bölüşüm: hata', () => {
+    expect(katkiHatasi(k(60, 40))).toMatch(/izinsiz/);
+    expect(katkiHatasi(k(80, 20))).toMatch(/izinsiz/);
+    expect(katkiHatasi(k(40, 30, 30))).toMatch(/izinsiz/);
+    expect(katkiHatasi(k(50, 30, 20))).toMatch(/izinsiz/);
+    expect(katkiHatasi(k(100, 0))).toMatch(/pozitif/);
+  });
+  it('aynı oyunda aynı oyuncu iki kez ve katkı sayısı 1-3', () => {
+    expect(katkiHatasi([{ oyuncu: 'Ada A' }, { oyuncu: 'ADA A' }])).toMatch(/iki kez/);
+    expect(katkiHatasi([])).toMatch(/1–3/);
+    expect(katkiHatasi(k(undefined, undefined, undefined, undefined))).toMatch(/1–3/);
+  });
+  it('katkiPaylari geçersiz katkıda hata fırlatır', () => {
+    expect(() => katkiPaylari(k(60, 40))).toThrow(/izinsiz/);
   });
 });
 
@@ -216,6 +348,13 @@ describe('benzerAdlar (yazım hatası şüphesi)', () => {
   it('slug\'ları farklı ama çok benzeyen adları bulur', () => {
     const b = benzerAdlar([gece('2026-11-01', 'top5', ['Marcus Delaney'], ['Marcus Delany'], ['Ada Yılmaz'], ['Kemal Torun'], ['Seda Albay'])]);
     expect(b.map((x) => [x.a.oyuncu, x.b.oyuncu])).toEqual([['Marcus Delaney', 'Marcus Delany']]);
+  });
+  it('katkılardaki ve rakip alanındaki tüm adları kapsar', () => {
+    const g = gece('2026-11-01', 'top5', ['Marcus Delaney'], ['Ada Yılmaz'], ['Kemal Torun'], ['Seda Albay'], ['Nils Berg']);
+    g.oyunlar[1] = { sira: 2, rakip: 'Marcus Delany', katkilar: [{ oyuncu: 'Ada Yılmaz', takim: 'SAS', rol: 'bitiren' }, { oyuncu: 'Kemal Toruna', takim: 'SAS', rol: 'pasor' }] };
+    const b = benzerAdlar([g]).map((x) => [x.a.oyuncu, x.b.oyuncu]);
+    expect(b).toContainEqual(['Marcus Delaney', 'Marcus Delany']); // rakip
+    expect(b).toContainEqual(['Kemal Torun', 'Kemal Toruna']); // ikinci katkı
   });
   it('aynı slug (büyük/küçük harf, aksan) benzer sayılmaz; uzak adlar sayılmaz', () => {
     expect(benzerAdlar([gece('2026-11-01', 'top5', ['Nikola Jokić'], ['NIKOLA JOKIC'], ['Luka Dončić'], ['Kemal Torun'], ['Seda Albay'])])).toEqual([]);

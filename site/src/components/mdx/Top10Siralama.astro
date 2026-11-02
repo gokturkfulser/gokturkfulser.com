@@ -3,7 +3,7 @@
 // hesap lib/top10.ts. `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum. Sıfır JS; geniş tablo yalnızca kendi kabında kayar.
 import Top10Bos from './Top10Bos.astro';
 import { top10Geceleri } from '../../lib/content';
-import { sayiYaz } from '../../lib/format';
+import { ondalikYaz, sayiYaz } from '../../lib/format';
 import { sezonTablosu } from '../../lib/top10';
 import { dilAl, sozluk } from '../../i18n';
 
@@ -43,7 +43,7 @@ const baslik = s.siralama(sezon ?? '');
                 <td class="sayi">{sayiYaz(i + 1, dil)}</td>
                 <th scope="row">{satir.oyuncu}</th>
                 <td>{satir.takim}</td>
-                <td class="sayi puan">{sayiYaz(satir.puan, dil)}</td>
+                <td class="sayi puan">{ondalikYaz(satir.puan, dil)}</td>
                 <td class="sayi">{sayiYaz(satir.gece, dil)}</td>
                 <td class="sayi">{sayiYaz(satir.birinci, dil)}</td>
               </tr>

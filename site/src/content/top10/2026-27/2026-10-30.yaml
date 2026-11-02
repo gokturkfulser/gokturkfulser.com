@@ -1,21 +1,31 @@
-# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular ve videolar gerçek değildir. site/YER-TUTUCULAR.md
+# UYDURMA ÖRNEK VERİ (yer tutucu): oyuncular, videolar ve açıklamalar gerçek değildir. site/YER-TUTUCULAR.md
 tarih: 2026-10-30
 video: https://www.youtube.com/watch?v=yer-tutucu-2
 tur: top5
+kaynak: elle
 taslak: true
 oyunlar:
   - sira: 1
-    oyuncu: Kofi Adebayo
-    takim: OKC
+    eylem: smac
+    katkilar:
+      - { oyuncu: Kofi Adebayo, takim: OKC, rol: bitiren }
   - sira: 2
-    oyuncu: Jun Takeda
-    takim: GSW
+    eylem: alley_oop
+    etiketler: [kendine_alley_oop]
+    katkilar:
+      - { oyuncu: Jun Takeda, takim: GSW, rol: pasor, pay: 50 }
+      - { oyuncu: Wes Okafor, takim: GSW, rol: bitiren, pay: 50 }
   - sira: 3
-    oyuncu: Amara Osei
-    takim: BOS
+    eylem: ucluk
+    etiketler: [mac_kazandiran]
+    katkilar:
+      - { oyuncu: Amara Osei, takim: BOS, rol: bitiren }
   - sira: 4
-    oyuncu: Tomas Veltri
-    takim: SAS
+    eylem: alley_oop
+    katkilar:
+      - { oyuncu: Tomas Veltri, takim: SAS, rol: bitiren, pay: 70 }
+      - { oyuncu: Mirko Daval, takim: SAS, rol: pasor, pay: 30 }
   - sira: 5
-    oyuncu: Dario Fenn
-    takim: PHX
+    eylem: orta_mesafe
+    katkilar:
+      - { oyuncu: Dario Fenn, takim: PHX, rol: bitiren }

@@ -1,7 +1,10 @@
 // Biçim yardımcıları. Dile bağlı olanlar `i18n/index.ts`'tedir (tarih, sayı, puan, liste); burada özgeçmiş dönemleri ve Letterboxd tarihi.
-import { AYAR, sozluk, type Dil } from '../i18n';
+import { AYAR, sayiYaz, sozluk, type Dil } from '../i18n';
 
 export { tarihYaz, puanYaz, sayiYaz, listeYaz, yerel, type Dil, type Yerel } from '../i18n';
+
+/** Puan gösterimi: en çok tek ondalık, tam sayıysa ondalık yok; tr "4,5", en "4.5". */
+export const ondalikYaz = (n: number, dil: Dil) => sayiYaz(n, dil, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 /** <time datetime="..."> için ISO tarih (YYYY-AA-GG). */
 export const tarihIso = (tarih: Date) => tarih.toISOString().slice(0, 10);

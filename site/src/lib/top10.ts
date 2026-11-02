@@ -1,16 +1,31 @@
 // NBA Top 10 gecesi verisinden sezonluk puan tablosu. Saf fonksiyonlar: Astro'ya, dosya sistemine ve içerik koleksiyonuna
 // dokunmaz (veriyi lib/content.ts getirir); birim testleri `top10.test.ts`'tedir. Puan kuralı site/CLAUDE.md "Top 10 verisi".
+// Puan oyuna verilir ve katkı sahiplerine bölünür; iç hesap tam sayıdır (1 puan = 100 birim), kayan nokta hatası birikmez.
 import { slugify } from './slug';
+import type { Eylem, Etiket, Rol } from './top10-sozluk';
 
 export type Tur = 'top10' | 'top5';
-export type Oyun = { sira: number; oyuncu: string; takim: string; asist?: string; not?: string };
+export type Kaynak = 'gemini' | 'elle';
+export type Katki = { oyuncu: string; takim: string; rol: Rol; pay?: number };
+export type Oyun = {
+  sira: number;
+  eylem?: Eylem;
+  etiketler?: Etiket[];
+  aciklama?: string;
+  /** Üstüne smaç basılan / bloklanan oyuncu; puan almaz. */
+  rakip?: string;
+  katkilar: Katki[];
+};
 /** Bir gecenin listesi. `tarih`, maçların ABD gecesidir (videonun başlığındaki tarih). */
-export type Gece = { tarih: Date; tur: Tur; video: string; oyunlar: Oyun[] };
+export type Gece = { tarih: Date; tur: Tur; video: string; kaynak?: Kaynak; oyunlar: Oyun[] };
 
 /** Gecenin türüne göre sıra sayısı. */
 export const SIRA_SAYISI: Record<Tur, number> = { top10: 10, top5: 5 };
 
-/** Puan = 11 − sıra; top5 gecesinde de aynı (1. sıra her zaman 10). `asist` puan almaz. */
+/** İç hesapta 1 puan = 100 birim. */
+export const PUAN_BIRIMI = 100;
+
+/** Oyun puanı = 11 − sıra; top5 gecesinde de aynı (1. sıra her zaman 10). */
 export const puan = (sira: number) => 11 - sira;
 
 /** Oyuncu kimliği: adın slug'ı (lib/slug.ts). Ad yazımı farklı olsa da slug aynıysa aynı oyuncudur. */
@@ -32,6 +47,47 @@ export function siraHatasi(tur: Tur, oyunlar: readonly Pick<Oyun, 'sira'>[]): st
   const eksik = Array.from({ length: n }, (_, i) => i + 1).filter((s) => !gorulen.has(s));
   if (eksik.length > 0) return `${tur} gecesinde eksik sıra: ${eksik.join(', ')}.`;
   return undefined;
+}
+
+/** İzinli açık bölüşümler (azalan sıralı; katkıların sırası serbesttir, yani permütasyonlar da geçerlidir). */
+const IZINLI_PAYLAR: readonly (readonly number[])[] = [[100], [50, 50], [70, 30], [34, 33, 33], [50, 25, 25]];
+
+/**
+ * Bir oyunun katkıları: 1–3 öğe, aynı oyuncu iki kez olamaz; pay ya hiçbirinde yok (eşit bölüşüm) ya hepsinde var;
+ * pay varsa toplam 100 ve bölüşüm izinli olanlardan biri: [100], [50,50], [70,30], [30,70], [34,33,33] ve [50,25,25] permütasyonları.
+ * Hata yoksa undefined.
+ */
+export function katkiHatasi(katkilar: readonly Pick<Katki, 'oyuncu' | 'pay'>[]): string | undefined {
+  if (katkilar.length < 1 || katkilar.length > 3) return `katkılar 1–3 öğe olmalı (${katkilar.length} var).`;
+  const kimlikler = new Set<string>();
+  for (const { oyuncu } of katkilar) {
+    const k = kimlik(oyuncu);
+    if (kimlikler.has(k)) return `"${oyuncu}" aynı oyunda iki kez katkı sahibi olamaz.`;
+    kimlikler.add(k);
+  }
+  const payli = katkilar.filter((k) => k.pay !== undefined).length;
+  if (payli === 0) return undefined;
+  if (payli !== katkilar.length) return 'pay ya hiçbir katkıda yazılmaz (eşit bölüşüm) ya hepsinde yazılır; bazılarında var, bazılarında yok.';
+  const paylar = katkilar.map((k) => k.pay as number);
+  if (paylar.some((p) => !Number.isInteger(p) || p < 1)) return `pay pozitif tam sayı olmalı (${paylar.join(', ')}).`;
+  const toplam = paylar.reduce((a, b) => a + b, 0);
+  if (toplam !== 100) return `pay toplamı 100 olmalı (${paylar.join(' + ')} = ${toplam}).`;
+  const sirali = [...paylar].sort((a, b) => b - a);
+  if (!IZINLI_PAYLAR.some((izinli) => izinli.length === sirali.length && izinli.every((p, i) => p === sirali[i]))) {
+    return `izinsiz bölüşüm (${paylar.join('/')}); izinli olanlar: 100, 50/50, 70/30, 30/70, 34/33/33 ve 50/25/25 (her sırayla).`;
+  }
+  return undefined;
+}
+
+/** Katkı başına pay (yüzde, tam sayı): açık pay yoksa eşit bölüşüm (2 kişi 50/50, 3 kişi 34/33/33, fazlalık ilk katkıya). */
+export function katkiPaylari(katkilar: readonly Pick<Katki, 'oyuncu' | 'pay'>[]): number[] {
+  const hata = katkiHatasi(katkilar);
+  if (hata) throw new Error(`katkılar geçersiz: ${hata}`);
+  if (katkilar[0]!.pay !== undefined) return katkilar.map((k) => k.pay as number);
+  const n = katkilar.length;
+  const taban = Math.floor(100 / n);
+  const artan = 100 - taban * n;
+  return katkilar.map((_, i) => taban + (i === 0 ? artan : 0));
 }
 
 /** Video bağlantısı https olmalı ve youtube.com ya da nba.com (alt alan adları dahil) üzerinde olmalı. */
@@ -78,12 +134,15 @@ export type Satir = {
   kimlik: string;
   /** Son görünmedeki yazım. */
   oyuncu: string;
-  /** Son görünmedeki takım. */
+  /** En yeni katkısındaki takım. */
   takim: string;
+  /** Toplam puan, tam sayı birimle (1 puan = 100 birim): sıralama ve eşitlik bunun üstündendir. */
+  puanBirim: number;
+  /** Toplam puan (puanBirim / 100); yalnızca gösterim içindir. */
   puan: number;
-  /** Listeye girdiği gece sayısı (aynı gecede iki oyun tek gece sayılır). */
+  /** Herhangi bir katkısının olduğu gece sayısı (aynı gecede birden çok katkı tek gece sayılır). */
   gece: number;
-  /** 1 numara olduğu gece sayısı. */
+  /** 1 numaralı oyunun katkı sahibi olduğu gece sayısı. */
   birinci: number;
   sonGorunme: Date;
 };
@@ -92,31 +151,39 @@ const artan = (a: Gece, b: Gece) => a.tarih.valueOf() - b.tarih.valueOf();
 
 /** Eşitlikte sırasıyla: daha çok 1 numara, daha çok gece, daha yeni son görünme, ad. */
 export const satirSirasi = (a: Satir, b: Satir) =>
-  b.puan - a.puan ||
+  b.puanBirim - a.puanBirim ||
   b.birinci - a.birinci ||
   b.gece - a.gece ||
   b.sonGorunme.valueOf() - a.sonGorunme.valueOf() ||
   a.oyuncu.localeCompare(b.oyuncu, 'tr');
 
-/** Gecenin puanlarını durumun üstüne ekler. Geceler tarih sırasıyla verilmelidir ("son" takım/yazım en yeni gecedir). */
+/** Bir katkı sahibinin bir oyundan aldığı puan, birim olarak (tam sayı): (11 − sıra) × pay. */
+export const katkiBirimi = (sira: number, pay: number) => puan(sira) * pay;
+
+/** Gecenin puanlarını durumun üstüne ekler. Geceler tarih sırasıyla verilmelidir ("son" takım/yazım en yeni gecedendir). */
 function geceyiEkle(durum: Map<string, Satir>, gece: Gece) {
-  // Aynı gecede birden fazla oyunla gelen oyuncunun puanları toplanır; takım/yazım o gecenin en iyi sıralı oyunundan alınır.
-  const bu = new Map<string, { oyuncu: string; takim: string; puan: number; birinci: number; enIyi: number }>();
-  for (const o of gece.oyunlar) {
-    const k = kimlik(o.oyuncu);
-    const m = bu.get(k) ?? { oyuncu: o.oyuncu, takim: o.takim, puan: 0, birinci: 0, enIyi: o.sira };
-    m.puan += puan(o.sira);
-    if (o.sira === 1) m.birinci += 1;
-    if (o.sira < m.enIyi) Object.assign(m, { oyuncu: o.oyuncu, takim: o.takim, enIyi: o.sira });
-    bu.set(k, m);
+  // Aynı gecede birden fazla katkısı olan oyuncunun puanları toplanır; takım/yazım o gecenin en iyi sıralı katkısından alınır.
+  const bu = new Map<string, { oyuncu: string; takim: string; birim: number; birinci: number; enIyi: number }>();
+  for (const oyun of gece.oyunlar) {
+    const paylar = katkiPaylari(oyun.katkilar);
+    oyun.katkilar.forEach((katki, i) => {
+      const k = kimlik(katki.oyuncu);
+      const m = bu.get(k) ?? { oyuncu: katki.oyuncu, takim: katki.takim, birim: 0, birinci: 0, enIyi: oyun.sira };
+      m.birim += katkiBirimi(oyun.sira, paylar[i]!);
+      if (oyun.sira === 1) m.birinci += 1;
+      if (oyun.sira < m.enIyi) Object.assign(m, { oyuncu: katki.oyuncu, takim: katki.takim, enIyi: oyun.sira });
+      bu.set(k, m);
+    });
   }
   for (const [k, m] of bu) {
     const onceki = durum.get(k);
+    const birim = (onceki?.puanBirim ?? 0) + m.birim;
     durum.set(k, {
       kimlik: k,
       oyuncu: m.oyuncu,
       takim: m.takim,
-      puan: (onceki?.puan ?? 0) + m.puan,
+      puanBirim: birim,
+      puan: birim / PUAN_BIRIMI,
       gece: (onceki?.gece ?? 0) + 1,
       birinci: (onceki?.birinci ?? 0) + m.birinci,
       sonGorunme: gece.tarih,
@@ -181,11 +248,17 @@ export type BenzerAd = { a: { kimlik: string; oyuncu: string }; b: { kimlik: str
 
 /**
  * Slug'ları farklı ama birbirine çok benzeyen adlar (yazım hatası şüphesi): düzenleme uzaklığı ≤ 1; iki slug da en az
- * 8 karakterse ≤ 2. Yalnızca uyarı içindir, build'i durdurmaz (iki ayrı oyuncu da olabilir).
+ * 8 karakterse ≤ 2. Katkılardaki ve `rakip` alanındaki tüm adlar taranır. Yalnızca uyarı içindir, build'i durdurmaz
+ * (iki ayrı oyuncu da olabilir).
  */
 export function benzerAdlar(geceler: readonly Gece[]): BenzerAd[] {
   const adlar = new Map<string, string>();
-  for (const gece of [...geceler].sort(artan)) for (const o of gece.oyunlar) adlar.set(kimlik(o.oyuncu), o.oyuncu);
+  for (const gece of [...geceler].sort(artan)) {
+    for (const o of gece.oyunlar) {
+      for (const k of o.katkilar) adlar.set(kimlik(k.oyuncu), k.oyuncu);
+      if (o.rakip) adlar.set(kimlik(o.rakip), o.rakip);
+    }
+  }
   const liste = [...adlar].sort(([x], [y]) => x.localeCompare(y));
   const sonuc: BenzerAd[] = [];
   for (let i = 0; i < liste.length; i++) {
