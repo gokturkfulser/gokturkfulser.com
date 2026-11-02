@@ -2,31 +2,7 @@
 
 Bu klasördeki **tüm örnek içerik uydurmadır** ve `taslak: true` ile işaretlidir. Production build'de hiçbiri bulunmaz (sayfa, RSS, sitemap, OG görseli, Pagefind dizini, görsel dosyaları dahil); `SHOW_DRAFTS=true` ile alınan preview build'inde tasarımı denemek için görünürler.
 
-Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `Dakika`, `Salon Rehberi`, `Eski Portföy`, `flower.mp4`, `github.io`. `dist/pagefind/` hariç aranır: Pagefind'ın kendi betiği `github.io` dizesini içerir (yanlış alarm). (Doğrulandı: 0 eşleşme; `dist/` 9 HTML içeriyor: 6 sabit sayfa, 404, `projeler/kelime-avi/` ve `projeler/tur/oyun/`.)
-
-## 1. Yazılar (`src/content/sinema/`, `src/content/basketbol/`)
-
-| Klasör | Uydurma olanlar |
-| --- | --- |
-| `sinema/paris-texas-bir-yalnizlik-resmi/` | Yazı metni ve yorumları, `puan: 4.5`, "Ry Cooder" cümlesi, alıntı, etiketler. `tmdbId: 655` gerçek filmin kimliğidir ama cache hiç çekilmedi, doğrulanmadı. `kapak.svg`, `col.svg` düz renk yer tutucu görseller. |
-| `sinema/uzak-karin-ve-sessizlik/` | Yazı metni, `puan: 4`, `orijinalAd`, etiketler. **Bilerek kapaksız**: görselsiz yedek kapağı (projektör ışığı + yıl) gösterir. |
-| `basketbol/pick-and-roll-sadeligi/` | Yazı metni, **uydurma istatistikler** (`istatistik`: 64 / %41 / %27 ve gövdedeki "Perde sonrası tercihler (örnek veri)" tablosu: 26 / 17 / 12 / 9), "Not defterimden" alıntısı, `sezon: 2026-27`, `kapak.svg`, `saha-bir.svg`, `saha-iki.svg`. |
-| `basketbol/sezon-acilisi-ritim-savasi/` | Yazı metni, `takimlar` (gerçek takım adları, içerik uydurma). **Bilerek kapaksız**: görselsiz yedek kapağı (saha çizgileri + sezon) gösterir. |
-
-Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
-
-## 2. Projeler (`src/content/projeler/`)
-
-> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. **Tek istisna:** `metin.tr.mdx` ve `metin.en.mdx` frontmatter'ındaki `vaka.ne`, `vaka.neden` ve `vaka.nasil` metinleri (**iki dilde de**) (proje sayfasındaki Ne / Neden / Nasıl modülleri) **uydurmadır**; gerçek metinle değiştirilmeli ya da alanlar silinmeli (boş modül hiç render edilmez). Aşağıdaki liste kalan yer tutucuları kapsar.
-
-| Klasör | Uydurma olanlar |
-| --- | --- |
-| `perde-perde-anadolu/` | Oyun **yayında** (`durum: yayinda`, `citiesofanatolia.gokturkfulser.com`, ad "Perde Perde Anadolu", "Oyna" bağlantısı; hakkımda'nın "Şu sıralar" grubunda yok). **Yer tutucu kalanlar:** `metin.tr.mdx` / `metin.en.mdx` içindeki geçici `ozet` cümlesi ("Çocuklar için hazırladığım Türkçe bir Anadolu macerası." / "An Anatolian adventure I made for kids."), boş `stack`, hiç yazılmamış `vaka` (ne/neden/nasıl) ve MDX gövdesi (**iki dil için de**). Klasör adı (slug) bilerek `perde-perde-anadolu`; özgeçmiş bu slug'a bağlanır. `kapak.png` oyunun başlangıç ekranından alınmış gerçek ekran görüntüsüdür. |
-| `dakika/` | Servis yok. `repo: github.com/gokturkfulser/dakika` (yok), **`demoVideo`: MDN'in `flower.mp4` örnek videosu** (konuyla ilgisiz), metin, `kapak.svg`. |
-| `salon-rehberi/` | Site yok. `url: gokturkfulser.github.io/salon-rehberi/` (yok), `repo` (yok), metin, `kapak.svg`. |
-| `eski-portfoy/` | `url: gokturkfulser.github.io/` (belirsiz), metin, `kapak.svg`. |
-
-> **İki dil:** her proje `proje.yaml` (ortak) + `metin.tr.mdx` + `metin.en.mdx` biçimindedir. Mevcut Türkçe proje metinlerinin İngilizcesi Claude tarafından yazıldı (gözden geçirilmeli); yer tutucu olan metinler iki dilde de yer tutucudur (`dakika`, `eski-portfoy`, `salon-rehberi` ve `kelime-avi` vaka metinleri, `perde-perde-anadolu` özeti). Yazılar: `basketbol/is-this-october-really-different/` gerçek yazının (`bu-ekim-gercekten-farkli-mi`) İngilizcesidir (`ceviri` ile bağlı).
+Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `Dakika`, `Salon Rehberi`, `Eski Portföy`, `flower.mp4`, `gokturkfulser.github.io/"` (`eski-portfoy` uydurma projesinin adresi; kapanış tırnağıyla, çünkü gerçek `ece-ismail-dugun-davetiyesi` projesinin adresi de `gokturkfulser.github.io/` ile başlar), `gokturkfulser.github.io/salon-rehberi` (`salon-rehberi` uydurma projesinin adresi). Eski kontroldeki yalın `github.io` dizesi kaldırıldı: gerçek proje yüzünden her zaman eşleşir. `dist/pagefind/` ve `dist/pagefind-b/` (Pagefind'ın kendi dosyaları) hariç aranır. (Doğrulandı: 0 eşleşme; `dist/` 28 HTML içeriyor, her dilde 14: ana sayfa, 404, hakkımda, arama, yazı listesi + 2 bölüm listesi, 1 çeviri yazısı, projeler, 3 proje sayfası (`kelime-avi`, `perde-perde-anadolu`, `ece-ismail-dugun-davetiyesi`) ve 2 tür sayfası (oyun, site).)
 
 ## 3. Sayfa metinleri ve tasarım yer tutucuları
 
