@@ -1,0 +1,28 @@
+# Ortak (dilden bağımsız) alanlar. Metinler metin.tr.mdx / metin.en.mdx dosyalarındadır.
+ad: "Kelime Avı"
+tur: oyun
+barindirma: lab
+durum: yayinda
+icerikDili: tr
+url: "https://lab.gokturkfulser.com/kelime-avi/"
+embedUrl: "https://lab.gokturkfulser.com/kelime-avi/"
+stack: ["TypeScript", "Vite", "Cloudflare Workers"]
+gorsel: ./kapak.png
+ekranGoruntuleri:
+  - gorsel: ./oyun-1.png
+    alt:
+      tr: "Telefonda Kelime Avı: boş tahmin ızgarası ve altında Türkçe ekran klavyesi"
+      en: "Kelime Avı on a phone: an empty guess grid with a Turkish on-screen keyboard below it"
+    altyazi:
+      tr: "Başlangıç ekranı"
+      en: "Starting screen"
+  - gorsel: ./oyun-2.png
+    alt:
+      tr: "Üç tahminden sonra harfler renklenmiş: doğru yerdekiler turkuaz, başka yerdekiler turuncu, kelimede olmayanlar koyu gri"
+      en: "After three guesses the letters are coloured: teal for the right spot, orange for the wrong spot, dark grey for letters not in the word"
+    altyazi:
+      tr: "Üçüncü tahminden sonra"
+      en: "After the third guess"
+oneCikan: true
+sira: 1
+taslak: false

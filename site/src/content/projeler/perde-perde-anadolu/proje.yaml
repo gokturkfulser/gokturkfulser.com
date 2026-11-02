@@ -1,0 +1,12 @@
+# Ortak (dilden bağımsız) alanlar. Metinler metin.tr.mdx / metin.en.mdx dosyalarındadır.
+ad: "Perde Perde Anadolu"
+tur: oyun
+barindirma: harici
+durum: yayinda
+icerikDili: tr
+url: "https://citiesofanatolia.gokturkfulser.com/"
+stack: []
+gorsel: ./kapak.png
+oneCikan: true
+sira: 2
+taslak: false

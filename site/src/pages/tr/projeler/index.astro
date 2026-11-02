@@ -1,0 +1,9 @@
+---
+import ProjelerSayfasi from '../../../components/ProjelerSayfasi.astro';
+import { dilAl } from '../../../i18n';
+import { projeler } from '../../../lib/content';
+
+const liste = await projeler(dilAl(Astro));
+---
+
+<ProjelerSayfasi projeler={liste} />

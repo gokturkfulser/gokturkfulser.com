@@ -1,4 +1,4 @@
-import type { Dil } from './format';
+import type { Dil } from '../i18n';
 
 /** Grafik etiketleri için sayı: tr "1.579" / "10,8", en "1,579" / "10.8" (en çok 1 ondalık). */
 export const sayiYaz = (n: number, dil: Dil) =>

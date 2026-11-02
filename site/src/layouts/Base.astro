@@ -10,88 +10,118 @@ import '../styles/medya.css';
 import '../styles/yazdir.css';
 import { jsonLdMetni } from '../lib/jsonld';
 import { projeler } from '../lib/content';
-import { EPOSTA, MENU, PROFILLER, SITE_ADI } from '../lib/site';
+import { EPOSTA, GITHUB, SITE_ADI } from '../lib/site';
+import { AYAR, DILLER, dilAl, digerDil, sozluk, type Dil } from '../i18n';
+import { yol, type Esdeger } from '../i18n/yollar';
 
 interface Props {
   baslik?: string;
   aciklama?: string;
   /** Sayfa türü: Open Graph için. */
   tur?: 'website' | 'article';
-  /** Site köküne göre OG görseli yolu; verilmezse ortak görsel. */
+  /** Site köküne göre OG görseli yolu; verilmezse sayfanın dilindeki ortak görsel. */
   ogGorsel?: string;
   /** schema.org verisi (JSON-LD). */
   jsonLd?: unknown;
   /** Üst çubuk ilk (koyu, görselli) bandın üstüne biner; verilmezse kendi koyu şeridinde durur. */
   bindirme?: boolean;
-  /** İçeriğin dili. Site kabuğu (menü, alt bilgi) Türkçe kalır; `en` sayfada kabuk `lang="tr"` ile işaretlenir. */
-  dil?: 'tr' | 'en';
-  /** Aynı içeriğin diğer dil sürümleri (hreflang). Kendisi de listede olmalıdır. */
-  alternatifler?: { dil: 'tr' | 'en'; href: string }[];
+  /** Sayfanın dili; verilmezse Astro'nun currentLocale'inden (yol önekinden) gelir. Menü, alt bilgi ve <html lang> bu dildedir. */
+  dil?: Dil;
+  /** Bu sayfanın dillerdeki gerçek karşılıkları (hreflang). Kendisi de yazılabilir; yazılmazsa yalnızca kendisi. */
+  esdeger?: Esdeger;
+  /** Dil düğmesi için yedek hedefler: gerçek karşılığı olmayan dilde ilgili liste sayfası. Yoksa ana sayfa. */
+  yedek?: Esdeger;
+  /** 404: canonical ve hreflang yok, noindex. */
+  bulunamadi?: boolean;
 }
 
-const VARSAYILAN_ACIKLAMA = 'Sinema, basketbol ve yaptığım projeler üzerine kişisel site.';
-
+const sayfaDili = dilAl(Astro);
 const {
   baslik,
-  aciklama = VARSAYILAN_ACIKLAMA,
+  aciklama,
   tur = 'website',
-  ogGorsel = '/og/varsayilan.png',
   jsonLd,
   bindirme = false,
-  dil = 'tr',
-  alternatifler = [],
+  dil = sayfaDili,
+  esdeger = {},
+  yedek = {},
+  bulunamadi = false,
 } = Astro.props;
-const kabukDil = dil === 'tr' ? undefined : 'tr';
+const s = sozluk(dil);
+const diger = digerDil(dil);
+const ayar = AYAR[dil];
+const ogGorsel = Astro.props.ogGorsel ?? yol.ogVarsayilan(dil);
 const tamBaslik = baslik ? `${baslik} · ${SITE_ADI}` : SITE_ADI;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const metaAciklama = aciklama ?? s.site.aciklama;
+const yolAdi = Astro.url.pathname;
+const canonical = bulunamadi ? undefined : new URL(yolAdi, Astro.site);
 const ogUrl = new URL(ogGorsel, Astro.site);
-const yol = Astro.url.pathname;
+
+// hreflang: gerçek karşılıklar (kendisi dahil) + x-default (İngilizce; yoksa kendisi).
+const karsiliklar: Esdeger = bulunamadi ? {} : { ...esdeger, [dil]: yolAdi };
+const alternatifler = DILLER.flatMap((d) => (karsiliklar[d] ? [{ dil: d, href: new URL(karsiliklar[d]!, Astro.site) }] : []));
+const xDefault = karsiliklar.en ?? karsiliklar[dil];
+const digerKarsilik = alternatifler.filter((a) => a.dil !== dil);
+// Dil düğmesi: karşılığı varsa ona, yoksa diğer dilin ilgili liste sayfasına (ya da ana sayfaya).
+const gecis = (d: Dil) => karsiliklar[d] ?? yedek[d] ?? yol.ana(d);
 
 // TMDB logosu: site/public/tmdb-logo.svg (ya da .png) varsa footer'da gösterilir; yoksa yalnızca metin atfı.
 const tmdbLogo = ['tmdb-logo.svg', 'tmdb-logo.png'].find((f) => existsSync(join(process.cwd(), 'public', f)));
 
-const altProjeler = (await projeler()).filter((p) => p.data.durum !== 'arsiv').slice(0, 4);
-const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href : yol.startsWith(oge.href));
+const altProjeler = (await projeler(dil)).filter((p) => p.data.durum !== 'arsiv').slice(0, 4);
+const menu = [
+  { ad: s.nav.anaSayfa, href: yol.ana(dil), tam: true },
+  { ad: s.nav.yazilar, href: yol.yazilar(dil) },
+  { ad: s.nav.projeler, href: yol.projeler(dil) },
+  { ad: s.nav.hakkimda, href: yol.hakkimda(dil) },
+];
+const aktifMi = (oge: (typeof menu)[number]) => (oge.tam ? yolAdi === oge.href : yolAdi.startsWith(oge.href));
+const profiller = [
+  { ad: 'GitHub', href: GITHUB },
+  { ad: 'RSS', href: yol.rss(dil) },
+];
 ---
 
 <!doctype html>
-<html lang={dil}>
+<html lang={ayar.lang} data-tire={ayar.tire}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tamBaslik}</title>
-    <meta name="description" content={aciklama} />
-    <link rel="canonical" href={canonical} />
-    {alternatifler.map((a) => <link rel="alternate" hreflang={a.dil} href={new URL(a.href, Astro.site)} />)}
+    <meta name="description" content={metaAciklama} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {alternatifler.map((a) => <link rel="alternate" hreflang={AYAR[a.dil].lang} href={a.href} />)}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={new URL(xDefault, Astro.site)} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate" type="application/rss+xml" title={SITE_ADI} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE_ADI} href={yol.rss(dil)} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:site_name" content={SITE_ADI} />
-    <meta property="og:locale" content={dil === 'en' ? 'en_US' : 'tr_TR'} />
+    <meta property="og:locale" content={ayar.og} />
+    {digerKarsilik.map((a) => <meta property="og:locale:alternate" content={AYAR[a.dil].og} />)}
     <meta property="og:type" content={tur} />
     <meta property="og:title" content={tamBaslik} />
-    <meta property="og:description" content={aciklama} />
-    <meta property="og:url" content={canonical} />
+    <meta property="og:description" content={metaAciklama} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0b0c0e" />
-    {SHOW_DRAFTS && <meta name="robots" content="noindex, nofollow" />}
+    {(SHOW_DRAFTS || bulunamadi) && <meta name="robots" content="noindex, nofollow" />}
     <meta name="generator" content={Astro.generator} />
     <Font cssVariable="--font-baslik" preload />
     <Font cssVariable="--font-metin" preload />
     {jsonLd && <script type="application/ld+json" is:inline set:html={jsonLdMetni(jsonLd)} />}
   </head>
   <body>
-    <a class="atla" href="#icerik" lang={kabukDil}>İçeriğe geç</a>
-    <header class:list={['ust', bindirme && 'bindirme']} lang={kabukDil}>
+    <a class="atla" href="#icerik">{s.nav.atla}</a>
+    <header class:list={['ust', bindirme && 'bindirme']}>
       <div class="kap ust-ic">
-        <a href="/" class="marka">{SITE_ADI}</a>
-        <nav class="menu" aria-label="Ana menü">
+        <a href={yol.ana(dil)} class="marka">{SITE_ADI}</a>
+        <nav class="menu" aria-label={s.nav.anaMenu}>
           <ul class="lista">
             {
-              MENU.map((oge) => (
+              menu.map((oge) => (
                 <li>
                   <a href={oge.href} class="sessiz-link" aria-current={aktifMi(oge) ? 'page' : undefined}>
                     {oge.ad}
@@ -101,13 +131,33 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
             }
           </ul>
         </nav>
+        <!-- Dil anahtarı: tek <a> (gezinme bağlantısı, role="switch" değil), JS yok; her ekran genişliğinde görünür.
+             Başparmak aktif dilin altındadır (data-aktif); iki sayfa arasında CSS View Transitions ile kayar. -->
+        <a
+          class="dil-anahtar"
+          data-aktif={dil}
+          href={gecis(diger)}
+          hreflang={AYAR[diger].lang}
+          lang={AYAR[diger].lang}
+          aria-label={sozluk(diger).nav.buDileGec}
+          rel="alternate"
+        >
+          <span class="dil-kaydirak" aria-hidden="true"></span>
+          {
+            DILLER.map((d) => (
+              <span class:list={['dil-etiket', d === dil && 'dil-etiket--aktif']} data-d={d} aria-hidden="true">
+                {d.toUpperCase()}
+              </span>
+            ))
+          }
+        </a>
         <!-- Mobil menü: JS'siz <details>; masaüstünde gizli -->
         <details class="menu-mobil">
-          <summary>Menü</summary>
-          <nav aria-label="Ana menü (mobil)">
+          <summary>{s.nav.menu}</summary>
+          <nav aria-label={s.nav.anaMenuMobil}>
             <ul class="lista">
               {
-                MENU.map((oge) => (
+                menu.map((oge) => (
                   <li>
                     <a href={oge.href} class="sessiz-link" aria-current={aktifMi(oge) ? 'page' : undefined}>
                       {oge.ad}
@@ -118,7 +168,7 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
             </ul>
           </nav>
         </details>
-        <a class="ara sessiz-link" href="/arama/" aria-label="Ara" aria-current={yol.startsWith('/arama/') ? 'page' : undefined}>
+        <a class="ara sessiz-link" href={yol.arama(dil)} aria-label={s.nav.ara} aria-current={yolAdi.startsWith(yol.arama(dil)) ? 'page' : undefined}>
           <svg
             viewBox="0 0 24 24"
             width="22"
@@ -138,35 +188,35 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
     <main id="icerik">
       <slot />
     </main>
-    <footer class="alt" lang={kabukDil}>
+    <footer class="alt">
       <div class="kap">
         <div class="alt-izgara">
           <div class="alt-marka">
-            <a class="marka" href="/">{SITE_ADI}</a>
-            <p>Sinema, basketbol ve yaptığım projeler üzerine kişisel site.</p>
+            <a class="marka" href={yol.ana(dil)}>{SITE_ADI}</a>
+            <p>{s.site.aciklama}</p>
             <p><a href={`mailto:${EPOSTA}`}>{EPOSTA}</a></p>
           </div>
           <nav class="alt-sutun" aria-labelledby="alt-bolumler">
-            <h2 id="alt-bolumler">Bölümler</h2>
+            <h2 id="alt-bolumler">{s.alt.bolumler}</h2>
             <ul class="lista">
-              <li><a href="/yazilar/">Tüm yazılar</a></li>
-              <li><a href="/yazilar/sinema/">Sinema</a></li>
-              <li><a href="/yazilar/basketbol/">Basketbol</a></li>
-              <li><a href="/hakkimda/">Hakkımda</a></li>
-              <li><a href="/arama/">Ara</a></li>
+              <li><a href={yol.yazilar(dil)}>{s.alt.tumYazilar}</a></li>
+              <li><a href={yol.yazilar(dil, 'sinema')}>{s.bolum.sinema}</a></li>
+              <li><a href={yol.yazilar(dil, 'basketbol')}>{s.bolum.basketbol}</a></li>
+              <li><a href={yol.hakkimda(dil)}>{s.nav.hakkimda}</a></li>
+              <li><a href={yol.arama(dil)}>{s.nav.ara}</a></li>
             </ul>
           </nav>
           <nav class="alt-sutun" aria-labelledby="alt-projeler">
-            <h2 id="alt-projeler">Projeler</h2>
+            <h2 id="alt-projeler">{s.alt.projeler}</h2>
             <ul class="lista">
-              <li><a href="/projeler/">Tüm projeler</a></li>
-              {altProjeler.map((p) => <li><a href={`/projeler/${p.id}/`}>{p.data.ad}</a></li>)}
+              <li><a href={yol.projeler(dil)}>{s.alt.tumProjeler}</a></li>
+              {altProjeler.map((p) => <li><a href={yol.proje(dil, p.id)}>{p.data.ad}</a></li>)}
             </ul>
           </nav>
           <nav class="alt-sutun" aria-labelledby="alt-profiller">
-            <h2 id="alt-profiller">Profiller</h2>
+            <h2 id="alt-profiller">{s.alt.profiller}</h2>
             <ul class="lista">
-              {PROFILLER.map((p) => <li><a href={p.href}>{p.ad}</a></li>)}
+              {profiller.map((p) => <li><a href={p.href}>{p.ad}</a></li>)}
             </ul>
           </nav>
         </div>
@@ -181,8 +231,7 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
               )
             }
             <p>
-              Film bilgileri ve afişler <a href="https://www.themoviedb.org/">TMDB</a> kaynaklıdır. This product uses
-              the TMDB API but is not endorsed or certified by TMDB.
+              {s.alt.tmdbOnce}<a href="https://www.themoviedb.org/">TMDB</a>{s.alt.tmdbSonra}<span lang="en">{s.alt.tmdbNot}</span>
             </p>
           </div>
         </div>
@@ -272,6 +321,105 @@ const aktifMi = (oge: (typeof MENU)[number]) => ('tam' in oge ? yol === oge.href
 
   .menu-mobil {
     display: none;
+  }
+
+  /* Dil anahtarı: tek hap, içinde EN ve TR yan yana; aktif dilin altında dolgulu "başparmak". Aktif etiket başparmak üstünde koyu,
+     pasif etiket soluk. Tek <a>; hedef alanı pseudo-öğeyle ≥ 44 px. Geçiş: başparmağın view-transition-name'i (base.css). */
+  .dil-anahtar {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    inline-size: 5.25rem;
+    block-size: 2.25rem;
+    padding: 3px;
+    box-sizing: border-box;
+    border: 1px solid rgb(236 232 225 / 0.45);
+    border-radius: 999px;
+    background: rgb(11 12 14 / 0.6);
+    font-family: var(--font-baslik-yigin);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-decoration-line: none;
+    color: var(--soluk);
+    isolation: isolate;
+  }
+
+  /* Dokunma hedefi: görünür hap 36 px, tıklanabilir alan 44 px yüksekliğinde */
+  .dil-anahtar::after {
+    content: '';
+    position: absolute;
+    inset: -0.3125rem -0.25rem;
+  }
+
+  .dil-kaydirak {
+    grid-row: 1;
+    grid-column: 1;
+    z-index: -1;
+    border-radius: 999px;
+    background: var(--murekkep);
+    transform-origin: left center;
+    transition: transform 0.35s var(--ease);
+    view-transition-name: dil-kaydirak;
+  }
+
+  .dil-anahtar[data-aktif='tr'] .dil-kaydirak {
+    grid-column: 2;
+    transform-origin: right center;
+  }
+
+  .dil-etiket[data-d='en'] {
+    grid-column: 1;
+  }
+
+  .dil-etiket[data-d='tr'] {
+    grid-column: 2;
+  }
+
+  .dil-etiket {
+    display: grid;
+    place-items: center;
+    grid-row: 1;
+  }
+
+  .dil-etiket--aktif {
+    color: var(--perde);
+  }
+
+  /* Hover/odak: başparmak diğer dile doğru hafifçe esner (niyet göstergesi); pasif etiket belirginleşir */
+  .dil-anahtar:is(:hover, :focus-visible) .dil-kaydirak {
+    transform: scaleX(1.14);
+  }
+
+  .dil-anahtar:is(:hover, :focus-visible) .dil-etiket:not(.dil-etiket--aktif) {
+    color: var(--murekkep);
+  }
+
+  .dil-anahtar:focus-visible {
+    outline: 3px solid var(--vurgu);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dil-kaydirak {
+      transition: none;
+    }
+
+    .dil-anahtar:is(:hover, :focus-visible) .dil-kaydirak {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .dil-anahtar {
+      margin-inline-start: auto;
+    }
+
+    .dil-anahtar + .menu-mobil {
+      margin-inline-start: 0;
+    }
   }
 
   @media (max-width: 40rem) {

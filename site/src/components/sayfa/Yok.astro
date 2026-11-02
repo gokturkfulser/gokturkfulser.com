@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import { dilAl, sozluk } from '../../i18n';
+import { yol } from '../../i18n/yollar';
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).yok;
+---
+
+<Base baslik={s.baslik} aciklama={s.aciklama} bulunamadi>
+  <section class="bant bant--koyu sayfa" aria-labelledby="yok-baslik">
+    <div class="kap yok">
+      <h1 id="yok-baslik" class="h1">{s.baslik}</h1>
+      <p class="lede">{s.lede}</p>
+      <p class="geri"><a href={yol.ana(dil)}>{s.geri}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sayfa {
+    min-height: calc(100svh - var(--nav));
+    display: grid;
+    align-items: center;
+  }
+
+  .yok {
+    display: grid;
+    gap: var(--aralik-3);
+  }
+
+  .geri {
+    margin: var(--aralik-3) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,10 @@
+# YER TUTUCU proje (taslak). Ortak alanlar; metinler metin.tr.mdx / metin.en.mdx.
+ad: "Eski Portföy"
+tur: site
+barindirma: harici
+durum: arsiv
+url: "https://gokturkfulser.github.io/"
+stack: ["HTML", "CSS"]
+gorsel: ./kapak.svg
+sira: 10
+taslak: true

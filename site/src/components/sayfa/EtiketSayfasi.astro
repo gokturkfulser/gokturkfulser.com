@@ -1,0 +1,45 @@
+---
+// /tags/<tag>/ ve /tr/etiketler/<etiket>/: etiketli yazılar (iki dilin yazıları; sayfanın dilinde olmayanlar etiketli ve kendi adresine bağlı).
+import Base from '../../layouts/Base.astro';
+import YaziSatiri from '../YaziSatiri.astro';
+import type { Yazi } from '../../lib/content';
+import { dilAl, sozluk } from '../../i18n';
+import { ikiDilde, yol } from '../../i18n/yollar';
+
+interface Props {
+  slug: string;
+  ad: string;
+  yazilar: Yazi[];
+}
+
+const { slug, ad, yazilar } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
+---
+
+<Base
+  baslik={`#${ad}`}
+  aciklama={s.etiket.aciklama(ad)}
+  esdeger={ikiDilde((d) => yol.etiket(d, slug))}
+  yedek={ikiDilde((d) => yol.yazilar(d))}
+>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="etiket-baslik">
+    <div class="kap">
+      <h1 id="etiket-baslik" class="h1">#{ad}</h1>
+      <p class="lede">{s.etiket.aciklama(ad)}</p>
+    </div>
+  </section>
+  <section class="bant bant--acik" aria-label={s.etiket.aria}>
+    <div class="kap">
+      <ul class="lista">
+        {
+          yazilar.map((yazi) => (
+            <li>
+              <YaziSatiri yazi={yazi} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>

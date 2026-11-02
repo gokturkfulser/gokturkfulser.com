@@ -1,0 +1,218 @@
+---
+import Base from '../../layouts/Base.astro';
+import { dilAl, digerDil, sozluk } from '../../i18n';
+import { ikiDilde, yol } from '../../i18n/yollar';
+
+const dil = dilAl(Astro);
+const diger = digerDil(dil);
+const s = sozluk(dil).arama;
+const p = s.pagefind;
+// Sayfanın dilinde olmayan sonuçlara konan küçük dil etiketi ("In Turkish" / "İngilizce").
+const yabanciEtiket = sozluk(dil).yaziDili[diger];
+
+// Pagefind arama motoru WebAssembly çalıştırır; 'wasm-unsafe-eval' yalnızca bu sayfaya eklenir.
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
+---
+
+<Base baslik={s.baslik} aciklama={s.aciklama} esdeger={ikiDilde((d) => yol.arama(d))}>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="ara-baslik">
+    <div class="kap">
+      <h1 id="ara-baslik" class="h1">{s.baslik}</h1>
+      <p class="lede">{s.lede}</p>
+    </div>
+  </section>
+  <section class="bant bant--acik sayfa">
+    <div class="kap">
+      <!-- Arayüz Pagefind'ın JS API'si üzerine küçük, kendi arayüzümüzdür (hazır UI, mergeIndex ile takılıyor).
+           Metinler sayfanın dilinde sunucudan (data-*) gelir; betikte sabit metin yok. -->
+      <div
+        id="arama"
+        class="arama"
+        data-dil={dil}
+        data-diger-dil={diger}
+        data-yabanci-etiket={yabanciEtiket}
+        data-yukleniyor={p.searching}
+        data-yok={p.zero_results}
+        data-cok={p.many_results}
+        data-bir={p.one_result}
+        data-daha={p.load_more}
+      >
+        <form role="search" class="arama-formu" action={yol.arama(dil)} method="get">
+          <label for="arama-girdi" class="sr-only">{p.search_label}</label>
+          <input id="arama-girdi" type="search" name="q" placeholder={p.placeholder} autocomplete="off" />
+        </form>
+        <p id="arama-durum" class="arama-durum" role="status"></p>
+        <ol id="arama-sonuclar" class="lista arama-sonuclar"></ol>
+        <p><button type="button" id="arama-daha" class="baglanti-dugme" hidden>{p.load_more}</button></p>
+      </div>
+      <p id="arama-hata" hidden>{s.hata}</p>
+      <noscript><p>{s.jsGerekli}</p></noscript>
+    </div>
+  </section>
+  <!-- Pagefind dizini build sonrası /pagefind/ altına yazılır; bu yüzden bundle'a değil çalışma anında yüklenir.
+       Betik paketlenip hash'lenir (CSP); Pagefind'ın kendi dosyaları 'self'. Dizin <html lang>'a göre dil başına ayrılır:
+       birincil dizin sayfanın dilidir; diğer dilin dizini /pagefind-b/ (aynı dizinin ikinci kopyası, Pagefind birincil dizinle
+       aynı yolu birleştirmeyi atladığı için) mergeIndex ile daha düşük ağırlıkla eklenir ve o dilin sonuçları dil etiketi taşır. -->
+  <script>
+    const kutu = document.getElementById('arama')!;
+    const girdi = document.getElementById('arama-girdi') as HTMLInputElement;
+    const durum = document.getElementById('arama-durum')!;
+    const liste = document.getElementById('arama-sonuclar')!;
+    const daha = document.getElementById('arama-daha') as HTMLButtonElement;
+    const hata = document.getElementById('arama-hata')!;
+    const d = kutu.dataset as Record<string, string>;
+    const SAYFA = 8;
+    const DIGER_AGIRLIK = 0.4;
+
+    const doldur = (sablon: string, terim: string, adet?: number) =>
+      sablon.replace('[SEARCH_TERM]', terim).replace('[COUNT]', String(adet ?? ''));
+
+    let pagefind: any;
+    let hazir: Promise<void> | undefined;
+    const yukle = (ilkTerim: string) =>
+      (hazir ??= (async () => {
+        try {
+          const adres = '/pagefind/pagefind.js';
+          pagefind = await import(/* @vite-ignore */ adres);
+          await pagefind.init();
+          // mergeIndex, birincil dizinin wasm'ı yüklenene kadar bekler; wasm ise ilk aramada yüklenir. Bu yüzden birleştirmeden önce
+          // birincil dizinde bir arama (yalnızca ısınma) yapılır; yoksa mergeIndex sonsuza dek bekler.
+          await pagefind.search(ilkTerim);
+          await pagefind.mergeIndex('/pagefind-b/', { language: d.digerDil, indexWeight: DIGER_AGIRLIK });
+        } catch {
+          hata.hidden = false;
+          throw new Error('pagefind');
+        }
+      })());
+
+    let sonuclar: any[] = [];
+    let gosterilen = 0;
+    let aramaNo = 0;
+
+    const ciz = async (dilimler: any[]) => {
+      for (const r of await Promise.all(dilimler.map((x) => x.data()))) {
+        const li = document.createElement('li');
+        li.className = 'arama-sonuc';
+        // Diğer dilin sonucu adres ağacından tanınır (tr → /tr/…, en → kök); Pagefind sonuçta dil alanı vermez.
+        const trSonuc = r.url === '/tr' || r.url.startsWith('/tr/');
+        const yabanci = trSonuc !== (d.dil === 'tr');
+        if (yabanci) li.lang = d.digerDil;
+        const baslik = document.createElement('h2');
+        const a = document.createElement('a');
+        a.href = r.url;
+        a.textContent = r.meta?.title ?? r.url;
+        baslik.append(a);
+        if (yabanci) {
+          const etiket = document.createElement('span');
+          etiket.className = 'dil-etiketi';
+          etiket.textContent = d.yabanciEtiket;
+          baslik.append(' ', etiket);
+        }
+        const ozet = document.createElement('p');
+        ozet.innerHTML = r.excerpt; // Pagefind'ın kendi, <mark> içeren ve kaçışlanmış özeti
+        li.append(baslik, ozet);
+        liste.append(li);
+      }
+      gosterilen += dilimler.length;
+      daha.hidden = gosterilen >= sonuclar.length;
+    };
+
+    const ara = async (terim: string) => {
+      const no = ++aramaNo;
+      terim = terim.trim();
+      liste.replaceChildren();
+      daha.hidden = true;
+      if (!terim) {
+        durum.textContent = '';
+        return;
+      }
+      durum.textContent = doldur(d.yukleniyor, terim);
+      try {
+        await yukle(terim);
+      } catch {
+        durum.textContent = '';
+        return;
+      }
+      const sonuc = await pagefind.search(terim);
+      if (no !== aramaNo) return; // daha yeni bir arama başladı
+      sonuclar = sonuc.results;
+      gosterilen = 0;
+      durum.textContent =
+        sonuclar.length === 0
+          ? doldur(d.yok, terim)
+          : doldur(sonuclar.length === 1 ? d.bir : d.cok, terim, sonuclar.length);
+      await ciz(sonuclar.slice(0, SAYFA));
+    };
+
+    let zamanlayici: number | undefined;
+    girdi.addEventListener('input', () => {
+      clearTimeout(zamanlayici);
+      zamanlayici = window.setTimeout(() => ara(girdi.value), 250);
+    });
+    daha.addEventListener('click', () => ciz(sonuclar.slice(gosterilen, gosterilen + SAYFA)));
+    document.getElementById('arama-girdi')!.closest('form')!.addEventListener('submit', (e) => {
+      e.preventDefault();
+      ara(girdi.value);
+    });
+
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) {
+      girdi.value = q;
+      ara(q);
+    }
+    girdi.focus();
+  </script>
+</Base>
+
+<style>
+  .arama {
+    max-width: var(--olcu);
+  }
+
+  .arama-formu input {
+    width: 100%;
+    padding: 0.75rem var(--aralik-3);
+    border: 1px solid var(--soluk);
+    border-radius: 6px;
+    background: var(--zemin);
+    color: var(--murekkep);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+  }
+
+  .arama-durum {
+    margin-block: var(--aralik-3);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-sm);
+    color: var(--soluk);
+  }
+
+  .arama-sonuc {
+    padding-block: var(--aralik-4);
+    border-block-end: 1px solid var(--cizgi);
+  }
+
+  .arama-sonuc h2 {
+    margin: 0 0 var(--aralik-2);
+    font-family: var(--font-baslik-yigin);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .arama-sonuc p {
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .arama-sonuc :global(mark) {
+    background: color-mix(in srgb, var(--turuncu) 35%, transparent);
+    color: inherit;
+  }
+
+  .arama-sonuc .dil-etiketi {
+    vertical-align: middle;
+    letter-spacing: 0;
+  }
+</style>

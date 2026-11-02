@@ -2,7 +2,7 @@
 
 Bu dosya bağlayıcıdır. Yön: **koyu salon** (sinematik tam genişlik görüntü, jenerik düzeni) içinde **kâğıt bandı** (okuma alanı basılı sayfa: çerçeve, çift çizgi, künye). Sinema turkuaz, basketbol turuncu. Başlıkta Cormorant (yalnızca koyu bantta ve ≥ 24 px), geri kalan her yerde Hanken Grotesk. Token'lar `src/styles/tokens.css`'te, fontlar `astro.config.mjs` → `fonts`'ta; bu dosyadaki değer değişmeden orada değişmez.
 
-Site okuma ağırlıklı ve Türkçe: ilk iş yazıyı rahat okutmak, ikinci iş projeleri öne çıkarmaktır.
+Site okuma ağırlıklı ve iki dilli (İngilizce varsayılan, Türkçe `/tr/`): ilk iş yazıyı rahat okutmak, ikinci iş projeleri öne çıkarmaktır.
 
 İçindekiler: Ortak sistem · Fontlar ve ölçek · Renkler ve kontrast · Medya kuralı · Hero ve koyu bant okunabilirliği · Sayfalar · Hareket · Link · Yasaklar · Erişilebilirlik · Kalıcı bölümler · Geçmiş.
 
@@ -15,13 +15,13 @@ Site okuma ağırlıklı ve Türkçe: ilk iş yazıyı rahat okutmak, ikinci iş
 | Adres | İçerik |
 | --- | --- |
 | `/` | Kapak (tam ekran sahne, ad, "kapak satırları": öne çıkan yazı ve proje) · projeler (dikey çerçeveler) · yazılar (öne çıkan yazı tam genişlik sahne + yan kartlar) · kısaca · sayılar (yazı ve proje; sıfır olan gösterilmez, en az iki sayı yoksa şerit çizilmez) · son izlediklerim (yavaş akan afiş bandı, varsa) · footer |
-| `/yazilar/`, `/yazilar/sinema/`, `/yazilar/basketbol/` | Manşet (en yeni yazı, tam genişlik görüntü üstünde sayfa başlığı) · JS'siz sekmeler (her biri kendi URL'i), arama girişi (`/arama/?q=`), etiket süzgeci · bölüm girişleri (Sinema turkuaz, Basketbol turuncu çizgili) · yıllara göre yazı satırları |
-| `/yazilar/<slug>/` | Tüm yazılar tek adres uzayında; slug'lar iki koleksiyon arasında tekil. Eski `/sinema/**`, `/basketbol/**` → `public/_redirects` ile 301 |
-| `/projeler/`, `/projeler/tur/<tur>/` | Dev proje dizini (hover önizlemeli), arşiv en sonda sade |
-| `/projeler/<slug>/` | **Vaka çalışması düzeni, tüm projelerin varsayılanı** |
-| `/hakkimda/` | Sayfanın kendisi özgeçmiş (`src/content/ozgecmis.yaml`); `taslak: true` iken production'da "hazırlanıyor" |
+| `/yazilar/` (en: `/writing/`; tr: `/tr/yazilar/`), `…/sinema/` (en: `/writing/cinema/`), `…/basketbol/` (en: `/writing/basketball/`) | Manşet (en yeni yazı, tam genişlik görüntü üstünde sayfa başlığı) · JS'siz sekmeler (her biri kendi URL'i), arama girişi (`/search/?q=`, `/tr/arama/?q=`), etiket süzgeci · bölüm girişleri (Sinema turkuaz, Basketbol turuncu çizgili) · yıllara göre yazı satırları; iki dilin yazıları da listelenir, sayfanın dilinde olmayanlar küçük dil etiketi taşır |
+| `/writing/<slug>/` · `/tr/yazilar/<slug>/` | Her yazı yalnızca kendi dilinin ağacında yaşar; slug dil başına tekil (iki koleksiyon arasında da). Eski Türkçe kök adresler ve `/sinema/**`, `/basketbol/**`, `/en/**` → `public/_redirects` ile 301 |
+| `/projects/`, `/projects/type/<type>/` · `/tr/projeler/`, `/tr/projeler/tur/<tur>/` | Dev proje dizini (hover önizlemeli), arşiv en sonda sade |
+| `/projects/<slug>/` · `/tr/projeler/<slug>/` | **Vaka çalışması düzeni, tüm projelerin varsayılanı** (slug iki dilde aynı) |
+| `/about/` · `/tr/hakkimda/` | Sayfanın kendisi özgeçmiş (`src/content/ozgecmis.yaml`); `taslak: true` iken production'da "hazırlanıyor" |
 
-Nav: **Ana sayfa · Yazılar · Projeler · Hakkımda** + arama simgesi (nav bağlantıları her durumda görünür). Dokunma hedefleri ≥ 44 px. Üst çubuk her zaman koyudur ve sayfayla kayar (sabit değil); görselli sayfa başlarında (`<Base bindirme>`) ilk bandın üstüne biner.
+Nav: **Ana sayfa · Yazılar · Projeler · Hakkımda** (dile göre: Home · Writing · Projects · About) + **EN / TR dil anahtarı** + arama simgesi (nav bağlantıları ve dil düğmesi her durumda görünür; mobilde "Menü" düğmesinin yanında). Dil anahtarı tek bir `<a>`dır (gezinme bağlantısı; `role="switch"` değil): tek ince çerçeveli hap, içinde EN ve TR yan yana, aktif dilin altında dolgulu "başparmak" (aktif etiket başparmak üstünde koyu, pasif soluk). Hover/odakta başparmak diğer dile doğru hafifçe esner (`scaleX(1.14)`); başparmağın sabit `view-transition-name: dil-kaydirak`'i sayesinde sayfa değişirken yeni konumuna kayar (cross-document View Transitions, saf CSS; desteklemeyen tarayıcıda animasyonsuz çalışır). `aria-label` hedef dilde ("Türkçe'ye geç" / "Switch to English"), `hreflang` ve `lang` hedef dildedir; görünür hap 36 px, tıklanabilir alan pseudo-öğeyle 44 px, odak halkası 3 px; `prefers-reduced-motion`'da esneme ve kayma yoktur. Dokunma hedefleri ≥ 44 px. Üst çubuk her zaman koyudur ve sayfayla kayar (sabit değil); görselli sayfa başlarında (`<Base bindirme>`) ilk bandın üstüne biner.
 
 ### Bantlar ve kenar kuralı
 
@@ -146,6 +146,17 @@ Okunabilirlik kuralları (ölçülüp ayarlandı; uygulamada aynen korunur):
 
 ---
 
+## Çok dillilik (i18n)
+
+- **Diller:** İngilizce varsayılan ve kökte (`prefixDefaultLocale: false`), Türkçe `/tr/` altında. Tarayıcı diline göre otomatik yönlendirme **yoktur**. Yol parçaları dile göre yerelleşir (`writing`/`yazilar`, `projects`/`projeler`, `about`/`hakkimda`, `search`/`arama`, `tags`/`etiketler`); adresleri tek yerden `src/i18n/yollar.ts` üretir, sayfa dosyaları `src/pages` (en) ve `src/pages/tr` (tr) altındadır ve ince sarmalayıcıdır (gövde `components/sayfa/` ve `components/`'te).
+- **Yeni arayüz metni** her zaman `src/i18n/tr.ts` **ve** `src/i18n/en.ts`'e eklenir (aynı anahtarlar: tür denetimi ve `i18n/index.ts`'teki çalışma zamanı denetimi eksik/fazla anahtarda build'i durdurur). Bileşenlerde sabit metin yazılmaz; sayfanın dili `dilAl(Astro)` ile (Astro'nun `currentLocale`'i) okunur. Tarih, sayı, puan, liste biçimi, `<html lang>`, `hyphens` (`html[data-tire]`) ve slug transliterasyonu `AYAR[dil]`'den gelir.
+- **Yeni yazı:** frontmatter'a `dil: 'tr' | 'en'` (varsayılan `tr`) ve varsa karşılığının slug'ı `ceviri: <diğer dildeki yazının slug'ı>` (tek taraftan yazılması yeter, iki yönlü çözülür). Çeviri ayrı klasör ve ayrı slugtır; görsel paylaşımı için `../<öteki-klasör>/görsel.png` içe aktarılabilir.
+- **Yeni proje:** `src/content/projeler/<slug>/proje.yaml` (ortak alanlar: görsel, bağlantılar, tür, durum, stack, embedUrl; `icerikDili` oyunun/uygulamanın kendi dili) + **iki** metin dosyası `metin.tr.mdx` ve `metin.en.mdx` (özet, `vaka`, MDX gövdesi). Bir dili eksik proje diğer dile düşer ve proje sayfasında notla belirtilir. Ekran görüntülerinin `alt`/`altyazi` alanları `{ en, tr }`'dir.
+- **Dil düğmesi:** (tek `<a>` kaydırmalı anahtar) bulunulan sayfanın diğer dildeki gerçek karşılığına gider; yoksa (ör. yalnızca bir dilde yazılmış yazı) diğer dilin ilgili liste sayfasına. Karşılıklar her sayfada `<Base esdeger yedek>` ile verilir ve hreflang'ı da besler.
+- **SEO:** her sayfada `hreflang` alternatifleri (x-default İngilizce), `og:locale` + `og:locale:alternate`, dilin OG görseli (`/og/<dil>/…`), RSS (`/rss.xml` en, `/tr/rss.xml` tr; bölüm feed'leri de): liste sayfalarıyla aynı mantıkta iki dilin yazılarını da içerir, her öğe `dc:language` taşır. Sitemap'e dil alternatifleri build sonrası sayfaların hreflang'ından yazılır (`scripts/sitemap-hreflang.mjs`).
+- **Dil etiketi:** liste sayfalarında sayfanın dilinde olmayan yazı küçük bir etiketle ("In Turkish" / "İngilizce") işaretlenir ve kendi adresine bağlanır.
+- **Değişmeyenler:** `lab.gokturkfulser.com` ve `citiesofanatolia.gokturkfulser.com` Türkçe kalır; Türkçe oyunlar (Kelime Avı, Perde Perde Anadolu) İngilizce sayfalarda belirtilir.
+
 ## Hareket
 
 Tek eğri `cubic-bezier(.22,1,.36,1)`. **Önce saf CSS** (`animation-timeline: view()`, `@starting-style`, View Transitions); desteklemeyen tarayıcıda içerik animasyonsuz ama **eksiksiz** görünür. **Kural:** içeriği ilk durumda gizleyen/kırpan/kaydıran her kural (görsel `clip-path` açılışı ve satır satır başlık) hem `@media (prefers-reduced-motion: no-preference)` hem `@supports (animation-timeline: view())` içindedir; bunların dışında başlangıçta gizli içerik yoktur (yalnızca `(hover: hover)` içindeki hover önizleme bilerek gizlidir). Doğrulama: Firefox (desteksiz), WebKit ve `@supports` sorgusu bozulmuş Chromium ile ana sayfa, `/yazilar/` ve bir yazı açılır; kırpılmış görsel, kaymış başlık satırı ve yüklenmemiş görsel sayısı 0 olmalı. JS yalnızca CSS'in yapamadığı yerde, küçük, yalnızca o sayfada (paketlenmiş `<script>`, `is:inline` değil): `/arama/` (Pagefind), oyunlu proje sayfası (`OyunKutusu`), `/hakkimda/` ("Yazdır / PDF" düğmesi). **Yazı sayfalarında hiç JS yok.** `prefers-reduced-motion: reduce` altında tüm hareket kapalıdır (akış bandı dahil). CSP: `unsafe-inline` yok, satır içi `style=""` yok.
@@ -231,7 +242,7 @@ Anlam taşıyan görselde gerçek `alt` yazılır; süs görselde (`kapak`, vitr
 
 ### Arama
 
-`/arama/` ayrı sayfa (nav'da arama simgesi; `/arama/?q=` ile `/yazilar/` arama girişinden gelir); arayüz Pagefind'ın hazır UI'ı, site token'larına bağlı, metinler Türkçe; kod yalnızca bu sayfada yüklenir.
+`/search/` (en) ve `/tr/arama/` (tr) ayrı sayfa (nav'da arama simgesi; `?q=` ile yazılar listesinin arama girişinden gelir). Arayüz, Pagefind'ın JS API'si üzerine yazılmış küçük kendi arayüzümüzdür (site token'larına bağlı; metinler sayfanın dilinde, sunucudan `data-*` ile; betikte sabit metin yok) — hazır UI `mergeIndex` ile takıldığı için. Pagefind dizini `<html lang>`'a göre dil başına ayrılır; sayfanın dili birincil dizindir, **diğer dilin dizini `mergeIndex` ile 0,4 ağırlıkla birleştirilir** ve o dilin sonuçları küçük dil etiketi taşır ("In Turkish" / "İngilizce"; dil sonucun adres ağacından tanınır). Pagefind birincil dizinle aynı paket yolunu birleştirmeyi atladığı için build iki kez çalışır (`pagefind --site dist` ve `--output-path dist/pagefind-b`). Birleştirme, birincil dizinin wasm'ı yüklenene kadar bekler; wasm ilk aramada yüklendiğinden `mergeIndex`'ten önce birincil dizinde bir ısınma araması yapılır (yoksa sonsuza dek bekler). Kod yalnızca bu sayfada yüklenir.
 
 ### Okuma süresi, TMDB ve künye
 

@@ -1,0 +1,17 @@
+---
+import EtiketSayfasi from '../../components/sayfa/EtiketSayfasi.astro';
+import { etiketHaritasi } from '../../lib/content';
+
+// Etiket sayfaları iki dilde de aynı slug kümesiyle üretilir; her biri iki dilin etiketli yazılarını listeler.
+export async function getStaticPaths() {
+  const harita = await etiketHaritasi();
+  return [...harita].map(([slug, kayit]) => ({
+    params: { tag: slug },
+    props: { slug, ad: kayit.ad, yazilar: kayit.yazilar },
+  }));
+}
+
+const { slug, ad, yazilar } = Astro.props;
+---
+
+<EtiketSayfasi {slug} {ad} {yazilar} />

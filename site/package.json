@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "afisler": "node --env-file-if-exists=.env scripts/letterboxd-afis.ts",
-    "build": "pnpm run afisler && astro build && pagefind --site dist",
+    "build": "pnpm run afisler && astro build && pagefind --site dist && pagefind --site dist --output-path dist/pagefind-b",
     "build:workers": "node scripts/workers-build.mjs",
     "preview": "astro preview",
     "check": "astro check",

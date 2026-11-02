@@ -11,8 +11,8 @@ Her madde işaretlenmeden `gokturkfulser.com` custom domain'i bağlanmaz. Sıray
   ```
 
   (`dist/pagefind/` dışarıda bırakılır: Pagefind'ın kendi betiği `github.io` içerir. Aranacak dizeleri yer tutucu listesine göre güncelleyin; kendi gerçek içeriğinizde geçen bir ad yanlış alarm verirse listeden çıkarın.)
-- [ ] **Gerçek "Hakkımda" metni** yazıldı (`src/pages/hakkimda.astro`): uydurma biyografi, uydurma iletişim/sosyal bağlantı yok; e-posta ve profil bağlantıları gerçek.
-- [ ] **En az bir gerçek yazı** (`taslak: false`) yayında: sinema veya basketbol. `site/dist/yazilar/` altında (sinema/basketbol dizinleri dışında) en az bir yazı klasörü var; ana sayfada ve ilgili listede görünüyor; boş durum ("Henüz yazı yok") görünmüyor.
+- [ ] **Gerçek "Hakkımda" metni** yazıldı (`src/content/hakkimda.<dil>.md` ve `ozgecmis.yaml`): uydurma biyografi, uydurma iletişim/sosyal bağlantı yok; e-posta ve profil bağlantıları gerçek.
+- [ ] **En az bir gerçek yazı** (`taslak: false`) yayında: sinema veya basketbol. `site/dist/writing/` ve `site/dist/tr/yazilar/` altında (bölüm dizinleri dışında) en az bir yazı klasörü var; ana sayfada ve ilgili listede görünüyor; boş durum ("Henüz yazı yok") görünmüyor.
 - [ ] Gerçek yazıdan sonra **CI'daki "taslaklar dahil" ikinci build adımı** (`.github/workflows/site.yml`) kaldırıldı; Lighthouse ve lychee artık gerçek yazıyı denetliyor.
 
 ## Görsel ve atıf
@@ -27,13 +27,13 @@ Her madde işaretlenmeden `gokturkfulser.com` custom domain'i bağlanmaz. Sıray
   ```powershell
   curl.exe -s -o NUL -w "%{http_code}`n" https://gokturkfulser.com/yok-boyle-sayfa/   # 404
   ```
-- [ ] **RSS geçerli.** `/rss.xml`, `/yazilar/sinema/rss.xml`, `/yazilar/basketbol/rss.xml` W3C Feed Validation Service'ten (validator.w3.org/feed) uyarısız geçiyor; yer tutucu yazı yok; `<link>` adresleri `https://gokturkfulser.com/...` ve sonunda `/` var.
-- [ ] **Arama** (`/arama/`) bir gerçek yazıda aranan kelimeyle sonuç döndürüyor, konsolda hata yok.
+- [ ] **RSS geçerli.** `/rss.xml`, `/writing/cinema/rss.xml`, `/writing/basketball/rss.xml` ve `/tr/rss.xml`, `/tr/yazilar/sinema/rss.xml`, `/tr/yazilar/basketbol/rss.xml` W3C Feed Validation Service'ten (validator.w3.org/feed) uyarısız geçiyor; yer tutucu yazı yok; `<link>` adresleri `https://gokturkfulser.com/...` ve sonunda `/` var.
+- [ ] **Arama** (`/search/` ve `/tr/arama/`) bir gerçek yazıda aranan kelimeyle sonuç döndürüyor, konsolda hata yok.
 - [ ] **robots.txt** production'da `Disallow: /` içermiyor ve sitemap adresini veriyor; sayfalarda `noindex` yok.
 
 ## Güvenlik ve performans
 
-- [ ] Ana sayfa, bir yazı, `/arama/` ve (varsa) oyunlu proje sayfasında tarayıcı konsolunda **CSP ihlali yok** (DevTools → Console, "Content Security Policy" araması).
+- [ ] Ana sayfa, bir yazı, `/search/` ve `/tr/arama/` ve (varsa) oyunlu proje sayfasında tarayıcı konsolunda **CSP ihlali yok** (DevTools → Console, "Content Security Policy" araması).
 - [ ] `curl.exe -sI https://gokturkfulser.com/` yanıtında `content-security-policy: frame-ancestors 'none'`, `referrer-policy`, `permissions-policy`, `x-content-type-options` var.
 - [ ] Lighthouse (CI'da veya PageSpeed Insights): ana sayfa ve bir yazıda performans ve erişilebilirlik ≥ 95 (hedef 100).
 - [ ] Yazı sayfalarında `ld+json` dışında `<script>` yok; `CF_ANALYTICS_TOKEN` tanımlıysa tek harici script (beacon) bilinçli bir istisna.

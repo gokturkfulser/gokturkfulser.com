@@ -5,7 +5,7 @@
 :is(.metin, .yazi-metni) {
   font-size: var(--yazi-yazi);
   line-height: 1.7;
-  hyphens: auto;
+  hyphens: auto; /* html[data-tire] (i18n/index.ts AYAR.tire) ile dile göre ezilir, aşağıda */
   overflow-wrap: break-word;
 }
 
@@ -210,4 +210,9 @@
     order: -1;
     margin-block-end: var(--aralik-4);
   }
+}
+
+/* Heceleme kuralı dile göre: <html data-tire> değeri i18n/index.ts'teki AYAR[dil].tire'dir. */
+html[data-tire='manual'] :is(.metin, .yazi-metni) {
+  hyphens: manual;
 }

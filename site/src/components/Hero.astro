@@ -5,10 +5,11 @@
 // küçük metin ≥ 7:1, büyük metin ≥ 4,5:1 (DESIGN.md "Hero ve koyu bant okunabilirliği").
 // Adın altındaki cümle (lede) isteğe bağlıdır; verilmezse hiç render edilmez. Kapak satırları yalnızca içerik varsa çizilir.
 import HeroSahne from './HeroSahne.astro';
-import type { CollectionEntry } from 'astro:content';
-import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { yaziUrl, type Proje, type Yazi } from '../lib/content';
 import { tarihIso, tarihYaz } from '../lib/format';
 import { okumaSuresi } from '../lib/okuma-suresi';
+import { dilAl, sozluk } from '../i18n';
+import { yol } from '../i18n/yollar';
 
 interface Props {
   /** Başlığın altındaki tek cümle (isteğe bağlı). */
@@ -16,13 +17,15 @@ interface Props {
   /** Kapak satırı: öne çıkan yazı. */
   yazi?: Yazi;
   /** Kapak satırı: öne çıkan proje. */
-  proje?: CollectionEntry<'projeler'>;
+  proje?: Proje;
 }
 
 const { cumle, yazi, proje } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
 // Build günü: sahnenin küçük varyasyonu (ışığın açısı, toz) için tohum; aynı gün aynı çıktı.
 const tohum = Math.floor(Date.now() / 86_400_000);
-const sure = yazi ? okumaSuresi(yazi.entry.body) : undefined;
+const sure = yazi ? okumaSuresi(yazi.entry.body, yazi.entry.data.dil) : undefined;
 const satirSayisi = Number(Boolean(yazi)) + Number(Boolean(proje));
 ---
 
@@ -44,13 +47,14 @@ const satirSayisi = Number(Boolean(yazi)) + Number(Boolean(proje));
           {
             yazi && sure && (
               <article data-dunya={yazi.bolum}>
-                <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
-                <h2 class="h3">
-                  <a href={yaziUrl(yazi.bolum, yazi.entry.id)}>{yazi.entry.data.baslik}</a>
+                <p class="etiket">{s.bolum[yazi.bolum]}</p>
+                <h2 class="h3" lang={yazi.entry.data.dil !== dil ? yazi.entry.data.dil : undefined}>
+                  <a href={yaziUrl(yazi)}>{yazi.entry.data.baslik}</a>
                 </h2>
                 <p class="meta">
-                  <time datetime={tarihIso(yazi.entry.data.tarih)}>{tarihYaz(yazi.entry.data.tarih)}</time>
-                  <span>{sure.dakika} dakikalık okuma</span>
+                  <time datetime={tarihIso(yazi.entry.data.tarih)}>{tarihYaz(yazi.entry.data.tarih, dil)}</time>
+                  <span>{sozluk(yazi.entry.data.dil).yazi.okumaSuresi(sure.dakika)}</span>
+                  {yazi.entry.data.dil !== dil && <span class="dil-etiketi">{s.yaziDili[yazi.entry.data.dil]}</span>}
                 </p>
               </article>
             )
@@ -58,11 +62,11 @@ const satirSayisi = Number(Boolean(yazi)) + Number(Boolean(proje));
           {
             proje && (
               <article data-dunya="proje">
-                <p class="etiket">Proje</p>
+                <p class="etiket">{s.ana.proje}</p>
                 <h2 class="h3">
-                  <a href={`/projeler/${proje.id}/`}>{proje.data.ad}</a>
+                  <a href={yol.proje(dil, proje.id)}>{proje.data.ad}</a>
                 </h2>
-                <p class="ozet">{proje.data.ozet}</p>
+                <p class="ozet" lang={proje.yedek ? proje.metinDili : undefined}>{proje.metin.data.ozet}</p>
               </article>
             )
           }

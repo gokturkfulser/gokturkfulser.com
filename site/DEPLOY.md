@@ -95,7 +95,7 @@ curl.exe -sI https://gokturkfulser.com/_astro/<herhangi-bir-dosya>   # cache-con
 curl.exe -s https://gokturkfulser.com/ | Select-String 'content-security-policy'   # meta etiketi (script-src/style-src hash'leri)
 ```
 
-Tarayıcı konsolunda ana sayfa, bir yazı, `/arama/` ve oyunlu proje sayfasında CSP ihlali olmamalı (yerelde `wrangler dev` ile aynı denendi).
+Tarayıcı konsolunda ana sayfa, bir yazı, `/search/` ve `/tr/arama/` ve oyunlu proje sayfasında CSP ihlali olmamalı (yerelde `wrangler dev` ile aynı denendi).
 
 ## 8. Bilmeniz gerekenler
 
@@ -103,7 +103,7 @@ Tarayıcı konsolunda ana sayfa, bir yazı, `/arama/` ve oyunlu proje sayfasınd
 - **CSP iki yerden gelir:** her HTML'de Astro'nun `<meta http-equiv="content-security-policy">` etiketi (script/style hash'leri + `directives`), ve `public/_headers`'ta yalnızca `frame-ancestors 'none'` (meta'da çalışmaz). İkisi birlikte uygulanır ve kesişir; header'da başka direktif olmadığı için çakışma yoktur. `_headers`'a başka CSP direktifi eklemeyin; ekleyecekseniz `astro.config.mjs` → `security.csp.directives`'e ekleyin.
 - **`lab` Worker'ının tarafı:** `frame-src https://lab.gokturkfulser.com` bu sitede izinli; lab de `lab/public/_headers` ile `frame-ancestors 'self' https://gokturkfulser.com` gönderir, yani karşılıklı izin kurulu. Yerelde iki production build'i birlikte servis edip (`wrangler dev`) `kelime-avi` iframe'inin açıldığı, başka origin'den çerçevelemenin engellendiği doğrulandı.
 - **Yeni harici kaynak** (ör. başka bir gömülü video sitesi, harici görsel, harici `.mp4`) CSP'ye `astro.config.mjs`'ten eklenmeden çalışmaz. Şu an izinliler: `static.cloudflareinsights.com` (script), `cloudflareinsights.com` (connect), `lab.gokturkfulser.com`, `www.youtube-nocookie.com`, `player.vimeo.com` (frame). Demo videoları kendi sitenizden (`media-src 'self'`) servis edilmelidir.
-- **Pagefind** WebAssembly çalıştırır; `'wasm-unsafe-eval'` yalnızca `/arama/` sayfasının CSP'sine eklenir (`src/pages/arama.astro`, `Astro.csp.insertScriptResource`).
+- **Pagefind** WebAssembly çalıştırır; `'wasm-unsafe-eval'` yalnızca `/search/` ve `/tr/arama/` sayfasının CSP'sine eklenir (`components/sayfa/Arama.astro`, `Astro.csp.insertScriptResource`).
 
 ## 9. Günlük otomatik build (son izlediklerim güncel kalsın)
 

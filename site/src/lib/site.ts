@@ -1,23 +1,13 @@
-// Site genelinde kullanılan sabitler (kök CLAUDE.md "Adlar" bölümüyle uyumlu).
+// Site genelinde kullanılan sabitler (kök CLAUDE.md "Adlar" bölümüyle uyumlu). Arayüz metinleri i18n sözlüklerindedir.
 export const SITE_ADI = 'Göktürk Fulser';
 
 export const EPOSTA = 'merhaba@gokturkfulser.com';
 
-export const PROFILLER = [
-  { ad: 'GitHub', href: 'https://github.com/gokturkfulser' },
-  { ad: 'RSS', href: '/rss.xml' },
-] as const;
+export const GITHUB = 'https://github.com/gokturkfulser';
 
-export const MENU = [
-  { ad: 'Ana sayfa', href: '/', tam: true },
-  { ad: 'Yazılar', href: '/yazilar/' },
-  { ad: 'Projeler', href: '/projeler/' },
-  { ad: 'Hakkımda', href: '/hakkimda/' },
-] as const;
-
-// İsteğe bağlı tanıtım metinleri. Boş bırakılırsa ilgili öğe hiç render edilmez (başlık, paragraf ya da boşluk kalmaz);
+// İsteğe bağlı tanıtım metinleri, iki dilli. İlgili dil boşsa (ve diğeri de boşsa) öğe hiç render edilmez (başlık, paragraf ya da boşluk kalmaz);
 // metin yazıldığında kendiliğinden görünür.
 /** Ana sayfa hero'sunda adın altındaki tek cümle. */
-export const HERO_CUMLESI = '';
+export const HERO_CUMLESI = { en: '', tr: '' };
 /** Ana sayfadaki "Kısaca" bölümünün metni (bölüm, metin yazılana kadar görünmez). */
-export const KISACA_METNI = '';
+export const KISACA_METNI = { en: '', tr: '' };

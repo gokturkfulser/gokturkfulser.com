@@ -7,21 +7,26 @@ import { taslakKlasorDesenleri } from './lib/taslak-loader';
 
 // Her içerik kendi klasöründe: <koleksiyon>/<slug>/index.mdx + görseller.
 // id, klasör adının Türkçe transliterasyonlu slug'ıdır. Production'da taslak klasörleri desenden çıkar.
-// `ceviri: true` olan koleksiyonda aynı klasördeki `index.en.mdx` İngilizce çevirisidir; id'si `<slug>--en`.
-const klasorLoader = (base: string, { ceviri = false } = {}) =>
+// Çeviri ayrı bir yazıdır: kendi klasörü, kendi slug'ı, `dil: 'en'` ve (isteğe bağlı) `ceviri: <diğer dildeki yazının slug'ı>`.
+const klasorLoader = (base: string) =>
   glob({
     base,
-    pattern: ['*/index.{md,mdx}', ...(ceviri ? ['*/index.en.mdx'] : []), ...taslakKlasorDesenleri(base)],
-    generateId: ({ entry }) => {
-      const [klasor = entry, dosya = ''] = entry.split('/');
-      return slugify(klasor) + (dosya.startsWith('index.en.') ? '--en' : '');
-    },
+    pattern: ['*/index.{md,mdx}', ...taslakKlasorDesenleri(base, ['index.mdx', 'index.md'])],
+    generateId: ({ entry }) => slugify(entry.split('/')[0] ?? entry),
   });
+
+// Yazıların ortak alanları. Her yazı yalnızca kendi dilinin adres ağacında yaşar; `ceviri` diğer dildeki yazının slug'ıdır
+// (yalnızca bir taraftan yazılması yeterli; karşılık iki yönlü çözülür, lib/content.ts).
+const yaziDili = {
+  dil: z.enum(['tr', 'en']).default('tr'),
+  ceviri: z.string().optional(),
+};
 
 const sinema = defineCollection({
   loader: klasorLoader('./src/content/sinema'),
   schema: ({ image }) =>
     z.object({
+      ...yaziDili,
       baslik: z.string(),
       tarih: z.coerce.date(),
       ozet: z.string(),
@@ -44,11 +49,10 @@ const sinema = defineCollection({
 });
 
 const basketbol = defineCollection({
-  loader: klasorLoader('./src/content/basketbol', { ceviri: true }),
+  loader: klasorLoader('./src/content/basketbol'),
   schema: ({ image }) =>
     z.object({
-      // `en` olan kayıt, aynı klasördeki Türkçe yazının çevirisidir: listelerde/RSS'te yer almaz, /en/yazilar/<slug>/ adresinde yayımlanır.
-      dil: z.enum(['tr', 'en']).default('tr'),
+      ...yaziDili,
       baslik: z.string(),
       tarih: z.coerce.date(),
       ozet: z.string(),
@@ -73,12 +77,24 @@ const basketbol = defineCollection({
     }),
 });
 
+// Projeler iki parçadır. `projeler`: dilden bağımsız ortak alanlar (`<slug>/proje.yaml`: görsel, bağlantılar, tür, durum, stack, embedUrl…).
+// `projeMetinleri`: dile bağlı metinler (`<slug>/metin.tr.mdx`, `metin.en.mdx`: özet, vaka ne/neden/nasıl ve MDX gövdesi).
+// Bir dili eksik proje diğer dile düşer ve sayfada küçük bir notla belirtilir (lib/content.ts → `projeler(dil)`).
+const yerel = z.object({ en: z.string().trim(), tr: z.string().trim() });
+
+const projeKlasoru = './src/content/projeler';
 const projeler = defineCollection({
-  loader: klasorLoader('./src/content/projeler'),
+  loader: glob({
+    base: projeKlasoru,
+    pattern: ['*/proje.yaml', ...taslakKlasorDesenleri(projeKlasoru, ['proje.yaml'])],
+    generateId: ({ entry }) => slugify(entry.split('/')[0] ?? entry),
+  }),
   schema: ({ image }) =>
     z.object({
+      // Ürün adı iki dilde de aynıdır (özel ad).
       ad: z.string(),
-      ozet: z.string(),
+      // Oyunun/uygulamanın kendi dili; sayfanın dilinden farklıysa sayfada belirtilir (Türkçe oyunlar İngilizce sayfada).
+      icerikDili: z.enum(['tr', 'en']).optional(),
       tur: z.enum(['oyun', 'uygulama', 'site', 'arac']),
       barindirma: z.enum(['cloudflare', 'lab', 'vps', 'harici']),
       durum: z.enum(['yayinda', 'gelistiriliyor', 'yakinda', 'arsiv']),
@@ -95,21 +111,12 @@ const projeler = defineCollection({
         .optional(),
       stack: z.array(z.string()).default([]),
       gorsel: image(),
-      // Detay sayfasında gösterilen ekran görüntüleri; alt metin zorunlu.
+      // Detay sayfasında gösterilen ekran görüntüleri; alt metin zorunlu ve iki dilli.
       ekranGoruntuleri: z
-        .array(z.object({ gorsel: image(), alt: z.string(), altyazi: z.string().optional() }))
+        .array(z.object({ gorsel: image(), alt: yerel, altyazi: yerel.optional() }))
         .default([]),
       // Doğrudan video dosyası (.mp4/.webm), YouTube ya da Vimeo bağlantısı.
       demoVideo: z.url().optional(),
-      // Vaka çalışması modülleri (proje sayfasının varsayılan düzeni): ne, neden, nasıl. Boş/eksik olan modül hiç render edilmez.
-      // Uzun anlatım MDX gövdesindedir; bu alanlar sayfanın üstündeki kısa, taranabilir özetlerdir.
-      vaka: z
-        .object({
-          ne: z.string().trim().optional(),
-          neden: z.string().trim().optional(),
-          nasil: z.string().trim().optional(),
-        })
-        .optional(),
       oneCikan: z.boolean().default(false),
       sira: z.number().int().default(100),
       // true ise production'da görünmez (SHOW_DRAFTS=true ile preview'da görünür).
@@ -117,10 +124,36 @@ const projeler = defineCollection({
     }),
 });
 
+const projeMetinleri = defineCollection({
+  loader: glob({
+    base: projeKlasoru,
+    pattern: [
+      '*/metin.{tr,en}.mdx',
+      ...taslakKlasorDesenleri(projeKlasoru, ['proje.yaml'], ['metin.tr.mdx', 'metin.en.mdx']),
+    ],
+    // id: `<slug>.<dil>`
+    generateId: ({ entry }) => {
+      const [klasor = entry, dosya = ''] = entry.split('/');
+      return `${slugify(klasor)}.${dosya.split('.')[1]}`;
+    },
+  }),
+  schema: z.object({
+    ozet: z.string(),
+    // Vaka çalışması modülleri (proje sayfasının varsayılan düzeni): ne, neden, nasıl. Boş/eksik olan modül hiç render edilmez.
+    // Uzun anlatım MDX gövdesindedir; bu alanlar sayfanın üstündeki kısa, taranabilir özetlerdir.
+    vaka: z
+      .object({
+        ne: z.string().trim().optional(),
+        neden: z.string().trim().optional(),
+        nasil: z.string().trim().optional(),
+      })
+      .optional(),
+  }),
+});
+
 // /hakkimda/ özgeçmişi: tek kayıtlı veri dosyası (kimlik: `ozgecmis`). Dosya düz bir belgedir; yükleyici onu tek kayda sarar.
-// Metin alanları { en, tr } biçiminde iki dilli; i18n gelene kadar sayfa `tr`'yi gösterir (`yerel`, lib/format.ts).
+// Metin alanları { en, tr } biçiminde iki dilli; sayfa kendi dilini gösterir, boşsa diğerine düşer (`yerel`, i18n/index.ts).
 // Tarihler "YYYY-AA" ya da "YYYY" (YAML `2016`'yı sayı okur, bu yüzden metne çevrilir); `bitis: null` ya da yok = devam ediyor.
-const yerel = z.object({ en: z.string().trim(), tr: z.string().trim() });
 const tarih = z.coerce.string().regex(/^\d{4}(-(0[1-9]|1[0-2]))?$/, 'YYYY ya da YYYY-AA');
 const bitis = tarih.nullish();
 
@@ -184,8 +217,8 @@ const ozgecmis = defineCollection({
           kurum: yerel,
           baslangic: tarih,
           bitis,
-          // Site içi adres (isteğe bağlı).
-          href: z.string().startsWith('/').optional(),
+          // Site içi bölüm (isteğe bağlı); adresi dile göre i18n/yollar.ts üretir.
+          href: z.enum(['projeler', 'yazilar', 'hakkimda']).optional(),
           kisa: yerel,
         }),
       )
@@ -221,4 +254,4 @@ const hakkimda = defineCollection({
   schema: z.object({ baslik: z.string().trim().default('') }),
 });
 
-export const collections = { sinema, basketbol, projeler, ozgecmis, hakkimda };
+export const collections = { sinema, basketbol, projeler, projeMetinleri, ozgecmis, hakkimda };

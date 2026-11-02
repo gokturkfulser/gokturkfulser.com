@@ -18,6 +18,13 @@
   animation-duration: 0.18s;
 }
 
+/* Dil anahtarının başparmağı (Base.astro `.dil-kaydirak`, view-transition-name: dil-kaydirak): iki sayfa arasında EN ↔ TR konumuna kayar.
+   Desteklemeyen tarayıcıda anahtar animasyonsuz çalışır; reduced-motion'da gezinme geçişi zaten kapalıdır (aşağıda). */
+::view-transition-group(dil-kaydirak) {
+  animation-duration: 0.4s;
+  animation-timing-function: var(--ease);
+}
+
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;
@@ -376,4 +383,17 @@ a:hover {
   @view-transition {
     navigation: none;
   }
+}
+
+/* Sayfanın dilinde olmayan yazıyı listede işaretleyen küçük dil etiketi (YaziKarti, YaziSatiri) */
+.dil-etiketi {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.0625rem 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: var(--yazi-xs);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--soluk);
 }

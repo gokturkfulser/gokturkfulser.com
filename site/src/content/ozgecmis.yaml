@@ -161,7 +161,7 @@ duraklar:
       tr: Kendi projelerim
     baslangic: 2026
     bitis: null
-    href: /projeler/
+    href: projeler
     kisa:
       en: "Back to making games, this time my own: a daily word game and an Anatolian adventure for kids."
       tr: "Oyun yapmaya kendi projelerimle döndüm: günlük bir kelime oyunu ve çocuklar için bir Anadolu macerası."
@@ -179,11 +179,8 @@ su_siralar:
   - baslik:
       en: Working on
       tr: Üzerinde çalıştığım
-    ogeler:
-      - metin:
-          en: Cities of Anatolia, an Anatolian adventure for kids (in preparation)
-          tr: Cities of Anatolia, çocuklar için bir Anadolu macerası (hazırlanıyor)
-        slug: perde-perde-anadolu
+    # Perde Perde Anadolu yayında; "üzerinde çalıştığım" değil, Projeler'de ve özgeçmişte yer alır. Boş grup gösterilmez.
+    ogeler: []
   - baslik:
       en: Following
       tr: Takip ettiğim

@@ -1,19 +1,22 @@
 ---
-import { slugify } from '../lib/slug';
+import { slugify, sozluk, type Dil } from '../i18n';
+import { yol } from '../i18n/yollar';
 
 interface Props {
   etiketler: string[];
+  /** Yazının dili: etiket slug'ı ve bağlantılar bu dilin ağacındadır. */
+  dil: Dil;
 }
 
-const { etiketler } = Astro.props;
+const { etiketler, dil } = Astro.props;
 ---
 
 {
   etiketler.length > 0 && (
-    <ul class="lista etiketler" aria-label="Etiketler">
+    <ul class="lista etiketler" aria-label={sozluk(dil).yazi.etiketler}>
       {etiketler.map((etiket) => (
         <li>
-          <a href={`/etiketler/${slugify(etiket)}/`}>#{etiket}</a>
+          <a href={yol.etiket(dil, slugify(etiket, dil))}>#{etiket}</a>
         </li>
       ))}
     </ul>

@@ -17,21 +17,23 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 ## 2. Projeler (`src/content/projeler/`)
 
-> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. **Tek istisna:** frontmatter'daki `vaka.ne`, `vaka.neden` ve `vaka.nasil` metinleri (proje sayfasındaki Ne / Neden / Nasıl modülleri) **uydurmadır**; gerçek metinle değiştirilmeli ya da alanlar silinmeli (boş modül hiç render edilmez). Aşağıdaki liste kalan yer tutucuları kapsar.
+> `kelime-avi/` artık yer tutucu değildir: gerçek, oynanabilir oyun `lab/apps/kelime-avi/` içindedir (`lab.gokturkfulser.com/kelime-avi/`); kapak ve ekran görüntüleri o oyundan alınmış PNG'lerdir, `taslak: false`. **Tek istisna:** `metin.tr.mdx` ve `metin.en.mdx` frontmatter'ındaki `vaka.ne`, `vaka.neden` ve `vaka.nasil` metinleri (**iki dilde de**) (proje sayfasındaki Ne / Neden / Nasıl modülleri) **uydurmadır**; gerçek metinle değiştirilmeli ya da alanlar silinmeli (boş modül hiç render edilmez). Aşağıdaki liste kalan yer tutucuları kapsar.
 
 | Klasör | Uydurma olanlar |
 | --- | --- |
-| `perde-perde-anadolu/` | Geçici olarak **"Cities of Anatolia"** adıyla, `durum: yakinda` ("Yakında, henüz yayında değil" notu; canlı bağlantı gizli) listeleniyor, `taslak: false`. Adres: `citiesofanatolia.gokturkfulser.com`. Yayına alınırken: `ad` ("Perde Perde Anadolu"), `ozet` (geçici cümle), `durum: yayinda`, `stack` ve vaka metinleri (`vaka.ne|neden|nasil`) gerçekle doldurulur. Klasör adı (slug) bilerek `perde-perde-anadolu`; özgeçmiş bu slug'a bağlanır. `kapak.png` oyunun başlangıç ekranından alınmış gerçek ekran görüntüsüdür. |
+| `perde-perde-anadolu/` | Oyun **yayında** (`durum: yayinda`, `citiesofanatolia.gokturkfulser.com`, ad "Perde Perde Anadolu", "Oyna" bağlantısı; hakkımda'nın "Şu sıralar" grubunda yok). **Yer tutucu kalanlar:** `metin.tr.mdx` / `metin.en.mdx` içindeki geçici `ozet` cümlesi ("Çocuklar için hazırladığım Türkçe bir Anadolu macerası." / "An Anatolian adventure I made for kids."), boş `stack`, hiç yazılmamış `vaka` (ne/neden/nasıl) ve MDX gövdesi (**iki dil için de**). Klasör adı (slug) bilerek `perde-perde-anadolu`; özgeçmiş bu slug'a bağlanır. `kapak.png` oyunun başlangıç ekranından alınmış gerçek ekran görüntüsüdür. |
 | `dakika/` | Servis yok. `repo: github.com/gokturkfulser/dakika` (yok), **`demoVideo`: MDN'in `flower.mp4` örnek videosu** (konuyla ilgisiz), metin, `kapak.svg`. |
 | `salon-rehberi/` | Site yok. `url: gokturkfulser.github.io/salon-rehberi/` (yok), `repo` (yok), metin, `kapak.svg`. |
 | `eski-portfoy/` | `url: gokturkfulser.github.io/` (belirsiz), metin, `kapak.svg`. |
+
+> **İki dil:** her proje `proje.yaml` (ortak) + `metin.tr.mdx` + `metin.en.mdx` biçimindedir. Mevcut Türkçe proje metinlerinin İngilizcesi Claude tarafından yazıldı (gözden geçirilmeli); yer tutucu olan metinler iki dilde de yer tutucudur (`dakika`, `eski-portfoy`, `salon-rehberi` ve `kelime-avi` vaka metinleri, `perde-perde-anadolu` özeti). Yazılar: `basketbol/is-this-october-really-different/` gerçek yazının (`bu-ekim-gercekten-farkli-mi`) İngilizcesidir (`ceviri` ile bağlı).
 
 ## 3. Sayfa metinleri ve tasarım yer tutucuları
 
 | Dosya | Durum |
 | --- | --- |
 | `src/pages/hakkimda.astro` | Sayfa artık `ozgecmis.yaml`'ı okur (yukarıdaki satır). `taslak: true` iken production'da "Bu sayfa hazırlanıyor" yazar, nav bağlantısı kalır; `SHOW_DRAFTS=true`'da yer tutucu özgeçmiş görünür. Gerçek veri girilince `taslak` satırı silinir. |
-| `src/content/ozgecmis.yaml` | **Gerçek veri** (`taslak: false`); yer tutucu değil. Alanlar `{ en, tr }` iki dilli, sayfa şimdilik `tr` gösterir. |
+| `src/content/ozgecmis.yaml` | **Gerçek veri** (`taslak: false`); yer tutucu değil. Alanlar `{ en, tr }` iki dilli; sayfa kendi dilini gösterir. |
 | `public/favicon.svg` | Geçici "G" işareti. |
 | Tüm `*.svg` kapak/ekran görüntüleri | Düz renk + daire. Gerçek görsellerle (jpg/png/webp) değiştirilmeli. |
 | `src/data/tmdb-cache.json` | Boş (`{}`): yer tutucu değil, `pnpm site:tmdb` ile dolacak. |
@@ -60,6 +62,6 @@ Hepsinde `tarih` değerleri (2026-08 – 2026-10) de uydurmadır.
 
 | Alan | Durum |
 | --- | --- |
-| `src/content/hakkimda.en.md` | İngilizce metin Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
+| `src/content/hakkimda.en.md` | İngilizce metin (ve tüm İngilizce arayüz sözlüğü `src/i18n/en.ts`) Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
 | `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
-| `ozgecmis.yaml` → `su_siralar` | Yalnızca "Üzerinde çalıştığım" dolu (Cities of Anatolia). "Takip ettiğim" boş: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |
+| `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Perde Perde Anadolu yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |

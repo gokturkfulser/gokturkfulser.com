@@ -1,0 +1,24 @@
+---
+ozet: "A new word every day: find the five-letter Turkish word in six guesses. Plays in the browser, with a keyboard or by touch."
+# PLACEHOLDER: the vaka.what|why|how copy is invented (site/YER-TUTUCULAR.md).
+vaka:
+  ne: "A new five-letter Turkish word every day, six guesses to find it. Plays in the browser, with a keyboard or by touch."
+  neden: "I wanted a small word game where Turkish letters work properly: dotted İ and dotless I are different letters, and upper-casing follows Turkish rules."
+  nasil: "A TypeScript and Vite client, live on Cloudflare Workers under lab.gokturkfulser.com."
+---
+
+Kelime Avı is a small puzzle game where you try to guess a new word every day. It plays in Turkish, and the Turkish-specific letters (ç, ğ, ı, i, ö, ş, ü) are at its centre: <strong>İ</strong> and <strong>I</strong> are different letters, and upper-casing follows Turkish rules.
+
+## How to play
+
+1. Guess a five-letter word.
+2. After each guess, look at the colour of the letters: teal means the right spot, orange means the letter is in the word but elsewhere, dark grey means it is not in the word.
+3. Find the word within six tries.
+
+A new word arrives every day; once you finish, you can keep playing with random words as long as you like.
+
+## Notes
+
+It works with a keyboard or a touch screen: type the letters or tap the on-screen keyboard, and Enter submits the guess. The game runs full screen on its own page and can also be played right here; if your reduced-motion preference (`prefers-reduced-motion`) is on, the letter-flip animations are turned off. Today's guesses are stored in your browser, and no other data is collected.
+
+Guesses are checked against an openly licensed Turkish dictionary; a word that is not in it is rejected and does not cost you a try. The word of the day comes from a curated list of common, uninflected words.

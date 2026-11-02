@@ -5,25 +5,29 @@ import Base from '../../layouts/Base.astro';
 import Etiketler from '../../components/Etiketler.astro';
 import { mdxBilesenleri } from '../../components/mdx';
 import DisBaglanti from '../../components/mdx/DisBaglanti.astro';
+import { yaziCevirisi, yaziUrl } from '../../lib/content';
 import { grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
+import { listeYaz, sozluk } from '../../i18n';
+import { yol } from '../../i18n/yollar';
 
 interface Props {
   entry: CollectionEntry<'basketbol'>;
-  /** Yazının diğer dildeki sürümü (varsa): üstte dil geçişi ve hreflang olur. */
-  diger?: { dil: 'tr' | 'en'; href: string };
 }
 
-const { entry, diger } = Astro.props;
+const { entry } = Astro.props;
 const { data } = entry;
+// Yazı kendi dilinin ağacında yaşar: künye, tarih ve etiketler yazının dilindedir.
 const dil = data.dil;
-const en = dil === 'en';
+const s = sozluk(dil);
 const { Content } = await render(entry);
 const sure = okumaSuresi(entry.body, dil);
-const ogYolu = `/og/basketbol/${entry.id}.png`;
-const kendi = { dil, href: Astro.url.pathname };
-const alternatifler = diger ? [kendi, diger] : [];
+const ogYolu = yol.og(dil, 'basketbol', entry.id);
 const url = new URL(Astro.url.pathname, Astro.site).href;
+// Diğer dildeki karşılık (varsa): nav'daki dil düğmesi, hreflang ve kapaktaki "oku" bağlantısı buradan bağlanır.
+const kendi = { bolum: 'basketbol' as const, entry };
+const ceviri = await yaziCevirisi(kendi);
+const esdeger = ceviri ? { [dil]: yaziUrl(kendi), [ceviri.entry.data.dil]: yaziUrl(ceviri) } : undefined;
 const ld = grafLd(
   makaleLd({
     baslik: data.baslik,
@@ -31,40 +35,48 @@ const ld = grafLd(
     tarih: data.tarih,
     url,
     gorsel: new URL(ogYolu, Astro.site).href,
-    bolumAdi: en ? 'Basketball' : 'Basketbol',
+    bolumAdi: s.bolum.basketbol,
     dil,
     etiketler: data.etiketler,
     kelime: sure.kelime,
     dakika: sure.dakika,
   }),
 );
-const liste = new Intl.ListFormat(en ? 'en-GB' : 'tr-TR', { style: 'long', type: 'conjunction' });
 const bilgi = [
-  data.sezon && { ad: en ? 'Season' : 'Sezon', deger: data.sezon },
-  data.takimlar?.length && { ad: en ? 'Teams' : 'Takımlar', deger: liste.format(data.takimlar) },
-  data.oyuncular?.length && { ad: en ? 'Players' : 'Oyuncular', deger: liste.format(data.oyuncular) },
+  data.sezon && { ad: s.yazi.sezon, deger: data.sezon },
+  data.takimlar?.length && { ad: s.yazi.takimlar, deger: listeYaz(data.takimlar, dil) },
+  data.oyuncular?.length && { ad: s.yazi.oyuncular, deger: listeYaz(data.oyuncular, dil) },
 ].filter((b): b is { ad: string; deger: string } => Boolean(b));
 ---
 
-<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld} bindirme {dil} {alternatifler}>
+<Base
+  baslik={data.baslik}
+  aciklama={data.ozet}
+  tur="article"
+  ogGorsel={ogYolu}
+  jsonLd={ld}
+  bindirme
+  {dil}
+  {esdeger}
+  yedek={{ en: yol.yazilar('en', 'basketbol'), tr: yol.yazilar('tr', 'basketbol') }}
+>
   <article data-dunya="basketbol" data-pagefind-body>
-    <YaziBasi yazi={{ bolum: 'basketbol', entry }} dakika={sure.dakika} {dil}>
+    <YaziBasi yazi={{ bolum: 'basketbol', entry }} dakika={sure.dakika}>
       {
-        diger && (
-          <a slot="meta" class="dil-gecisi" href={diger.href} hreflang={diger.dil} lang={diger.dil}>
-            {diger.dil === 'en' ? 'Read in English' : 'Türkçe oku'}
+        ceviri && (
+          <a slot="meta" class="dil-gecisi" href={yaziUrl(ceviri)} hreflang={ceviri.entry.data.dil} lang={ceviri.entry.data.dil}>
+            {sozluk(ceviri.entry.data.dil).nav.buDildeOku}
           </a>
         )
       }
     </YaziBasi>
-
     <!-- Kâğıt bandı: kapaktan sonra okuma alanı basılı sayfaya geçer (sert bant değişimi) -->
     <div class="bant bant--acik govde">
       <div class="kap">
         <div class="yazi-metni">
           {
             bilgi.length > 0 && (
-              <aside class="kenar-notu" aria-label={en ? 'Details' : 'Künye'}>
+              <aside class="kenar-notu" aria-label={s.yazi.kunye}>
                 <dl>
                   {bilgi.map((b) => (
                     <div>
@@ -77,21 +89,20 @@ const bilgi = [
             )
           }
           <Content components={{ ...mdxBilesenleri, a: DisBaglanti }} />
-          <Etiketler etiketler={data.etiketler} />
+          <Etiketler etiketler={data.etiketler} {dil} />
         </div>
       </div>
     </div>
-
     {
       data.istatistik && (
         <section class="bant bant--koyu skorbord" aria-labelledby="skor-baslik">
           <div class="kap">
-            <h2 id="skor-baslik" class="sr-only">{en ? 'Game stats' : 'Maç istatistikleri'}</h2>
+            <h2 id="skor-baslik" class="sr-only">{s.yazi.macIstatistikleri}</h2>
             <dl class="skor">
-              {data.istatistik.map((s) => (
+              {data.istatistik.map((i) => (
                 <div>
-                  <dt>{s.etiket}</dt>
-                  <dd>{s.deger}</dd>
+                  <dt>{i.etiket}</dt>
+                  <dd>{i.deger}</dd>
                 </div>
               ))}
             </dl>

@@ -9,21 +9,27 @@ const ONYAZI = /^---\r?\n([\s\S]*?)\r?\n---/;
 const TASLAK_SATIRI = /^taslak:\s*true\s*$/m;
 
 /**
- * Production'da `taslak: true` klasörlerini `glob()` desenine olumsuzlayarak (`!klasor/index.mdx`) verir.
+ * Production'da `taslak: true` klasörlerini `glob()` desenine olumsuzlayarak (`!klasor/dosya`) verir.
  * Yalnızca belgelenmiş API kullanılır: desenden çıkan dosya hiç yüklenmez, işlenmez; böylece sayfa, RSS,
  * sitemap, OG görseli ve `image()` / MDX `import` ile gelen görseller dist/'e girmez.
  * Preview'da (SHOW_DRAFTS=true) boş döner, hepsi dahildir.
+ * @param anaDosyalar `taslak:` satırının okunduğu dosyalar (md/mdx önyazısı ya da yaml)
+ * @param bastirilacak taslak klasörde olumsuzlanacak dosyalar; verilmezse `anaDosyalar`
  */
-export function taslakKlasorDesenleri(base: string): string[] {
+export function taslakKlasorDesenleri(base: string, anaDosyalar: string[], bastirilacak: string[] = anaDosyalar): string[] {
   if (taslakGoster() || !existsSync(base)) return [];
   const desenler: string[] = [];
   for (const klasor of readdirSync(base, { withFileTypes: true })) {
     if (!klasor.isDirectory()) continue;
-    for (const dosya of ['index.mdx', 'index.md', 'index.en.mdx']) {
+    for (const dosya of anaDosyalar) {
       const yol = join(base, klasor.name, dosya);
       if (!existsSync(yol)) continue;
-      const onyazi = ONYAZI.exec(readFileSync(yol, 'utf8'))?.[1] ?? '';
-      if (TASLAK_SATIRI.test(onyazi)) desenler.push(`!${klasor.name}/${dosya}`);
+      const metin = readFileSync(yol, 'utf8');
+      const onyazi = dosya.endsWith('.yaml') ? metin : (ONYAZI.exec(metin)?.[1] ?? '');
+      if (TASLAK_SATIRI.test(onyazi)) {
+        for (const b of bastirilacak) desenler.push(`!${klasor.name}/${b}`);
+        break;
+      }
     }
   }
   return desenler;

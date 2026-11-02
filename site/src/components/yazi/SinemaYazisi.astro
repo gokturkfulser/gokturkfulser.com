@@ -9,6 +9,9 @@ import { puanYaz } from '../../lib/format';
 import { filmYorumuLd, grafLd, makaleLd } from '../../lib/jsonld';
 import { okumaSuresi } from '../../lib/okuma-suresi';
 import { tmdbKaydi, tmdbUrl } from '../../lib/tmdb';
+import { yaziCevirisi, yaziUrl } from '../../lib/content';
+import { sozluk } from '../../i18n';
+import { yol } from '../../i18n/yollar';
 
 interface Props {
   entry: CollectionEntry<'sinema'>;
@@ -16,16 +19,24 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data } = entry;
+// Yazı kendi dilinin ağacında yaşar: künye, tarih ve etiketler yazının dilindedir.
+const dil = data.dil;
+const s = sozluk(dil);
 const { Content } = await render(entry);
 const { film } = data;
 
-const tmdb = tmdbKaydi(film.tmdbId);
+// Künyede ad yazının dilinde (TMDB'den; yoksa yazıdaki ad), özgün ad ikisinde de.
+const tmdb = tmdbKaydi(film.tmdbId, dil);
+const filmAdi = tmdb?.baslik ?? film.ad;
 const orijinalAd = film.orijinalAd ?? tmdb?.orijinalBaslik;
-const orijinal = orijinalAd && orijinalAd !== film.ad ? orijinalAd : undefined;
-const sure = okumaSuresi(entry.body);
-const ogYolu = `/og/sinema/${entry.id}.png`;
+const orijinal = orijinalAd && orijinalAd !== filmAdi ? orijinalAd : undefined;
+const sure = okumaSuresi(entry.body, dil);
+const ogYolu = yol.og(dil, 'sinema', entry.id);
 const url = new URL(Astro.url.pathname, Astro.site).href;
 const ogUrl = new URL(ogYolu, Astro.site).href;
+
+const ceviri = await yaziCevirisi({ bolum: 'sinema', entry });
+const esdeger = ceviri ? { [dil]: yaziUrl({ bolum: 'sinema', entry }), [ceviri.entry.data.dil]: yaziUrl(ceviri) } : undefined;
 
 const ld = grafLd(
   makaleLd({
@@ -34,7 +45,8 @@ const ld = grafLd(
     tarih: data.tarih,
     url,
     gorsel: ogUrl,
-    bolumAdi: 'Sinema',
+    bolumAdi: s.bolum.sinema,
+    dil,
     etiketler: data.etiketler,
     kelime: sure.kelime,
     dakika: sure.dakika,
@@ -46,7 +58,8 @@ const ld = grafLd(
           ozet: data.ozet,
           tarih: data.tarih,
           url,
-          film: { ad: film.ad, orijinalAd: orijinal, yil: film.yil, yonetmen: film.yonetmen },
+          dil,
+          film: { ad: filmAdi, orijinalAd: orijinal, yil: film.yil, yonetmen: film.yonetmen },
           puan: data.puan,
           tmdbUrl: film.tmdbId ? tmdbUrl(film.tmdbId) : undefined,
         }),
@@ -55,42 +68,59 @@ const ld = grafLd(
 );
 ---
 
-<Base baslik={data.baslik} aciklama={data.ozet} tur="article" ogGorsel={ogYolu} jsonLd={ld} bindirme>
+<Base
+  baslik={data.baslik}
+  aciklama={data.ozet}
+  tur="article"
+  ogGorsel={ogYolu}
+  jsonLd={ld}
+  bindirme
+  {dil}
+  {esdeger}
+  yedek={{ en: yol.yazilar('en', 'sinema'), tr: yol.yazilar('tr', 'sinema') }}
+>
   <article data-dunya="sinema" data-pagefind-body>
     <YaziBasi yazi={{ bolum: 'sinema', entry }} dakika={sure.dakika}>
       <span slot="meta">{film.yonetmen}, {film.yil}</span>
+      {
+        ceviri && (
+          <a slot="meta" class="dil-gecisi" href={yaziUrl(ceviri)} hreflang={ceviri.entry.data.dil} lang={ceviri.entry.data.dil}>
+            {sozluk(ceviri.entry.data.dil).nav.buDildeOku}
+          </a>
+        )
+      }
     </YaziBasi>
 
     <!-- Kâğıt bandı: kapaktan sonra okuma alanı basılı sayfaya geçer (sert bant değişimi) -->
     <div class="bant bant--acik govde">
       <div class="kap">
         <div class="yazi-metni">
-          <aside class="kenar-notu" aria-label="Künye">
+          <aside class="kenar-notu" aria-label={s.yazi.kunye}>
             <dl>
               <div>
-                <dt>Film</dt>
-                <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
+                <dt>{s.yazi.film}</dt>
+                <dd>{filmAdi}{orijinal && <> ({orijinal})</>}</dd>
               </div>
               <div>
-                <dt>Yönetmen</dt>
+                <dt>{s.yazi.yonetmen}</dt>
                 <dd>{film.yonetmen}</dd>
               </div>
               <div>
-                <dt>Yıl</dt>
+                <dt>{s.yazi.yil}</dt>
                 <dd>{film.yil}</dd>
               </div>
               {
                 data.puan !== undefined && (
                   <div>
-                    <dt>Puanım</dt>
-                    <dd>{puanYaz(data.puan)} / 5</dd>
+                    <dt>{s.yazi.puanim}</dt>
+                    <dd>{puanYaz(data.puan, dil)} / 5</dd>
                   </div>
                 )
               }
             </dl>
           </aside>
           <Content components={mdxBilesenleri} />
-          <Etiketler etiketler={data.etiketler} />
+          <Etiketler etiketler={data.etiketler} {dil} />
         </div>
       </div>
     </div>
@@ -98,37 +128,37 @@ const ld = grafLd(
     <!-- Film künyesi yazının sonunda, jenerik düzeninde (koyu bant) -->
     <section class="bant bant--koyu jenerik" aria-labelledby="jenerik-baslik">
       <div class="kap jenerik-ic">
-        <h2 id="jenerik-baslik" class="sr-only">Film künyesi</h2>
+        <h2 id="jenerik-baslik" class="sr-only">{s.yazi.filmKunyesi}</h2>
         {
           tmdb?.afisGorsel && (
-            <Medya class="afis" src={tmdb.afisGorsel} oran="afis" alt={`${film.ad} filminin afişi`} width={320} />
+            <Medya class="afis" src={tmdb.afisGorsel} oran="afis" alt={s.yazi.afisAlt(filmAdi)} width={320} />
           )
         }
         <dl class="liste">
           <div>
-            <dt>Film</dt>
-            <dd>{film.ad}{orijinal && <> ({orijinal})</>}</dd>
+            <dt>{s.yazi.film}</dt>
+            <dd>{filmAdi}{orijinal && <> ({orijinal})</>}</dd>
           </div>
           <div>
-            <dt>Yönetmen</dt>
+            <dt>{s.yazi.yonetmen}</dt>
             <dd>{film.yonetmen}</dd>
           </div>
           <div>
-            <dt>Yapım yılı</dt>
+            <dt>{s.yazi.yapimYili}</dt>
             <dd>{film.yil}</dd>
           </div>
           {
             tmdb?.sure && (
               <div>
-                <dt>Süre</dt>
-                <dd>{tmdb.sure} dakika</dd>
+                <dt>{s.yazi.sure}</dt>
+                <dd>{s.yazi.dakika(tmdb.sure)}</dd>
               </div>
             )
           }
           {
             tmdb && tmdb.turler.length > 0 && (
               <div>
-                <dt>Tür</dt>
+                <dt>{s.yazi.tur}</dt>
                 <dd>{tmdb.turler.join(', ')}</dd>
               </div>
             )
@@ -136,8 +166,8 @@ const ld = grafLd(
           {
             data.puan !== undefined && (
               <div>
-                <dt>Puanım</dt>
-                <dd class="puan">{puanYaz(data.puan)} <span>/ 5</span></dd>
+                <dt>{s.yazi.puanim}</dt>
+                <dd class="puan">{puanYaz(data.puan, dil)} <span>/ 5</span></dd>
               </div>
             )
           }
@@ -148,6 +178,14 @@ const ld = grafLd(
 </Base>
 
 <style>
+  /* Dil geçişi: kapaktaki meta satırında, koyu bantta; çizgisi sürekli (bağlantı olduğu belli olsun) */
+  .dil-gecisi {
+    color: var(--vurgu);
+    font-weight: 600;
+    text-decoration-line: underline;
+    text-underline-offset: 0.2em;
+  }
+
   .govde {
     padding-block-start: calc(var(--bant) * 0.7);
     padding-block-end: calc(var(--bant) * 0.7);

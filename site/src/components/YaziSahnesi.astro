@@ -2,8 +2,9 @@
 // Tam genişlik görüntü sahnesi: görsel arka plandır, başlık görselin üstüne biner (karartma ile). Ana sayfada öne çıkan yazı,
 // /yazilar/ manşeti ve (kendi sayfa başlığıyla) yazı kapağı için ortak yapı. Görsel Medya kuralından geçer (YaziKapagi).
 import YaziKapagi from './YaziKapagi.astro';
-import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { yaziUrl, type Yazi } from '../lib/content';
 import { tarihIso, tarihYaz } from '../lib/format';
+import { dilAl, sozluk } from '../i18n';
 import { okumaSuresi } from '../lib/okuma-suresi';
 
 interface Props {
@@ -18,10 +19,14 @@ interface Props {
 }
 
 const { yazi, baslikEtiketi = 'h3', ozetli = false, oncelikli = false, uzun = false } = Astro.props;
-const { data, id } = yazi.entry;
-const href = yaziUrl(yazi.bolum, id);
-const sure = okumaSuresi(yazi.entry.body);
+const { data } = yazi.entry;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
+const href = yaziUrl(yazi);
+const sure = okumaSuresi(yazi.entry.body, data.dil);
 const Baslik = baslikEtiketi;
+// Sayfanın dilinde olmayan yazı etiketle işaretlenir ve başlığı kendi diliyle işaretlenir.
+const yabanci = data.dil !== dil;
 ---
 
 <article class:list={['sahne', uzun && 'uzun']} data-dunya={yazi.bolum}>
@@ -30,12 +35,13 @@ const Baslik = baslikEtiketi;
   </a>
   <div class="kap sahne-ic">
     <slot />
-    <p class="etiket">{BOLUM_ADLARI[yazi.bolum]}</p>
-    <Baslik class="bas"><a href={href}>{data.baslik}</a></Baslik>
-    {ozetli && <p class="lede">{data.ozet}</p>}
+    <p class="etiket">{s.bolum[yazi.bolum]}</p>
+    <Baslik class="bas" lang={yabanci ? data.dil : undefined}><a href={href} hreflang={yabanci ? data.dil : undefined}>{data.baslik}</a></Baslik>
+    {ozetli && <p class="lede" lang={yabanci ? data.dil : undefined}>{data.ozet}</p>}
     <p class="meta">
-      <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
-      <span>{sure.dakika} dakikalık okuma</span>
+      <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih, dil)}</time>
+      <span>{sozluk(data.dil).yazi.okumaSuresi(sure.dakika)}</span>
+      {yabanci && <span class="dil-etiketi">{s.yaziDili[data.dil]}</span>}
     </p>
   </div>
 </article>

@@ -1,7 +1,8 @@
 ---
 import YaziKapagi from './YaziKapagi.astro';
-import { BOLUM_ADLARI, yaziUrl, type Yazi } from '../lib/content';
+import { yaziUrl, type Yazi } from '../lib/content';
 import { tarihIso, tarihYaz } from '../lib/format';
+import { dilAl, sozluk } from '../i18n';
 
 interface Props {
   yazi: Yazi;
@@ -11,8 +12,12 @@ interface Props {
 }
 
 const { yazi, boyut = 'orta', oncelikli = false } = Astro.props;
-const { data, id } = yazi.entry;
-const href = yaziUrl(yazi.bolum, id);
+const { data } = yazi.entry;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
+const href = yaziUrl(yazi);
+// Sayfanın dilinde olmayan yazı küçük bir dil etiketiyle işaretlenir ve kendi adresine bağlanır.
+const yabanci = data.dil !== dil;
 ---
 
 <article class:list={['kart', boyut]} data-dunya={yazi.bolum}>
@@ -26,11 +31,12 @@ const href = yaziUrl(yazi.bolum, id);
     />
   </a>
   <p class="bolum">
-    <span class="bolum-adi">{BOLUM_ADLARI[yazi.bolum]}</span>
-    <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih)}</time>
+    <span class="bolum-adi">{s.bolum[yazi.bolum]}</span>
+    <time datetime={tarihIso(data.tarih)}>{tarihYaz(data.tarih, dil)}</time>
+    {yabanci && <span class="dil-etiketi">{s.yaziDili[data.dil]}</span>}
   </p>
-  <h3><a href={href}>{data.baslik}</a></h3>
-  <p class="ozet">{data.ozet}</p>
+  <h3><a href={href} lang={yabanci ? data.dil : undefined} hreflang={yabanci ? data.dil : undefined}>{data.baslik}</a></h3>
+  <p class="ozet" lang={yabanci ? data.dil : undefined}>{data.ozet}</p>
 </article>
 
 <style>

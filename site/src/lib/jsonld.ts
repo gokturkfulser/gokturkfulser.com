@@ -46,6 +46,7 @@ type FilmYorumuGirdi = {
   puan: number;
   afis?: string;
   tmdbUrl?: string;
+  dil?: 'tr' | 'en';
 };
 
 export function filmYorumuLd(g: FilmYorumuGirdi) {
@@ -54,7 +55,7 @@ export function filmYorumuLd(g: FilmYorumuGirdi) {
     name: g.baslik,
     reviewBody: g.ozet,
     datePublished: g.tarih.toISOString(),
-    inLanguage: 'tr-TR',
+    inLanguage: g.dil === 'en' ? 'en' : 'tr-TR',
     author: YAZAR,
     url: g.url,
     itemReviewed: {

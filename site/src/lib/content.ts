@@ -1,55 +1,27 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { SHOW_DRAFTS } from 'astro:env/server';
 import type { ImageMetadata } from 'astro';
-import { slugify } from './slug';
+import { digerDil, slugify, type Dil } from '../i18n';
+import { yol, type Bolum } from '../i18n/yollar';
 import { tmdbKaydi } from './tmdb';
 
-export type Bolum = 'sinema' | 'basketbol';
+export type { Bolum };
 
 export type Yazi =
   | { bolum: 'sinema'; entry: CollectionEntry<'sinema'> }
   | { bolum: 'basketbol'; entry: CollectionEntry<'basketbol'> };
-
-export const BOLUM_ADLARI: Record<Bolum, string> = {
-  sinema: 'Sinema',
-  basketbol: 'Basketbol',
-};
 
 /** Production'da taslaklar elenir; SHOW_DRAFTS=true ise (preview) gösterilir. */
 const gorunur = ({ data }: { data: { taslak: boolean } }) => SHOW_DRAFTS || !data.taslak;
 const yeniden = (a: { data: { tarih: Date } }, b: { data: { tarih: Date } }) =>
   b.data.tarih.valueOf() - a.data.tarih.valueOf();
 
-export async function sinemaYazilari() {
-  return (await getCollection('sinema', gorunur)).sort(yeniden);
-}
+/** Yazı adres ağaçlarında bu adlar bölüm sayfalarına ve feed'e ayrılmıştır (iki dilde de). */
+const AYRILMIS_SLUGLAR = new Set(['sinema', 'basketbol', 'cinema', 'basketball']);
 
-/** Listeler, RSS, etiketler ve ana sayfa yalnızca Türkçe (asıl) yazıları görür; çeviriler `basketbolCevirileri`'nde. */
-export async function basketbolYazilari() {
-  return (await getCollection('basketbol', (e) => gorunur(e) && e.data.dil === 'tr')).sort(yeniden);
-}
-
-/** İngilizce çeviriler (`<slug>/index.en.mdx`, id `<slug>--en`). */
-export async function basketbolCevirileri() {
-  return (await getCollection('basketbol', (e) => gorunur(e) && e.data.dil === 'en')).sort(yeniden);
-}
-
-/** Çevirinin asıl yazısının id'si: "slug--en" → "slug". */
-export const asilId = (id: string) => id.replace(/--en$/, '');
-
-/** Bir yazının İngilizce çevirisi (yoksa undefined). */
-export async function basketbolCevirisi(id: string) {
-  return (await basketbolCevirileri()).find((e) => e.id === `${id}--en`);
-}
-
-/** Çevirilerin adresi: /en/yazilar/<slug>/. */
-export const cevirilenYaziUrl = (id: string) => `/en/yazilar/${asilId(id)}/`;
-
-/** /yazilar/<slug>/ tek bir alan adı uzayıdır; bu adlar bölüm sayfalarına ve feed'e ayrılmıştır. */
-const AYRILMIS_SLUGLAR = new Set(['sinema', 'basketbol']);
-
+/** Tüm yazılar (iki dil, yeniden eskiye). Slug'lar her dil ağacında tekildir; çakışma build'i durdurur. */
 export async function tumYazilar(): Promise<Yazi[]> {
-  const [s, b] = await Promise.all([sinemaYazilari(), basketbolYazilari()]);
+  const [s, b] = await Promise.all([getCollection('sinema', gorunur), getCollection('basketbol', gorunur)]);
   const hepsi: Yazi[] = [
     ...s.map((entry) => ({ bolum: 'sinema' as const, entry })),
     ...b.map((entry) => ({ bolum: 'basketbol' as const, entry })),
@@ -59,25 +31,48 @@ export async function tumYazilar(): Promise<Yazi[]> {
     if (AYRILMIS_SLUGLAR.has(entry.id)) {
       throw new Error(`"${entry.id}" (${bolum}) ayrılmış bir slug; klasörü yeniden adlandırın.`);
     }
-    const onceki = gorulen.get(entry.id);
+    const anahtar = `${entry.data.dil}:${entry.id}`;
+    const onceki = gorulen.get(anahtar);
     if (onceki) {
-      throw new Error(`"${entry.id}" hem ${onceki} hem ${bolum} koleksiyonunda var; /yazilar/<slug>/ tekil olmalı.`);
+      throw new Error(`"${entry.id}" (${entry.data.dil}) hem ${onceki} hem ${bolum} koleksiyonunda var; yazı slug'ı dil başına tekil olmalı.`);
     }
-    gorulen.set(entry.id, bolum);
+    gorulen.set(anahtar, bolum);
   }
   return hepsi.sort((x, y) => yeniden(x.entry, y.entry));
 }
 
-/** Bölüme göre süzülmüş yazılar (yeniden eskiye). */
-export async function bolumYazilari(bolum: Bolum): Promise<Yazi[]> {
-  return (await tumYazilar()).filter((y) => y.bolum === bolum);
+/** Bir dilin kendi yazıları (RSS ve o dilin "kendi" saydığı kümeler için). */
+export async function dilYazilari(dil: Dil): Promise<Yazi[]> {
+  return (await tumYazilar()).filter((y) => y.entry.data.dil === dil);
 }
 
-/** Ana sayfa için: `oneCikan` işaretliler; hiçbiri yoksa en yeniler. Sinema ve basketboldan dengeli karışır. */
-export async function oneCikanYazilar(adet = 3): Promise<Yazi[]> {
+/** Bölüme (ve isteğe bağlı dile) göre süzülmüş yazılar (yeniden eskiye). */
+export async function bolumYazilari(bolum: Bolum, dil?: Dil): Promise<Yazi[]> {
+  return (await tumYazilar()).filter((y) => y.bolum === bolum && (!dil || y.entry.data.dil === dil));
+}
+
+/**
+ * Yazının diğer dildeki karşılığı: `ceviri` iki yönlü çözülür (A → B ya da B → A yazılmışsa ikisi de eşleşir).
+ * Karşılık taslaksa (production) ya da yoksa undefined.
+ */
+export async function yaziCevirisi(yazi: Yazi): Promise<Yazi | undefined> {
+  const { dil, ceviri } = yazi.entry.data;
+  const hedefDil = digerDil(dil);
   const hepsi = await tumYazilar();
-  const isaretli = hepsi.filter((y) => y.entry.data.oneCikan);
-  const havuz = isaretli.length > 0 ? isaretli : hepsi;
+  return hepsi.find(
+    (y) =>
+      y.entry.data.dil === hedefDil &&
+      ((ceviri && y.entry.id === ceviri) || (y.entry.data.ceviri === yazi.entry.id && y !== yazi)),
+  );
+}
+
+/** Ana sayfa için: sayfanın dilindeki yazılardan `oneCikan` işaretliler; hiçbiri yoksa en yeniler (dilde yazı yoksa tüm yazılar). */
+export async function oneCikanYazilar(dil: Dil, adet = 3): Promise<Yazi[]> {
+  const hepsi = await tumYazilar();
+  const kendi = hepsi.filter((y) => y.entry.data.dil === dil);
+  const kaynak = kendi.length > 0 ? kendi : hepsi;
+  const isaretli = kaynak.filter((y) => y.entry.data.oneCikan);
+  const havuz = isaretli.length > 0 ? isaretli : kaynak;
   const secilen: Yazi[] = [];
   // Önce her bölümün en yenisi (varsa), sonra kalan en yeniler.
   for (const bolum of ['sinema', 'basketbol'] as const) {
@@ -92,7 +87,7 @@ export async function oneCikanYazilar(adet = 3): Promise<Yazi[]> {
 export function yaziKapagi(yazi: Yazi): ImageMetadata | undefined {
   if (yazi.bolum === 'basketbol') return yazi.entry.data.kapak;
   const { data } = yazi.entry;
-  return data.kapak ?? tmdbKaydi(data.film.tmdbId)?.arkaplanGorsel;
+  return data.kapak ?? tmdbKaydi(data.film.tmdbId, data.dil)?.arkaplanGorsel;
 }
 
 /** Görselsiz yedek kapağın büyük yazısı: basketbolda sezon (yoksa ilk istatistik, yoksa yıl), sinemada film yılı. */
@@ -112,10 +107,36 @@ export function yillaraGore(yazilar: Yazi[]) {
   return [...gruplar].map(([yil, liste]) => ({ yil, yazilar: liste }));
 }
 
-/** Sıra: arşiv en sonda; sonra öne çıkanlar, sonra `sira`, sonra ada göre. */
-export async function projeler() {
-  const arsiv = (p: CollectionEntry<'projeler'>) => (p.data.durum === 'arsiv' ? 1 : 0);
-  return (await getCollection('projeler', gorunur)).sort(
+/** Yazının kendi dilindeki adresi (her yazı yalnızca kendi dilinin ağacında yaşar). */
+export const yaziUrl = (yazi: Yazi) => yol.yazi(yazi.entry.data.dil, yazi.entry.id);
+
+// ——— Projeler ———
+
+export type Proje = {
+  /** Slug (iki dilde aynıdır). */
+  id: string;
+  /** Dilden bağımsız ortak alanlar. */
+  data: CollectionEntry<'projeler'>['data'];
+  /** Gösterilen dil metni (yoksa diğer dil). */
+  metin: CollectionEntry<'projeMetinleri'>;
+  /** Gösterilen metnin dili; istenen dilden farklıysa `yedek` doğrudur. */
+  metinDili: Dil;
+  yedek: boolean;
+};
+
+/** Sıra: arşiv en sonda; sonra öne çıkanlar, sonra `sira`, sonra ada göre. Metin istenen dilde, yoksa diğer dilde. */
+export async function projeler(dil: Dil): Promise<Proje[]> {
+  const [ortak, metinler] = await Promise.all([getCollection('projeler', gorunur), getCollection('projeMetinleri')]);
+  const liste: Proje[] = [];
+  for (const p of ortak) {
+    const istenen = metinler.find((m) => m.id === `${p.id}.${dil}`);
+    const diger = metinler.find((m) => m.id === `${p.id}.${digerDil(dil)}`);
+    const metin = istenen ?? diger;
+    if (!metin) throw new Error(`Proje "${p.id}" için hiçbir dilde metin yok (metin.tr.mdx / metin.en.mdx).`);
+    liste.push({ id: p.id, data: p.data, metin, metinDili: istenen ? dil : digerDil(dil), yedek: !istenen });
+  }
+  const arsiv = (p: Proje) => (p.data.durum === 'arsiv' ? 1 : 0);
+  return liste.sort(
     (a, b) =>
       arsiv(a) - arsiv(b) ||
       Number(b.data.oneCikan) - Number(a.data.oneCikan) ||
@@ -124,16 +145,12 @@ export async function projeler() {
   );
 }
 
-/** Tüm yazılar tek adres uzayındadır; bölüm URL'de yer almaz (eski /sinema/<slug>/ → 301, public/_redirects). */
-export const yaziUrl = (_bolum: Bolum, id: string) => `/yazilar/${id}/`;
-export const BOLUM_URL: Record<Bolum, string> = { sinema: '/yazilar/sinema/', basketbol: '/yazilar/basketbol/' };
-
-/** Etiket slug'ı → görünen ad ve o etikete sahip yazılar. */
+/** Etiket slug'ı → görünen ad ve o etikete sahip yazılar (iki dilin yazıları; slug yazının dilinin kuralıyla üretilir). */
 export async function etiketHaritasi() {
   const harita = new Map<string, { ad: string; yazilar: Yazi[] }>();
   for (const yazi of await tumYazilar()) {
     for (const etiket of yazi.entry.data.etiketler) {
-      const slug = slugify(etiket);
+      const slug = slugify(etiket, yazi.entry.data.dil);
       const kayit = harita.get(slug) ?? { ad: etiket, yazilar: [] };
       kayit.yazilar.push(yazi);
       harita.set(slug, kayit);

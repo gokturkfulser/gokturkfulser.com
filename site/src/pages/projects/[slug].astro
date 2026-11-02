@@ -1,0 +1,12 @@
+---
+import ProjeSayfasi from '../../components/sayfa/ProjeSayfasi.astro';
+import { projeler } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await projeler('en')).map((proje) => ({ params: { slug: proje.id }, props: { proje } }));
+}
+
+const { proje } = Astro.props;
+---
+
+<ProjeSayfasi proje={proje} />

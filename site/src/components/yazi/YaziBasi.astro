@@ -2,23 +2,22 @@
 // Yazı kapağı: tam genişlik koyu görüntü, başlık görselin üstüne biner (karartma ile). Sinema ve basketbol yazısı için ortak.
 // Görsel Medya kuralından geçer (kendi kapağı → TMDB backdrop → görselsiz yedek: YaziKapagi). Tarih ve okuma süresi ayrı öğe.
 import YaziKapagi from '../YaziKapagi.astro';
-import { BOLUM_ADLARI, type Yazi } from '../../lib/content';
+import type { Yazi } from '../../lib/content';
 import { tarihIso, tarihYaz } from '../../lib/format';
+import { sozluk } from '../../i18n';
 
 interface Props {
   yazi: Yazi;
   dakika: number;
-  /** İçerik dili; `en` iken tarih, bölüm adı ve okuma süresi İngilizce yazılır. */
-  dil?: 'tr' | 'en';
 }
 
-const { yazi, dakika, dil = 'tr' } = Astro.props;
+// Yazı kendi dilinin ağacında yaşar; tarih, bölüm adı ve okuma süresi yazının dilindedir.
+const { yazi, dakika } = Astro.props;
 const { data } = yazi.entry;
-const en = dil === 'en';
-const tarihMetni = en
-  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(data.tarih)
-  : tarihYaz(data.tarih);
-const bolumAdi = en ? { sinema: 'Cinema', basketbol: 'Basketball' }[yazi.bolum] : BOLUM_ADLARI[yazi.bolum];
+const dil = data.dil;
+const s = sozluk(dil);
+const tarihMetni = tarihYaz(data.tarih, dil);
+const bolumAdi = s.bolum[yazi.bolum];
 ---
 
 <header class="kapak" data-dunya={yazi.bolum}>
@@ -31,7 +30,7 @@ const bolumAdi = en ? { sinema: 'Cinema', basketbol: 'Basketball' }[yazi.bolum] 
     <p class="lede">{data.ozet}</p>
     <p class="meta">
       <time datetime={tarihIso(data.tarih)}>{tarihMetni}</time>
-      <span>{en ? `${dakika} min read` : `${dakika} dakikalık okuma`}</span>
+      <span>{s.yazi.okumaSuresi(dakika)}</span>
       <slot name="meta" />
     </p>
   </div>

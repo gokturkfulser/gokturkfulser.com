@@ -1,7 +1,7 @@
 // TMDB künye, afiş ve backdrop çekici. Çalıştırma: `pnpm site:tmdb` (kökten) ya da `pnpm --filter site tmdb`.
 // - Yalnızca film.tmdbId'si olan sinema yazılarını işler. (Letterboxd şeridinin afişleri repo'ya girmez; her build'de
 //   `scripts/letterboxd-afis.ts` indirir.)
-// - Cache'te olanı yeniden çekmez (`--yenile` ile hepsini yeniler). Backdrop'tan önceki (surum < 2) kayıtlar bir kez yeniden çekilir.
+// - Cache'te olanı yeniden çekmez (`--yenile` ile hepsini yeniler). Eski (surum < 3: tek dilli) kayıtlar bir kez yeniden çekilir.
 // - Anahtar: TMDB_API_KEY (v3 anahtarı ya da v4 "API Read Access Token"). Anahtar repo'ya girmez.
 // - Test için TMDB_API_TABANI ve TMDB_GORSEL_TABANI ortam değişkenleriyle sahte sunucuya yönlendirilebilir.
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -11,12 +11,13 @@ import { parse } from 'yaml';
 
 type Kayit = {
   tmdbId: number;
-  baslik: string;
+  /** Dile göre başlık (tr-TR ve en-US ayrı çekilir). */
+  baslik: { tr: string; en: string };
   orijinalBaslik: string;
   yil?: number;
   sure?: number;
   yonetmenler: string[];
-  turler: string[];
+  turler: { tr: string[]; en: string[] };
   afis?: string;
   /** Yatay backdrop (w1280); kapak yoksa sinema yazısında 2.39:1 kırpılarak kapak olur. */
   arkaplan?: string;
@@ -29,7 +30,7 @@ const sinemaKlasoru = join(kok, 'src/content/sinema');
 const cacheYolu = join(kok, 'src/data/tmdb-cache.json');
 const afisKlasoru = join(kok, 'src/data/tmdb/afis');
 const arkaplanKlasoru = join(kok, 'src/data/tmdb/arkaplan');
-const SURUM = 2;
+const SURUM = 3;
 
 const API = process.env.TMDB_API_TABANI ?? 'https://api.themoviedb.org/3';
 const GORSEL = process.env.TMDB_GORSEL_TABANI ?? 'https://image.tmdb.org/t/p';
@@ -96,6 +97,7 @@ for (const id of idler) {
   if (cache[id]?.surum === SURUM && !yenile) continue;
   try {
     const film = await tmdb(`/movie/${id}`, { language: 'tr-TR', append_to_response: 'credits' });
+    const filmEn = await tmdb(`/movie/${id}`, { language: 'en-US' });
     const yonetmenler: string[] = (film.credits?.crew ?? [])
       .filter((k: { job: string }) => k.job === 'Director')
       .map((k: { name: string }) => k.name);
@@ -118,19 +120,22 @@ for (const id of idler) {
 
     cache[id] = {
       tmdbId: id,
-      baslik: film.title,
+      baslik: { tr: film.title, en: filmEn.title },
       orijinalBaslik: film.original_title,
       yil: film.release_date ? Number(String(film.release_date).slice(0, 4)) : undefined,
       sure: film.runtime || undefined,
       yonetmenler,
-      turler: (film.genres ?? []).map((g: { name: string }) => g.name),
+      turler: {
+        tr: (film.genres ?? []).map((g: { name: string }) => g.name),
+        en: (filmEn.genres ?? []).map((g: { name: string }) => g.name),
+      },
       afis,
       arkaplan,
       surum: SURUM,
       cekildi: new Date().toISOString().slice(0, 10),
     };
     cekilen++;
-    console.log(`✓ ${id} ${film.title}`);
+    console.log(`✓ ${id} ${film.title} / ${filmEn.title}`);
   } catch (e) {
     hata++;
     console.error(`✗ ${id}: ${(e as Error).message}`);

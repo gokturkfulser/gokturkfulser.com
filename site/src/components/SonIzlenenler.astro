@@ -7,12 +7,15 @@ import Medya from './Medya.astro';
 import type { Izlenen } from '../lib/letterboxd';
 import { letterboxdAfisi } from '../lib/letterboxd-afis';
 import { puanYaz, tarihYaz } from '../lib/format';
+import { dilAl, sozluk } from '../i18n';
 
 interface Props {
   filmler: Izlenen[];
   ton?: 'koyu' | 'acik';
 }
 const { filmler, ton = 'koyu' } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil).izlenen;
 const kopyalar = [false, true];
 ---
 
@@ -21,19 +24,19 @@ const kopyalar = [false, true];
     <section class={`bant bant--${ton}`} data-dunya="sinema" aria-labelledby="izlenen-baslik">
       <div class="kap">
         <div class="bas-satiri">
-          <h2 id="izlenen-baslik" class="h2">Son izlediklerim</h2>
+          <h2 id="izlenen-baslik" class="h2">{s.baslik}</h2>
           <p class="kucuk">
-            Veriler <a href="https://letterboxd.com/">Letterboxd</a> günlüğümden, build sırasında alınır.
+            {s.kaynakOnce}<a href="https://letterboxd.com/">Letterboxd</a>{s.kaynakSonra}
           </p>
         </div>
       </div>
       <div class="bolge">
-        <input type="checkbox" id="akis-durdur" class="durdur-girdi" aria-label="Afiş akışını durdur" />
+        <input type="checkbox" id="akis-durdur" class="durdur-girdi" aria-label={s.durdurAria} />
         <label for="akis-durdur" class="durdur">
-          <span class="durdur-dur" aria-hidden="true">Akışı durdur</span>
-          <span class="durdur-oynat" aria-hidden="true">Akışı oynat</span>
+          <span class="durdur-dur" aria-hidden="true">{s.durdur}</span>
+          <span class="durdur-oynat" aria-hidden="true">{s.oynat}</span>
         </label>
-        <div class="akis" role="group" aria-label="Son izlediğim filmler">
+        <div class="akis" role="group" aria-label={s.grupAria}>
           <div class="iz">
             {kopyalar.map((kopya) => (
               <ul class="lista afisler" aria-hidden={kopya ? 'true' : undefined} inert={kopya ? true : undefined} data-kopya={kopya ? '' : undefined}>
@@ -50,8 +53,8 @@ const kopyalar = [false, true];
                         <a href={f.link}>{f.film}</a>
                       </p>
                       {f.yil && <p class="kucuk">{f.yil}</p>}
-                      {f.puan !== undefined && <p class="puan">{puanYaz(f.puan)} / 5</p>}
-                      {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="kucuk">{tarihYaz(f.tarih)}</p>}
+                      {f.puan !== undefined && <p class="puan">{puanYaz(f.puan, dil)} / 5</p>}
+                      {f.tarih && !Number.isNaN(f.tarih.valueOf()) && <p class="kucuk">{tarihYaz(f.tarih, dil)}</p>}
                     </li>
                   );
                 })}

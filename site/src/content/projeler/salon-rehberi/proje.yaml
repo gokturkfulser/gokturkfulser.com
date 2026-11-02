@@ -1,0 +1,12 @@
+# YER TUTUCU proje (taslak). Ortak alanlar; metinler metin.tr.mdx / metin.en.mdx.
+ad: "Salon Rehberi"
+tur: site
+barindirma: harici
+durum: yayinda
+icerikDili: tr
+url: "https://gokturkfulser.github.io/salon-rehberi/"
+repo: "https://github.com/gokturkfulser/salon-rehberi"
+stack: ["Astro", "GitHub Pages"]
+gorsel: ./kapak.svg
+sira: 3
+taslak: true

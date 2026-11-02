@@ -1,0 +1,129 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../Hero.astro';
+import YaziKarti from '../YaziKarti.astro';
+import YaziSahnesi from '../YaziSahnesi.astro';
+import ProjeVitrin from '../ProjeVitrin.astro';
+import SayilarSeridi from '../SayilarSeridi.astro';
+import SonIzlenenler from '../SonIzlenenler.astro';
+import { LETTERBOXD_RSS } from 'astro:env/server';
+import { oneCikanYazilar, projeler, dilYazilari } from '../../lib/content';
+import { sonIzlenenler } from '../../lib/letterboxd';
+import { HERO_CUMLESI, KISACA_METNI } from '../../lib/site';
+import { dilAl, sozluk } from '../../i18n';
+import { ikiDilde, yol } from '../../i18n/yollar';
+
+const dil = dilAl(Astro);
+const s = sozluk(dil);
+const hero = HERO_CUMLESI[dil];
+const kisaca = KISACA_METNI[dil];
+// Sayılar sayfanın dilindeki yazıları sayar (RSS ile tutarlı).
+const [vitrinYazilar, yazilar, tumProjeler] = await Promise.all([oneCikanYazilar(dil, 3), dilYazilari(dil), projeler(dil)]);
+const [buyukYazi, ...digerYazilar] = vitrinYazilar;
+// LETTERBOXD_RSS tanımlı değilse boş döner ve şerit hiç render edilmez.
+const izlenenler = await sonIzlenenler(LETTERBOXD_RSS);
+
+const vitrinProjeler = (() => {
+  const aktif = tumProjeler.filter((p) => p.data.durum !== 'arsiv');
+  const secili = aktif.filter((p) => p.data.oneCikan);
+  return (secili.length > 0 ? secili : aktif).slice(0, 4);
+})();
+
+const sayilar = [
+  { deger: yazilar.length, etiket: s.ana.yazi(yazilar.length) },
+  { deger: tumProjeler.length, etiket: s.ana.projeSayi(tumProjeler.length) },
+].filter((s) => s.deger > 0); // sıfır sayı gösterilmez
+// Tek başına kalan bir sayı şerit olmaz: en az iki sayı varsa çizilir.
+const sayiSeridiVar = sayilar.length >= 2;
+---
+
+<Base bindirme esdeger={ikiDilde((d) => yol.ana(d))}>
+  <Hero cumle={hero || undefined} yazi={buyukYazi} proje={vitrinProjeler[0]} />
+
+  {vitrinProjeler.length > 0 && <ProjeVitrin projeler={vitrinProjeler} ton="koyu" />}
+
+  {
+    buyukYazi && (
+      <section class="yazilar" aria-labelledby="yazilar-baslik">
+        <div class="kap bas-bandi">
+          <div class="bas-satiri">
+            <h2 id="yazilar-baslik" class="h2">{s.yazilar.baslik}</h2>
+            <a href={yol.yazilar(dil)}>{s.alt.tumYazilar}</a>
+          </div>
+        </div>
+        <YaziSahnesi yazi={buyukYazi} />
+        {digerYazilar.length > 0 && (
+          <div class="kap yan-yazilar">
+            {digerYazilar.map((y) => (
+              <YaziKarti yazi={y} />
+            ))}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  {
+    kisaca && (
+      <section class="bant bant--koyu" aria-labelledby="kisaca-baslik">
+        <div class="kap kisaca">
+          <h2 id="kisaca-baslik" class="h3">{s.ana.kisaca}</h2>
+          <div>
+            <p class="kisaca-metin">{kisaca}</p>
+            <p class="kisaca-link"><a href={yol.hakkimda(dil)}>{s.ana.hakkimda}</a></p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {sayiSeridiVar && <SayilarSeridi {sayilar} ton="koyu" />}
+
+  <SonIzlenenler filmler={izlenenler} ton="koyu" />
+</Base>
+
+<style>
+  .yazilar {
+    background: var(--perde);
+    padding-block-start: var(--bant);
+  }
+
+  .bas-bandi .bas-satiri {
+    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .yan-yazilar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem);
+    padding-block-start: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .kisaca {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+    gap: var(--aralik-4) clamp(2rem, 5vw, 6rem);
+  }
+
+  .kisaca-metin {
+    font-family: var(--font-serif-yigin);
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3.25rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: pretty;
+  }
+
+  .kisaca-link {
+    margin: var(--aralik-5) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 52rem) {
+    .kisaca {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

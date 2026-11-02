@@ -1,27 +1,31 @@
 ---
-// /yazilar/, /yazilar/sinema/, /yazilar/basketbol/ için ortak sayfa. Sekmeler JS'siz: her biri kendi URL'inde.
+// Yazılar sayfası: /writing/, /writing/cinema/, /writing/basketball/ ve /tr/yazilar/… için ortak bileşen. Sekmeler JS'siz: her biri kendi URL'inde.
+// Her iki dilin yazıları da listelenir; sayfanın dilinde olmayanlar küçük bir dil etiketiyle işaretlenir ve kendi adresine bağlanır.
 // Düzen (hepsi koyu): manşet (en yeni yazı, tam genişlik görüntü + sayfa başlığı), araçlar (sekmeler, arama, etiketler),
 // bölüm girişleri (Sinema turkuaz, Basketbol turuncu çizgili) ve yazı satırları.
 import Base from '../layouts/Base.astro';
 import YaziSahnesi from './YaziSahnesi.astro';
 import YaziSatiri from './YaziSatiri.astro';
-import { BOLUM_ADLARI, BOLUM_URL, tumYazilar, yillaraGore, type Bolum } from '../lib/content';
-import { slugify } from '../lib/slug';
+import { tumYazilar, yillaraGore, type Bolum } from '../lib/content';
+import { AYAR, dilAl, slugify, sozluk } from '../i18n';
+import { ikiDilde, yol } from '../i18n/yollar';
 
 interface Props {
   bolum?: Bolum;
 }
 
 const { bolum } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
 const hepsi = await tumYazilar();
 const yazilar = bolum ? hepsi.filter((y) => y.bolum === bolum) : hepsi;
 const [manset, ...digerleri] = yazilar;
 
 const sekmeler = [
-  { ad: 'Tümü', href: '/yazilar/', adet: hepsi.length, aktif: !bolum },
+  { ad: s.yazilar.sekmeTumu, href: yol.yazilar(dil), adet: hepsi.length, aktif: !bolum },
   ...(['sinema', 'basketbol'] as const).map((b) => ({
-    ad: BOLUM_ADLARI[b],
-    href: BOLUM_URL[b],
+    ad: s.bolum[b],
+    href: yol.yazilar(dil, b),
     adet: hepsi.filter((y) => y.bolum === b).length,
     aktif: bolum === b,
   })),
@@ -31,23 +35,18 @@ const sekmeler = [
 const etiketler = new Map<string, { ad: string; adet: number }>();
 for (const { entry } of yazilar) {
   for (const ad of entry.data.etiketler) {
-    const slug = slugify(ad);
+    const slug = slugify(ad, entry.data.dil);
     etiketler.set(slug, { ad, adet: (etiketler.get(slug)?.adet ?? 0) + 1 });
   }
 }
-const etiketListesi = [...etiketler].sort((a, b) => b[1].adet - a[1].adet || a[1].ad.localeCompare(b[1].ad, 'tr'));
+const etiketListesi = [...etiketler].sort(
+  (a, b) => b[1].adet - a[1].adet || a[1].ad.localeCompare(b[1].ad, AYAR[dil].lang),
+);
 
-const baslik = bolum ? BOLUM_ADLARI[bolum] : 'Yazılar';
-const aciklama = {
-  tumu: 'Sinema ve basketbol üzerine yazılar, yeniden eskiye.',
-  sinema: 'İzlediğim filmler üzerine yazılar ve puanlar.',
-  basketbol: 'Maçlar, taktikler ve sezon notları.',
-}[bolum ?? 'tumu'];
-const bolumAciklama: Record<Bolum, string> = {
-  sinema: 'Filmler, yönetmenler ve izleme notları. Puan, künye ve jenerik her yazının sonunda.',
-  basketbol: 'Taktik notları, sezon başlangıçları ve sayılarla okunan maçlar.',
-};
-const rss = bolum ? `${BOLUM_URL[bolum]}rss.xml` : '/rss.xml';
+const baslik = bolum ? s.bolum[bolum] : s.yazilar.baslik;
+const aciklama = s.yazilar.aciklama[bolum ?? 'tumu'];
+const rss = yol.rss(dil, bolum);
+const esdeger = ikiDilde((d) => yol.yazilar(d, bolum));
 
 // Bölümler: "Tümü"de her bölüm kendi girişiyle (yalnızca yazısı kalan bölüm çizilir); bölüm sayfasında tek bölüm.
 const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
@@ -55,7 +54,12 @@ const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
   .filter((b) => b.yazilar.length > 0);
 ---
 
-<Base baslik={bolum ? `Yazılar · ${baslik}` : 'Yazılar'} aciklama={aciklama} bindirme={Boolean(manset)}>
+<Base
+  baslik={bolum ? s.yazilar.kisaBaslik(baslik) : baslik}
+  aciklama={aciklama}
+  bindirme={Boolean(manset)}
+  {esdeger}
+>
   {
     manset ? (
       <YaziSahnesi yazi={manset} baslikEtiketi="h2" ozetli uzun oncelikli>
@@ -73,32 +77,32 @@ const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
     )
   }
 
-  <section class="bant bant--koyu araclar-bandi" aria-label="Yazıları süz ve ara">
+  <section class="bant bant--koyu araclar-bandi" aria-label={s.yazilar.suzAra}>
     <div class="kap">
-      <nav class="sekmeler" aria-label="Yazı bölümleri">
+      <nav class="sekmeler" aria-label={s.yazilar.sekmelerAria}>
         {
-          sekmeler.map((s) => (
-            <a href={s.href} aria-current={s.aktif ? 'page' : undefined}>
-              {s.ad} <span class="adet">{s.adet}</span>
+          sekmeler.map((t) => (
+            <a href={t.href} aria-current={t.aktif ? 'page' : undefined}>
+              {t.ad} <span class="adet">{t.adet}</span>
             </a>
           ))
         }
       </nav>
       <div class="araclar">
-        <form class="ara-formu" action="/arama/" method="get" role="search">
-          <label class="sr-only" for="yazi-ara">Yazılarda ara</label>
-          <input id="yazi-ara" type="search" name="q" placeholder="Yazılarda ara" autocomplete="off" />
-          <button type="submit">Ara</button>
+        <form class="ara-formu" action={yol.arama(dil)} method="get" role="search">
+          <label class="sr-only" for="yazi-ara">{s.yazilar.araEtiket}</label>
+          <input id="yazi-ara" type="search" name="q" placeholder={s.yazilar.araYer} autocomplete="off" />
+          <button type="submit">{s.yazilar.araDugme}</button>
         </form>
-        <a class="rss" href={rss}>RSS ile takip et</a>
+        <a class="rss" href={rss}>{s.yazilar.rss}</a>
       </div>
 
       {
         etiketListesi.length > 0 && (
-          <ul class="lista etiket-listesi" aria-label="Etikete göre süz">
+          <ul class="lista etiket-listesi" aria-label={s.yazilar.etiketAria}>
             {etiketListesi.map(([slug, e]) => (
               <li>
-                <a href={`/etiketler/${slug}/`}>
+                <a href={yol.etiket(dil, slug)}>
                   #{e.ad} <span class="adet">{e.adet}</span>
                 </a>
               </li>
@@ -107,13 +111,7 @@ const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
         )
       }
 
-      {
-        yazilar.length === 0 && (
-          <p class="bos">
-            Bu bölümde henüz yazı yok. Yazılar yayımlandığında burada görünecek; RSS ile de takip edebilirsiniz.
-          </p>
-        )
-      }
+      {yazilar.length === 0 && <p class="bos">{s.yazilar.bos}</p>}
     </div>
   </section>
 
@@ -122,8 +120,8 @@ const bolumler = (bolum ? [bolum] : (['sinema', 'basketbol'] as const))
       <section class="bant bant--koyu bolum-bandi" data-dunya={b.bolum} aria-labelledby={`bolum-${b.bolum}`}>
         <div class="kap">
           <div class="giris">
-            <h2 id={`bolum-${b.bolum}`} class="h2">{BOLUM_ADLARI[b.bolum]}</h2>
-            <p>{bolumAciklama[b.bolum]}</p>
+            <h2 id={`bolum-${b.bolum}`} class="h2">{s.bolum[b.bolum]}</h2>
+            <p>{s.yazilar.bolumAciklama[b.bolum]}</p>
           </div>
           {yillaraGore(b.yazilar).map(({ yil, yazilar: liste }) => (
             <section class="yil" aria-labelledby={`yil-${b.bolum}-${yil}`}>

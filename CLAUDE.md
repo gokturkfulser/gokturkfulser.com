@@ -34,7 +34,7 @@ CI: `.github/workflows/{site,lab,infra}.yml` yalnızca kendi klasörlerindeki ve
 
 ## Kurallar
 
-- İçerik ve arayüz dili Türkçe.
+- Site içeriği ve arayüzü iki dilli: İngilizce (varsayılan, kökte) ve Türkçe (`/tr/`); kurallar `site/CLAUDE.md` "Dil (i18n) kuralları". `lab` ve `citiesofanatolia` Türkçe kalır.
 - Geliştirme ortamı Windows + PowerShell; script'ler buna uygun olmalı. Linux'ta çalışacak dosyalar (bash, compose, `infra/**`) LF satır sonuyla yazılır (`.gitattributes` zorlar).
 - Git işlemlerine (add, commit, push, stash, checkout, branch) dokunulmaz; bunları kullanıcı yapar.
 - Astro konularında astro-docs MCP'si, Cloudflare/Wrangler konularında cloudflare-docs MCP'si ve Cloudflare skill'leri kullanılır; eğitim verisindeki bilgiye güvenilmez.

@@ -1,6 +1,7 @@
-// Türkçe okuma süresi. Türkçe sondan eklemeli olduğu için kelimeler uzun; ekranda sessiz
-// okumada ortalama ~180 kelime/dakika alınır. Görsel ve tablo başına küçük bir ek süre eklenir.
-const DAKIKADA_KELIME = { tr: 180, en: 230 };
+// Okuma süresi. Dilin kelime hızı i18n/index.ts'te (tr sondan eklemeli, kelimeler uzun: ~180/dk; en ~230/dk).
+// Görsel ve tablo başına küçük bir ek süre eklenir.
+import { AYAR, type Dil } from '../i18n';
+
 const GORSEL_SANIYE = 8;
 
 const kelimeBolucu = new Intl.Segmenter('tr', { granularity: 'word' }); // İngilizce için de yeterli (boşluk/noktalama ayrımı)
@@ -15,12 +16,12 @@ function temizle(mdx: string): string {
     .replace(/[#>*_`|~-]+/g, ' ');
 }
 
-export function okumaSuresi(govde: string | undefined, dil: 'tr' | 'en' = 'tr') {
+export function okumaSuresi(govde: string | undefined, dil: Dil) {
   const metin = temizle(govde ?? '');
   let kelime = 0;
   for (const parca of kelimeBolucu.segment(metin)) if (parca.isWordLike) kelime++;
   const gorsel = (govde?.match(/<(Gorsel|IkiGorsel|IstatistikTablosu|Grafik\w+)\b/g) ?? []).length;
-  const saniye = (kelime / DAKIKADA_KELIME[dil]) * 60 + gorsel * GORSEL_SANIYE;
+  const saniye = (kelime / AYAR[dil].kelimeHizi) * 60 + gorsel * GORSEL_SANIYE;
   const dakika = Math.max(1, Math.ceil(saniye / 60));
   return { dakika, kelime };
 }

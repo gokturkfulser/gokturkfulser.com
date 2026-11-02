@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { dilAl, sozluk } from '../i18n';
 
 interface Props {
   url: string;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 const { url, baslik, poster } = Astro.props;
+const d = sozluk(dilAl(Astro)).proje.demo;
 
 const dosya = /\.(mp4|webm|ogg)(\?.*)?$/i.exec(url);
 const youtube = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{6,})/i.exec(url);
@@ -22,21 +24,21 @@ const tur = dosya ? `video/${dosya[1]!.toLowerCase().replace('ogg', 'ogg')}` : u
 
 {
   dosya ? (
-    <video controls preload="none" poster={poster?.src} aria-label={`${baslik} demo videosu`}>
+    <video controls preload="none" poster={poster?.src} aria-label={d.aria(baslik)}>
       <source src={url} type={tur} />
-      <p>Tarayıcınız videoyu oynatamıyor. <a href={url}>Videoyu indirin</a>.</p>
+      <p>{d.desteklenmiyor} <a href={url}>{d.indir}</a>.</p>
     </video>
   ) : gomulu ? (
     <iframe
       src={gomulu}
-      title={`${baslik} demo videosu`}
+      title={d.aria(baslik)}
       loading="lazy"
       sandbox="allow-scripts allow-same-origin allow-presentation"
       allow="fullscreen"
       referrerpolicy="no-referrer"
     />
   ) : (
-    <p><a href={url}>Demo videosunu izle</a></p>
+    <p><a href={url}>{d.izle}</a></p>
   )
 }
 

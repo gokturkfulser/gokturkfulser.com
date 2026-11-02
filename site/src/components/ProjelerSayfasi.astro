@@ -2,47 +2,55 @@
 // /projeler/ ve /projeler/tur/<tur>/ için ortak sayfa. Süzgeç JS'siz: her tür kendi URL'inde.
 // Düzen (koyu): sayfa başı, ardından dev proje dizini. Hover/odakta görsel önizleme saf CSS ile açılır
 // (yalnızca (hover: hover) ve geniş ekran; önizleme kendi şeridinde, metne binmez); dokunmatikte küçük görsel satır içindedir.
-// Arşiv en sonda sade liste.
+// Arşiv en sonda sade liste. Dil: Astro.currentLocale (yol öneki); metinler i18n sözlüğünden.
 import Base from '../layouts/Base.astro';
 import Medya from './Medya.astro';
-import type { CollectionEntry } from 'astro:content';
-import { DURUM, TUR, TUR_SIRASI } from '../lib/labels';
+import type { Proje } from '../lib/content';
+import { dilAl, sozluk } from '../i18n';
+import { ikiDilde, yol, type ProjeTuru } from '../i18n/yollar';
 
 interface Props {
-  /** Tüm projeler (sıralı: arşiv en sonda). */
-  projeler: CollectionEntry<'projeler'>[];
+  /** Tüm projeler (sıralı: arşiv en sonda), sayfanın dilindeki metinle. */
+  projeler: Proje[];
   /** Seçili tür; yoksa hepsi. */
-  tur?: (typeof TUR_SIRASI)[number];
+  tur?: ProjeTuru;
 }
 
+const TUR_SIRASI = ['oyun', 'uygulama', 'site', 'arac'] as const;
+
 const { projeler, tur } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
 const turler = TUR_SIRASI.filter((t) => projeler.some((p) => p.data.tur === t));
 const gorunen = tur ? projeler.filter((p) => p.data.tur === tur) : projeler;
 const aktif = gorunen.filter((p) => p.data.durum !== 'arsiv');
 const arsiv = gorunen.filter((p) => p.data.durum === 'arsiv');
 const sayi = (t?: string) => (t ? projeler.filter((p) => p.data.tur === t).length : projeler.length);
 
-const baslik = tur ? `Projeler: ${TUR[tur]}` : 'Projeler';
-const aciklama = tur ? `${TUR[tur]} türündeki projelerim.` : 'Yaptığım oyunlar, uygulamalar, siteler ve araçlar.';
+const baslik = tur ? s.proje.turBaslik(s.proje.tur[tur]) : s.proje.baslik;
+const aciklama = tur ? s.proje.turAciklama(s.proje.tur[tur]) : s.proje.aciklama;
 /** "Oyna" (oyun) ya da "Aç": yalnızca yayında olan ve canlı adresi bulunan projede. */
-const canliEtiket = (p: CollectionEntry<'projeler'>) =>
-  p.data.durum !== 'yakinda' && p.data.url ? (p.data.tur === 'oyun' ? 'Oyna' : 'Aç') : undefined;
+const canliEtiket = (p: Proje) =>
+  p.data.durum !== 'yakinda' && p.data.url ? (p.data.tur === 'oyun' ? s.proje.oyna : s.proje.ac) : undefined;
+// Tür sayfasının karşılığı her dilde vardır (tür slug'ı dile göre değişir).
+const esdeger = tur ? ikiDilde((d) => yol.projeTuru(d, tur)) : ikiDilde((d) => yol.projeler(d));
+const yedek = ikiDilde((d) => yol.projeler(d));
 ---
 
-<Base baslik={baslik} aciklama={aciklama}>
+<Base baslik={baslik} aciklama={aciklama} {esdeger} {yedek}>
   <section class="bant bant--koyu bant--basi" aria-labelledby="projeler-baslik">
     <div class="kap">
-      <h1 id="projeler-baslik" class="h1"><span class="satir"><span>Projeler</span></span></h1>
-      <p class="lede">Oyunlar, küçük uygulamalar ve siteler. Her kayıt neyin yayında olduğunu söylüyor.</p>
+      <h1 id="projeler-baslik" class="h1"><span class="satir"><span>{s.proje.baslik}</span></span></h1>
+      <p class="lede">{s.proje.lede}</p>
       {
         projeler.length > 0 && (
-          <nav class="sekmeler" aria-label="Projeleri türe göre süz">
-            <a href="/projeler/" aria-current={tur ? undefined : 'page'}>
-              Tümü <span class="adet">{sayi()}</span>
+          <nav class="sekmeler" aria-label={s.proje.turAria}>
+            <a href={yol.projeler(dil)} aria-current={tur ? undefined : 'page'}>
+              {s.proje.tumu} <span class="adet">{sayi()}</span>
             </a>
             {turler.map((t) => (
-              <a href={`/projeler/tur/${t}/`} aria-current={tur === t ? 'page' : undefined}>
-                {TUR[t]} <span class="adet">{sayi(t)}</span>
+              <a href={yol.projeTuru(dil, t)} aria-current={tur === t ? 'page' : undefined}>
+                {s.proje.tur[t]} <span class="adet">{sayi(t)}</span>
               </a>
             ))}
           </nav>
@@ -53,38 +61,41 @@ const canliEtiket = (p: CollectionEntry<'projeler'>) =>
 
   {
     aktif.length > 0 && (
-      <section class="bant bant--koyu dizin-bandi" aria-label="Proje dizini">
+      <section class="bant bant--koyu dizin-bandi" aria-label={s.proje.dizinAria}>
         <div class="kap">
           <ul class="lista dizin">
             {aktif.map((p) => (
               <li data-dunya="proje" data-durum={p.data.durum} data-tur={p.data.tur}>
                 <article class="satir-proje">
                   <h2 class="ad">
-                    <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+                    <a href={yol.proje(dil, p.id)}>{p.data.ad}</a>
                   </h2>
                   <div class="detay">
-                    <p class="ozet">{p.data.ozet}</p>
+                    <p class="ozet" lang={p.yedek ? p.metinDili : undefined}>{p.metin.data.ozet}</p>
                     {p.data.durum === 'yakinda' && (
                       <p class="yakinda-not">
-                        <strong>Yakında.</strong> Henüz yayında değil.
-                        {p.data.barindirma === 'vps' && ' VPS üzerinde çalışacak.'}
+                        <strong>{s.proje.yakindaKalin}</strong> {s.proje.yakindaMetin}
+                        {p.data.barindirma === 'vps' && ` ${s.proje.yakindaVpsKisa}`}
                       </p>
                     )}
+                    {p.data.icerikDili && p.data.icerikDili !== dil && (
+                      <p class="yakinda-not">{s.proje.icerikDiliNot(s.proje.icerikDiliAd[p.data.icerikDili])}</p>
+                    )}
                     <dl>
-                      <dt>Tür</dt>
-                      <dd>{TUR[p.data.tur]}</dd>
-                      <dt>Durum</dt>
-                      <dd>{DURUM[p.data.durum]}</dd>
+                      <dt>{s.proje.kTur}</dt>
+                      <dd>{s.proje.tur[p.data.tur]}</dd>
+                      <dt>{s.proje.kDurum}</dt>
+                      <dd>{s.proje.durum[p.data.durum]}</dd>
                       {p.data.stack.length > 0 && (
                         <>
-                          <dt>Teknoloji</dt>
+                          <dt>{s.proje.kTeknoloji}</dt>
                           <dd>{p.data.stack.slice(0, 3).join(', ')}</dd>
                         </>
                       )}
                     </dl>
                     <p class="eylemler">
                       {canliEtiket(p) && <a class="eylem" href={p.data.url}>{canliEtiket(p)}</a>}
-                      <a class="eylem" href={`/projeler/${p.id}/`}>Projeyi incele</a>
+                      <a class="eylem" href={yol.proje(dil, p.id)}>{s.proje.incele}</a>
                     </p>
                     <div class="kucuk-gorsel" aria-hidden="true">
                       <Medya src={p.data.gorsel} oran="proje" width={600} />
@@ -106,12 +117,12 @@ const canliEtiket = (p: CollectionEntry<'projeler'>) =>
     arsiv.length > 0 && (
       <section class="bant bant--koyu arsiv" aria-labelledby="arsiv-baslik">
         <div class="kap">
-          <h2 id="arsiv-baslik" class="h3">Arşiv</h2>
+          <h2 id="arsiv-baslik" class="h3">{s.proje.arsiv}</h2>
           <ul class="lista">
             {arsiv.map((p) => (
               <li>
-                <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
-                <span class="soluk">{p.data.ozet}</span>
+                <a href={yol.proje(dil, p.id)}>{p.data.ad}</a>
+                <span class="soluk" lang={p.yedek ? p.metinDili : undefined}>{p.metin.data.ozet}</span>
               </li>
             ))}
           </ul>
@@ -122,11 +133,9 @@ const canliEtiket = (p: CollectionEntry<'projeler'>) =>
 
   {
     aktif.length === 0 && arsiv.length === 0 && (
-      <section class="bant bant--koyu" aria-label="Boş durum">
+      <section class="bant bant--koyu" aria-label={s.proje.bosAria}>
         <div class="kap">
-          <p class="bos">
-            {tur ? 'Bu türde henüz proje yok.' : 'Henüz proje yok. Yayına alınan projeler burada listelenecek.'}
-          </p>
+          <p class="bos">{tur ? s.proje.bosTur : s.proje.bos}</p>
         </div>
       </section>
     )

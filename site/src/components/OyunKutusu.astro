@@ -1,16 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { dilAl, sozluk } from '../i18n';
 
 interface Props {
   baslik: string;
   kapak: ImageMetadata;
   embedUrl: string;
-  /** Düğme metni: oyunlarda "Oyna", diğerlerinde "Dene". */
+  /** Düğme metni: oyunlarda "Oyna", diğerlerinde "Dene" (sayfanın dilinde). */
   etiket?: string;
 }
 
-const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
+const s = sozluk(dilAl(Astro)).proje;
+const { baslik, kapak, embedUrl, etiket = s.oyna } = Astro.props;
+const m = s.oyunKutusu;
 ---
 
 <!--
@@ -18,7 +21,18 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
   bir bağlantı var. JS yoksa bağlantı oyunu yeni sekmede açar. Betik Astro tarafından paketlenir ve hash'lenir; yalnızca bu bileşenin render edildiği
   sayfalara girer, bu yüzden diğer sayfalarda JS yoktur.
 -->
-<div class="oyun" data-oyun data-embed={embedUrl} data-baslik={baslik} data-etiket={etiket}>
+<div
+  class="oyun"
+  data-oyun
+  data-embed={embedUrl}
+  data-baslik={baslik}
+  data-etiket={etiket}
+  data-tam-ekran-metni={m.tamEkran}
+  data-tam-ekrandan-cik-metni={m.tamEkrandanCik}
+  data-gomulu-metni={m.gomulu}
+  data-yukleniyor-metni={m.yukleniyor}
+  data-hazir-metni={m.hazir}
+>
   <div class="sahne" data-sahne>
     <Image src={kapak} alt="" width={1280} loading="eager" class="kapak" data-kapak />
     <a class="oyna" href={embedUrl} target="_blank" rel="noopener" aria-label={`${etiket}: ${baslik}`} data-oyna>
@@ -26,8 +40,8 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
     </a>
   </div>
   <div class="araclar" data-araclar hidden>
-    <button type="button" data-tam-ekran hidden>Tam ekran</button>
-    <button type="button" data-kapat>Oyunu kapat</button>
+    <button type="button" data-tam-ekran hidden>{m.tamEkran}</button>
+    <button type="button" data-kapat>{m.kapat}</button>
   </div>
   <p class="durum sr-only" role="status" data-durum></p>
 </div>
@@ -43,6 +57,8 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
     const kapat = al('kapat');
     const durum = al('durum');
     const baslik = kutu.dataset.baslik ?? '';
+    // Metinler sayfanın dilinde sunucudan gelir (data-*-metni); betikte sabit metin yok.
+    const metin = (ad: string) => kutu.dataset[ad] ?? '';
     let iframe: HTMLIFrameElement | null = null;
 
     if (document.fullscreenEnabled) tamEkran.hidden = false;
@@ -53,7 +69,7 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
       const kare = document.createElement('iframe');
       iframe = kare;
       kare.src = kutu.dataset.embed ?? '';
-      kare.title = baslik + ' (gömülü)';
+      kare.title = `${baslik} (${metin('gomuluMetni')})`;
       kare.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');
       kare.setAttribute('allow', 'fullscreen; gamepad');
       kare.setAttribute('referrerpolicy', 'no-referrer');
@@ -62,9 +78,9 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
       oyna.hidden = true;
       sahne.appendChild(kare);
       araclar.hidden = false;
-      durum.textContent = baslik + ' yükleniyor.';
+      durum.textContent = `${baslik} ${metin('yukleniyorMetni')}`;
       kare.addEventListener('load', () => {
-        durum.textContent = baslik + ' hazır.';
+        durum.textContent = `${baslik} ${metin('hazirMetni')}`;
       });
       kare.focus();
     });
@@ -75,7 +91,7 @@ const { baslik, kapak, embedUrl, etiket = 'Oyna' } = Astro.props;
     });
 
     document.addEventListener('fullscreenchange', () => {
-      tamEkran.textContent = document.fullscreenElement === sahne ? 'Tam ekrandan çık' : 'Tam ekran';
+      tamEkran.textContent = document.fullscreenElement === sahne ? metin('tamEkrandanCikMetni') : metin('tamEkranMetni');
     });
 
     kapat.addEventListener('click', () => {

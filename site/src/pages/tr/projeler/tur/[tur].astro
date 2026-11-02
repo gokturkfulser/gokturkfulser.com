@@ -1,0 +1,19 @@
+---
+import ProjelerSayfasi from '../../../../components/ProjelerSayfasi.astro';
+import { projeler } from '../../../../lib/content';
+import { turSlug, type ProjeTuru } from '../../../../i18n/yollar';
+
+// Süzgeç JS'siz çalışır: her tür kendi statik sayfası. Tür slug'ı dile göre değişir (en: game, tr: oyun).
+// Yalnızca en az bir projesi olan türler üretilir.
+export async function getStaticPaths() {
+  const liste = await projeler('tr');
+  const turler: ProjeTuru[] = ['oyun', 'uygulama', 'site', 'arac'];
+  return turler
+    .filter((t) => liste.some((p) => p.data.tur === t))
+    .map((tur) => ({ params: { tur: turSlug('tr', tur) }, props: { tur, liste } }));
+}
+
+const { tur, liste } = Astro.props;
+---
+
+<ProjelerSayfasi projeler={liste} tur={tur} />

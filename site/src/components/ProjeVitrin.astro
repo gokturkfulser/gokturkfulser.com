@@ -1,15 +1,18 @@
 ---
 // Ana sayfa proje vitrini: dikey çerçeveler, çift sıradaki kareler aşağı kaymış (kademeli). Her proje için tür ve durum ayrı satır.
-import type { CollectionEntry } from 'astro:content';
+import type { Proje } from '../lib/content';
 import Medya from './Medya.astro';
-import { DURUM, TUR } from '../lib/labels';
+import { dilAl, sozluk } from '../i18n';
+import { yol } from '../i18n/yollar';
 
 interface Props {
-  projeler: CollectionEntry<'projeler'>[];
+  projeler: Proje[];
   ton?: 'koyu' | 'acik';
 }
 
 const { projeler, ton = 'koyu' } = Astro.props;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
 ---
 
 {
@@ -17,24 +20,30 @@ const { projeler, ton = 'koyu' } = Astro.props;
     <section class={`bant bant--${ton}`} data-dunya="proje" aria-labelledby="vitrin-baslik">
       <div class="kap">
         <div class="bas-satiri">
-          <h2 id="vitrin-baslik" class="h2">Projeler</h2>
-          <a href="/projeler/">Tüm projeler</a>
+          <h2 id="vitrin-baslik" class="h2">{s.proje.baslik}</h2>
+          <a href={yol.projeler(dil)}>{s.alt.tumProjeler}</a>
         </div>
         <ul class="lista dikeyler">
           {projeler.map((p) => (
             <li>
               <article class="dikey">
-                <a class="gorsel" href={`/projeler/${p.id}/`} tabindex="-1" aria-hidden="true">
+                <a class="gorsel" href={yol.proje(dil, p.id)} tabindex="-1" aria-hidden="true">
                   <Medya src={p.data.gorsel} oran="proje" width={900} class="ac" />
                 </a>
                 <h3>
-                  <a href={`/projeler/${p.id}/`}>{p.data.ad}</a>
+                  <a href={yol.proje(dil, p.id)}>{p.data.ad}</a>
                 </h3>
                 <dl>
-                  <dt>Tür</dt>
-                  <dd>{TUR[p.data.tur]}</dd>
-                  <dt>Durum</dt>
-                  <dd>{DURUM[p.data.durum]}</dd>
+                  <dt>{s.proje.kTur}</dt>
+                  <dd>{s.proje.tur[p.data.tur]}</dd>
+                  <dt>{s.proje.kDurum}</dt>
+                  <dd>{s.proje.durum[p.data.durum]}</dd>
+                  {p.data.icerikDili && p.data.icerikDili !== dil && (
+                    <>
+                      <dt>{s.proje.kIcerikDili}</dt>
+                      <dd>{s.proje.icerikDiliAd[p.data.icerikDili]}</dd>
+                    </>
+                  )}
                 </dl>
               </article>
             </li>

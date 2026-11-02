@@ -1,0 +1,406 @@
+---
+// Proje sayfası = vaka çalışması düzeni (tüm projelerin varsayılanı): koyu üst (ad, özet, eylemler), kâğıt bandında Swiss modüller:
+// oyna/görsel, künye, ne, neden, nasıl, bağlantılar, (varsa) ekran görüntüleri; altında MDX gövdesi.
+// ne/neden/nasıl `projeMetinleri` koleksiyonundaki `vaka` alanından gelir; boş olan modül hiç render edilmez.
+// Metin sayfanın dilinde, yoksa diğer dilde gösterilir ve küçük bir notla belirtilir. Ortak alanlar (görsel, bağlantılar…) tek yerdedir.
+import { Image } from 'astro:assets';
+import Medya from '../Medya.astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DemoVideo from '../DemoVideo.astro';
+import OyunKutusu from '../OyunKutusu.astro';
+import { mdxBilesenleri } from '../mdx';
+import type { Proje } from '../../lib/content';
+import { dilAl, sozluk, yerel } from '../../i18n';
+import { ikiDilde, yol } from '../../i18n/yollar';
+
+interface Props {
+  proje: Proje;
+}
+
+const { proje } = Astro.props;
+const { data } = proje;
+const dil = dilAl(Astro);
+const s = sozluk(dil);
+const p = s.proje;
+const { Content } = await render(proje.metin);
+const metin = proje.metin.data;
+
+const yakinda = data.durum === 'yakinda';
+const arsiv = data.durum === 'arsiv';
+const vps = data.barindirma === 'vps';
+
+// Yakında olan projede canlı bağlantı, mağaza bağlantısı ve gömülü oyun gösterilmez.
+const storeLinkleri = yakinda
+  ? []
+  : Object.entries(data.storeLinkleri ?? {}).filter(
+      (cift): cift is [string, string] => typeof cift[1] === 'string',
+    );
+const canliUrl = yakinda ? undefined : data.url;
+const oynat = !yakinda && data.embedUrl;
+// Yakında + demo videosu: video kapak görselinin yerine öne çıkar.
+const videoOnde = yakinda && data.demoVideo;
+const canliEtiket = data.tur === 'oyun' ? p.oyna : p.ac;
+
+// Vaka modülleri: boş metin render edilmez.
+const vakaMetinleri = [
+  { anahtar: 'ne', baslik: p.ne, metin: metin.vaka?.ne },
+  { anahtar: 'neden', baslik: p.neden, metin: metin.vaka?.neden },
+  { anahtar: 'nasil', baslik: p.nasil, metin: metin.vaka?.nasil },
+].filter((m): m is { anahtar: string; baslik: string; metin: string } => Boolean(m.metin?.length));
+const baglantilar = [
+  ...(canliUrl ? [{ ad: oynat ? p.yeniSekme : canliEtiket, href: canliUrl }] : []),
+  ...(data.repo ? [{ ad: p.kaynakKod, href: data.repo }] : []),
+  ...(data.demoVideo && !videoOnde ? [{ ad: p.demoVideosu, href: '#demo' }] : []),
+  ...storeLinkleri.map(([anahtar, href]) => ({ ad: p.store[anahtar as keyof typeof p.store] ?? anahtar, href })),
+];
+// Sağ sütundaki küçük modül sayısı → sol "oyna/görsel" modülünün kaç satıra yayılacağı (boşluk kalmasın)
+const kucukModul = vakaMetinleri.length + (baglantilar.length > 0 ? 1 : 0);
+const satirSayisi = Math.min(4, 1 + Math.ceil(kucukModul / 2));
+const govdeVar = Boolean(proje.metin.body?.trim());
+
+// Notlar: metin diğer dilden geliyorsa; oyunun kendi dili sayfanın dilinden farklıysa (ör. Türkçe oyun, İngilizce sayfa).
+const yedekNotu = proje.yedek ? p.yedekMetin(p.icerikDiliAd[proje.metinDili]) : undefined;
+const dilNotu = data.icerikDili && data.icerikDili !== dil ? p.icerikDiliNot(p.icerikDiliAd[data.icerikDili]) : undefined;
+const metinDili = proje.yedek ? proje.metinDili : undefined;
+---
+
+<Base
+  baslik={data.ad}
+  aciklama={metin.ozet}
+  bindirme
+  esdeger={ikiDilde((d) => yol.proje(d, proje.id))}
+>
+  <article data-dunya="proje" data-pagefind-body>
+    <header class="bant bant--koyu vaka-ust">
+      <div class="kap ust">
+        <h1 class="h1"><span class="satir"><span>{data.ad}</span></span></h1>
+        <p class="lede" lang={metinDili}>{metin.ozet}</p>
+        {
+          yakinda && (
+            <p class="not yakinda" role="note">
+              <strong>{p.yakindaKalin}</strong> {p.yakindaMetin}
+              {vps && ` ${p.yakindaVps}`}
+            </p>
+          )
+        }
+        {arsiv && <p class="not" role="note"><strong>{p.arsivKalin}</strong> {p.arsivMetin}</p>}
+        {dilNotu && <p class="not" role="note">{dilNotu}</p>}
+        {yedekNotu && <p class="not" role="note">{yedekNotu}</p>}
+        {
+          canliUrl && (
+            <p class="eylemler">
+              <a class="dugme" href={oynat ? '#oyna' : canliUrl}>{canliEtiket}</a>
+              {oynat && <a href={canliUrl}>{p.yeniSekme}</a>}
+            </p>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="bant bant--acik govde">
+      <div class="kap">
+        <div class="vaka-modulleri">
+          <!-- Oyna / görsel -->
+          <section class="modul iki sol" data-satir={satirSayisi} aria-labelledby="oyun-baslik">
+            {
+              oynat ? (
+                <>
+                  <h2 id="oyun-baslik">{data.tur === 'oyun' ? p.burdaOyna : p.burdaDene}</h2>
+                  <div id="oyna">
+                    <OyunKutusu
+                      baslik={data.ad}
+                      kapak={data.gorsel}
+                      embedUrl={data.embedUrl!}
+                      etiket={data.tur === 'oyun' ? p.oyna : p.dene}
+                    />
+                  </div>
+                </>
+              ) : videoOnde ? (
+                <>
+                  <h2 id="oyun-baslik">{p.demoVideosu}</h2>
+                  <div id="demo">
+                    <DemoVideo url={data.demoVideo!} baslik={data.ad} poster={data.gorsel} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 id="oyun-baslik" class="sr-only">{p.gorsel}</h2>
+                  <Medya src={data.gorsel} oran="proje" width={1200} oncelikli />
+                </>
+              )
+            }
+          </section>
+
+          <!-- Künye -->
+          <section class="modul iki" aria-labelledby="kunye-baslik">
+            <h2 id="kunye-baslik">{p.kunye}</h2>
+            <dl>
+              <dt>{p.kTur}</dt>
+              <dd>{p.tur[data.tur]}</dd>
+              <dt>{p.kDurum}</dt>
+              <dd>{p.durum[data.durum]}</dd>
+              <dt>{p.kBarindirma}</dt>
+              <dd>{p.barindirma[data.barindirma]}</dd>
+              {
+                data.icerikDili && (
+                  <>
+                    <dt>{p.kIcerikDili}</dt>
+                    <dd>{p.icerikDiliAd[data.icerikDili]}</dd>
+                  </>
+                )
+              }
+              {
+                data.stack.length > 0 && (
+                  <>
+                    <dt>{p.kTeknoloji}</dt>
+                    <dd>{data.stack.join(', ')}</dd>
+                  </>
+                )
+              }
+            </dl>
+          </section>
+
+          {
+            vakaMetinleri.map((m) => (
+              <section class="modul" aria-labelledby={`vaka-${m.anahtar}`}>
+                <h2 id={`vaka-${m.anahtar}`}>{m.baslik}</h2>
+                <p lang={metinDili}>{m.metin}</p>
+              </section>
+            ))
+          }
+
+          {
+            baglantilar.length > 0 && (
+              <section class="modul" aria-labelledby="baglanti-baslik">
+                <h2 id="baglanti-baslik">{p.baglantilar}</h2>
+                <ul class="lista">
+                  {baglantilar.map((b) => <li><a href={b.href}>{b.ad}</a></li>)}
+                </ul>
+              </section>
+            )
+          }
+
+          {
+            data.demoVideo && !videoOnde && (
+              <section id="demo" class="modul tum" aria-labelledby="demo-baslik">
+                <h2 id="demo-baslik">{p.demoVideosu}</h2>
+                <DemoVideo url={data.demoVideo} baslik={data.ad} poster={data.gorsel} />
+              </section>
+            )
+          }
+
+          {
+            data.ekranGoruntuleri.length > 0 && (
+              <section class="modul tum" aria-labelledby="ekran-baslik">
+                <h2 id="ekran-baslik">{p.ekranGoruntuleri}</h2>
+                <ul class="lista ekranlar">
+                  {data.ekranGoruntuleri.map((e) => (
+                    <li>
+                      <figure>
+                        <Image src={e.gorsel} alt={yerel(e.alt, dil)} width={900} loading="lazy" />
+                        {e.altyazi && <figcaption>{yerel(e.altyazi, dil)}</figcaption>}
+                      </figure>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+        </div>
+
+        {
+          govdeVar && (
+            <div class="metin" lang={metinDili}>
+              <Content components={mdxBilesenleri} />
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .vaka-ust {
+    padding-block: clamp(8rem, 18vw, 13rem) clamp(2rem, 4vw, 3.4rem);
+  }
+
+  .ust {
+    display: grid;
+    gap: var(--aralik-4);
+    justify-items: start;
+  }
+
+  .not {
+    max-width: 44ch;
+    margin: 0;
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 6px solid var(--murekkep);
+    font-family: var(--font-baslik-yigin);
+    line-height: 1.5;
+  }
+
+  .not.yakinda {
+    border-inline-start-color: var(--turuncu-metin);
+  }
+
+  .eylemler {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-3) var(--aralik-4);
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .dugme {
+    display: inline-block;
+    padding: 0.85rem 1.5rem;
+    background: var(--murekkep);
+    color: var(--zemin);
+    font-size: 1.0625rem;
+    text-decoration: none;
+  }
+
+  .dugme:hover {
+    background: transparent;
+    color: var(--murekkep);
+    outline: 1px solid var(--murekkep);
+  }
+
+  .govde {
+    padding-block: calc(var(--bant) * 0.7);
+  }
+
+  /* Swiss modüller: ortak çizgili ızgara; kart yok, köşe yok */
+  .vaka-modulleri {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    border-block-start: 1px solid var(--murekkep);
+    border-inline-start: 1px solid var(--murekkep);
+    margin-block: 1.6rem;
+  }
+
+  .modul {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    min-width: 0;
+    padding: clamp(0.9rem, 1.6vw, 1.4rem);
+    border-inline-end: 1px solid var(--murekkep);
+    border-block-end: 1px solid var(--murekkep);
+  }
+
+  .modul.iki {
+    grid-column: span 2;
+  }
+
+  .modul.tum {
+    grid-column: 1 / -1;
+  }
+
+  .modul.sol[data-satir='2'] {
+    grid-row: span 2;
+  }
+
+  .modul.sol[data-satir='3'] {
+    grid-row: span 3;
+  }
+
+  .modul.sol[data-satir='4'] {
+    grid-row: span 4;
+  }
+
+  .modul h2 {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .modul p {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 1rem;
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+  }
+
+  dt {
+    color: var(--soluk);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .modul ul {
+    display: grid;
+    gap: 0.4rem;
+    font-family: var(--font-baslik-yigin);
+    font-weight: 600;
+  }
+
+  .modul .ekranlar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-4);
+    align-items: flex-start;
+  }
+
+  .ekranlar li {
+    flex: 1 1 14rem;
+    max-width: 22rem;
+  }
+
+  .ekranlar figure {
+    margin: 0;
+  }
+
+  .ekranlar img {
+    width: 100%;
+    height: auto;
+  }
+
+  .ekranlar figcaption {
+    margin-block-start: var(--aralik-2);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    color: var(--soluk);
+  }
+
+  .govde > .kap > :global(.metin) {
+    margin-block-start: clamp(2rem, 4vw, 4rem);
+  }
+
+  @media (max-width: 62rem) {
+    .vaka-modulleri {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .modul.sol[data-satir] {
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .vaka-modulleri {
+      grid-template-columns: 1fr;
+    }
+
+    .modul.iki {
+      grid-column: auto;
+    }
+  }
+</style>
