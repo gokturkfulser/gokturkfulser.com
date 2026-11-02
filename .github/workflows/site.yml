@@ -80,7 +80,7 @@ jobs:
           urls=(--collect.url=http://127.0.0.1:4321/ --collect.url=http://127.0.0.1:4321/tr/)
           # Her dilin ilk yazısı (bölüm dizinleri hariç): İngilizce writing/, Türkçe tr/yazilar/
           for kok in writing tr/yazilar; do
-            for d in site/dist/$kok/*/; do
+            for d in site/dist/"$kok"/*/; do
               case "$d" in */sinema/|*/basketbol/|*/cinema/|*/basketball/) continue ;; esac
               if [ -d "$d" ]; then urls+=(--collect.url="http://127.0.0.1:4321/${d#site/dist/}"); break; fi
             done
