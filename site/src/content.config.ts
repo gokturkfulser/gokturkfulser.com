@@ -4,8 +4,9 @@ import { z } from 'astro/zod';
 import { parse as parseYaml } from 'yaml';
 import { slugify } from './lib/slug';
 import { taslakDosyaDesenleri, taslakKlasorDesenleri } from './lib/taslak-loader';
-import { dosyaYoluHatasi, katkiHatasi, siraHatasi, videoAdresiMi } from './lib/top10';
-import { ETIKET_ANAHTARLARI, EYLEM_ANAHTARLARI, ROL_ANAHTARLARI } from './lib/top10-sozluk';
+import { dosyaYoluHatasi } from './lib/top10';
+import { sozlukHatasi } from './lib/top10-adlar';
+import { top10Sema } from './lib/top10-sema';
 
 // Her içerik kendi klasöründe: <koleksiyon>/<slug>/index.mdx + görseller.
 // id, klasör adının Türkçe transliterasyonlu slug'ıdır. Production'da taslak klasörleri desenden çıkar.
@@ -271,52 +272,24 @@ const top10 = defineCollection({
       return entry.replace(/\.yaml$/, '');
     },
   }),
+  // Şema lib/top10-sema.ts'te (birim testleri ve scripts/top10 da aynısını kullanır).
+  schema: top10Sema,
+});
+
+// Oyuncu adı sözlüğü (kanonik ad → takma adlar). Gece koleksiyonunun glob'u `<sezon>/<tarih>.yaml` aradığından klasör kökündeki bu dosyayı yüklemez;
+// ayrı bir tek kayıtlı koleksiyondur. Çakışma (bir takma ad iki kanonik ada bağlı, kanonik ad başka kaydın takma adı) build'i durdurur.
+const top10Adlar = defineCollection({
+  loader: file('./src/content/top10/oyuncu-adlari.yaml', {
+    parser: (metin) => [{ id: 'sozluk', kayitlar: parseYaml(metin) ?? {} }],
+  }),
   schema: z
     .object({
-      tarih: z.coerce.date(),
-      video: z.url().refine(videoAdresiMi, 'video bağlantısı https ile youtube.com ya da nba.com üzerinde olmalı'),
-      tur: z.enum(['top10', 'top5']).default('top10'),
-      // Verinin nereden geldiği: elle girilmiş ya da Gemini betiğiyle çıkarılmış.
-      kaynak: z.enum(['gemini', 'elle']).default('elle'),
-      // Puan oyuna verilir ve katkı sahiplerine bölünür (lib/top10.ts). Eylem/etiket/rol anahtarları lib/top10-sozluk.ts'tedir;
-      // listede olmayan değer build'i durdurur. Satır katıdır: kaldırılan eski alanlar (oyuncu, takim, asist) hata verir.
-      oyunlar: z
-        .array(
-          z
-            .strictObject({
-              sira: z.number().int(),
-              eylem: z.enum(EYLEM_ANAHTARLARI).optional(),
-              etiketler: z.array(z.enum(ETIKET_ANAHTARLARI)).optional(),
-              aciklama: z.string().trim().min(1).optional(),
-              // Üstüne smaç basılan / bloklanan oyuncu; puan almaz.
-              rakip: z.string().trim().min(1).optional(),
-              katkilar: z
-                .array(
-                  z.strictObject({
-                    oyuncu: z.string().trim().min(1),
-                    // NBA takım kısaltması: 3 büyük harf (SAS, OKC…)
-                    takim: z.string().regex(/^[A-Z]{3}$/, 'takım 3 büyük harf olmalı (ör. SAS)'),
-                    rol: z.enum(ROL_ANAHTARLARI),
-                    // Yüzde, tam sayı; ya hiçbir katkıda yok (eşit bölüşüm) ya hepsinde var (kurallar: katkiHatasi).
-                    pay: z.number().int().optional(),
-                  }),
-                )
-                .min(1)
-                .max(3),
-            })
-            .superRefine((oyun, ctx) => {
-              const hata = katkiHatasi(oyun.katkilar);
-              if (hata) ctx.addIssue({ code: 'custom', message: `sira ${oyun.sira}: ${hata}`, path: ['katkilar'] });
-            }),
-        )
-        .min(1),
-      // true ise production'da görünmez (SHOW_DRAFTS=true ile preview'da görünür). Örnek veriler taslaktır.
-      taslak: z.boolean().default(false),
+      kayitlar: z.record(z.string(), z.array(z.string()).nullable().transform((t) => t ?? [])),
     })
-    .superRefine((gece, ctx) => {
-      const hata = siraHatasi(gece.tur, gece.oyunlar);
-      if (hata) ctx.addIssue({ code: 'custom', message: hata, path: ['oyunlar'] });
+    .superRefine((d, ctx) => {
+      const hata = sozlukHatasi(d.kayitlar);
+      if (hata) ctx.addIssue({ code: 'custom', message: `oyuncu-adlari.yaml: ${hata}`, path: ['kayitlar'] });
     }),
 });
 
-export const collections = { sinema, basketbol, projeler, projeMetinleri, ozgecmis, hakkimda, top10 };
+export const collections = { sinema, basketbol, projeler, projeMetinleri, ozgecmis, hakkimda, top10, top10Adlar };

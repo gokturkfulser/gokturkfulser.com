@@ -1,7 +1,7 @@
 // Dil katmanı: tek locale parametresi (`Dil`) ile sözlük, <html lang>, tarih/sayı biçimi, hyphens kuralı ve slug
 // transliterasyonu buradan yönetilir. Sayfalar dili `dilAl(Astro)` ile (Astro'nun `currentLocale`'inden) okur; sabit yazmaz.
-import { en } from './en';
-import { tr, type Sozluk } from './tr';
+import { en } from './en.ts';
+import { tr, type Sozluk } from './tr.ts';
 
 export const DILLER = ['en', 'tr'] as const;
 export type Dil = (typeof DILLER)[number];

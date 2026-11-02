@@ -1,11 +1,14 @@
 // NBA Top 10 gecesi verisinden sezonluk puan tablosu. Saf fonksiyonlar: Astro'ya, dosya sistemine ve içerik koleksiyonuna
 // dokunmaz (veriyi lib/content.ts getirir); birim testleri `top10.test.ts`'tedir. Puan kuralı site/CLAUDE.md "Top 10 verisi".
 // Puan oyuna verilir ve katkı sahiplerine bölünür; iç hesap tam sayıdır (1 puan = 100 birim), kayan nokta hatası birikmez.
-import { slugify } from './slug';
-import type { Eylem, Etiket, Rol } from './top10-sozluk';
+// Not: göreli içe aktarmalar .ts uzantılı: scripts/top10 bu dosyaları Node'un yerel TypeScript desteğiyle (uzantısız çözümleme yok) yükler.
+import { slugify } from './slug.ts';
+import type { Eylem, Etiket, Rol } from './top10-sozluk.ts';
 
 export type Tur = 'top10' | 'top5';
 export type Kaynak = 'gemini' | 'elle';
+/** Otomatik çıkarılan geceler kontrol edilene kadar 'bekliyor'; elle girilenler baştan 'onaylandi'. */
+export type Inceleme = 'bekliyor' | 'onaylandi';
 export type Katki = { oyuncu: string; takim: string; rol: Rol; pay?: number };
 export type Oyun = {
   sira: number;
@@ -14,10 +17,19 @@ export type Oyun = {
   aciklama?: string;
   /** Üstüne smaç basılan / bloklanan oyuncu; puan almaz. */
   rakip?: string;
+  /** Oyunun videodaki başlangıç zamanı: "m:ss" ya da "mm:ss". */
+  zaman?: string;
   katkilar: Katki[];
 };
 /** Bir gecenin listesi. `tarih`, maçların ABD gecesidir (videonun başlığındaki tarih). */
-export type Gece = { tarih: Date; tur: Tur; video: string; kaynak?: Kaynak; oyunlar: Oyun[] };
+export type Gece = { tarih: Date; tur: Tur; video: string; kaynak?: Kaynak; inceleme?: Inceleme; oyunlar: Oyun[] };
+
+/** `inceleme` yazılmamışsa kaynağa göre varsayılan: gemini → bekliyor, elle (ya da kaynak yok) → onaylandi. */
+export const varsayilanInceleme = (kaynak?: Kaynak): Inceleme => (kaynak === 'gemini' ? 'bekliyor' : 'onaylandi');
+
+/** Gecenin verisi henüz kontrol edilmedi mi? (Sayfada gecenin altında not çıkar; puanlar yine sayılır.) */
+export const incelemeBekliyor = (gece: Pick<Gece, 'kaynak' | 'inceleme'>): boolean =>
+  (gece.inceleme ?? varsayilanInceleme(gece.kaynak)) === 'bekliyor';
 
 /** Gecenin türüne göre sıra sayısı. */
 export const SIRA_SAYISI: Record<Tur, number> = { top10: 10, top5: 5 };
@@ -269,6 +281,63 @@ export function benzerAdlar(geceler: readonly Gece[]): BenzerAd[] {
       if (Math.abs(ka.length - kb.length) <= esik && uzaklik(ka, kb) <= esik) {
         sonuc.push({ a: { kimlik: ka, oyuncu: oa }, b: { kimlik: kb, oyuncu: ob } });
       }
+    }
+  }
+  return sonuc;
+}
+
+// ——— Video zamanı ———
+
+/** "m:ss" / "mm:ss" biçimi (saniye 00–59). */
+export const ZAMAN_BICIMI = /^\d{1,2}:[0-5]\d$/;
+
+/** "1:05" → 65 saniye; biçim geçersizse undefined. */
+export function zamanSaniye(zaman: string): number | undefined {
+  if (!ZAMAN_BICIMI.test(zaman)) return undefined;
+  const [dk, sn] = zaman.split(':').map(Number);
+  return dk! * 60 + sn!;
+}
+
+/** YouTube adresine `t` (saniye) parametresi eklenmiş bağlantı. YouTube dışı (nba.com) adreslerde ya da zaman geçersizse undefined. */
+export function videoZamanAdresi(video: string, zaman: string): string | undefined {
+  const saniye = zamanSaniye(zaman);
+  if (saniye === undefined) return undefined;
+  let url: URL;
+  try {
+    url = new URL(video);
+  } catch {
+    return undefined;
+  }
+  if (!(url.hostname === 'youtube.com' || url.hostname.endsWith('.youtube.com'))) return undefined;
+  url.searchParams.set('t', String(saniye));
+  return url.toString();
+}
+
+// ——— Mevcut veriyle ad benzerliği ———
+
+export type MevcutBenzer = { yeni: string; mevcut: string; yeniKimlik: string; mevcutKimlik: string };
+
+/**
+ * Yeni gecedeki adlar (katkılar ve rakip), mevcut gecelerdeki adlarla çok benzer ama slug'ları farklıysa (aynı eşik: benzerAdlar).
+ * Ad değiştirilmez; çağıran uyarı verir ve yoruma "mevcut yazım: X?" ekler.
+ */
+export function benzerAdlarMevcutla(yeni: Gece, mevcutGeceler: readonly Gece[]): MevcutBenzer[] {
+  const adlar = (geceler: readonly Gece[]) => {
+    const harita = new Map<string, string>();
+    for (const g of geceler) for (const o of g.oyunlar) {
+      for (const k of o.katkilar) harita.set(kimlik(k.oyuncu), k.oyuncu);
+      if (o.rakip) harita.set(kimlik(o.rakip), o.rakip);
+    }
+    return harita;
+  };
+  const yeniAdlar = adlar([yeni]);
+  const mevcutAdlar = adlar(mevcutGeceler);
+  const sonuc: MevcutBenzer[] = [];
+  for (const [yk, ya] of yeniAdlar) {
+    if (mevcutAdlar.has(yk)) continue; // aynı kimlik: aynı oyuncu
+    for (const [mk, ma] of mevcutAdlar) {
+      const esik = Math.min(yk.length, mk.length) >= 8 ? 2 : 1;
+      if (Math.abs(yk.length - mk.length) <= esik && uzaklik(yk, mk) <= esik) sonuc.push({ yeni: ya, mevcut: ma, yeniKimlik: yk, mevcutKimlik: mk });
     }
   }
   return sonuc;

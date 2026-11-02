@@ -4,7 +4,7 @@
 import Top10Bos from './Top10Bos.astro';
 import { top10Geceleri } from '../../lib/content';
 import { ondalikYaz, tarihIso, tarihYaz } from '../../lib/format';
-import { katkiBirimi, katkiPaylari, PUAN_BIRIMI, sonGece } from '../../lib/top10';
+import { incelemeBekliyor, katkiBirimi, katkiPaylari, PUAN_BIRIMI, sonGece, videoZamanAdresi } from '../../lib/top10';
 import { etiketAdi, eylemAdi, rolAdi } from '../../lib/top10-sozluk';
 import { dilAl, sozluk } from '../../i18n';
 
@@ -57,6 +57,15 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
                   </ul>
                 )}
                 {o.aciklama && <p class="ek">{o.aciklama}</p>}
+                {o.zaman && (
+                  <p class="ek zaman">
+                    {videoZamanAdresi(gece.video, o.zaman) ? (
+                      <a href={videoZamanAdresi(gece.video, o.zaman)} rel="noopener noreferrer">{s.videodaZaman(o.zaman)}</a>
+                    ) : (
+                      s.videodaZaman(o.zaman)
+                    )}
+                  </p>
+                )}
                 {o.rakip && (
                   <p class="ek">
                     {s.rakip}: {o.rakip}
@@ -70,6 +79,7 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
       <p class="video">
         <a href={gece.video} rel="noopener noreferrer">{s.video(videoAlani)}</a>
       </p>
+      {incelemeBekliyor(gece) && <p class="bekleyen-not">{s.bekleyenNot}</p>}
     </section>
   )
 }
@@ -188,9 +198,22 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     font-size: var(--yazi-xs);
   }
 
+  /* Oyunun videodaki zamanına bağlantı: ink metin, vurgu renkli alt çizgi (genel bağlantı stili) */
+  .zaman a {
+    color: var(--murekkep);
+    font-weight: 600;
+  }
+
   .video {
     margin-block-start: var(--aralik-3);
     font-size: var(--yazi-sm);
+  }
+
+  /* Otomatik çıkarılmış, henüz kontrol edilmemiş gece: yalnızca düz metin notu (renk, ikon, ok yok). */
+  .bekleyen-not {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
   }
 
   /* Bağlantı: ink metin, vurgu renkli alt çizgi (turuncu metin < 7:1 olurdu) */

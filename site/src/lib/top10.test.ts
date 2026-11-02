@@ -360,3 +360,31 @@ describe('benzerAdlar (yazım hatası şüphesi)', () => {
     expect(benzerAdlar([gece('2026-11-01', 'top5', ['Nikola Jokić'], ['NIKOLA JOKIC'], ['Luka Dončić'], ['Kemal Torun'], ['Seda Albay'])])).toEqual([]);
   });
 });
+
+describe('video zamanı', () => {
+  it('zamanSaniye: m:ss ve mm:ss', async () => {
+    const { zamanSaniye } = await import('./top10');
+    expect(zamanSaniye('0:05')).toBe(5);
+    expect(zamanSaniye('1:05')).toBe(65);
+    expect(zamanSaniye('10:30')).toBe(630);
+    expect(zamanSaniye('00:42')).toBe(42);
+    for (const kotu of ['1:5', '1:75', '105', '1:05:00', '', 'a:bc']) expect(zamanSaniye(kotu), kotu).toBeUndefined();
+  });
+  it('videoZamanAdresi: youtube adresine t (saniye) parametresi; YouTube dışı ya da geçersiz zamanda undefined', async () => {
+    const { videoZamanAdresi } = await import('./top10');
+    expect(videoZamanAdresi('https://www.youtube.com/watch?v=abc', '1:05')).toBe('https://www.youtube.com/watch?v=abc&t=65');
+    expect(videoZamanAdresi('https://www.youtube.com/watch?v=abc&t=3', '0:10')).toBe('https://www.youtube.com/watch?v=abc&t=10');
+    expect(videoZamanAdresi('https://www.nba.com/watch/video/x', '1:05')).toBeUndefined();
+    expect(videoZamanAdresi('https://www.youtube.com/watch?v=abc', '1:75')).toBeUndefined();
+  });
+});
+
+describe('benzerAdlarMevcutla', () => {
+  it('yeni gecedeki ad mevcut adlarla çok benzer ama farklıysa bulunur; aynı kimlik sayılmaz', async () => {
+    const { benzerAdlarMevcutla } = await import('./top10');
+    const yeni = gece('2026-11-01', 'top5', ['Marcus Delaney'], ['Ada Yılmaz'], ['Kemal Torun'], ['Seda Albay'], ['Nils Berg']);
+    const mevcut = gece('2026-10-30', 'top5', ['Marcus Delany'], ['ADA YILMAZ'], ['Qwe Rty'], ['Zxc Vbn'], ['Poi Uyt']);
+    expect(benzerAdlarMevcutla(yeni, [mevcut]).map((b) => [b.yeni, b.mevcut])).toEqual([['Marcus Delaney', 'Marcus Delany']]);
+    expect(benzerAdlarMevcutla(yeni, [])).toEqual([]);
+  });
+});

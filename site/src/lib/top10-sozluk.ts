@@ -3,46 +3,47 @@
 // i18n/tr.ts ve en.ts'e bu anahtarlar yazılmaz. Anahtar eklemek/çıkarmak = veri dosyalarının geçerli değerlerini değiştirmek.
 import type { Dil } from '../i18n';
 
-type Adlar = { tr: string; en: string };
+// `gemini`: scripts/top10/istem.md'deki İngilizce değer (modelin döndürdüğü anahtar); siteye yazılan anahtar nesnenin kendi anahtarıdır.
+type Adlar = { tr: string; en: string; gemini?: string };
 
 export const EYLEMLER = {
-  smac: { tr: 'Smaç', en: 'Dunk' },
-  alley_oop: { tr: 'Alley-oop', en: 'Alley-oop' },
-  blok: { tr: 'Blok', en: 'Block' },
-  top_calma: { tr: 'Top çalma', en: 'Steal' },
-  pas: { tr: 'Pas', en: 'Pass' },
-  ucluk: { tr: 'Üçlük', en: 'Three-pointer' },
-  turnike: { tr: 'Turnike', en: 'Layup' },
-  orta_mesafe: { tr: 'Orta mesafe', en: 'Mid-range' },
-  diger: { tr: 'Diğer', en: 'Other' },
+  smac: { tr: 'Smaç', en: 'Dunk', gemini: 'dunk' },
+  alley_oop: { tr: 'Alley-oop', en: 'Alley-oop', gemini: 'alley_oop' },
+  blok: { tr: 'Blok', en: 'Block', gemini: 'block' },
+  top_calma: { tr: 'Top çalma', en: 'Steal', gemini: 'steal' },
+  pas: { tr: 'Pas', en: 'Pass', gemini: 'pass' },
+  ucluk: { tr: 'Üçlük', en: 'Three-pointer', gemini: 'three_pointer' },
+  turnike: { tr: 'Turnike', en: 'Layup', gemini: 'layup' },
+  orta_mesafe: { tr: 'Orta mesafe', en: 'Mid-range', gemini: 'mid_range' },
+  diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 
 export const ETIKETLER = {
-  poster: { tr: 'Poster', en: 'Poster' },
-  chase_down_blok: { tr: 'Arkadan blok', en: 'Chase-down block' },
-  son_saniye: { tr: 'Son saniye', en: 'Last second' },
-  mac_kazandiran: { tr: 'Maçı kazandıran', en: 'Game-winner' },
-  and_one: { tr: 'And-one', en: 'And-one' },
-  yari_saha_ve_otesi: { tr: 'Yarı saha ve ötesi', en: 'Half court and beyond' },
-  bacak_arasi: { tr: 'Bacak arası', en: 'Between the legs' },
-  sirt_arkasi: { tr: 'Sırt arkası', en: 'Behind the back' },
-  bakmadan: { tr: 'Bakmadan', en: 'No-look' },
-  crossover: { tr: 'Crossover', en: 'Crossover' },
-  putback: { tr: 'Putback', en: 'Putback' },
-  tip_in: { tr: 'Tip-in', en: 'Tip-in' },
-  hizli_hucum: { tr: 'Hızlı hücum', en: 'Fast break' },
-  windmill: { tr: 'Windmill', en: 'Windmill' },
-  ters: { tr: 'Ters', en: 'Reverse' },
-  tek_el: { tr: 'Tek el', en: 'One-handed' },
-  kendine_alley_oop: { tr: 'Kendine alley-oop', en: 'Self alley-oop' },
+  poster: { tr: 'Poster', en: 'Poster', gemini: 'poster' },
+  chase_down_blok: { tr: 'Arkadan blok', en: 'Chase-down block', gemini: 'chase_down_block' },
+  son_saniye: { tr: 'Son saniye', en: 'Last second', gemini: 'buzzer_beater' },
+  mac_kazandiran: { tr: 'Maçı kazandıran', en: 'Game-winner', gemini: 'game_winner' },
+  and_one: { tr: 'And-one', en: 'And-one', gemini: 'and_one' },
+  yari_saha_ve_otesi: { tr: 'Yarı saha ve ötesi', en: 'Half court and beyond', gemini: 'half_court_or_longer' },
+  bacak_arasi: { tr: 'Bacak arası', en: 'Between the legs', gemini: 'between_the_legs' },
+  sirt_arkasi: { tr: 'Sırt arkası', en: 'Behind the back', gemini: 'behind_the_back' },
+  bakmadan: { tr: 'Bakmadan', en: 'No-look', gemini: 'no_look' },
+  crossover: { tr: 'Crossover', en: 'Crossover', gemini: 'crossover_ankle_breaker' },
+  putback: { tr: 'Putback', en: 'Putback', gemini: 'putback' },
+  tip_in: { tr: 'Tip-in', en: 'Tip-in', gemini: 'tip_in' },
+  hizli_hucum: { tr: 'Hızlı hücum', en: 'Fast break', gemini: 'fast_break' },
+  windmill: { tr: 'Windmill', en: 'Windmill', gemini: 'windmill' },
+  ters: { tr: 'Ters', en: 'Reverse', gemini: 'reverse' },
+  tek_el: { tr: 'Tek el', en: 'One-handed', gemini: 'one_handed' },
+  kendine_alley_oop: { tr: 'Kendine alley-oop', en: 'Self alley-oop', gemini: 'self_alley_oop' },
 } as const satisfies Record<string, Adlar>;
 
 export const ROLLER = {
-  bitiren: { tr: 'Bitiren', en: 'Finisher' },
-  pasor: { tr: 'Pasör', en: 'Passer' },
-  bloklayan: { tr: 'Bloklayan', en: 'Blocker' },
-  top_calan: { tr: 'Top çalan', en: 'Stealer' },
-  diger: { tr: 'Diğer', en: 'Other' },
+  bitiren: { tr: 'Bitiren', en: 'Finisher', gemini: 'finisher' },
+  pasor: { tr: 'Pasör', en: 'Passer', gemini: 'passer' },
+  bloklayan: { tr: 'Bloklayan', en: 'Blocker', gemini: 'blocker' },
+  top_calan: { tr: 'Top çalan', en: 'Stealer', gemini: 'stealer' },
+  diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 
 export type Eylem = keyof typeof EYLEMLER;
@@ -57,3 +58,27 @@ export const ROL_ANAHTARLARI = Object.keys(ROLLER) as [Rol, ...Rol[]];
 export const eylemAdi = (anahtar: Eylem, dil: Dil) => EYLEMLER[anahtar][dil];
 export const etiketAdi = (anahtar: Etiket, dil: Dil) => ETIKETLER[anahtar][dil];
 export const rolAdi = (anahtar: Rol, dil: Dil) => ROLLER[anahtar][dil];
+
+/** NBA'in 30 takım kısaltması: `katkilar[].takim` bunlardan biri olmalıdır (şema reddeder; betikte yeniden deneme yolu). */
+export const TAKIM_KODLARI = [
+  'ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW',
+  'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK',
+  'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS',
+] as const;
+export type TakimKodu = (typeof TAKIM_KODLARI)[number];
+
+// Gemini'nin (istem.md) İngilizce değerleri ↔ sitenin anahtarları. Sözlükteki `gemini` alanlarından türetilir.
+type Anahtarli = Record<string, Adlar>;
+const gemini = <T extends string>(tablo: Anahtarli) => {
+  const harita = Object.fromEntries(Object.entries(tablo).map(([k, v]) => [v.gemini, k])) as Record<string, T>;
+  return { harita, degerler: Object.keys(harita) as [string, ...string[]] };
+};
+const GE = gemini<Eylem>(EYLEMLER);
+const GT = gemini<Etiket>(ETIKETLER);
+const GR = gemini<Rol>(ROLLER);
+export const GEMINI_EYLEM = GE.harita;
+export const GEMINI_ETIKET = GT.harita;
+export const GEMINI_ROL = GR.harita;
+export const GEMINI_EYLEM_DEGERLERI = GE.degerler;
+export const GEMINI_ETIKET_DEGERLERI = GT.degerler;
+export const GEMINI_ROL_DEGERLERI = GR.degerler;

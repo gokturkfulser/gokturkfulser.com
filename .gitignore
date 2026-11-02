@@ -13,6 +13,9 @@ site/src/data/letterboxd/
 
 # Playwright ekran görüntüleri ve MCP çıktıları: yerel kanıt, repo'ya girmez
 site/ekran-goruntuleri/
+
+# top10 betiği --kuru çıktıları (JSON): yerel inceleme için, repoya girmez
+site/scripts/top10/cikti/
 .playwright-mcp/
 
 # Python

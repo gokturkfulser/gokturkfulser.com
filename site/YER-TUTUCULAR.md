@@ -42,16 +42,13 @@ Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden h
 | `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
 | `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Perde Perde Anadolu yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |
 
-## 6. Top 10 ("İnsan highlight makarası") örnek verisi
+## 6. Top 10 ("İnsan highlight makarası")
 
-Hepsi uydurmadır (oyuncular, videolar ve açıklamalar gerçek değil) ve `taslak: true`'dur; production'da yüklenmez, yazı da taslaktır. Gerçek veri girilince silinir.
+Örnek gece verisi (uydurma `2026-27/*.yaml` dosyaları) **kaldırıldı**; `src/content/top10/` altında yalnızca gerçek veri ve `oyuncu-adlari.yaml` sözlüğü yer alır. Gece verisi yokken bileşenler boş durumu gösterir.
 
 | Dosya | Durum |
 | --- | --- |
-| `src/content/top10/2026-27/2026-10-28.yaml` | Uydurma Top 10 gecesi (çoğu tek kişilik oyun, bir 50/50 alley-oop). |
-| `src/content/top10/2026-27/2026-10-30.yaml` | Uydurma **Top 5** gecesi (50/50 ve 70/30 paylı oyunlar). |
-| `src/content/top10/2026-27/2026-11-01.yaml` | Uydurma Top 10 gecesi: 50/50 alley-oop (açık pay), 70/30 pas ağırlıklı alley-oop, blok + hızlı hücum (iki katkı), üçlü eşit bölüşüm (34/33/33), top çalma + hızlı hücum, `rakip` ve `aciklama` örnekleri; aynı oyuncu (Ilse Brandt) o gecede hem tek başına (3. sıra) hem paylı oyunla (8. sıra) gelir. |
-| `src/content/basketbol/insan-highlight-makarasi/index.mdx` | Taslak yazı (tr); giriş metni yer tutucu, yazılacak. |
-| `src/content/basketbol/human-highlight-reel/index.mdx` | Taslak çeviri (en); giriş metni yer tutucu. |
+| `src/content/basketbol/insan-highlight-makarasi/index.mdx` | Taslak yazı (tr, `taslak: true`); giriş metni yer tutucu, yazılacak. |
+| `src/content/basketbol/human-highlight-reel/index.mdx` | Taslak çeviri (en, `taslak: true`); giriş metni yer tutucu. |
 
-Kontrol: production `dist/` içinde şu dizelerin hiçbiri bulunmamalı: `Veltri`, `Kofi Adebayo`, `Ilse Brandt`, `Piet Kronen`, `Wes Okafor`, `Cal Meyer`, `Sol Brando`, `Ben Archer`, `Noor Hale`, `Amara Osei`, `Jun Takeda`, `Rafael Quintero`, `Nils Haugen`, `Mirko Daval`, `Leo Marchetti`, `Dario Fenn`, `yer-tutucu-`, `insan-highlight`, `human-highlight` (`dist/pagefind*` ve bileşen CSS'i dışında; Top 10 bileşenlerinin stil kuralları paylaşılan `mdx.*.css` paketinde yer alır, veri değildir). Gerçeğe çevirirken `src/content/top10/2026-27/` altındaki üç dosyayı silin, iki yazıdan `taslak: true` satırını kaldırın.
+Kontrol: production `dist/` içinde `insan-highlight`, `human-highlight`, `top10` bulunmamalı (`dist/pagefind*` ve bileşen CSS'i dışında; Top 10 bileşenlerinin stil kuralları paylaşılan `mdx.*.css` paketinde yer alır). Gerçeğe çevirirken iki yazıdan `taslak: true` satırını kaldırın.

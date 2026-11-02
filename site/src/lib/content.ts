@@ -5,6 +5,7 @@ import { digerDil, slugify, type Dil } from '../i18n';
 import { yol, type Bolum } from '../i18n/yollar';
 import { tmdbKaydi } from './tmdb';
 import { benzerAdlar, yinelenenTarihler, type Gece } from './top10';
+import { kanonikGece, sozlukHaritasi } from './top10-adlar';
 
 export type { Bolum };
 
@@ -170,7 +171,10 @@ const top10Uyarilan = new Set<string>();
  * slug'ları farklı ama çok benzeyen oyuncu adları (yazım hatası şüphesi) build günlüğüne uyarı olarak yazılır.
  */
 export async function top10Geceleri(sezon?: string): Promise<{ sezon: string | undefined; geceler: Gece[] }> {
-  const girdiler = (await getCollection('top10', gorunur)).map((g) => ({ sezon: g.id.split('/')[0]!, gece: g.data as Gece }));
+  // Takma adla yazılmış adlar kanonik ada çevrilir (oyuncu-adlari.yaml): oyuncu geceler arasında tek satırda toplanır, kanonik ad görünür.
+  const sozluk = (await getCollection('top10Adlar'))[0]?.data.kayitlar ?? {};
+  const harita = sozlukHaritasi(sozluk);
+  const girdiler = (await getCollection('top10', gorunur)).map((g) => ({ sezon: g.id.split('/')[0]!, gece: kanonikGece(g.data as Gece, harita) }));
   const yinelenen = yinelenenTarihler(girdiler.map((g) => g.gece));
   if (yinelenen.length > 0) throw new Error(`top10: aynı güne birden fazla gece yazılmış: ${yinelenen.join(', ')}.`);
   for (const { a, b } of benzerAdlar(girdiler.map((g) => g.gece))) {

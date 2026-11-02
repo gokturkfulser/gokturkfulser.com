@@ -220,6 +220,8 @@ export const en: Sozluk = {
     video: (alan: string) => `Watch the video on ${alan}`,
     puanlar: (n: number, gosterim: string) => (n === 1 ? '1 point' : `${gosterim} points`),
     rakip: 'Against',
+    videodaZaman: (zaman: string) => `In the video at ${zaman}`,
+    bekleyenNot: 'This night’s data was extracted automatically and has not been checked yet.',
     liderler: (sezon: string) => `Lead changes, ${sezon} season`,
     ilkLider: 'Leader after the first night',
     onceki: 'Previous leader',

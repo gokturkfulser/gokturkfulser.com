@@ -1,0 +1,110 @@
+name: site-top10
+
+# "İnsan highlight makarası" günlük otomasyonu: NBA kanalındaki yeni "Top 10/5 Plays of the Night" videosunu bulur, Gemini ile
+# gece dosyasını (site/src/content/top10/<sezon>/<tarih>.yaml) üretir, site şemasıyla doğrular ve DOĞRUDAN main'e commit'ler (PR yok).
+# Bot yalnızca site/src/content/top10/** yazar; başka bir dosya değişirse commit atılmaz, iş hata verir.
+# Kurulum, sırlar ve ilk çalıştırma kontrolleri: site/DEPLOY.md "Top 10 günlük otomasyonu". Mantık: site/scripts/top10/.
+on:
+  schedule:
+    # GitHub cron'u UTC'dir (https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
+    # İstanbul yıl boyu UTC+3'tür (yaz saati yok): 10:00 İstanbul = 07:00 UTC, 16:00 İstanbul = 13:00 UTC.
+    # (GitHub yoğun saatlerde başlatmayı geciktirebilir; ikinci çalıştırma ilkinin kaçırdığını da yakalar.)
+    - cron: '0 7 * * *'
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+    inputs:
+      tarih:
+        description: 'Tek gece üret: ABD gecesi (YYYY-AA-GG). Boş bırakılırsa son 3 gece taranır.'
+        required: false
+        type: string
+      url:
+        description: 'İsteğe bağlı: bu gece için YouTube video adresi (boşsa NBA kanalından bulunur).'
+        required: false
+        type: string
+      uzerine_yaz:
+        description: 'Bekleyen (kaynak: gemini, inceleme: bekliyor) gece dosyasını yeniden üret. Elle yazılmış ya da onaylı dosyaya yine dokunulmaz.'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-top10
+  cancel-in-progress: false
+
+jobs:
+  uret:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0 # push öncesi rebase için tam geçmiş
+      - uses: pnpm/action-setup@v4 # sürüm: kök package.json'daki packageManager
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc # tek kaynak: Node sürümü köktek .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Birim testleri
+        run: pnpm --filter site test
+
+      # Girdiler ortam değişkeniyle geçer (komut satırına ${{ }} enjekte edilmez); `--ortamdan` bunları bayraklara çevirir
+      # (scripts/top10/calistir.ts → dispatchArgumanlari, testli): girdi yoksa (zamanlanmış çalıştırma) --otomatik; tarih/url varsa tek gece;
+      # `uzerine_yaz` işaretliyse --uzerine-yaz (yalnızca kaynak: gemini + inceleme: bekliyor dosyalar; elle/onaylı dosyaya dokunulmaz).
+      - name: Gece dosyalarını üret
+        working-directory: site
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_COZUNURLUK: ${{ vars.GEMINI_COZUNURLUK }}
+          GIRDI_TARIH: ${{ inputs.tarih }}
+          GIRDI_URL: ${{ inputs.url }}
+          GIRDI_UZERINE_YAZ: ${{ inputs.uzerine_yaz }}
+        run: node scripts/top10/calistir.ts --ortamdan
+
+      # Üretilen dosyaların sitenin kendi içerik şemasından geçtiğini kanıtlar: `astro sync` içerik katmanını yükler ve her koleksiyon
+      # girdisini şemaya karşı doğrular (hata → çıkış 1). TMDB/Letterboxd sırrı gerekmez (yalnızca `build` onları kullanır).
+      - name: Site şemasıyla doğrula (astro sync)
+        run: pnpm --filter site exec astro sync
+
+      - name: Yalnızca top10 verisi değiştiyse commit + push
+        run: |
+          set -euo pipefail
+          degisen="$(git status --porcelain --untracked-files=all | cut -c4-)"
+          if [ -z "$degisen" ]; then
+            echo "Değişiklik yok; commit atılmadı."
+            exit 0
+          fi
+          # Yalnızca gece dosyaları (site/src/content/top10/<sezon>/<tarih>.yaml): oyuncu-adlari.yaml sözlüğü ve başka her dosya bot tarafından yazılamaz.
+          yabanci="$(printf '%s\n' "$degisen" | grep -Ev '^site/src/content/top10/[0-9]{4}-[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2}\.yaml$' || true)"
+          if [ -n "$yabanci" ]; then
+            echo "::error::top10 gece dosyaları dışında dosya değişmiş; commit atılmadı:"
+            printf '%s\n' "$yabanci"
+            exit 1
+          fi
+          tarihler="$(printf '%s\n' "$degisen" | sed -E 's#.*/([0-9]{4}-[0-9]{2}-[0-9]{2})\.yaml$#\1#' | sort -u | paste -sd, - | sed 's/,/, /g')"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- site/src/content/top10
+          git commit -m "top10: ${tarihler} (gemini)"
+          # Yarış: bu sırada main'e başka commit girmiş olabilir. Rebase + push, çakışmada bir kez daha dene, olmazsa hata.
+          basarili=0
+          for deneme in 1 2; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              basarili=1
+              break
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "::warning::push denemesi ${deneme} başarısız"
+            sleep 5
+          done
+          if [ "$basarili" != "1" ]; then
+            echo "::error::main'e push edilemedi (iki deneme)"
+            exit 1
+          fi

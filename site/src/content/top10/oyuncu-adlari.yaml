@@ -1,0 +1,7 @@
+# Oyuncu adı sözlüğü: kanonik ad -> takma adlar.
+# Model aynı oyuncuyu farklı yazabiliyor; takma adla yazılmış her ad (gece dosyalarında ve betiğin çıktısında) kanonik ada çevrilir,
+# böylece oyuncu tabloda ve oylamada tek kişi sayılır. Tabloda ve listelerde kanonik ad görünür.
+# Kurallar (ihlal build'i durdurur): bir takma ad iki kanonik ada bağlanamaz; kanonik ad başka bir kaydın takma adı olamaz.
+# Bu dosyayı yalnızca siz düzenlersiniz: bot bu klasörde yalnızca gece dosyalarını (<sezon>/<tarih>.yaml) yazar.
+Svi Mykhailiuk: [Sviatoslav Mykhailiuk]
+Brayden Burries: [Braden Burries]

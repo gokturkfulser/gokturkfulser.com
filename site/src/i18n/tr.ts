@@ -224,6 +224,8 @@ export const tr = {
     video: (alan: string) => `Videoyu ${alan} üzerinde izle`,
     puanlar: (_n: number, gosterim: string) => `${gosterim} puan`,
     rakip: 'Rakip',
+    videodaZaman: (zaman: string) => `Videoda ${zaman}`,
+    bekleyenNot: 'Bu gecenin verisi otomatik çıkarıldı, henüz kontrol edilmedi.',
     liderler: (sezon: string) => `${sezon} sezonu lider değişimleri`,
     ilkLider: 'İlk gecenin lideri',
     onceki: 'Önceki lider',

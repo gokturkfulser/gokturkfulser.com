@@ -133,3 +133,70 @@ Site statik olduğundan "Son izlediklerim" şeridi yalnızca build anında günc
 
 - Deploy Hook ile tetiklenen build'in **Build watch paths** kuralından muaf olup olmadığı dokümanda yazmıyor; yol kuralları dosya değişikliğine baktığı için hook build'inin çalışması beklenir. İlk elle çalıştırmada build history'de "Skipped" görürseniz watch paths'e `site/*` zaten ekli olduğundan bunu bildirin.
 - GitHub zamanlanmış workflow'ları yoğun saatlerde birkaç dakika gecikebilir; 60 gün hiç etkinlik olmayan **public** repolarda otomatik durdurulur (bu repo private).
+
+## 10. Top 10 günlük otomasyonu (İnsan highlight makarası)
+
+`.github/workflows/site-top10.yml` günde iki kez (**10:00 ve 16:00 İstanbul**; GitHub cron'u UTC olduğundan `0 7 * * *` ve `0 13 * * *`) NBA resmi YouTube kanalının son videolarına bakar. "NBA's Top 10 (ya da 5) Plays of the Night | <tarih>" başlıklı ve son 3 ABD gecesine denk gelen videolar için, dosyası yoksa Gemini'ye videonun resmi YouTube adresini verip `site/src/content/top10/<sezon>/<tarih>.yaml` dosyasını üretir, sitenin kendi içerik şemasıyla doğrular ve **doğrudan `main`'e commit'ler (PR yok)**. Bot yalnızca `site/src/content/top10/**` yazar. Mantık: `site/scripts/top10/`; kurallar: `site/CLAUDE.md` "Top 10 verisi".
+
+### Gereken iki sır (Settings → Secrets and variables → Actions → New repository secret)
+
+| Ad | Nereden |
+| --- | --- |
+| `YOUTUBE_API_KEY` | Google Cloud'da YouTube Data API v3 anahtarı (aşağıda) |
+| `GEMINI_API_KEY` | Google AI Studio |
+| `GEMINI_MODEL` (isteğe bağlı, **Variables** sekmesi) | Model kimliği; tanımlı değilse betiğin varsayılanı (`scripts/top10/ayarlar.ts`) |
+
+Anahtarlar repoya, loga ve step summary'ye girmez; yerelde denemek için `site/.env`'e yazın (`.env.example` şablonu).
+
+### YouTube Data API anahtarı (Google Cloud)
+
+Kaynak: YouTube Data API "Getting started" ve Google Cloud "API keys" dokümanları.
+
+1. Google Cloud Console'da bir proje seçin, **Enabled APIs** sayfasında **YouTube Data API v3**'ün açık olduğunu doğrulayın; değilse **API Library**'den etkinleştirin.
+2. [Credentials sayfası](https://console.cloud.google.com/apis/credentials) → **Create credentials** → **API key**. Konsol en az bir kısıtlama ister; **Create** ile anahtar dizesini kopyalayın ve güvenli saklayın.
+3. Anahtarın adına tıklayın → **API restrictions** → **Restrict key** → yalnızca **YouTube Data API v3**'ü seçin → **Save**. (Doküman kısıtlanmamış anahtarları güvensiz sayar.)
+4. **Application restrictions** için GitHub'ın hosted runner'ları sabit IP'ye sahip olmadığından IP kısıtlaması uygun değildir; yalnızca API kısıtlaması kullanın. Anahtarı GitHub'da `YOUTUBE_API_KEY` secret'ı olarak kaydedin.
+5. Kota: bu iş `playlistItems.list` kullanır (çağrı başına 1 birim; `search.list` 100 birim olurdu). Çalıştırma başına birkaç sayfa okunur, günlük varsayılan 10.000 birimin çok altındadır.
+
+Gemini anahtarı: aistudio.google.com/apikey → **Create API key**. Anahtar ücretlendirmeye bağlı olabilir; Google Cloud'da faturalandırma uyarısı kurmanız önerilir (AI Studio dokümanı).
+
+### Geçmiş geceleri toplu doldurma (yerelde)
+
+Sezon başından beri eksik geceleri doldurmak için workflow kullanılmaz (günlük iş yalnızca son 3 geceye bakar); yerelde `site/.env` anahtarlarıyla: `pnpm --filter site top10 --otomatik --baslangic 2026-10-20 --bitis 2026-10-31` (bitiş verilmezse dün; en çok 31 gün). Betik oynatma listesini gerektiği kadar sayfalar, her gece için normal kuralları (oylama, doğrulamalar, kilitler) uygular, başarısız geceyi atlayıp devam eder ve sonda başarılı/başarısız/video yok listesi, sayfa sayısı ve YouTube kotasını yazar. Aynı komutu tekrar çalıştırmak yalnızca dosyası olmayan geceleri (başarısızları) işler. Üretilen `inceleme: bekliyor` dosyalarını gözden geçirip commit'leyin. Her gece oylama sayısı kadar Gemini çağrısı yaptığından büyük aralıklarda token maliyeti yüksektir; ilk denemede `--kuru` ya da kısa aralık kullanın.
+
+### Doğruluk ayarları ve maliyet
+
+Workflow her geceyi **3 kez** bağımsız işler ve satır satır çoğunluk oylaması yapar (`--oylama`, varsayılan 3); bu, tek çalıştırmaya göre yaklaşık 3 kat Gemini token'ı demektir. Video girdisi varsayılan olarak **yüksek çözünürlükte** gider (yaklaşık 3 kat daha fazla video token'ı); düşürmek için Settings → Secrets and variables → Actions → **Variables** sekmesinde `GEMINI_COZUNURLUK` tanımlayın (`low` gibi; boşsa `high`). Token harcaması step summary'de çağrı başına ve toplam olarak görünür; video başına üst sınırı aşan çağrı için uyarı çıkar. Oy birliği olmayan satırlar YAML yorumunda ve özetteki "Kontrol edilecek satırlar"da oy oranı ve alternatifleriyle listelenir.
+
+### Model
+
+Varsayılan model `gemini-3.8-flash`'tır (`scripts/top10/ayarlar.ts`). GitHub'da **Settings → Secrets and variables → Actions → Variables** sekmesindeki `GEMINI_MODEL` repository variable'ıyla değiştirilebilir (boşsa varsayılan). Model Google tarafından kaldırılır ya da adı değişirse çalıştırma `404`/`400` hatasıyla **kırmızı biter** (hiçbir gece dosyası yazılmaz, commit olmaz); `GEMINI_MODEL` değişkenini yeni model kimliğiyle güncelleyip workflow'u yeniden çalıştırın. Hangi model sürümünün kullanıldığı her çalıştırmanın step summary başında yazar.
+
+### Oyuncu adları
+
+Model aynı oyuncuyu farklı yazabilir ("Brayden Burries" / "Braden Burries"). Betik oylamada bunları aynı kişi sayar ve step summary'de "olası takma ad: X → Y, sözlüğe ekle" önerir; öneriyi `site/src/content/top10/oyuncu-adlari.yaml`'a elle ekleyin (`Kanonik Ad: [Takma Ad]`). Sözlük çakışmaları (bir takma adın iki kanonik ada bağlanması vb.) hem betiği (çıkış 2) hem site build'ini durdurur.
+
+### Workflow'u elle çalıştırma
+
+**Actions → site-top10 → Run workflow** (`main`):
+
+- Girdiler boşsa son 3 gece taranır (zamanlanmış çalıştırmayla aynı).
+- `tarih` (YYYY-AA-GG, ABD gecesi) tek gece üretir; videoyu NBA kanalından bulur. İsteğe bağlı `url` o gece için video adresidir.
+- `uzerine_yaz` yalnızca bu elle çalıştırmada vardır: `kaynak: gemini` ve `inceleme: bekliyor` olan dosyayı yeniden üretir. Elle yazılmış ya da `inceleme: onaylandi` dosyaya hiçbir durumda dokunulmaz.
+
+### İlk çalıştırmadan önce / sırasında kontrol edilecekler
+
+1. **Örnek veri yok:** uydurma örnek gece dosyaları kaldırıldı (`YER-TUTUCULAR.md` bölüm 6); bot yalnızca gerçek geceleri yazar. `src/content/top10/oyuncu-adlari.yaml` sözlüğünü siz düzenlersiniz (bot yazmaz; workflow yalnızca `top10/<sezon>/<tarih>.yaml` gece dosyalarını commit'ler).
+2. Önce `tarih` girdisiyle tek bir gece deneyin; Actions günlüğünde ve **step summary**'de gecenin sıralamasına, orta/düşük güvenli satırlara ve video bağlantısına bakın. Doğru model kimliğinin çalıştığını (hata `404`/`400` ise `GEMINI_MODEL` değişkenini düzeltin) ilk çalıştırmada görürsünüz.
+3. Commit'in `main`'de `top10: <tarihler> (gemini)` iletisiyle ve `github-actions[bot]` yazarıyla göründüğünü doğrulayın. Dosya `inceleme: bekliyor` olduğundan sayfada gecenin altında "Bu gecenin verisi otomatik çıkarıldı, henüz kontrol edilmedi." notu çıkar.
+4. **Cloudflare build history:** Workers Builds `main`'e her push'ta (bot dahil) build alır; `gokturkfulser-site` → **Deployments → View build history**'de bot commit'inin build tetiklediğini doğrulayın. Build watch paths `site/*` içerdiğinden `site/src/content/top10/**` değişikliği build'i çalıştırır (bölüm 3).
+5. **`GITHUB_TOKEN` ile yapılan push başka GitHub workflow'larını tetiklemez** (GitHub dokümanı: "other `GITHUB_TOKEN`-triggered events do not create workflow runs at all"). Yani bot commit'i için `site.yml` (check/test/build) çalışmaz; beklenen davranıştır. Doğrulama zaten workflow içinde yapılır (birim testleri + `astro sync` ile içerik şeması). Cloudflare'in build'i GitHub Actions'tan bağımsızdır, o yüzden çalışır.
+6. Zamanlanmış çalıştırmalar yoğun saatlerde gecikebilir ya da nadiren atlanabilir; günde iki çalıştırma bu yüzdendir. Eksik kalan gece bir sonraki çalıştırmada (3 gün içinde) yakalanır.
+
+### Yanlış bir geceyi yeniden ürettirme
+
+Bot bir geceyi bir kez üretir ve `inceleme: bekliyor` olduğu sürece tekrar dokunmaz. Model yanlış çıkardıysa: **Actions → site-top10 → Run workflow** (`main`) → `tarih` (YYYY-AA-GG), `url` (o gecenin YouTube adresi) ve **`uzerine_yaz` kutusunu işaretleyin**. Betik `--tarih ... --url ... --uzerine-yaz` ile yalnızca o geceyi yeniden üretir ve yeni dosyayı commit'ler. Adres yalnızca youtube.com/watch?v=<kimlik>, youtu.be/<kimlik> ya da youtube.com/shorts/<kimlik> olmalıdır; geçersiz adres hiçbir API çağrılmadan hata verir. Video herkese açık olmalı ve başlığı "Top 10/5 Plays of the Night" kalıbına uymalıdır (aksi hâlde Gemini çağrılmaz). Kutu işaretli değilse bekleyen dosya olduğu gibi kalır (özette "dokunulmadı… yeniden üretmek için uzerine_yaz" yazar). `kaynak: elle` ya da `inceleme: onaylandi` dosyaya bu yolla da dokunulmaz; önce dosyayı düzenleyin ya da silin. İstem metnini `site/scripts/top10/istem.md`'den değiştirip aynı yolla deneyebilirsiniz; yerelde önce `pnpm site:top10 <tarih> <url> --kuru --tekrar 2` ile (dosya yazmaz) iki çalıştırmanın tutarlılığına bakın.
+
+### Bir geceyi düzeltme
+
+Dosyayı açın (`site/src/content/top10/<sezon>/<tarih>.yaml`), oyuncu/takım/rol/eylem/pay değerlerini düzeltin ve `inceleme: bekliyor` satırını `inceleme: onaylandi` yapın. Bot onaylı dosyaya bir daha dokunmaz; sayfadaki not kalkar. Dosyayı baştan ürettirmek isterseniz (henüz onaylamadıysanız) Actions'tan `tarih` + `uzerine_yaz` ile çalıştırın.

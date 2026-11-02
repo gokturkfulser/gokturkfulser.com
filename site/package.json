@@ -11,6 +11,7 @@
     "check": "astro check",
     "deploy": "wrangler deploy",
     "tmdb": "node --env-file-if-exists=.env scripts/tmdb-fetch.ts",
+    "top10": "node --env-file-if-exists=.env scripts/top10/calistir.ts",
     "test": "vitest run"
   },
   "dependencies": {
