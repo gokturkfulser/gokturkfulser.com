@@ -273,7 +273,7 @@ export type SayimListeleri = {
   calimlanan: SayimSatiri[];
   /** Poster etiketli oyunlarda rolü bitiren olan katkı sahipleri. */
   posterBasan: SayimSatiri[];
-  /** Eylemi blok olan oyunlarda rolü bloklayan olan katkı sahipleri (bloklayan rolü yoksa ve tek katkı varsa o kişi). */
+  /** Eyleme bakmadan rolü bloklayan olan tüm katkı sahipleri (örn. eylemi smaç olan blok + hızlı hücum oyunu da sayılır); eylemi blok olup bloklayan rolü yoksa ve tek katkı varsa o kişi. Aynı oyunda aynı kişi bir kez. */
   blokYapan: SayimSatiri[];
 };
 
@@ -307,10 +307,9 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
         if (calim) say(l.calimlanan, o.rakip, gece.tarih);
       }
       if (poster) for (const k of o.katkilar) if (k.rol === 'bitiren') say(l.posterBasan, k.oyuncu, gece.tarih);
-      if (blok) {
-        const bloklayanlar = o.katkilar.filter((k) => k.rol === 'bloklayan');
-        for (const k of bloklayanlar.length > 0 ? bloklayanlar : o.katkilar.length === 1 ? o.katkilar : []) say(l.blokYapan, k.oyuncu, gece.tarih);
-      }
+      const bloklayanlar = o.katkilar.filter((k) => k.rol === 'bloklayan');
+      const yapanlar = bloklayanlar.length > 0 ? bloklayanlar : blok && o.katkilar.length === 1 ? o.katkilar : [];
+      for (const ad of new Set(yapanlar.map((k) => k.oyuncu))) say(l.blokYapan, ad, gece.tarih);
     }
   }
   const sirala = (sayac: Sayac) =>

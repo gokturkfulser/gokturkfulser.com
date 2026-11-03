@@ -396,10 +396,32 @@ describe('sayimListeleri', () => {
         o(1, [['Ada Aksoy', 'bloklayan'], ['Bora Berk', 'bitiren']], { eylem: 'blok' }),
         o(2, [['Can Ceylan', 'diger']], { eylem: 'blok' }), // tek katkı, bloklayan rolü yok → o kişi
         o(3, [['Deniz Demir', 'diger'], ['Ece Eren', 'bitiren']], { eylem: 'blok' }), // çok katkı, bloklayan yok → kimse
-        o(4, [['Fikret Fidan', 'bloklayan']], { eylem: 'smac' }), // blok eylemi değil
+        o(4, [['Fikret Fidan', 'bloklayan']], { eylem: 'smac' }), // eylem blok değil ama rol bloklayan: sayılır
+      ),
+    ]);
+    expect(ad(l.blokYapan)).toEqual([['Ada Aksoy', 1], ['Can Ceylan', 1], ['Fikret Fidan', 1]]);
+  });
+
+  it('blokYapan eyleme bakmaz: eylemi smaç olan oyunda bloklayan rolü sayılır; bloklananlar listesi o oyunu saymaz', () => {
+    const l = sayimListeleri([
+      g('2026-11-01', o(1, [['Ada Aksoy', 'bloklayan'], ['Bora Berk', 'bitiren']], { eylem: 'smac', etiketler: ['chase_down_blok'], rakip: 'Ravi Rakip' })),
+    ]);
+    expect(ad(l.blokYapan)).toEqual([['Ada Aksoy', 1]]);
+    expect(l.bloklanan).toEqual([]); // eylem blok değil: rakip bloklananlara girmez
+    expect(l.posterlenen).toEqual([]);
+  });
+
+  it('blokYapan: tek katkılı blok oyunu o kişiyi sayar; eylemi blok olmayan tek katkılı bloklayansız oyun sayılmaz; aynı oyunda aynı kişi bir kez', () => {
+    const l = sayimListeleri([
+      g(
+        '2026-11-01',
+        o(1, [['Can Ceylan', 'diger']], { eylem: 'blok', rakip: 'Ravi Rakip' }),
+        o(2, [['Deniz Demir', 'diger']], { eylem: 'smac' }),
+        o(3, [['Ada Aksoy', 'bloklayan'], ['Ada Aksoy', 'bloklayan']], { eylem: 'smac' }), // aynı kişi iki katkıda: tek sayı
       ),
     ]);
     expect(ad(l.blokYapan)).toEqual([['Ada Aksoy', 1], ['Can Ceylan', 1]]);
+    expect(ad(l.bloklanan)).toEqual([['Ravi Rakip', 1]]);
   });
 
   it('takma adlar sözlükle tek kişide birleşir', () => {
