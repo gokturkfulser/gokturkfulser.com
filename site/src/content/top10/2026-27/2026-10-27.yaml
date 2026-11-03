@@ -27,7 +27,7 @@ oyunlar:
   # olası takma ad: Michael Brown Jr. → Mikel Brown Jr., sözlüğe ekle
   - sira: 2
     eylem: ucluk
-    etiketler: [ clutch ]
+    etiketler: [ clutch, esitleyen ]
     aciklama: Mikel Brown Jr. drains a turnaround corner three-pointer with under a second left to send the game to overtime.
     zaman: "01:41"
     katkilar:
