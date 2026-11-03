@@ -3,7 +3,8 @@
 tarih: 2026-10-31
 video: https://www.youtube.com/watch?v=u7oaBlNbO5s
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -27,8 +28,8 @@ oyunlar:
   - sira: 2
     eylem: smac
     etiketler: [ poster ]
-    aciklama: Brayden Burries drives into the paint and detonates a one-handed poster slam over Tristan Thompson.
-    rakip: Tristan Thompson
+    aciklama: Brayden Burries drives into the paint and detonates a one-handed poster slam over Tristan Enaruna.
+    rakip: Tristan Enaruna
     zaman: "01:54"
     katkilar:
       - { oyuncu: Brayden Burries, takim: MIL, rol: bitiren, pay: 100 }
@@ -65,8 +66,8 @@ oyunlar:
     aciklama: Zion Williamson leads the fast break and connects with Trey Murphy III for an explosive alley-oop slam.
     zaman: "01:26"
     katkilar:
-      - { oyuncu: Zion Williamson, takim: NOP, rol: pasor, pay: 50 }
-      - { oyuncu: Trey Murphy III, takim: NOP, rol: bitiren, pay: 50 }
+      - { oyuncu: Zion Williamson, takim: NOP, rol: pasor, pay: 30 }
+      - { oyuncu: Trey Murphy III, takim: NOP, rol: bitiren, pay: 70 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -85,7 +86,7 @@ oyunlar:
     rakip: Alperen Sengun
     zaman: "01:12"
     katkilar:
-      - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 100 }
+      - { oyuncu: Jaylin Williams, takim: OKC, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -116,8 +117,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: smac
-    etiketler: [ tek_el ]
+    etiketler: [ tek_el, poster ]
     aciklama: Sion James drives the lane and takes off for a high-flying one-handed slam.
+    rakip: Dean Wade
     zaman: "00:43"
     katkilar:
       - { oyuncu: Sion James, takim: CHA, rol: bitiren, pay: 100 }
@@ -154,8 +156,8 @@ oyunlar:
   # uzlaşma yok
   # eylem oyu 2/3
   - sira: 9
-    eylem: alley_oop
-    etiketler: [ bacak_arasi, ters ]
+    eylem: pas
+    etiketler: [ bacak_arasi ]
     aciklama: Svi Mykhailiuk threads a nutmeg bounce pass through Robert Williams III to Jaxson Hayes for a reverse dunk.
     rakip: Robert Williams III
     zaman: "00:16"
@@ -180,7 +182,7 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 10
-    eylem: smac
+    eylem: blok
     etiketler: [ hizli_hucum ]
     aciklama: Victor Wembanyama blocks Jonathan Kuminga, runs the floor in transition, and throws down a two-handed slam.
     rakip: Jonathan Kuminga
