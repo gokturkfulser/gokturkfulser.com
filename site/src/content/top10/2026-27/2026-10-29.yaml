@@ -3,7 +3,8 @@
 tarih: 2026-10-29
 video: https://www.youtube.com/watch?v=OL5_fLX8dww
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -43,13 +44,13 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # pay: Morant delivers a pinpoint one-handed bounce pass through the defense.
   - sira: 3
-    eylem: smac
+    eylem: pas
     etiketler: [ ters ]
     aciklama: Ja Morant threads a left-handed bounce pass to Sidy Cissoko for a double-clutch reverse dunk.
     zaman: "02:02"
     katkilar:
-      - { oyuncu: Ja Morant, takim: POR, rol: pasor, pay: 50 }
-      - { oyuncu: Sidy Cissoko, takim: POR, rol: bitiren, pay: 50 }
+      - { oyuncu: Ja Morant, takim: POR, rol: pasor, pay: 70 }
+      - { oyuncu: Sidy Cissoko, takim: POR, rol: bitiren, pay: 30 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -83,8 +84,7 @@ oyunlar:
     aciklama: CJ McCollum pushes the ball in transition and finds Onyeka Okongwu with a behind-the-back no-look pass for a layup.
     zaman: "01:25"
     katkilar:
-      - { oyuncu: CJ McCollum, takim: ATL, rol: pasor, pay: 70 }
-      - { oyuncu: Onyeka Okongwu, takim: ATL, rol: bitiren, pay: 30 }
+      - { oyuncu: CJ McCollum, takim: ATL, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -122,8 +122,7 @@ oyunlar:
     aciklama: Zach LaVine hits Malik Monk on the break for a soaring one-handed dunk.
     zaman: "00:56"
     katkilar:
-      - { oyuncu: Zach LaVine, takim: SAC, rol: pasor, pay: 30 }
-      - { oyuncu: Malik Monk, takim: SAC, rol: bitiren, pay: 70 }
+      - { oyuncu: Malik Monk, takim: SAC, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -157,7 +156,7 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
-    eylem: turnike
+    eylem: calim
     etiketler: [ crossover ]
     aciklama: Kingston Flemings shakes James Harden with a sharp crossover and drives in for a layup.
     rakip: James Harden
@@ -181,8 +180,7 @@ oyunlar:
     aciklama: Dyson Daniels feeds Jalen Johnson ahead on the break for an emphatic slam.
     zaman: "00:03"
     katkilar:
-      - { oyuncu: Dyson Daniels, takim: ATL, rol: pasor, pay: 30 }
-      - { oyuncu: Jalen Johnson, takim: ATL, rol: bitiren, pay: 70 }
+      - { oyuncu: Jalen Johnson, takim: ATL, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 2/3
