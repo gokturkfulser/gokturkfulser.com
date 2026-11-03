@@ -3,7 +3,8 @@
 tarih: 2026-10-23
 video: https://www.youtube.com/watch?v=9nIHPqjNb1g
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -48,8 +49,7 @@ oyunlar:
     rakip: Karl-Anthony Towns
     zaman: "01:41"
     katkilar:
-      - { oyuncu: Derrick White, takim: BOS, rol: pasor, pay: 30 }
-      - { oyuncu: Mitchell Robinson, takim: BOS, rol: bitiren, pay: 70 }
+      - { oyuncu: Mitchell Robinson, takim: BOS, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -86,8 +86,8 @@ oyunlar:
     aciklama: Tyrese Haliburton sets up Obi Toppin on the break for an explosive windmill alley-oop jam.
     zaman: "01:09"
     katkilar:
-      - { oyuncu: Tyrese Haliburton, takim: IND, rol: pasor, pay: 30 }
-      - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 70 }
+      - { oyuncu: Tyrese Haliburton, takim: IND, rol: pasor, pay: 50 }
+      - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 50 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -133,8 +133,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: smac
-    etiketler: [ tek_el ]
+    etiketler: [ tek_el, poster ]
     aciklama: Jaime Jaquez Jr. drives along the baseline and throws down a thunderous one-handed dunk.
+    rakip: Leonard Miller
     zaman: "00:32"
     katkilar:
       - { oyuncu: Jaime Jaquez Jr., takim: MIL, rol: bitiren, pay: 100 }
@@ -154,8 +155,7 @@ oyunlar:
     aciklama: Luka Doncic finds Matisse Thybulle with a brilliant no-look pass for a layup.
     zaman: "00:15"
     katkilar:
-      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
-      - { oyuncu: Matisse Thybulle, takim: LAL, rol: bitiren, pay: 30 }
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
