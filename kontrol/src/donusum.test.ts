@@ -249,20 +249,47 @@ describe('geceyiYenidenYaz', () => {
     expect(() => geceyiYenidenYaz(geceMetni(), o.slice(1), {})).toThrow(/uyuşmuyor/);
   });
 
-  it('gerçek bir gece dosyası: değişiklik yapılmadan yeniden yazım yalnızca elle_duzenlendi ekler (kontrol, zaman, yorumlar korunur)', () => {
-    let metin: string;
-    try {
-      metin = readFileSync(new URL('../../site/src/content/top10/2026-27/2026-10-21.yaml', import.meta.url), 'utf8');
-    } catch {
-      return; // örnek veri bu ortamda yoksa atla
-    }
+  // Sabit fixture'lar (src/fixtures): canlı site/src/content/top10 dosyalarını okumaz; o dosyalar düzenleyiciyle/botla değişir.
+  const fixture = (ad: string) => readFileSync(new URL(`./fixtures/${ad}`, import.meta.url), 'utf8');
+  const yenidenYaz = (metin: string) => {
     const g = oku(metin);
-    const cikti = geceyiYenidenYaz(metin, dogru(g.gece.oyunlar.map((o) => oyundanDurum(o as never)), g), {});
+    return geceyiYenidenYaz(metin, dogru(g.gece.oyunlar.map((o) => oyundanDurum(o as never)), g), {});
+  };
+  const yorumSayisi = (m: string) => m.split('\n').filter((l) => l.trim().startsWith('#')).length;
+
+  it('fixture: düzenlenmemiş gece, değişiklik yapılmadan yeniden yazılınca yalnızca elle_duzenlendi eklenir (kontrol, zaman, yorumlar korunur)', () => {
+    const metin = fixture('gece-duzenlenmemis.yaml');
     const once = parse(metin) as any;
+    expect(once.elle_duzenlendi).toBeUndefined();
+    expect(once.inceleme).toBe('bekliyor');
+    expect(JSON.stringify(once.oyunlar.map((o: any) => o.etiketler))).not.toMatch(/mac_kazandiran|esitleyen/); // clutch kuralı etiket eklemez
+    const cikti = yenidenYaz(metin);
     const sonra = parse(cikti) as any;
     expect(derinEsit({ ...sonra, elle_duzenlendi: undefined }, once)).toBe(true);
     expect(sonra.elle_duzenlendi).toBe(true);
-    expect(cikti.split('\n').filter((l) => l.trim().startsWith('#')).length).toBe(metin.split('\n').filter((l) => l.trim().startsWith('#')).length);
+    expect(sonra.inceleme).toBe('bekliyor');
+    expect(yorumSayisi(cikti)).toBe(yorumSayisi(metin));
+    expect(cikti).toContain('zaman: "02:05"'); // tırnaklı zaman korunur
+    expect(cikti.includes('\r')).toBe(false); // LF dosya LF kalır
+  });
+
+  it('fixture, CRLF: satır sonu korunur ve sonuç aynı içeriği verir', () => {
+    const lf = fixture('gece-duzenlenmemis.yaml');
+    const crlf = lf.split('\n').join('\r\n');
+    const cikti = yenidenYaz(crlf);
+    expect(cikti.split('\r\n').join('').includes('\n')).toBe(false);
+    expect(parse(cikti)).toEqual(parse(yenidenYaz(lf)));
+  });
+
+  it('fixture: kazandıran etiketli ama clutchsız gece kaydedilince clutch eklenir (ayrı beklenti); başka hiçbir şey değişmez', () => {
+    const metin = fixture('gece-clutch-eklenecek.yaml');
+    const once = parse(metin) as any;
+    expect(once.oyunlar[0].etiketler).toEqual(['poster', 'mac_kazandiran']);
+    const cikti = yenidenYaz(metin);
+    const sonra = parse(cikti) as any;
+    expect(sonra.oyunlar[0].etiketler).toEqual(['poster', 'mac_kazandiran', 'clutch']);
+    sonra.oyunlar[0].etiketler = once.oyunlar[0].etiketler;
+    expect(derinEsit({ ...sonra, elle_duzenlendi: undefined }, once)).toBe(true);
   });
 });
 
