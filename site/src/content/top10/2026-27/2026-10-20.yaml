@@ -3,7 +3,8 @@
 tarih: 2026-10-20
 video: https://www.youtube.com/watch?v=MuHLdhZ4zh8
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: düşük (oy 2/3)
   # diğer: Cade Cunningham + Ausar Thompson 1/3
@@ -12,12 +13,12 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # eylem oyu 1/3
   - sira: 1
-    eylem: alley_oop
+    eylem: turnike
     aciklama: Ausar Thompson soars in from the perimeter to snare an offensive rebound in mid-air and throw down a vicious one-handed putback slam.
     rakip: Hugo Gonzalez
     zaman: "02:11"
     katkilar:
-      - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren, pay: 100 }
+      - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren }
     kontrol:
       guven: dusuk
       oy: 2/3
@@ -90,6 +91,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: blok
+    etiketler: [ chase_down_blok ]
     aciklama: Victor Wembanyama rises at the rim to emphatically reject Chet Holmgren again.
     rakip: Chet Holmgren
     zaman: "01:10"
@@ -106,6 +108,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: blok
+    etiketler: [ chase_down_blok ]
     aciklama: Victor Wembanyama recovers to swat Chet Holmgren's driving attempt inside.
     rakip: Chet Holmgren
     zaman: "00:58"
@@ -127,8 +130,7 @@ oyunlar:
     aciklama: LeBron James finds Jaylen Brown on the perimeter for a buzzer-beating three-pointer.
     zaman: "00:46"
     katkilar:
-      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 30 }
-      - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 70 }
+      - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -140,8 +142,8 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
-    eylem: turnike
-    etiketler: [ ters ]
+    eylem: orta_mesafe
+    etiketler: [ crossover ]
     aciklama: Shai Gilgeous-Alexander spins around Carter Bryant and converts a tough layup.
     rakip: Carter Bryant
     zaman: "00:30"

@@ -3,7 +3,8 @@
 tarih: 2026-10-25
 video: https://www.youtube.com/watch?v=2xh6VkcMwoA
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -26,7 +27,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: ucluk
-    etiketler: [ bacak_arasi ]
+    etiketler: [ crossover ]
     aciklama: LaMelo Ball strings together a between-the-legs dribble move and drills a step-back three-pointer.
     zaman: "02:06"
     katkilar:
@@ -75,7 +76,7 @@ oyunlar:
   # pay: Keyonte George lofts a high alley-oop pass into the paint.
   - sira: 5
     eylem: alley_oop
-    etiketler: [ hizli_hucum ]
+    etiketler: [ hizli_hucum, bakmadan ]
     aciklama: Keyonte George connects with Ace Bailey for an airborne alley-oop slam.
     zaman: "01:18"
     katkilar:
@@ -95,7 +96,6 @@ oyunlar:
     eylem: smac
     etiketler: [ hizli_hucum, tek_el ]
     aciklama: Tyrese Maxey sprints down the floor on the fast break and throws down a high-flying one-handed slam.
-    rakip: Cade Cunningham
     zaman: "01:05"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
@@ -111,13 +111,12 @@ oyunlar:
   # pay: LaMelo Ball launches an accurate transition alley-oop pass from beyond the arc.
   - sira: 7
     eylem: alley_oop
-    etiketler: [ poster, hizli_hucum ]
-    aciklama: LaMelo Ball tosses a half-court lob to Joan Beringer, who flushes the alley-oop over Ulrich Chomche.
-    rakip: Ulrich Chomche
+    etiketler: [ hizli_hucum ]
+    aciklama: LaMelo Ball tosses a half-court lob to Joan Beringer, who flushes the alley-oop.
     zaman: "00:50"
     katkilar:
-      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 50 }
-      - { oyuncu: Joan Beringer, takim: MIN, rol: bitiren, pay: 50 }
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
+      - { oyuncu: Joan Beringer, takim: MIN, rol: bitiren, pay: 30 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -146,10 +145,10 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
-    eylem: smac
+    eylem: blok
     etiketler: [ hizli_hucum ]
     aciklama: Jay Huff swats a shot at the rim on defense and hustles down the floor to throw down a transition dunk.
-    rakip: Dennis Schröder
+    rakip: Micheal Porter Jr.
     zaman: "00:19"
     katkilar:
       - { oyuncu: Jay Huff, takim: MEM, rol: bitiren, pay: 100 }
