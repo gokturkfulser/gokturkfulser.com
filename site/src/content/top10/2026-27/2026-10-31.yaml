@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=u7oaBlNbO5s
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: alley_oop
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:08"
     katkilar:
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: smac
@@ -25,7 +32,14 @@ oyunlar:
     zaman: "01:54"
     katkilar:
       - { oyuncu: Brayden Burries, takim: MIL, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: smac
@@ -35,7 +49,14 @@ oyunlar:
     zaman: "01:40"
     katkilar:
       - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Zion Williamson initiates the break and serves a pinpoint lob to Trey Murphy III.
   - sira: 4
@@ -46,7 +67,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Zion Williamson, takim: NOP, rol: pasor, pay: 50 }
       - { oyuncu: Trey Murphy III, takim: NOP, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Zion Williamson initiates the break and serves a pinpoint lob to Trey Murphy III."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # olası takma ad: Jaylin Williams → Jalen Williams, sözlüğe ekle
   - sira: 5
@@ -57,7 +86,16 @@ oyunlar:
     zaman: "01:12"
     katkilar:
       - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      uyarilar:
+        - "olası takma ad: Jaylin Williams → Jalen Williams, sözlüğe ekle"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
@@ -67,7 +105,14 @@ oyunlar:
     zaman: "00:58"
     katkilar:
       - { oyuncu: Tidjane Salaun, takim: CHA, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: smac
@@ -76,7 +121,14 @@ oyunlar:
     zaman: "00:43"
     katkilar:
       - { oyuncu: Sion James, takim: CHA, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: smac
@@ -86,12 +138,21 @@ oyunlar:
     zaman: "00:30"
     katkilar:
       - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 100 }
-  # güven: düşük (oy 1/3, uzlaşma yok; eylem 2/3; pay 1/1)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 1/3)
   # diğer: Svi Mykhailiuk + Isaiah Jackson + Jaxson Hayes 1/3
   # diğer: Svi Mykhailiuk + Jordan Clarkson + Jaxson Hayes 1/3
   # eylem diğer: Pas 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Svi Mykhailiuk's nutmeg bounce pass between the defender's legs is the standout highlight setting up the dunk.
+  # uzlaşma yok
+  # eylem oyu 2/3
   - sira: 9
     eylem: alley_oop
     etiketler: [ bacak_arasi, ters ]
@@ -101,7 +162,22 @@ oyunlar:
     katkilar:
       - { oyuncu: Svi Mykhailiuk, takim: UTA, rol: pasor, pay: 70 }
       - { oyuncu: Jaxson Hayes, takim: UTA, rol: bitiren, pay: 30 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+        - eylem oyu 2/3
+      alternatifler:
+        - "diğer: Svi Mykhailiuk + Isaiah Jackson + Jaxson Hayes 1/3"
+        - "diğer: Svi Mykhailiuk + Jordan Clarkson + Jaxson Hayes 1/3"
+        - "eylem diğer: Pas 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Svi Mykhailiuk's nutmeg bounce pass between the defender's legs is the standout highlight setting up the dunk."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 10
     eylem: smac
@@ -111,3 +187,10 @@ oyunlar:
     zaman: "00:03"
     katkilar:
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

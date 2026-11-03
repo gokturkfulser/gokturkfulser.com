@@ -4,10 +4,11 @@
 import { Document, parse, Scalar, YAMLMap, YAMLSeq } from 'yaml';
 import { aciklamaKontrolu, aciklamadanOyuncular, adNormallestir, type AciklamaKontrolu } from './aciklama.ts';
 import { top10Sema } from '../../src/lib/top10-sema.ts';
-import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
+import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type Kontrol, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
 import { eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi, takimKodunuCevir } from '../../src/lib/top10-sozluk.ts';
 import { kanonikAd, type AdHaritasi } from '../../src/lib/top10-adlar.ts';
 import type { Guven, HamGece, HamOyun } from './gemini.ts';
+import { kontrolYorumlari, notuKontrole } from './kontrol.ts';
 
 /** Çoğunluk oylamasında bir satırın oy bilgisi (oylama.ts üretir; N = 1 iken yoktur). */
 export type OyBilgisi = {
@@ -174,8 +175,11 @@ export function eylemPayUyarisi(oyun: Gece['oyunlar'][number]): string | undefin
   return `eylem ile en büyük pay uyuşmuyor (eylem: ${eylemAdi(oyun.eylem, 'tr')}; en büyük pay: ${katki.oyuncu} %${enBuyuk}, ${rolAdi(katki.rol, 'tr')})`;
 }
 
-/** Gece verisini `yaml` paketinin Document API'siyle yazar; her oyunun üstüne güven/pay yorumu, dosyanın başına üretim zamanı + model. */
-export function geceYaml(veri: { tarih: string; video: string; tur: string; oyunlar: Record<string, unknown>[] }, notlar: readonly OyunNotu[], baglam: Pick<Baglam, 'model' | 'uretildi'>): string {
+/**
+ * Gece verisini `yaml` paketinin Document API'siyle yazar. Her oyunun `kontrol` alanı yazılır ve oyunun üstündeki yorumlar o alandan üretilir
+ * (tek kaynak kontrol alanıdır, kontrol.ts); dosyanın başına üretim zamanı + model yorumu eklenir.
+ */
+export function geceYaml(veri: { tarih: string; video: string; tur: string; oyunlar: Record<string, unknown>[] }, baglam: Pick<Baglam, 'model' | 'uretildi'>): string {
   const belge = new Document({
     tarih: veri.tarih,
     video: veri.video,
@@ -186,28 +190,15 @@ export function geceYaml(veri: { tarih: string; video: string; tur: string; oyun
   });
   belge.commentBefore = ` Gemini ile üretildi: ${baglam.uretildi.toISOString()}, model ${baglam.model}`;
   const oyunlar = belge.get('oyunlar', true) as unknown as YAMLSeq<YAMLMap>;
-  oyunlar.items.forEach((oyun) => {
-    const not = notlar.find((n) => n.sira === (oyun.get('sira') as number));
+  oyunlar.items.forEach((oyun, i) => {
     const katkilar = oyun.get('katkilar', true) as unknown as YAMLSeq<YAMLMap>;
     for (const k of katkilar.items) k.flow = true;
     const etiketler = oyun.get('etiketler', true) as unknown as YAMLSeq | undefined;
     if (etiketler) etiketler.flow = true;
     const zaman = oyun.get('zaman', true) as unknown as Scalar | undefined;
     if (zaman) zaman.type = 'QUOTE_DOUBLE'; // "1:05" metin kalsın (YAML 1.1 yükleyicileri 1:05'i sayı sanabilir)
-    if (!not) return;
-    const guvenAdi = not.guven === 'high' ? 'yüksek' : not.guven === 'medium' ? 'orta' : 'düşük';
-    const satirlar = not.oy
-      ? [`güven: ${guvenAdi} (oy ${not.oy.oran}${not.oy.uzlasmaYok ? ', uzlaşma yok' : ''}; eylem ${not.oy.eylemOran}; pay ${not.oy.payOran})`, ...not.oy.alternatifler]
-      : [`güven: ${guvenAdi}${not.guvenNedeni ? ` (${not.guvenNedeni})` : ''}`];
-    if (not.oy && not.modelGuvenleri?.length) satirlar.push(`model güveni: ${not.modelGuvenleri.map((m) => (m.guven === 'high' ? 'yüksek' : m.guven === 'medium' ? 'orta' : 'düşük') + (m.neden ? ` (${m.neden})` : '')).join('; ')}`);
-    if (not.payli) satirlar.push(`pay: ${not.payNedeni ?? 'gerekçe verilmedi'}`);
-    for (const a of not.adUyarilari) satirlar.push(`ad uyarısı: ${a}`);
-    for (const a of not.benzerAdUyarilari ?? []) satirlar.push(a);
-    if (not.dogrulanmamisAdlar?.length) satirlar.push(`doğrulanmamış ad: ${not.dogrulanmamisAdlar.join(', ')} (sözlükte ve mevcut veride yok, güven düşük)`);
-    if (not.aciklamadaYok.length) satirlar.push(`açıklamada yok: ${not.aciklamadaYok.join(', ')}`);
-    if (not.eylemUyari) satirlar.push(not.eylemUyari);
-    if (not.zamanUyari) satirlar.push(not.zamanUyari);
-    oyun.commentBefore = satirlar.map((s) => ` ${s}`).join('\n');
+    const kontrol = veri.oyunlar[i]!.kontrol as Kontrol | undefined;
+    if (kontrol) oyun.commentBefore = kontrolYorumlari(kontrol).map((satir) => ` ${satir}`).join(String.fromCharCode(10));
   });
   return belge.toString({ lineWidth: 0 });
 }
@@ -308,9 +299,14 @@ export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: 
       if (adlar.some((a) => kimlik(a) === b.yeniKimlik)) notlar[i]!.adUyarilari.push(`"${b.yeni}", mevcut yazım: ${b.mevcut}?`);
     });
   }
+  // Kontrol alanı: notlardan üretilir ve oyunun son alanı olarak yazılır; yorumlar ondan türetilir. Sonuç yine sitenin şemasından geçer.
+  const kontrollu = oyunlar.map((o, i) => ({ ...o, kontrol: notuKontrole(notlar[i]!) }));
+  const kontrolluAday = { ...aday, oyunlar: kontrollu };
+  const kontrolSonuc = top10Sema.safeParse(kontrolluAday);
+  if (!kontrolSonuc.success) return { hata: `kontrol alanı şemadan geçmedi: ${semaHatasi(kontrolSonuc.error.issues, kontrolluAday)}` };
   return {
-    gece,
-    yaml: geceYaml({ ...aday, oyunlar }, notlar, baglam),
+    gece: kontrolSonuc.data as unknown as Gece,
+    yaml: geceYaml(kontrolluAday, baglam),
     oyunNotlari: notlar,
     adUyarilari: benzerAdlar([gece]).map(({ a, b }) => `"${a.oyuncu}" ile "${b.oyuncu}" çok benzer (yazım hatası olabilir)`),
     mevcutBenzerler,

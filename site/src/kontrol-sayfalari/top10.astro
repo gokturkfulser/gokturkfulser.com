@@ -1,0 +1,8 @@
+---
+// Top 10 kontrol sayfası (/kontrol/top10/). Bu dosya bilerek src/pages dışındadır: astro.config.mjs → kontrolSayfasi entegrasyonu onu
+// YALNIZCA SHOW_DRAFTS=true build'lerinde injectRoute ile rotaya ekler. Production'da dosya modül grafiğine hiç girmez:
+// sayfa, bağlantı, veri ve bileşenin CSS'i de dist'e çıkmaz. Sitemap, RSS ve menüde yoktur; Base noindex koyar.
+import Top10Kontrol from '../components/sayfa/Top10Kontrol.astro';
+---
+
+<Top10Kontrol />

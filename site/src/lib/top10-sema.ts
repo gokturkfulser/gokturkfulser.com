@@ -1,7 +1,7 @@
 // `top10` koleksiyonunun şeması (content.config.ts bunu kullanır). Ayrı dosyada durur ki birim testleri ve scripts/top10
 // (Gemini çıktısını dosyaya yazmadan önce doğrular) aynı şemayı Astro'ya bağlanmadan yükleyebilsin.
 import { z } from 'astro/zod';
-import { katkiHatasi, siraHatasi, varsayilanInceleme, videoAdresiMi, ZAMAN_BICIMI } from './top10.ts';
+import { katkiHatasi, KONTROL_GUVEN, siraHatasi, varsayilanInceleme, videoAdresiMi, ZAMAN_BICIMI } from './top10.ts';
 import { ETIKET_ANAHTARLARI, EYLEM_ANAHTARLARI, ROL_ANAHTARLARI, TAKIM_KODLARI } from './top10-sozluk.ts';
 
 export const top10Sema = z
@@ -27,6 +27,19 @@ export const top10Sema = z
             rakip: z.string().trim().min(1).optional(),
             // Oyunun videodaki başlangıcı ("m:ss" ya da "mm:ss"); sayfada videonun o saniyesine bağlantı olur. Metin olarak yazılır ("1:05" tırnaklı).
             zaman: z.string().regex(ZAMAN_BICIMI, 'zaman "m:ss" ya da "mm:ss" olmalı (ör. 1:05)').optional(),
+            // Kontrol verisi (yalnızca betik yazar, yalnızca kontrol sayfası okar): herkese açık bileşenler bu alanı kullanmaz ve HTML'e yazmaz.
+            // YAML yorumları bu alandan üretilir (scripts/top10/kontrol.ts); tek kaynak burasıdır.
+            kontrol: z
+              .strictObject({
+                guven: z.enum(KONTROL_GUVEN),
+                // Oy oranı, ör. "2/3" (yalnızca çoğunluk oylamasında).
+                oy: z.string().regex(/^\d+\/\d+$/, 'oy "k/n" biçiminde olmalı (ör. 2/3)').optional(),
+                uyarilar: z.array(z.string().trim().min(1)).optional(),
+                alternatifler: z.array(z.string().trim().min(1)).optional(),
+                // Modelin çalıştırma başına kendi güveni: "yuksek", "orta (gerekçe)"…
+                model_guveni: z.array(z.string().trim().min(1)).optional(),
+              })
+              .optional(),
             katkilar: z
               .array(
                 z.strictObject({

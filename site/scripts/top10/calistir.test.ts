@@ -590,7 +590,7 @@ describe('çoğunluk oylaması (varsayılan 3) uçtan uca', () => {
     expect(log()).toContain("Toplam video süresi: 10:30; Gemini'de işlenen toplam süre: 31:30 (3 çağrı)"); // 3 × 10:30
     expect(log()).toContain('1. alley_oop: Mirko Daval (SAS, %70), Tomas Veltri (SAS, %30) @2:50 [güven: yüksek (oy 3/3)]');
     const yaml = readFileSync(dosya('2026-11-01'), 'utf8');
-    expect(yaml).toContain('# güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)');
+    expect(yaml).toContain('# güven: yüksek (oy 3/3)');
     const ozet = readFileSync(b.ozetDosyasi, 'utf8');
     expect(ozet).toContain('Model: `gemini-3.8-flash`; yanıtta bildirilen model: `gemini-3.6-flash-001`.');
     expect(ozet).toContain('oylama: 3; video çözünürlüğü: high');
@@ -621,7 +621,7 @@ describe('çoğunluk oylaması (varsayılan 3) uçtan uca', () => {
     const s = await calistir(['--tarih', '2026-11-01'], b);
     expect(s.kod).toBe(0);
     expect(log()).toContain('[güven: düşük (oy 1/3, uzlaşma yok;');
-    expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# güven: düşük (oy 1/3, uzlaşma yok;');
+    expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# güven: düşük (oy 1/3)');
     expect(readFileSync(b.ozetDosyasi, 'utf8')).toContain('sıra 5: oy 1/3, uzlaşma yok');
   });
 
@@ -633,7 +633,7 @@ describe('çoğunluk oylaması (varsayılan 3) uçtan uca', () => {
     expect(s.kod).toBe(0);
     expect(geminiGovdeleri).toHaveLength(4);
     expect(log()).toContain('1 çalıştırma doğrulamadan geçmedi ve oylamaya katılmadı (2/3 geçerli)');
-    expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# güven: yüksek (oy 2/2;');
+    expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# güven: yüksek (oy 2/2)');
   });
   it('geçerli çalıştırma sayısı 2nin altına düşerse gece başarısız; gereksiz çağrı yapılmaz', async () => {
     const b = bag({ videolar: v5, gemini: (tur) => { const h = gecerliHam(tur); h.plays[0]!.timestamp = '59:59'; return h; } });

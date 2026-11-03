@@ -192,3 +192,14 @@ export async function top10Geceleri(sezon?: string): Promise<{ sezon: string | u
     .sort((x, y) => x.tarih.valueOf() - y.tarih.valueOf());
   return { sezon: secilen, geceler };
 }
+
+/**
+ * Top 10 kontrol sayfasının verisi: sezon ayrımı olmadan tüm geceler (kanonik adlarla) ve kimlikleri (`<sezon>/<tarih>`).
+ * Yalnızca SHOW_DRAFTS build'lerinde veri döner; production'da her zaman boştur (kontrol alanı ve gece verisi hiçbir sayfaya girmez).
+ */
+export async function top10KontrolGirdileri(): Promise<{ id: string; gece: Gece }[]> {
+  if (!SHOW_DRAFTS) return [];
+  const sozluk = (await getCollection('top10Adlar'))[0]?.data.kayitlar ?? {};
+  const harita = sozlukHaritasi(sozluk);
+  return (await getCollection('top10', gorunur)).map((g) => ({ id: g.id, gece: kanonikGece(g.data as Gece, harita) }));
+}

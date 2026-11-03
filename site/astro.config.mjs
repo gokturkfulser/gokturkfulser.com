@@ -4,6 +4,25 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { sitemapDilAlternatifleri } from './scripts/sitemap-hreflang.mjs';
 
+import { existsSync, readFileSync } from 'node:fs';
+
+/**
+ * Geliştirici kontrol sayfası (/kontrol/top10/): yalnızca SHOW_DRAFTS=true ortamında (preview build'leri, `top10-kontrol` dalı, yerel geliştirme) rotaya eklenir.
+ * Production'da sayfa dosyası (src/kontrol-sayfalari/) modül grafiğine hiç girmez; sayfa, bağlantı, veri ve CSS'i dist'e çıkmaz.
+ * SHOW_DRAFTS okuması taslak-loader.ts ile aynıdır: süreç ortamı, yoksa site/.env dosyası (yapılandırma dosyası .env'yi kendisi yüklemez).
+ */
+const envDosyasindaTaslak = existsSync('.env') && /^SHOW_DRAFTS\s*=\s*["']?true["']?\s*$/m.test(readFileSync('.env', 'utf8'));
+const taslakGorunur = process.env.SHOW_DRAFTS === 'true' || (process.env.SHOW_DRAFTS === undefined && envDosyasindaTaslak);
+/** @type {import('astro').AstroIntegration} */
+const kontrolSayfasi = {
+  name: 'kontrol-sayfasi',
+  hooks: {
+    'astro:config:setup': ({ injectRoute }) => {
+      if (taslakGorunur) injectRoute({ pattern: '/kontrol/top10', entrypoint: './src/kontrol-sayfalari/top10.astro' });
+    },
+  },
+};
+
 // Saf statik çıktı: adapter yok, output varsayılan ('static').
 export default defineConfig({
   site: 'https://gokturkfulser.com',
@@ -18,7 +37,7 @@ export default defineConfig({
   },
   // Sitemap'in kendi i18n eşlemesi yol önekine bakar; yollar dile göre değiştiği için dil alternatifleri sayfalardaki
   // hreflang bağlantılarından okunup sitemap'e yazılır (scripts/sitemap-hreflang.mjs). Sıra önemli: sitemap'ten sonra.
-  integrations: [mdx(), sitemap({ filter: (sayfa) => !/\/404\/?$/.test(sayfa) }), sitemapDilAlternatifleri()],
+  integrations: [mdx(), kontrolSayfasi, sitemap({ filter: (sayfa) => !/\/404\/?$/.test(sayfa) && !/\/kontrol\//.test(sayfa) }), sitemapDilAlternatifleri()],
   devToolbar: { enabled: false },
   // CSP (hash tabanlı, 'unsafe-inline' yok). Astro her sayfaya <meta http-equiv="content-security-policy">
   // koyar: script-src/style-src hash'leri otomatik, aşağıdaki directives tüm sayfalara eklenir.

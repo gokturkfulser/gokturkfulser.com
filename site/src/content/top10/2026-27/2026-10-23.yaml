@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=9nIHPqjNb1g
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: blok
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:13"
     katkilar:
       - { oyuncu: Amen Thompson, takim: HOU, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: turnike
@@ -24,7 +31,14 @@ oyunlar:
     zaman: "01:58"
     katkilar:
       - { oyuncu: Jerami Grant, takim: MEM, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: White leads the fast break and delivers an on-target lob.
   - sira: 3
@@ -36,7 +50,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Derrick White, takim: BOS, rol: pasor, pay: 30 }
       - { oyuncu: Mitchell Robinson, takim: BOS, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: White leads the fast break and delivers an on-target lob."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Castle delivers an extraordinarily high lob pass.
   - sira: 4
@@ -47,7 +69,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Stephon Castle, takim: SAS, rol: pasor, pay: 30 }
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Castle delivers an extraordinarily high lob pass."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Haliburton initiates the break and lofts a perfect alley-oop feed.
   - sira: 5
@@ -58,7 +88,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Tyrese Haliburton, takim: IND, rol: pasor, pay: 30 }
       - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Haliburton initiates the break and lofts a perfect alley-oop feed."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: blok
@@ -67,7 +105,14 @@ oyunlar:
     zaman: "00:57"
     katkilar:
       - { oyuncu: Justin Champagnie, takim: WAS, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: blok
@@ -77,7 +122,14 @@ oyunlar:
     zaman: "00:45"
     katkilar:
       - { oyuncu: Ausar Thompson, takim: DET, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: smac
@@ -86,7 +138,14 @@ oyunlar:
     zaman: "00:32"
     katkilar:
       - { oyuncu: Jaime Jaquez Jr., takim: MIL, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Doncic creates the basket with a flashy no-look pass through traffic.
   - sira: 9
@@ -97,7 +156,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
       - { oyuncu: Matisse Thybulle, takim: LAL, rol: bitiren, pay: 30 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Doncic creates the basket with a flashy no-look pass through traffic."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Fox delivers a precise lob pass towards the rim.
   - sira: 10
@@ -108,3 +175,11 @@ oyunlar:
     katkilar:
       - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Fox delivers a precise lob pass towards the rim."

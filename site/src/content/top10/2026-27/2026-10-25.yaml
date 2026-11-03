@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=2xh6VkcMwoA
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:28"
     katkilar:
       - { oyuncu: Kris Dunn, takim: LAC, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: ucluk
@@ -24,7 +31,14 @@ oyunlar:
     zaman: "02:06"
     katkilar:
       - { oyuncu: LaMelo Ball, takim: MIN, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: ucluk
@@ -33,7 +47,14 @@ oyunlar:
     zaman: "01:51"
     katkilar:
       - { oyuncu: Lauri Markkanen, takim: UTA, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: alley_oop
@@ -42,7 +63,14 @@ oyunlar:
     zaman: "01:31"
     katkilar:
       - { oyuncu: Tyrese Haliburton, takim: IND, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Keyonte George lofts a high alley-oop pass into the paint.
   - sira: 5
@@ -53,7 +81,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 50 }
       - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Keyonte George lofts a high alley-oop pass into the paint."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
@@ -63,7 +99,14 @@ oyunlar:
     zaman: "01:05"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: LaMelo Ball launches an accurate transition alley-oop pass from beyond the arc.
   - sira: 7
@@ -75,7 +118,15 @@ oyunlar:
     katkilar:
       - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 50 }
       - { oyuncu: Joan Beringer, takim: MIN, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: LaMelo Ball launches an accurate transition alley-oop pass from beyond the arc."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: smac
@@ -85,7 +136,14 @@ oyunlar:
     zaman: "00:38"
     katkilar:
       - { oyuncu: Zach LaVine, takim: SAC, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
     eylem: smac
@@ -95,7 +153,14 @@ oyunlar:
     zaman: "00:19"
     katkilar:
       - { oyuncu: Jay Huff, takim: MEM, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 10
     eylem: smac
@@ -104,3 +169,10 @@ oyunlar:
     zaman: "00:03"
     katkilar:
       - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

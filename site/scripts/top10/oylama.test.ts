@@ -154,9 +154,9 @@ describe('oylamaSonrasi: şema, YAML yorumları', () => {
     const r = oylamaSonrasi([calisma(), calisma(yanlis), calisma()], { ...baglam, tur: 'top5' }, [], 2);
     if ('hata' in r) throw new Error(r.hata);
     expect(r.gece.kaynak).toBe('gemini');
-    expect(r.yaml).toContain('# güven: orta (oy 2/3; eylem 3/3; pay 2/2)');
+    expect(r.yaml).toContain('# güven: orta (oy 2/3)');
     expect(r.yaml).toContain('# diğer: Brayden Burries 1/3');
-    expect(r.yaml).toContain('# güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)');
+    expect(r.yaml).toContain('# güven: yüksek (oy 3/3)');
     expect(r.yaml).toContain('# model güveni: orta (Jersey number partly hidden); orta (Jersey number partly hidden); orta (Jersey number partly hidden)');
     expect(r.yaml).toMatch(/zaman: "2:50"/);
     expect(r.calismaSayisi).toBe(3);
@@ -166,7 +166,7 @@ describe('oylamaSonrasi: şema, YAML yorumları', () => {
     const adli = (ad: string) => (h: HamGece) => (h.plays[4]!.contributors = [{ player: ad, team: 'SAS', role: 'finisher', share: 100 }]);
     const r = oylamaSonrasi([calisma(adli('Ada Bee')), calisma(adli('Cem Dee')), calisma(adli('Eda Eff'))], { ...baglam, tur: 'top5' }, [], 2);
     if ('hata' in r) throw new Error(r.hata);
-    expect(r.yaml).toContain('# güven: düşük (oy 1/3, uzlaşma yok; eylem 3/3; pay 1/1)');
+    expect(r.yaml).toContain('# güven: düşük (oy 1/3)');
     expect(r.yaml).toContain('# diğer: Cem Dee 1/3');
   });
 });

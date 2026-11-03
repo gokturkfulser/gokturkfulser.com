@@ -6,7 +6,7 @@ tur: top5
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Holmgren swats Braun's layup attempt at the rim to trigger the fast break.
   - sira: 1
@@ -19,7 +19,15 @@ oyunlar:
       - { oyuncu: Chet Holmgren, takim: OKC, rol: bloklayan, pay: 25 }
       - { oyuncu: Cason Wallace, takim: OKC, rol: pasor, pay: 25 }
       - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Holmgren swats Braun's layup attempt at the rim to trigger the fast break."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: turnike
@@ -28,7 +36,14 @@ oyunlar:
     zaman: "00:53"
     katkilar:
       - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: ucluk
@@ -37,11 +52,20 @@ oyunlar:
     zaman: "00:39"
     katkilar:
       - { oyuncu: Donovan Mitchell, takim: CLE, rol: bitiren, pay: 100 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 2/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
   # eylem diğer: Pas 1/3
   # pay diğer: 70/30 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Williams grabs the rebound and launches a precise full-court pass.
+  # eylem oyu 2/3
+  # pay oyu 2/3
   - sira: 4
     eylem: turnike
     etiketler: [ hizli_hucum ]
@@ -50,7 +74,21 @@ oyunlar:
     katkilar:
       - { oyuncu: Jalen Williams, takim: OKC, rol: pasor, pay: 50 }
       - { oyuncu: Chet Holmgren, takim: OKC, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Pas 1/3"
+        - "pay diğer: 70/30 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Williams grabs the rebound and launches a precise full-court pass."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: smac
@@ -59,3 +97,10 @@ oyunlar:
     zaman: "00:03"
     katkilar:
       - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

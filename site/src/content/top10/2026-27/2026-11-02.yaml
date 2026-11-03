@@ -5,10 +5,11 @@ video: https://www.youtube.com/watch?v=LXor_pP78A8
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+  # güven: orta (oy 3/3)
   # pay diğer: 50/50 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: DeRozan creates the highlight with a stunning no-look, over-the-head pass right to the rim.
+  # pay oyu 2/3
   - sira: 1
     eylem: alley_oop
     etiketler: [ bakmadan ]
@@ -17,7 +18,19 @@ oyunlar:
     katkilar:
       - { oyuncu: DeMar DeRozan, takim: DEN, rol: pasor, pay: 70 }
       - { oyuncu: Trevon Brazile, takim: DEN, rol: bitiren, pay: 30 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: DeRozan creates the highlight with a stunning no-look, over-the-head pass right to the rim."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: blok
@@ -26,7 +39,14 @@ oyunlar:
     zaman: "02:00"
     katkilar:
       - { oyuncu: Jarrett Allen, takim: CLE, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: smac
@@ -36,7 +56,14 @@ oyunlar:
     zaman: "01:47"
     katkilar:
       - { oyuncu: Brandon Miller, takim: CHA, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: blok
@@ -45,7 +72,14 @@ oyunlar:
     zaman: "01:33"
     katkilar:
       - { oyuncu: Isaiah Stewart, takim: MEM, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: smac
@@ -54,7 +88,14 @@ oyunlar:
     zaman: "01:19"
     katkilar:
       - { oyuncu: Stephon Castle, takim: SAS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: turnike
@@ -62,7 +103,14 @@ oyunlar:
     zaman: "01:03"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: turnike
@@ -70,9 +118,17 @@ oyunlar:
     zaman: "00:48"
     katkilar:
       - { oyuncu: Ty Jerome, takim: MEM, rol: bitiren, pay: 100 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
   # eylem diğer: Orta mesafe 1/3
   # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
   - sira: 8
     eylem: turnike
     aciklama: Aday Mara shakes Evan Mobley with an up-and-under pump fake and finishes the reverse layup.
@@ -80,10 +136,22 @@ oyunlar:
     zaman: "00:30"
     katkilar:
       - { oyuncu: Aday Mara, takim: OKC, rol: bitiren, pay: 100 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Orta mesafe 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
   # eylem diğer: Alley-oop 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: LeBron delivers a pinpoint full-court dime and Edgecombe finishes with a high-flying alley-oop dunk.
+  # eylem oyu 2/3
   - sira: 9
     eylem: smac
     etiketler: [ hizli_hucum, tek_el ]
@@ -93,7 +161,19 @@ oyunlar:
     katkilar:
       - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 50 }
       - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Alley-oop 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: LeBron delivers a pinpoint full-court dime and Edgecombe finishes with a high-flying alley-oop dunk."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 10
     eylem: smac
@@ -102,3 +182,10 @@ oyunlar:
     zaman: "00:03"
     katkilar:
       - { oyuncu: Cade Cunningham, takim: DET, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

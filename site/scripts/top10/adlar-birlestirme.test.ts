@@ -204,7 +204,7 @@ describe('uçtan uca (sahte API, geçici klasör)', () => {
     expect(s.kod).toBe(0);
     expect(dosya()).toContain('oyuncu: Brayden Burries');
     expect(dosya()).not.toContain('Braden');
-    expect(dosya()).toContain('# güven: yüksek (oy 3/3;');
+    expect(dosya()).toContain('# güven: yüksek (oy 3/3)');
     expect(log()).not.toContain('benzer ad');
   });
   it('sözlükte olmayan benzer yazım ayrı aday kalır: "benzer ad, aynı kişi mi?" uyarısı YAML yorumu, terminal ve özette; sözlük değişmez', async () => {

@@ -5,11 +5,12 @@ video: https://www.youtube.com/watch?v=MuHLdhZ4zh8
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: düşük (oy 2/3; eylem 1/3; pay 2/2)
+  # güven: düşük (oy 2/3)
   # diğer: Cade Cunningham + Ausar Thompson 1/3
   # eylem diğer: Smaç 1/3
   # eylem diğer: Turnike 1/3
   # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 1/3
   - sira: 1
     eylem: alley_oop
     aciklama: Ausar Thompson soars in from the perimeter to snare an offensive rebound in mid-air and throw down a vicious one-handed putback slam.
@@ -17,9 +18,23 @@ oyunlar:
     zaman: "02:11"
     katkilar:
       - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren, pay: 100 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 1/3
+      alternatifler:
+        - "diğer: Cade Cunningham + Ausar Thompson 1/3"
+        - "eylem diğer: Smaç 1/3"
+        - "eylem diğer: Turnike 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
   # eylem diğer: Smaç 1/3
   # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
   - sira: 2
     eylem: blok
     aciklama: Aday Mara rises up at the rim to deny Victor Wembanyama's dunk attempt.
@@ -27,7 +42,18 @@ oyunlar:
     zaman: "01:53"
     katkilar:
       - { oyuncu: Aday Mara, takim: OKC, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: blok
@@ -37,7 +63,14 @@ oyunlar:
     zaman: "01:39"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: blok
@@ -46,7 +79,14 @@ oyunlar:
     zaman: "01:25"
     katkilar:
       - { oyuncu: John Collins, takim: DET, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: blok
@@ -55,7 +95,14 @@ oyunlar:
     zaman: "01:10"
     katkilar:
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: blok
@@ -64,7 +111,14 @@ oyunlar:
     zaman: "00:58"
     katkilar:
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: James finds Brown on the wing just before the third-quarter buzzer.
   - sira: 7
@@ -75,7 +129,15 @@ oyunlar:
     katkilar:
       - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 30 }
       - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: James finds Brown on the wing just before the third-quarter buzzer."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: turnike
@@ -85,7 +147,14 @@ oyunlar:
     zaman: "00:30"
     katkilar:
       - { oyuncu: Shai Gilgeous-Alexander, takim: OKC, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Brown delivers a pinpoint transition lob and James finishes with a strong alley-oop slam.
   - sira: 9
@@ -96,7 +165,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Jaylen Brown, takim: PHI, rol: pasor, pay: 50 }
       - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Brown delivers a pinpoint transition lob and James finishes with a strong alley-oop slam."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 10
     eylem: smac
@@ -105,3 +182,10 @@ oyunlar:
     zaman: "00:00"
     katkilar:
       - { oyuncu: Cade Cunningham, takim: DET, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

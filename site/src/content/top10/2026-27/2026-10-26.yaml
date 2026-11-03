@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=FjY3D0xwrrY
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:20"
     katkilar:
       - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Ace Bailey drives into the key and throws a high lob over the defense.
   - sira: 2
@@ -27,10 +34,19 @@ oyunlar:
     katkilar:
       - { oyuncu: Ace Bailey, takim: UTA, rol: pasor, pay: 30 }
       - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 70 }
-  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ace Bailey drives into the key and throws a high lob over the defense."
+  # güven: orta (oy 3/3)
   # pay diğer: 30/70 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Trae Young receives Anthony Davis's between-the-legs pass and lofts a pinpoint lob back to him.
+  # pay oyu 2/3
   - sira: 3
     eylem: alley_oop
     etiketler: [ bacak_arasi ]
@@ -39,7 +55,19 @@ oyunlar:
     katkilar:
       - { oyuncu: Trae Young, takim: WAS, rol: pasor, pay: 50 }
       - { oyuncu: Anthony Davis, takim: WAS, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Trae Young receives Anthony Davis's between-the-legs pass and lofts a pinpoint lob back to him."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: smac
@@ -49,7 +77,14 @@ oyunlar:
     zaman: "01:34"
     katkilar:
       - { oyuncu: Ayo Dosunmu, takim: MIN, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: LaMelo Ball creates the highlight with a stunning behind-the-back no-look pass in transition.
   - sira: 5
@@ -60,10 +95,19 @@ oyunlar:
     katkilar:
       - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
       - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 30 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: LaMelo Ball creates the highlight with a stunning behind-the-back no-look pass in transition."
+  # güven: orta (oy 3/3)
   # eylem diğer: Smaç 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Jalen Green drives baseline and floats a lob toward the rim.
+  # eylem oyu 2/3
   - sira: 6
     eylem: alley_oop
     etiketler: [ poster ]
@@ -73,7 +117,19 @@ oyunlar:
     katkilar:
       - { oyuncu: Jalen Green, takim: PHX, rol: pasor, pay: 30 }
       - { oyuncu: Miles Bridges, takim: PHX, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jalen Green drives baseline and floats a lob toward the rim."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Keyonte George delivers a high lob off the pick and roll to set up Mo Bamba's high-flying finish.
   - sira: 7
@@ -84,7 +140,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 30 }
       - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Keyonte George delivers a high lob off the pick and roll to set up Mo Bamba's high-flying finish."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: diger
@@ -92,7 +156,14 @@ oyunlar:
     zaman: "00:30"
     katkilar:
       - { oyuncu: Dillon Brooks, takim: PHX, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
     eylem: blok
@@ -101,11 +172,20 @@ oyunlar:
     zaman: "00:18"
     katkilar:
       - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
-  # güven: düşük (oy 1/3, uzlaşma yok; eylem 2/3; pay 1/1)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 1/3)
   # diğer: Dennis Schröder + Paul Reed 1/3
   # diğer: Dennis Schröder + Naz Reid 1/3
   # eylem diğer: Smaç 1/3
   # model güveni: yüksek; yüksek; yüksek
+  # uzlaşma yok
+  # eylem oyu 2/3
   - sira: 10
     eylem: alley_oop
     etiketler: [ poster ]
@@ -114,3 +194,17 @@ oyunlar:
     zaman: "00:03"
     katkilar:
       - { oyuncu: Paul Reed, takim: CHA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+        - eylem oyu 2/3
+      alternatifler:
+        - "diğer: Dennis Schröder + Paul Reed 1/3"
+        - "diğer: Dennis Schröder + Naz Reid 1/3"
+        - "eylem diğer: Smaç 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=ko4Zrm2hobA
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: orta_mesafe
@@ -14,7 +14,14 @@ oyunlar:
     zaman: "01:53"
     katkilar:
       - { oyuncu: Jayson Tatum, takim: BOS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # olası takma ad: Michael Brown Jr. → Mikel Brown Jr., sözlüğe ekle
   - sira: 2
@@ -23,7 +30,16 @@ oyunlar:
     zaman: "01:41"
     katkilar:
       - { oyuncu: Mikel Brown Jr., takim: BKN, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      uyarilar:
+        - "olası takma ad: Michael Brown Jr. → Mikel Brown Jr., sözlüğe ekle"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Kolek dishes a brilliant no-look behind-the-back pass through traffic.
   - sira: 3
@@ -34,7 +50,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Tyler Kolek, takim: NYK, rol: pasor, pay: 70 }
       - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: bitiren, pay: 30 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Kolek dishes a brilliant no-look behind-the-back pass through traffic."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: smac
@@ -43,7 +67,14 @@ oyunlar:
     zaman: "01:17"
     katkilar:
       - { oyuncu: Harrison Barnes, takim: SAS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: smac
@@ -52,7 +83,14 @@ oyunlar:
     zaman: "01:04"
     katkilar:
       - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
@@ -61,7 +99,14 @@ oyunlar:
     zaman: "00:53"
     katkilar:
       - { oyuncu: Andre Drummond, takim: NYK, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: smac
@@ -70,7 +115,14 @@ oyunlar:
     zaman: "00:42"
     katkilar:
       - { oyuncu: Dylan Harper, takim: SAS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: blok
@@ -79,7 +131,14 @@ oyunlar:
     zaman: "00:31"
     katkilar:
       - { oyuncu: Michael Porter Jr., takim: BKN, rol: bloklayan, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
     eylem: smac
@@ -89,7 +148,14 @@ oyunlar:
     zaman: "00:19"
     katkilar:
       - { oyuncu: Cade Cunningham, takim: DET, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Williams creates the highlight with a fancy behind-the-back pass on the break.
   - sira: 10
@@ -100,3 +166,11 @@ oyunlar:
     katkilar:
       - { oyuncu: Ziaire Williams, takim: LAL, rol: pasor, pay: 70 }
       - { oyuncu: Luka Doncic, takim: LAL, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Williams creates the highlight with a fancy behind-the-back pass on the break."

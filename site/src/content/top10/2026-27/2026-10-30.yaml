@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=3A-KG4CvN2s
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: ucluk
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:08"
     katkilar:
       - { oyuncu: Stephen Curry, takim: GSW, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: smac
@@ -25,7 +32,14 @@ oyunlar:
     zaman: "01:51"
     katkilar:
       - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: smac
@@ -35,7 +49,14 @@ oyunlar:
     zaman: "01:38"
     katkilar:
       - { oyuncu: Kevin Durant, takim: HOU, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: smac
@@ -44,7 +65,14 @@ oyunlar:
     zaman: "01:25"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
-  # güven: düşük (oy 2/3; eylem 1/3; pay 1/2)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 2/3)
   # diğer: Charles Bassey + Buddy Hield 1/3
   # eylem diğer: Blok 1/3
   # eylem diğer: Smaç 1/3
@@ -52,6 +80,8 @@ oyunlar:
   # pay diğer: 70/30 1/2
   # model güveni: orta (Finisher is identified by audio and jersey name as Rose, likely a rookie or custom roster player.); orta (Finisher named Axl Rose as heard in commentary, likely a custom/rookie player.); orta (The commentator referred to GSW #7 as 'Axl Rose' as part of a Guns N' Roses pun ('Welcome to the Jungle' and 'Paradise City').)
   # pay: Swats Walker Kessler at the rim to spark the fast break
+  # eylem oyu 1/3
+  # pay oyu 1/2
   - sira: 5
     eylem: alley_oop
     etiketler: [ hizli_hucum ]
@@ -61,7 +91,24 @@ oyunlar:
     katkilar:
       - { oyuncu: Charles Bassey, takim: GSW, rol: bloklayan, pay: 50 }
       - { oyuncu: Axl Rose, takim: GSW, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 1/3
+        - pay oyu 1/2
+      alternatifler:
+        - "diğer: Charles Bassey + Buddy Hield 1/3"
+        - "eylem diğer: Blok 1/3"
+        - "eylem diğer: Smaç 1/3"
+        - "pay diğer: 50/50 1/2"
+        - "pay diğer: 70/30 1/2"
+      model_guveni:
+        - orta (Finisher is identified by audio and jersey name as Rose, likely a rookie or custom roster player.)
+        - orta (Finisher named Axl Rose as heard in commentary, likely a custom/rookie player.)
+        - "orta (The commentator referred to GSW #7 as 'Axl Rose' as part of a Guns N' Roses pun ('Welcome to the Jungle' and 'Paradise City').)"
+        - "pay: Swats Walker Kessler at the rim to spark the fast break"
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
@@ -70,7 +117,14 @@ oyunlar:
     zaman: "00:57"
     katkilar:
       - { oyuncu: Matas Buzelis, takim: CHI, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Throws the transition lob right on target
   - sira: 7
@@ -81,7 +135,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Kyrie Irving, takim: DAL, rol: pasor, pay: 50 }
       - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 50 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Throws the transition lob right on target"
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Executes a flashy behind-the-back dime on the fast break
   - sira: 8
@@ -92,7 +154,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 70 }
       - { oyuncu: Josh Giddey, takim: CHI, rol: bitiren, pay: 30 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Executes a flashy behind-the-back dime on the fast break"
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
     eylem: turnike
@@ -101,7 +171,14 @@ oyunlar:
     zaman: "00:13"
     katkilar:
       - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: Delivers an accurate baseline lob off the dribble
   - sira: 10
@@ -111,3 +188,11 @@ oyunlar:
     katkilar:
       - { oyuncu: Bones Hyland, takim: MIN, rol: pasor, pay: 50 }
       - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Delivers an accurate baseline lob off the dribble"

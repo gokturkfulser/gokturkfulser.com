@@ -8,7 +8,8 @@
 //   pnpm --filter site top10 --otomatik --baslangic 2026-10-20 [--bitis 2026-10-31]   geçmiş geceleri toplu doldurma (en çok 31 gün; bitiş varsayılan dün, ABD saati)
 //   ... --oylama N              aynı video N kez bağımsız işlenir, satır satır çoğunluk oylaması (varsayılan 3; 1 = oylamasız)
 //   ... --kuru                  dosyaya yazmaz; terminale ve git'e girmeyen scripts/top10/cikti/ klasörüne JSON
-//   ... --ortamdan              workflow_dispatch girdilerini (GIRDI_TARIH, GIRDI_URL, GIRDI_UZERINE_YAZ) bayraklara çevirir
+//   ... --ortamdan              workflow_dispatch girdilerini (GIRDI_TARIH, GIRDI_URL, GIRDI_UZERINE_YAZ, GIRDI_ONAYLA) bayraklara çevirir
+//   pnpm --filter site top10 --onayla "2026-10-20, 2026-10-21"          yalnızca onaylama: o gecelerin `inceleme: bekliyor` satırı `onaylandi` olur (Gemini/YouTube çağrısı yok; başka bayrakla birlikte kullanılmaz)
 //
 // Uydurma koruması: Gemini'ye gitmeden önce adres biçimi doğrulanır; videonun meta verisi (başlık, süre, açıklama, gizlilik) YouTube Data API'den
 // zorunlu alınır; her çalıştırmanın çıktısı videoyla tutarlılık için denetlenir (gece.ts → dogrula); satırlar çoğunluk oylamasıyla birleştirilir
@@ -27,6 +28,7 @@ import { EN_COK_ARALIK_GUN, EN_COK_OYLAMA, PENCERE_GUN, PENCERE_SAAT_DILIMI, tok
 import { baslikCoz } from './baslik.ts';
 import { dogrula, hamAdlariniUygula, sezonKlasoru, yamlDogrula, type OyunNotu, type Uretilen } from './gece.ts';
 import { cozunurlukCoz, geceUret, istemHazirla, istemOku, ISTEM_DOSYASI, type Kullanim } from './gemini.ts';
+import { onayla, onayOzeti, onaySatiri, onaylaTarihleri } from './onayla.ts';
 import { oylamaSonrasi } from './oylama.ts';
 import { aralikTarihleri, karar, pencereTarihleri, planla, type Mevcut, type Plan } from './otomatik.ts';
 import { aralikOzeti, ozetMarkdown, toplamSatiri, tokenRaporu, type GeceSonucu, type TokenCagrisi } from './ozet.ts';
@@ -53,19 +55,26 @@ export type Bagimliliklar = {
   dosyaOku?: (yol: string) => string;
 };
 
-type Secenekler = { otomatik: boolean; tarih?: string; url?: string; dosya?: string; uzerineYaz: boolean; kuru: boolean; oylama: number; zorla: boolean; baslangic?: string; bitis?: string };
+type Secenekler = { otomatik: boolean; tarih?: string; url?: string; dosya?: string; uzerineYaz: boolean; kuru: boolean; oylama: number; zorla: boolean; baslangic?: string; bitis?: string; onayla?: string[] };
 
 class KullanimHatasi extends Error {}
 
-/** workflow_dispatch girdileri → betik bayrakları. Girdi yoksa --otomatik; tarih/url varsa tek gece; `uzerine_yaz` işaretliyse --uzerine-yaz. */
+/**
+ * workflow_dispatch girdileri → betik bayrakları. Girdi yoksa --otomatik; `onayla` doluysa --onayla (yalnızca onaylama);
+ * tarih/url varsa tek gece; `uzerine_yaz` işaretliyse --uzerine-yaz. Çakışan girdiler (onayla + tarih/url/uzerine_yaz) olduğu gibi geçirilir:
+ * `argumanlar` bunları kullanım hatası (çıkış 2) olarak reddeder.
+ */
 export function dispatchArgumanlari(env: Record<string, string | undefined>): string[] {
   const tarih = env.GIRDI_TARIH?.trim();
   const url = env.GIRDI_URL?.trim();
-  if (!tarih && !url) return ['--otomatik'];
+  const onayla = env.GIRDI_ONAYLA?.trim();
+  const uzerineYaz = env.GIRDI_UZERINE_YAZ?.trim() === 'true';
+  if (!tarih && !url && !onayla) return ['--otomatik'];
   const a: string[] = [];
+  if (onayla) a.push('--onayla', onayla);
   if (tarih) a.push('--tarih', tarih);
   if (url) a.push('--url', url);
-  if (env.GIRDI_UZERINE_YAZ?.trim() === 'true') a.push('--uzerine-yaz');
+  if (uzerineYaz && (onayla || tarih || url)) a.push('--uzerine-yaz');
   return a;
 }
 
@@ -96,10 +105,20 @@ export function argumanlar(argv: readonly string[]): Secenekler {
     else if (ad === '--oylama') s.oylama = Number(sonraki());
     else if (ad === '--baslangic') s.baslangic = sonraki();
     else if (ad === '--bitis') s.bitis = sonraki();
+    else if (ad === '--onayla') {
+      try {
+        s.onayla = onaylaTarihleri(sonraki() ?? '');
+      } catch (hata) {
+        throw new KullanimHatasi((hata as Error).message);
+      }
+    }
     else if (ad === '--tekrar') throw new KullanimHatasi('--tekrar kaldırıldı: --oylama N aynı videoyu N kez işler ve satır satır oylar; farklı çıkan satırlar oy oranı ve alternatifleriyle gösterilir.');
     else if (!ad.startsWith('--') && TARIH_KALIBI.test(ad)) s.tarih = ad; // konumsal: tarih
     else if (!ad.startsWith('--') && /^https?:\/\//i.test(ad)) s.url = ad; // konumsal: url (geçerliliği aşağıda denetlenir)
     else throw new KullanimHatasi(`Bilinmeyen argüman: ${ad}`);
+  }
+  if (s.onayla && (s.otomatik || s.tarih || s.url || s.dosya || s.uzerineYaz || s.zorla || s.kuru || s.baslangic || s.bitis)) {
+    throw new KullanimHatasi('--onayla yalnızca onaylama yapar; --otomatik/--tarih/--url/--uzerine-yaz/--dosya/--zorla/--kuru/--baslangic/--bitis ile birlikte kullanılmaz.');
   }
   if (s.otomatik && (s.tarih || s.url || s.dosya)) throw new KullanimHatasi('--otomatik ile --tarih/--url/--dosya birlikte kullanılmaz.');
   if (s.otomatik && s.uzerineYaz) throw new KullanimHatasi('--uzerine-yaz yalnızca tek gece (--tarih/--url) ya da liste (--dosya) modunda, elle kullanılır.');
@@ -109,7 +128,7 @@ export function argumanlar(argv: readonly string[]): Secenekler {
   if (s.bitis && !s.baslangic) throw new KullanimHatasi('--bitis için --baslangic de verilmeli.');
   for (const [ad, t] of [['--baslangic', s.baslangic], ['--bitis', s.bitis]] as const) if (t !== undefined && !TARIH_KALIBI.test(t)) throw new KullanimHatasi(`${ad} YYYY-AA-GG olmalı: ${t}`);
   if (!Number.isInteger(s.oylama) || s.oylama < 1 || s.oylama > EN_COK_OYLAMA) throw new KullanimHatasi(`--oylama 1 ile ${EN_COK_OYLAMA} arasında bir tam sayı olmalı (varsayılan ${VARSAYILAN_OYLAMA}).`);
-  if (!s.otomatik && !s.tarih && !s.url && !s.dosya) throw new KullanimHatasi('Kullanım: --otomatik | <YYYY-AA-GG> <url> | --tarih YYYY-AA-GG [--url ...] [--uzerine-yaz] [--zorla] | --dosya liste.txt  (+ --oylama N, --kuru)');
+  if (!s.onayla && !s.otomatik && !s.tarih && !s.url && !s.dosya) throw new KullanimHatasi('Kullanım: --onayla "YYYY-AA-GG, ..." | --otomatik | <YYYY-AA-GG> <url> | --tarih YYYY-AA-GG [--url ...] [--uzerine-yaz] [--zorla] | --dosya liste.txt  (+ --oylama N, --kuru)');
   if (s.tarih && !TARIH_KALIBI.test(s.tarih)) throw new KullanimHatasi(`--tarih YYYY-AA-GG olmalı: ${s.tarih}`);
   if (s.url) adresDogrula(s.url); // Gemini'ye (ve hiçbir API'ye) gitmeden çıkış 2
   return s;
@@ -231,10 +250,19 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
     if (bag.ozetDosyasi && sonuclar.length) appendFileSync(bag.ozetDosyasi, `${ozet}\n`);
     return { kod, sonuclar, ozet };
   };
+  /** Yalnızca onaylama modu: anahtar gerekmez, ağ çağrısı yapılmaz. Hata (okunamayan dosya) çıkış 1; bilgi satırları (dosya yok, zaten onaylı, elle) çıkışı etkilemez. */
+  const onaylaYurut = (tarihler: string[]) => {
+    const sonuc = onayla(tarihler, bag.icerikKlasoru);
+    for (const r of sonuc) bag.yaz(onaySatiri(r));
+    const ozet = onayOzeti(sonuc);
+    if (bag.ozetDosyasi) appendFileSync(bag.ozetDosyasi, `${ozet}\n`);
+    return { kod: sonuc.some((r) => r.durum === 'hata') ? 1 : 0, sonuclar: [] as GeceSonucu[], ozet };
+  };
   let secenek: Secenekler;
   try {
     const girdi = argv.includes('--ortamdan') ? [...argv.filter((a) => a !== '--ortamdan'), ...dispatchArgumanlari(bag.env)] : argv;
     secenek = argumanlar(girdi);
+    if (secenek.onayla) return onaylaYurut(secenek.onayla);
     if (!bag.env.YOUTUBE_API_KEY) throw new KullanimHatasi('YOUTUBE_API_KEY tanımlı değil (site/.env ya da GitHub secret).');
     try {
       cozunurluk = cozunurlukCoz(bag.env.GEMINI_COZUNURLUK);

@@ -154,7 +154,7 @@ describe('YAML (Document API): yorumlar ve yeniden okuma', () => {
     expect(okunan.oyunlar[0]!.katkilar.map((k) => k.pay)).toEqual([70, 30]);
     expect(okunan.inceleme).toBe('bekliyor');
     expect(okunan.oyunlar[0]!.zaman).toBe('6:10');
-    expect(s.yaml).not.toMatch(/confidence|guven:/); // güven yalnızca yorumda ("# güven"), alan olarak yazılmaz
+    expect(s.yaml).not.toMatch(/confidence/); // modelin ham alan adı yazılmaz; güven yalnızca kontrol alanında ve ondan üretilen yorumda
   });
 
   it('yamlDogrula bozuk YAML ve şemaya uymayan veriyi reddeder', () => {

@@ -5,7 +5,7 @@ video: https://www.youtube.com/watch?v=V6wyTk_Nos8
 kaynak: gemini
 inceleme: bekliyor
 oyunlar:
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
@@ -15,7 +15,14 @@ oyunlar:
     zaman: "02:09"
     katkilar:
       - { oyuncu: Kyle Kuzma, takim: MIL, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: smac
@@ -25,7 +32,14 @@ oyunlar:
     zaman: "01:51"
     katkilar:
       - { oyuncu: Bilal Coulibaly, takim: WAS, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
     eylem: smac
@@ -35,7 +49,14 @@ oyunlar:
     zaman: "01:35"
     katkilar:
       - { oyuncu: Alperen Sengun, takim: HOU, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: smac
@@ -45,7 +66,14 @@ oyunlar:
     zaman: "01:21"
     katkilar:
       - { oyuncu: Matas Buzelis, takim: CHI, rol: bitiren, pay: 100 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: ucluk
@@ -54,10 +82,18 @@ oyunlar:
     zaman: "01:08"
     katkilar:
       - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
-  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
   # pay diğer: 50/50 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Fox lofts a high alley-oop pass over the defense.
+  # pay oyu 2/3
   - sira: 6
     eylem: alley_oop
     etiketler: [ tek_el ]
@@ -66,7 +102,19 @@ oyunlar:
     katkilar:
       - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
-  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Fox lofts a high alley-oop pass over the defense."
+  # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: ucluk
@@ -75,7 +123,14 @@ oyunlar:
     zaman: "00:42"
     katkilar:
       - { oyuncu: Grayson Allen, takim: CHA, rol: bitiren, pay: 100 }
-  # güven: orta (oy 2/3; eylem 3/3; pay 2/2)
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
   # diğer: Peyton Watson 1/3
   # model güveni: yüksek; yüksek; orta (Jersey displays Watson #8 on the Cavaliers; Anton Watson identified by appearance.)
   - sira: 8
@@ -86,10 +141,20 @@ oyunlar:
     zaman: "00:29"
     katkilar:
       - { oyuncu: Anton Watson, takim: CLE, rol: bloklayan, pay: 100 }
-  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Peyton Watson 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - "orta (Jersey displays Watson #8 on the Cavaliers; Anton Watson identified by appearance.)"
+  # güven: orta (oy 3/3)
   # eylem diğer: Top çalma 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Gillespie pulls off an incredible nutmeg steal through Niang's legs and pushes the break.
+  # eylem oyu 2/3
   - sira: 9
     eylem: pas
     etiketler: [ bacak_arasi, hizli_hucum ]
@@ -99,10 +164,23 @@ oyunlar:
     katkilar:
       - { oyuncu: Collin Gillespie, takim: PHX, rol: pasor, pay: 70 }
       - { oyuncu: Luke Kennard, takim: PHX, rol: bitiren, pay: 30 }
-  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Top çalma 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Gillespie pulls off an incredible nutmeg steal through Niang's legs and pushes the break."
+  # güven: orta (oy 3/3)
   # pay diğer: 50/50 1/3
   # model güveni: yüksek; yüksek; yüksek
   # pay: Jokic delivers a slick behind-the-back bounce pass to set up Gordon's reverse finish.
+  # pay oyu 2/3
   - sira: 10
     eylem: smac
     etiketler: [ ters ]
@@ -111,3 +189,15 @@ oyunlar:
     katkilar:
       - { oyuncu: Nikola Jokic, takim: DEN, rol: pasor, pay: 30 }
       - { oyuncu: Aaron Gordon, takim: DEN, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jokic delivers a slick behind-the-back bounce pass to set up Gordon's reverse finish."

@@ -26,6 +26,10 @@ on:
         required: false
         type: boolean
         default: false
+      onayla:
+        description: 'Yalnızca onayla: virgülle ayrılmış tarihler (ör. 2026-10-20, 2026-10-21). Doluysa Gemini/YouTube çağrılmaz; o gecelerin inceleme: bekliyor satırı onaylandi olur. tarih/url/uzerine_yaz ile birlikte verilemez.'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -56,7 +60,9 @@ jobs:
       # Girdiler ortam değişkeniyle geçer (komut satırına ${{ }} enjekte edilmez); `--ortamdan` bunları bayraklara çevirir
       # (scripts/top10/calistir.ts → dispatchArgumanlari, testli): girdi yoksa (zamanlanmış çalıştırma) --otomatik; tarih/url varsa tek gece;
       # `uzerine_yaz` işaretliyse --uzerine-yaz (yalnızca kaynak: gemini + inceleme: bekliyor dosyalar; elle/onaylı dosyaya dokunulmaz).
-      - name: Gece dosyalarını üret
+      # `onayla` doluysa --onayla: yalnızca onaylama (Gemini/YouTube çağrısı yok; yalnızca inceleme: bekliyor → onaylandi); mantık betikte (scripts/top10/onayla.ts),
+      # tarih/url/uzerine_yaz ile birlikte verilirse betik kullanım hatası (çıkış 2) verir.
+      - name: Gece dosyalarını üret (ya da onayla)
         working-directory: site
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
@@ -66,6 +72,7 @@ jobs:
           GIRDI_TARIH: ${{ inputs.tarih }}
           GIRDI_URL: ${{ inputs.url }}
           GIRDI_UZERINE_YAZ: ${{ inputs.uzerine_yaz }}
+          GIRDI_ONAYLA: ${{ inputs.onayla }}
         run: node scripts/top10/calistir.ts --ortamdan
 
       # Üretilen dosyaların sitenin kendi içerik şemasından geçtiğini kanıtlar: `astro sync` içerik katmanını yükler ve her koleksiyon
@@ -74,6 +81,8 @@ jobs:
         run: pnpm --filter site exec astro sync
 
       - name: Yalnızca top10 verisi değiştiyse commit + push
+        env:
+          GIRDI_ONAYLA: ${{ inputs.onayla }} # doluysa commit iletisi "top10: onay <tarihler>"
         run: |
           set -euo pipefail
           degisen="$(git status --porcelain --untracked-files=all | cut -c4-)"
@@ -92,7 +101,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- site/src/content/top10
-          git commit -m "top10: ${tarihler} (gemini)"
+          if [ -n "${GIRDI_ONAYLA// /}" ]; then
+            git commit -m "top10: onay ${tarihler}"
+          else
+            git commit -m "top10: ${tarihler} (gemini)"
+          fi
           # Yarış: bu sırada main'e başka commit girmiş olabilir. Rebase + push, çakışmada bir kez daha dene, olmazsa hata.
           basarili=0
           for deneme in 1 2; do
@@ -108,3 +121,19 @@ jobs:
             echo "::error::main'e push edilemedi (iki deneme)"
             exit 1
           fi
+
+      # top10-kontrol dalı yalnızca main'in aynasıdır: Cloudflare Workers Builds bu dalı önizleme olarak derler (SHOW_DRAFTS=true; site/scripts/workers-build.mjs)
+      # ve kontrol sayfası (/kontrol/top10/) orada görünür. Bot main'e commit attıysa (üretim ya da onay) aynı commit, commit yoksa da dal main'den farklıysa main'in ucu
+      # bu dala gönderilir. Force push YALNIZCA bu dala yapılır (açık refspec: main'in kendisine ya da başka dala asla).
+      - name: top10-kontrol dalını main'e eşitle
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          ana="$(git rev-parse origin/main)"
+          uzak="$(git ls-remote --heads origin refs/heads/top10-kontrol | cut -f1)"
+          if [ "$ana" = "$uzak" ]; then
+            echo "top10-kontrol dalı zaten main ile aynı (${ana}); push yok."
+            exit 0
+          fi
+          git push --force origin "${ana}:refs/heads/top10-kontrol"
+          echo "top10-kontrol dalı ${ana} commit'ine eşitlendi."

@@ -9,6 +9,11 @@ export type Tur = 'top10' | 'top5';
 export type Kaynak = 'gemini' | 'elle';
 /** Otomatik çıkarılan geceler kontrol edilene kadar 'bekliyor'; elle girilenler baştan 'onaylandi'. */
 export type Inceleme = 'bekliyor' | 'onaylandi';
+/** Kontrol verisinin güven düzeyleri (sıra: en iyiden en kötüye). */
+export const KONTROL_GUVEN = ['yuksek', 'orta', 'dusuk'] as const;
+export type KontrolGuven = (typeof KONTROL_GUVEN)[number];
+/** Oyun satırının kontrol verisi (betik yazar; yalnızca kontrol sayfası okur, herkese açık bileşenler kullanmaz). */
+export type Kontrol = { guven: KontrolGuven; oy?: string; uyarilar?: string[]; alternatifler?: string[]; model_guveni?: string[] };
 export type Katki = { oyuncu: string; takim: string; rol: Rol; pay?: number };
 export type Oyun = {
   sira: number;
@@ -19,6 +24,8 @@ export type Oyun = {
   rakip?: string;
   /** Oyunun videodaki başlangıç zamanı: "m:ss" ya da "mm:ss". */
   zaman?: string;
+  /** Kontrol verisi (yalnızca betik yazar, yalnızca kontrol sayfası okur). */
+  kontrol?: Kontrol;
   katkilar: Katki[];
 };
 /** Bir gecenin listesi. `tarih`, maçların ABD gecesidir (videonun başlığındaki tarih). */

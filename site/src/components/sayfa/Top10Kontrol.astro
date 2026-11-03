@@ -1,0 +1,437 @@
+---
+// Top 10 kontrol sayfası (/kontrol/top10/): bekleyen gecelerde bakılacak satırlar, bekleyen geceler, onaylanmış geceler.
+// Yalnızca SHOW_DRAFTS build'lerinde üretilir (pages/kontrol/[konu]/index.astro getStaticPaths); veri lib/content.ts → top10KontrolGirdileri().
+// Yalnızca betiğin yazdığı `kontrol` alanını okur; herkese açık Top10* bileşenleri bu alanı hiç kullanmaz. Tablo yok: mobil öncelikli satır blokları.
+// Sayfa Türkçedir (dil sabit 'tr'); sıfır client JS.
+import Base from '../../layouts/Base.astro';
+import { top10KontrolGirdileri } from '../../lib/content';
+import { tarihIso, tarihYaz } from '../../lib/format';
+import { katkiPaylari, type Gece, type Oyun } from '../../lib/top10';
+import { duzenleAdresi, kontrolOzeti, ONAY_FORMU_ADRESI, ONIZLEME_ADRESI_BICIMI, zamanBaglantisi } from '../../lib/top10-kontrol';
+import { eylemAdi, rolAdi } from '../../lib/top10-sozluk';
+import { sozluk } from '../../i18n';
+
+const dil = 'tr';
+const s = sozluk(dil).top10Kontrol;
+const t = sozluk(dil).top10;
+const { bakilacak, bekleyen, onayli } = kontrolOzeti(await top10KontrolGirdileri());
+const lede = s.lede(ONAY_FORMU_ADRESI);
+
+/** Satırın video zaman bağlantısı ve görünen metni (zaman yoksa bağlantı yok). */
+const zamanOgesi = (gece: Gece, oyun: Oyun) => {
+  const adres = zamanBaglantisi(gece, oyun);
+  return adres && oyun.zaman ? { adres, metin: s.zaman(oyun.zaman) } : undefined;
+};
+---
+
+<Base baslik={s.baslik} aciklama={s.aciklama} dil={dil}>
+  <section class="bant bant--koyu bant--basi" aria-labelledby="kontrol-baslik">
+    <div class="kap">
+      <h1 id="kontrol-baslik" class="h1">{s.baslik}</h1>
+      <p class="lede">{lede.once}<a href={lede.adres} rel="noopener noreferrer">{lede.baglanti}</a>{lede.sonra}</p>
+      <p class="onizleme">{s.onizleme}: <span class="adres">{ONIZLEME_ADRESI_BICIMI}</span></p>
+    </div>
+  </section>
+
+  <section class="bant bant--acik kontrol" aria-labelledby="bakilacak-baslik">
+    <div class="kap">
+      <h2 id="bakilacak-baslik" class="bolum-baslik">{s.bakilacakBaslik}</h2>
+      {
+        bakilacak.length === 0 ? (
+          <p class="bos">{s.bakilacakYok}</p>
+        ) : (
+          <ul class="satirlar" role="list">
+            {bakilacak.map(({ id, gece, oyun }) => {
+              const k = oyun.kontrol!;
+              const paylar = katkiPaylari(oyun.katkilar);
+              const zaman = zamanOgesi(gece, oyun);
+              return (
+                <li>
+                  <article class="satir" data-guven={k.guven} aria-label={`${tarihYaz(gece.tarih, dil)}, ${s.sira(oyun.sira)}`}>
+                    <header class="satir-ust">
+                      <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
+                      <span class="sira">{s.sira(oyun.sira)}</span>
+                      <span class="tur">{t.tur[gece.tur]}</span>
+                      {zaman ? <a class="zaman" href={zaman.adres} rel="noopener noreferrer">{zaman.metin}</a> : <span class="zaman-yok">{s.zamanYok}</span>}
+                    </header>
+                    <dl class="alanlar">
+                      {oyun.eylem && (
+                        <div>
+                          <dt>{s.eylem}</dt>
+                          <dd>{eylemAdi(oyun.eylem, dil)}</dd>
+                        </div>
+                      )}
+                      <div>
+                        <dt>{s.katkilar}</dt>
+                        <dd>
+                          <ul class="katkilar" role="list">
+                            {oyun.katkilar.map((katki, i) => (
+                              <li>
+                                <span class="ad">{katki.oyuncu}</span> <span class="takim">{katki.takim}</span> <span class="rol">{rolAdi(katki.rol, dil)}</span>{' '}
+                                <span class="pay">{s.pay(paylar[i]!)}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </dd>
+                      </div>
+                      {oyun.rakip && (
+                        <div>
+                          <dt>{s.rakip}</dt>
+                          <dd>{oyun.rakip}</dd>
+                        </div>
+                      )}
+                      <div>
+                        <dt>{s.guven}</dt>
+                        <dd class="guven">{s.guvenAdi[k.guven]}</dd>
+                      </div>
+                      {k.oy && (
+                        <div>
+                          <dt>{s.oy}</dt>
+                          <dd>{k.oy}</dd>
+                        </div>
+                      )}
+                      {k.alternatifler && k.alternatifler.length > 0 && (
+                        <div>
+                          <dt>{s.alternatifler}</dt>
+                          <dd>
+                            <ul class="liste" role="list">
+                              {k.alternatifler.map((a) => <li>{a}</li>)}
+                            </ul>
+                          </dd>
+                        </div>
+                      )}
+                      {k.uyarilar && k.uyarilar.length > 0 && (
+                        <div>
+                          <dt>{s.uyarilar}</dt>
+                          <dd>
+                            <ul class="liste uyarilar" role="list">
+                              {k.uyarilar.map((u) => <li><span class="uyari-etiketi">{s.uyari}:</span> {u}</li>)}
+                            </ul>
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                    <p class="duzenle"><a href={duzenleAdresi(id)} rel="noopener noreferrer">{s.duzenle}</a></p>
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="bant bant--acik kontrol" aria-labelledby="bekleyen-baslik">
+    <div class="kap">
+      <h2 id="bekleyen-baslik" class="bolum-baslik">{s.bekleyenBaslik}</h2>
+      {
+        bekleyen.length === 0 ? (
+          <p class="bos">{s.bekleyenYok}</p>
+        ) : (
+          <ul class="geceler" role="list">
+            {bekleyen.map(({ id, gece, satirSayisi, bakilacakSayisi, kontrolsuzSayisi }) => (
+              <li>
+                <article class="gece" aria-labelledby={`gece-${gece.tarih.toISOString().slice(0, 10)}`}>
+                  <h3 id={`gece-${tarihIso(gece.tarih)}`} class="gece-baslik">
+                    <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
+                  </h3>
+                  <ul class="gece-ozet" role="list">
+                    <li>{t.tur[gece.tur]}</li>
+                    <li>{s.satirSayisi(satirSayisi)}</li>
+                    <li>{s.bakilacakSayisi(bakilacakSayisi)}</li>
+                    {kontrolsuzSayisi > 0 && <li>{s.kontrolsuzSayisi(kontrolsuzSayisi)}</li>}
+                  </ul>
+                  <p class="baglantilar">
+                    <a href={gece.video} rel="noopener noreferrer">{s.video}</a>
+                    <a href={duzenleAdresi(id)} rel="noopener noreferrer">{s.duzenle}</a>
+                  </p>
+                  <h4 class="alt-baslik">{s.tumSatirlar}</h4>
+                  <ol class="kisa" role="list">
+                    {[...gece.oyunlar].sort((a, b) => a.sira - b.sira).map((oyun) => {
+                      const zaman = zamanOgesi(gece, oyun);
+                      return (
+                        <li>
+                          <span class="kisa-sira">{s.sira(oyun.sira)}</span>
+                          <span class="kisa-adlar">{oyun.katkilar.map((katki) => katki.oyuncu).join(', ')}</span>
+                          {zaman && <a class="zaman" href={zaman.adres} rel="noopener noreferrer">{zaman.metin}</a>}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </article>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    onayli.length > 0 && (
+      <section class="bant bant--acik kontrol" aria-labelledby="onayli-baslik">
+        <div class="kap">
+          <h2 id="onayli-baslik" class="bolum-baslik">{s.onayliBaslik}</h2>
+          <ul class="onayli" role="list">
+            {onayli.map(({ id, gece }) => (
+              <li>
+                <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
+                <a href={duzenleAdresi(id)} rel="noopener noreferrer">{s.duzenle}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  /* Kâğıt bandı: tüm metin --murekkep (kâğıtta 15,5:1); --soluk küçük metinde 7:1'in altında kalır, kullanılmaz. */
+  .kontrol {
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+    font-size: var(--yazi-sm);
+    line-height: 1.45;
+  }
+
+  /* Bölüm başlığı: kâğıtta Hanken, ≥ 24 px (--yazi-h3), tek renk */
+  .bolum-baslik {
+    margin: 0 0 var(--aralik-4);
+    font-family: var(--font-bas);
+    font-size: var(--yazi-h3);
+    font-weight: 650;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
+  .bos {
+    margin: 0;
+    font-size: var(--yazi-govde);
+  }
+
+  ul[role='list'],
+  ol[role='list'] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .kontrol a {
+    overflow-wrap: anywhere;
+  }
+
+  /* ——— Bakılacak satırlar: çizgiyle ayrılmış bloklar (kart gridi değil); güven metinle de yazılır, çizgi ikincil ipucudur ——— */
+  .satirlar > li {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .satirlar > li:last-child {
+    border-block-end: 1px solid var(--cizgi);
+  }
+
+  .satir {
+    display: grid;
+    gap: var(--aralik-3);
+    padding-block: var(--aralik-4);
+    padding-inline-start: var(--aralik-3);
+    border-inline-start: 3px solid var(--murekkep);
+  }
+
+  .satir[data-guven='dusuk'] {
+    border-inline-start-color: var(--turuncu-metin);
+    border-inline-start-width: 6px;
+  }
+
+  .satir-ust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-1) var(--aralik-3);
+  }
+
+  .satir-ust time {
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+
+  .sira,
+  .tur {
+    font-weight: 600;
+  }
+
+  /* Zaman bağlantısı: ≥ 44 px dokunma alanı */
+  .zaman {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding-inline: var(--aralik-3);
+    border: 1px solid var(--murekkep);
+    font-weight: 700;
+    color: var(--murekkep);
+  }
+
+  .zaman-yok {
+    font-weight: 600;
+  }
+
+  .alanlar {
+    display: grid;
+    gap: var(--aralik-2);
+    margin: 0;
+  }
+
+  .alanlar > div {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .alanlar dt {
+    font-size: var(--yazi-xs);
+    font-weight: 700;
+  }
+
+  .alanlar dd {
+    margin: 0;
+    font-size: var(--yazi-sm);
+  }
+
+  .katkilar,
+  .liste {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .ad {
+    font-weight: 700;
+  }
+
+  .takim,
+  .rol,
+  .pay {
+    font-weight: 500;
+  }
+
+  .uyari-etiketi {
+    font-weight: 700;
+  }
+
+  .duzenle {
+    margin: 0;
+  }
+
+  .duzenle a,
+  .baglantilar a,
+  .onayli a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+  }
+
+  /* ——— Bekleyen geceler ——— */
+  .geceler {
+    display: grid;
+    gap: var(--aralik-5);
+  }
+
+  .gece {
+    display: grid;
+    gap: var(--aralik-3);
+    padding-block-start: var(--aralik-3);
+    border-block-start: 3px solid var(--murekkep);
+  }
+
+  .gece-baslik,
+  .alt-baslik {
+    margin: 0;
+    font-family: var(--font-baslik-yigin);
+    letter-spacing: -0.01em;
+  }
+
+  .gece-baslik {
+    font-size: 1.5rem; /* ≥ 24 px */
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .alt-baslik {
+    font-size: var(--yazi-sm);
+    font-weight: 700;
+  }
+
+  .gece-ozet {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-4);
+  }
+
+  .baglantilar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-4);
+    margin: 0;
+  }
+
+  .kisa {
+    display: grid;
+  }
+
+  .kisa > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-1) var(--aralik-3);
+    padding-block: var(--aralik-2);
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .kisa-sira {
+    min-inline-size: 4.5rem;
+    font-weight: 700;
+  }
+
+  .kisa-adlar {
+    flex: 1 1 12rem;
+  }
+
+  /* Koyu bantta küçük not: gövde ≥ 16 px, soluk ton (koyu bantta 11,16:1) */
+  .onizleme {
+    margin: var(--aralik-4) 0 0;
+    font-family: var(--font-baslik-yigin);
+    font-size: 1rem;
+    color: var(--soluk);
+    overflow-wrap: anywhere;
+  }
+
+  .adres {
+    font-weight: 700;
+    color: var(--murekkep);
+  }
+
+  /* ——— Onaylanmış geceler: düz liste ——— */
+  .onayli {
+    display: grid;
+  }
+
+  .onayli > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aralik-1) var(--aralik-4);
+    padding-block: var(--aralik-1);
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .onayli time {
+    font-weight: 700;
+    min-inline-size: 9.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .alanlar > div {
+      grid-template-columns: 11rem 1fr;
+      gap: var(--aralik-3);
+    }
+  }
+</style>
