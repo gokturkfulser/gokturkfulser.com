@@ -4,7 +4,8 @@ tarih: 2026-10-22
 video: https://www.youtube.com/watch?v=1TgjpN4TyWU
 tur: top5
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -16,8 +17,7 @@ oyunlar:
     rakip: Christian Braun
     zaman: "01:11"
     katkilar:
-      - { oyuncu: Chet Holmgren, takim: OKC, rol: bloklayan, pay: 25 }
-      - { oyuncu: Cason Wallace, takim: OKC, rol: pasor, pay: 25 }
+      - { oyuncu: Chet Holmgren, takim: OKC, rol: bloklayan, pay: 50 }
       - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 50 }
     kontrol:
       guven: yuksek
@@ -31,7 +31,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: turnike
-    etiketler: [ ters ]
+    etiketler: [ ters, crossover ]
     aciklama: Jaylen Brown drives into the paint, executes a spin move, and finishes an acrobatic reverse layup.
     zaman: "00:53"
     katkilar:
@@ -69,10 +69,10 @@ oyunlar:
   - sira: 4
     eylem: turnike
     etiketler: [ hizli_hucum ]
-    aciklama: Jalen Williams fires a full-court outlet pass to Chet Holmgren for a smooth transition layup.
+    aciklama: Jaylin Williams fires a full-court outlet pass to Chet Holmgren for a smooth transition layup.
     zaman: "00:20"
     katkilar:
-      - { oyuncu: Jalen Williams, takim: OKC, rol: pasor, pay: 50 }
+      - { oyuncu: Jaylin Williams, takim: OKC, rol: pasor, pay: 50 }
       - { oyuncu: Chet Holmgren, takim: OKC, rol: bitiren, pay: 50 }
     kontrol:
       guven: orta
