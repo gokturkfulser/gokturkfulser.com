@@ -1,0 +1,8 @@
+# Üretilen statik varlıklar (scripts/varliklar.mjs)
+public/
+.wrangler/
+# Yerel geliştirme sırları ve sahte GitHub deposu
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.gelistirme-depo/

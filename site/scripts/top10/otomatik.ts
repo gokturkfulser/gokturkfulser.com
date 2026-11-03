@@ -9,10 +9,12 @@ export type Mevcut = {
   inceleme?: 'bekliyor' | 'onaylandi';
   /** Dosya var ama ayrıştırılamadı: dokunulmaz. */
   okunamadi?: boolean;
+  /** `elle_duzenlendi: true`: kontrol düzenleyicisinden kaydedilmiş; hiçbir koşulda (uzerine_yaz dahil) dokunulmaz. */
+  eleDuzenlendi?: boolean;
 };
 
 /** uret: dosya yok, video var · uzerine-yaz: bekleyen gemini dosyası, elle tetiklemede --uzerine-yaz · bekliyor: bekleyen gemini dosyası, dokunulmaz
- *  · kilitli: elle ya da onaylı (ya da okunamayan) dosya, asla dokunulmaz · video-yok: henüz video yok (başarısızlık değil). */
+ *  · kilitli: elle, onaylı, `elle_duzenlendi: true` ya da okunamayan dosya, asla dokunulmaz · video-yok: henüz video yok (başarısızlık değil). */
 export type Karar = 'uret' | 'uzerine-yaz' | 'bekliyor' | 'kilitli' | 'video-yok';
 
 const GUN_MS = 24 * 60 * 60 * 1000;
@@ -47,7 +49,7 @@ export function aralikTarihleri(baslangic: string, bitis: string | undefined, si
 }
 
 export const kilitliMi = (m: Mevcut): boolean =>
-  m.dosyaVar && (m.okunamadi === true || (m.kaynak ?? 'elle') === 'elle' || m.inceleme === 'onaylandi');
+  m.dosyaVar && (m.okunamadi === true || m.eleDuzenlendi === true || (m.kaynak ?? 'elle') === 'elle' || m.inceleme === 'onaylandi');
 
 export function karar(mevcut: Mevcut, videoVar: boolean, uzerineYaz: boolean): Karar {
   if (mevcut.dosyaVar) {

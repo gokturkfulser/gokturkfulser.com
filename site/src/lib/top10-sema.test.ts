@@ -10,6 +10,19 @@ const gece = (ekstra: Record<string, unknown> = {}) => ({
   ...ekstra,
 });
 
+describe('elle_duzenlendi', () => {
+  it('isteğe bağlı boolean; yazılmazsa undefined, kaynak ve inceleme varsayılanlarını etkilemez', () => {
+    expect(top10Sema.parse(gece({ kaynak: 'gemini' })).elle_duzenlendi).toBeUndefined();
+    const g = top10Sema.parse(gece({ kaynak: 'gemini', elle_duzenlendi: true }));
+    expect([g.elle_duzenlendi, g.inceleme]).toEqual([true, 'bekliyor']);
+    expect(top10Sema.safeParse(gece({ elle_duzenlendi: 'evet' })).success).toBe(false);
+  });
+  it('clutch etiketi şemadan geçer, puanı etkilemez (oyun satırı aynı kalır)', () => {
+    const oyunlar = [1, 2, 3, 4, 5].map((sira) => ({ sira, etiketler: sira === 3 ? ['clutch', 'mac_kazandiran'] : undefined, katkilar: [{ oyuncu: `Oyuncu ${sira}`, takim: 'SAS', rol: 'bitiren' }] }));
+    expect(top10Sema.parse(gece({ oyunlar })).oyunlar[2]!.etiketler).toEqual(['clutch', 'mac_kazandiran']);
+  });
+});
+
 describe('inceleme ve kaynak varsayılanları', () => {
   it('kaynak yazılmazsa elle, inceleme onaylandi', () => {
     const g = top10Sema.parse(gece());

@@ -1,0 +1,22 @@
+# kontrol/ — Top 10 özel düzenleyici (kontrol.gokturkfulser.com)
+
+Kök [CLAUDE.md](../CLAUDE.md) ve [site/CLAUDE.md](../site/CLAUDE.md) (özellikle "Top 10 verisi") bu klasör için de geçerlidir. Kurulum ve sırlar: [DEPLOY.md](DEPLOY.md).
+
+Ayrı bir Cloudflare Worker (`gokturkfulser-kontrol`, Cloudflare Access arkasında): gece dosyalarını telefondan da düzenleyip onaylamak için. Değişiklik GitHub contents API ile `main`'e commit edilir; ana site her zamanki gibi yayınlanır. **Ana sitenin kodu, rotaları, CSP'si ve sıfır-JS kuralı bu klasörden etkilenmez; ana sitede bu uygulamaya hiçbir bağlantı yoktur.**
+
+## Kurallar
+
+- **Kimlik:** her istek (statik varlıklar dahil) önce `src/erisim.ts`'te `Cf-Access-Jwt-Assertion` başlığıyla doğrulanır (RS256, `iss`, `aud`, `exp`/`nbf`; takım alanı ve AUD secret'tan). Yoksa/geçersizse 403. Atlama yalnızca `KONTROL_GELISTIRME="evet"` **ve** istek `localhost`/`127.0.0.1`'e geliyorsa; production alan adında bayrak yok sayılır. `GITHUB_API_TABANI` (sahte GitHub) da yalnızca bu bayrakla geçerlidir (token başka adrese gitmesin).
+- **GitHub:** token `GITHUB_TOKEN_KONTROL` Worker secret'ıdır; yalnızca `Authorization` başlığında kullanılır, hiçbir yanıta/loga/HTML'e/hata iletisine yazılmaz (testler denetler). Repo ve dal sabit (`ortam.ts` → `DEPO`). Yazma yalnızca `site/src/content/top10/<sezon>/<YYYY-AA-GG>.yaml` ve `site/src/content/top10/oyuncu-adlari.yaml` (`yollar.ts`); okuma bunlara ek olarak yalnızca `site/src/content/top10` ve sezon klasörlerinin dizin listesi. Başka yol: 400, GitHub'a istek gitmez. Yeni dosya oluşturulmaz.
+- **Paylaşım, kopyalama yok:** şema (`top10-sema.ts`), pay kuralları (`top10.ts` → `katkiHatasi`, `izinliBolusumler`), ad sözlüğü (`top10-adlar.ts`), "bakılacak satır" (`top10-kontrol.ts`), sezon klasörü (`sezonKlasoru`), sabit listeler (`top10-sozluk.ts`) `site/src/lib/`'ten içe aktarılır; renkler `site/src/styles/tokens.css`'ten (`scripts/varliklar.mjs` birleştirir). Bu klasörde bu mantığın ikinci bir kopyası yazılmaz.
+- **Kaydetme:** form sitenin şemasıyla doğrulanır; hata varsa 422 ve satır satır hata, gönderilen değerler korunur, commit yok. Geçerliyse dosya `yaml` Document API'siyle yeniden yazılır (`gece-yaml.ts`: kontrol alanı, tırnaklı zaman ve yorumlar korunur; yazılan metin yeniden okunup beklenenle karşılaştırılır), her kayıtta `elle_duzenlendi: true`. `inceleme`: **Kaydet** olduğu gibi bırakır; **Kaydet ve onayla** / **Onayla** `onaylandi` yapar (Onayla yalnızca onaylar, formdaki alanları yok sayar). Commit, formun yüklendiği andaki `sha` ile yapılır; dosya o arada değiştiyse (`sha` uyuşmuyor ya da GitHub 409/422) hiçbir şey yazılmaz ve "Dosya değişti, yeniden yükleyin" gösterilir. Mesajlar: `top10: elle düzenleme <tarih>`, `top10: onay <tarih>`, `top10: ad sözlüğü`.
+- **CSP:** `default-src 'self'` (+ `script-src`/`style-src` `'self'`); satır içi betik/stil yok, harici kaynak yok. POST için aynı kaynak (`Origin`) zorunlu; `Referrer-Policy` `same-origin` olmalı (`no-referrer` tarayıcıda same-origin POST'ta `Origin: null` gönderir ve CSRF denetimi gerçek istekleri de reddeder).
+- **Worker giriş modülü** (`src/index.ts`) yalnızca varsayılan dışa aktarma içerir (workerd adlandırılmış dışa aktarmaları işleyici sanır); mantık `src/isleyici.ts`'tedir.
+- Mobil öncelikli, tablo yok; dokunma hedefleri ≥ 44 px; form öğelerinin görünür etiketi var; kontrast küçük metin ≥ 7:1 (yalnızca `--murekkep`; `--soluk` küçük metinde kullanılmaz); DESIGN.md yasakları (ok, gradient, bento, nokta ayraçlı meta satırı) burada da geçerli.
+- Windows + PowerShell: `pnpm kontrol:dev` (sahte GitHub + `wrangler dev`), `pnpm kontrol:test`. Workers Builds `wrangler.jsonc`'daki `build.command`'ı uygulamaz; varlıklar `pnpm --filter kontrol build` içinde üretilir.
+
+## Her görev sonunda
+
+```powershell
+pnpm --filter kontrol build   # varlıklar + tsc + vitest
+```

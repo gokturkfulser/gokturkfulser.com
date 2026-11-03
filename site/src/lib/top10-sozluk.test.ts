@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { TAKIM_KODLARI, TAKIM_VARYANTLARI, takimKodunuCevir } from './top10-sozluk';
+import { ETIKET_ANAHTARLARI, ETIKETLER, GEMINI_ETIKET, TAKIM_KODLARI, TAKIM_VARYANTLARI, takimKodunuCevir } from './top10-sozluk';
+
+describe('clutch etiketi', () => {
+  it('anahtar, Gemini değeri ve görünen adlar', () => {
+    expect(ETIKETLER.clutch).toEqual({ tr: 'Clutch', en: 'Clutch', gemini: 'clutch' });
+    expect(ETIKET_ANAHTARLARI).toContain('clutch');
+    expect(GEMINI_ETIKET.clutch).toBe('clutch');
+  });
+});
 
 describe('takım kodu varyantları', () => {
   it('her varyant resmi 30 koddan birine çevrilir; varyant resmi kod değildir', () => {

@@ -67,6 +67,13 @@ describe('incelemeyiOnayla', () => {
     if (!('metin' in s)) throw new Error(JSON.stringify(s));
     expect((parse(s.metin) as any).inceleme).toBe('onaylandi');
   });
+  it('elle_duzenlendi: true dosyada onaylama (yedek yol) çalışır: yalnızca inceleme değişir, elle_duzenlendi korunur', () => {
+    const once = gece('2026-11-01', 'gemini', 'bekliyor').replace('oyunlar:', 'elle_duzenlendi: true' + LF + 'oyunlar:');
+    const s = incelemeyiOnayla(once);
+    if (!('metin' in s)) throw new Error(JSON.stringify(s));
+    expect((parse(s.metin) as any).elle_duzenlendi).toBe(true);
+    expect((parse(s.metin) as any).inceleme).toBe('onaylandi');
+  });
   it('zaten onaylı, kaynak: elle ve bozuk dosya', () => {
     expect(incelemeyiOnayla(gece('2026-11-01', 'gemini', 'onaylandi'))).toEqual({ bilgi: 'zaten onaylı' });
     expect(incelemeyiOnayla(gece('2026-11-01', 'elle', 'bekliyor'))).toMatchObject({ bilgi: expect.stringContaining('kaynak: elle') });

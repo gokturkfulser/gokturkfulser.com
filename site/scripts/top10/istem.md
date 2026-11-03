@@ -12,7 +12,8 @@ For every rank shown on screen (count down from 10 to 1, or from 5 to 1 if the v
   - share: percentage of credit. Allowed splits: one player 100; two players 50/50 or 70/30 (either order); three players 34/33/33 or 50/25/25 (any order). Give the larger share to the player whose action is the more spectacular part; use an equal split when both are comparable. Example: a chase-down block that starts a fast-break dunk has two contributors (blocker and finisher). In alley-oops, judge whether the pass or the finish is the more impressive part.
   - share_reason: one short sentence explaining the split (null if single player)
 - opponent: the player who was dunked on, blocked or crossed over, otherwise null
-- tags: zero or more of: poster, chase_down_block, buzzer_beater, game_winner, and_one, half_court_or_longer, between_the_legs, behind_the_back, no_look, crossover_ankle_breaker, putback, tip_in, fast_break, windmill, reverse, one_handed, self_alley_oop
+- tags: zero or more of: poster, chase_down_block, buzzer_beater, game_winner, clutch, and_one, half_court_or_longer, between_the_legs, behind_the_back, no_look, crossover_ankle_breaker, putback, tip_in, fast_break, windmill, reverse, one_handed, self_alley_oop
+  - clutch = a play in the last five minutes of the fourth quarter or overtime with the score within five points, judged from the scoreboard graphic or commentary. It can be combined with game_winner or buzzer_beater. Do not use it if the game clock or score cannot be seen or heard.
 - description: one short sentence describing the play
 - timestamp: mm:ss where this rank starts
 - confidence: high / medium / low for player identification, with one short reason if not high

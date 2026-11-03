@@ -388,3 +388,22 @@ describe('benzerAdlarMevcutla', () => {
     expect(benzerAdlarMevcutla(yeni, [])).toEqual([]);
   });
 });
+
+describe('izinliBolusumler ve sezonKlasoru (kontrol düzenleyicisiyle paylaşılan)', () => {
+  it('katkı sayısına göre izinli bölüşümler; katkiHatasi ile uyumlu', async () => {
+    const { izinliBolusumler, katkiHatasi } = await import('./top10');
+    expect(izinliBolusumler(1)).toEqual([[100]]);
+    expect(izinliBolusumler(2)).toEqual([[50, 50], [70, 30], [30, 70]]);
+    expect(izinliBolusumler(3).map((b) => b.join('-')).sort()).toEqual(['25-25-50', '25-50-25', '33-33-34', '33-34-33', '34-33-33', '50-25-25']);
+    expect(izinliBolusumler(4)).toEqual([]);
+    for (const n of [1, 2, 3]) {
+      for (const b of izinliBolusumler(n)) expect(katkiHatasi(b.map((pay, i) => ({ oyuncu: `Oyuncu ${i}`, pay })))).toBeUndefined();
+    }
+  });
+  it('sezon klasörü: Ağustos ve sonrası o yıl, öncesi önceki yıl', async () => {
+    const { sezonKlasoru } = await import('./top10');
+    expect(sezonKlasoru('2026-11-01')).toBe('2026-27');
+    expect(sezonKlasoru('2027-01-15')).toBe('2026-27');
+    expect(sezonKlasoru('2027-08-01')).toBe('2027-28');
+  });
+});

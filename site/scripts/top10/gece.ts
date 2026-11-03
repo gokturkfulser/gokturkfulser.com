@@ -4,7 +4,7 @@
 import { Document, parse, Scalar, YAMLMap, YAMLSeq } from 'yaml';
 import { aciklamaKontrolu, aciklamadanOyuncular, adNormallestir, type AciklamaKontrolu } from './aciklama.ts';
 import { top10Sema } from '../../src/lib/top10-sema.ts';
-import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type Kontrol, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
+import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, sezonKlasoru, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type Kontrol, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
 import { eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi, takimKodunuCevir } from '../../src/lib/top10-sozluk.ts';
 import { kanonikAd, type AdHaritasi } from '../../src/lib/top10-adlar.ts';
 import type { Guven, HamGece, HamOyun } from './gemini.ts';
@@ -67,13 +67,8 @@ export type Uretilen = {
   bilgiler: string[];
 };
 
-/** Takvim gününe göre sezon klasörü: Ağustos ve sonrası o yıl başlayan sezon (2026-27), öncesi önceki yıl başlayan (Ocak 2027 → 2026-27). */
-export function sezonKlasoru(tarih: string): string {
-  const yil = Number(tarih.slice(0, 4));
-  const ay = Number(tarih.slice(5, 7));
-  const baslangic = ay >= 8 ? yil : yil - 1;
-  return `${baslangic}-${String((baslangic + 1) % 100).padStart(2, '0')}`;
-}
+// Sezon klasörü hesabı kontrol düzenleyicisiyle paylaşılır (src/lib/top10.ts).
+export { sezonKlasoru };
 
 /** Zod hata listesinin özeti: en çok 3 hata, her biri "alan = değer: ileti" (yeniden deneme nedeni; modele de geri verilir). */
 export function semaHatasi(issues: readonly { path: readonly PropertyKey[]; message: string }[], aday: unknown): string {

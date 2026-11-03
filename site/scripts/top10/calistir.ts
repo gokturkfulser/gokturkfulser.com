@@ -160,7 +160,7 @@ export function mevcutOku(klasor: string, tarih: string): Mevcut {
     const veri = yamlOku(readFileSync(dosya, 'utf8')) as Record<string, unknown> | null;
     const kaynak = veri?.kaynak === 'gemini' ? 'gemini' : 'elle';
     const inceleme = veri?.inceleme === 'onaylandi' ? 'onaylandi' : veri?.inceleme === 'bekliyor' ? 'bekliyor' : undefined;
-    return { dosyaVar: true, kaynak, inceleme };
+    return { dosyaVar: true, kaynak, inceleme, ...(veri?.elle_duzenlendi === true ? { eleDuzenlendi: true } : {}) };
   } catch {
     return { dosyaVar: true, okunamadi: true };
   }

@@ -29,7 +29,7 @@ export type Oyun = {
   katkilar: Katki[];
 };
 /** Bir gecenin listesi. `tarih`, maçların ABD gecesidir (videonun başlığındaki tarih). */
-export type Gece = { tarih: Date; tur: Tur; video: string; kaynak?: Kaynak; inceleme?: Inceleme; oyunlar: Oyun[] };
+export type Gece = { tarih: Date; tur: Tur; video: string; kaynak?: Kaynak; inceleme?: Inceleme; /** true: elle düzenlenmiş, betik dokunmaz. */ elle_duzenlendi?: boolean; oyunlar: Oyun[] };
 
 /** `inceleme` yazılmamışsa kaynağa göre varsayılan: gemini → bekliyor, elle (ya da kaynak yok) → onaylandi. */
 export const varsayilanInceleme = (kaynak?: Kaynak): Inceleme => (kaynak === 'gemini' ? 'bekliyor' : 'onaylandi');
@@ -96,6 +96,28 @@ export function katkiHatasi(katkilar: readonly Pick<Katki, 'oyuncu' | 'pay'>[]):
     return `izinsiz bölüşüm (${paylar.join('/')}); izinli olanlar: 100, 50/50, 70/30, 30/70, 34/33/33 ve 50/25/25 (her sırayla).`;
   }
   return undefined;
+}
+
+/**
+ * Bir oyunun `n` katkısı için izinli açık bölüşümler (her sıralama ayrı): n=1 → [100]; n=2 → 50/50, 70/30, 30/70; n=3 → 34/33/33 ve 50/25/25'in permütasyonları.
+ * Kontrol düzenleyicisinin pay seçimi buradan gelir; `katkiHatasi` ile aynı kural tek kaynaktan (IZINLI_PAYLAR).
+ */
+export function izinliBolusumler(n: number): number[][] {
+  const sonuc = new Map<string, number[]>();
+  const uret = (kalan: number[], simdiki: number[]) => {
+    if (kalan.length === 0) sonuc.set(simdiki.join('-'), simdiki);
+    kalan.forEach((p, i) => uret([...kalan.slice(0, i), ...kalan.slice(i + 1)], [...simdiki, p]));
+  };
+  for (const izinli of IZINLI_PAYLAR) if (izinli.length === n) uret([...izinli], []);
+  return [...sonuc.values()];
+}
+
+/** Takvim gününe göre sezon klasörü: Ağustos ve sonrası o yıl başlayan sezon (2026-27), öncesi önceki yıl başlayan (Ocak 2027 → 2026-27). */
+export function sezonKlasoru(tarih: string): string {
+  const yil = Number(tarih.slice(0, 4));
+  const ay = Number(tarih.slice(5, 7));
+  const baslangic = ay >= 8 ? yil : yil - 1;
+  return `${baslangic}-${String((baslangic + 1) % 100).padStart(2, '0')}`;
 }
 
 /** Katkı başına pay (yüzde, tam sayı): açık pay yoksa eşit bölüşüm (2 kişi 50/50, 3 kişi 34/33/33, fazlalık ilk katkıya). */

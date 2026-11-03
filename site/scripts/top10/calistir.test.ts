@@ -310,6 +310,21 @@ describe('tek gece ve liste modu', () => {
     expect(s2.sonuclar[0]!.durum).toBe('kilitli');
     expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# onayli');
   });
+  it('elle_duzenlendi: true dosyaya --uzerine-yaz dahil hiçbir koşulda dokunulmaz (inceleme bekliyor olsa bile); false/yok olan bekleyen dosya yeniden üretilir', async () => {
+    mkdirSync(join(icerik(), '2026-27'), { recursive: true });
+    const videolar = [oge(V5, T5, '2026-11-01T05:26:50Z'.replace('11-01', '11-02'))];
+    for (const bayrak of [['--tarih=2026-11-01', '--uzerine-yaz'], ['--tarih=2026-11-01'], ['--otomatik']]) {
+      writeFileSync(dosya('2026-11-01'), 'tarih: 2026-11-01\nkaynak: gemini\ninceleme: bekliyor\nelle_duzenlendi: true\n# elle\n');
+      const s = await tek(bayrak, bag({ videolar }));
+      const durum = s.sonuclar.find((r) => r.tarih === '2026-11-01')!.durum;
+      expect(durum, bayrak.join(' ')).toBe('kilitli');
+      expect(readFileSync(dosya('2026-11-01'), 'utf8')).toContain('# elle');
+    }
+    writeFileSync(dosya('2026-11-01'), 'tarih: 2026-11-01\nkaynak: gemini\ninceleme: bekliyor\nelle_duzenlendi: false\n# eski\n');
+    const s = await tek(['--tarih=2026-11-01', '--uzerine-yaz'], bag({ videolar }));
+    expect(s.sonuclar[0]!.karar).toBe('uzerine-yaz');
+    expect(readFileSync(dosya('2026-11-01'), 'utf8')).not.toContain('# eski');
+  });
   it('liste dosyası ayrıştırma: boş satır, # yorumu ve satır sonu yorumu', () => {
     const l = listeAyristir(['# başlık', '', '2026-11-01 https://www.youtube.com/watch?v=vid5aaaaaaa', '2026-10-31   https://youtu.be/vid10bbbbbb  # elle seçildi', '   # son'].join('\n'));
     expect(l).toEqual([{ tarih: '2026-11-01', url: 'https://www.youtube.com/watch?v=vid5aaaaaaa' }, { tarih: '2026-10-31', url: 'https://youtu.be/vid10bbbbbb' }]);

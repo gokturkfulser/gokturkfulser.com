@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gokturkfulser-kontrol",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-24",
+  // Yalnızca kontrol.gokturkfulser.com (custom domain, dashboard'dan; bkz. kontrol/DEPLOY.md). workers.dev ve önizleme adresleri kapalı:
+  // Access yalnızca custom domain'i korur; her istekte Cf-Access-Jwt-Assertion yine de Worker içinde doğrulanır (src/erisim.ts).
+  "workers_dev": false,
+  "preview_urls": false,
+  // Statik varlıklar (stil.css, uygulama.js, yazı tipleri) `scripts/varliklar.mjs` ile üretilir (public/ repoya girmez).
+  // run_worker_first: her istek (varlıklar dahil) önce Worker'dan geçer, yani Access JWT doğrulaması varlıklar için de çalışır.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+  // Sırlar repoya girmez; Worker secret'ı olarak girilir (kontrol/DEPLOY.md):
+  //   GITHUB_TOKEN_KONTROL   fine-grained token (yalnızca bu repo, Contents: Read and write)
+  //   ACCESS_TEAM_DOMAIN     https://<ekip-adı>.cloudflareaccess.com
+  //   ACCESS_AUD             Access uygulamasının Application Audience (AUD) etiketi
+  //   ACCESS_IZINLI_EPOSTA   (isteğe bağlı, ek emniyet) yalnızca bu e-posta
+}

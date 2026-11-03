@@ -23,6 +23,7 @@ export const ETIKETLER = {
   chase_down_blok: { tr: 'Arkadan blok', en: 'Chase-down block', gemini: 'chase_down_block' },
   son_saniye: { tr: 'Son saniye', en: 'Last second', gemini: 'buzzer_beater' },
   mac_kazandiran: { tr: 'Maçı kazandıran', en: 'Game-winner', gemini: 'game_winner' },
+  clutch: { tr: 'Clutch', en: 'Clutch', gemini: 'clutch' },
   and_one: { tr: 'And-one', en: 'And-one', gemini: 'and_one' },
   yari_saha_ve_otesi: { tr: 'Yarı saha ve ötesi', en: 'Half court and beyond', gemini: 'half_court_or_longer' },
   bacak_arasi: { tr: 'Bacak arası', en: 'Between the legs', gemini: 'between_the_legs' },

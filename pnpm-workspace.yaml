@@ -2,6 +2,7 @@ packages:
   - site
   - lab
   - lab/apps/*
+  - kontrol
 allowBuilds:
   esbuild: true
   sharp: true

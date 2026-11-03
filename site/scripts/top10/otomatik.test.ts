@@ -48,13 +48,16 @@ describe('karar: dosya kilidi kuralları', () => {
     expect(karar(bekleyen, true, true)).toBe('uzerine-yaz');
     expect(karar(bekleyen, false, true)).toBe('video-yok');
   });
-  it('onaylandi, elle ve okunamayan dosyaya --uzerine-yaz ile bile asla dokunulmaz', () => {
+  it('onaylandi, elle, elle_duzenlendi ve okunamayan dosyaya --uzerine-yaz ile bile asla dokunulmaz', () => {
     for (const m of [
       { dosyaVar: true, kaynak: 'gemini', inceleme: 'onaylandi' },
       { dosyaVar: true, kaynak: 'elle', inceleme: 'bekliyor' },
       { dosyaVar: true, kaynak: 'elle' },
       { dosyaVar: true },
       { dosyaVar: true, okunamadi: true },
+      // elle_duzenlendi: true (kontrol düzenleyicisi) kaynak ve inceleme ne olursa olsun kilitler
+      { dosyaVar: true, kaynak: 'gemini', inceleme: 'bekliyor', eleDuzenlendi: true },
+      { dosyaVar: true, kaynak: 'gemini', eleDuzenlendi: true },
     ] as Mevcut[]) {
       expect(kilitliMi(m)).toBe(true);
       expect(karar(m, true, false)).toBe('kilitli');

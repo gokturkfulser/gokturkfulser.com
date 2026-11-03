@@ -13,6 +13,8 @@ export const top10Sema = z
     kaynak: z.enum(['gemini', 'elle']).default('elle'),
     // Kontrol durumu. Yazılmazsa kaynağa göre: gemini → bekliyor, elle → onaylandi. 'onaylandi' dosyaya bot bir daha dokunmaz.
     inceleme: z.enum(['bekliyor', 'onaylandi']).optional(),
+    // true ise gece dosyası elle düzenlenmiştir (kontrol düzenleyicisi her kayıtta yazar): Gemini betiği o dosyaya hiçbir koşulda dokunmaz (uzerine_yaz dahil).
+    elle_duzenlendi: z.boolean().optional(),
     // Puan oyuna verilir ve katkı sahiplerine bölünür (lib/top10.ts). Eylem/etiket/rol anahtarları lib/top10-sozluk.ts'tedir;
     // listede olmayan değer build'i durdurur. Satır katıdır: kaldırılan eski alanlar (oyuncu, takim, asist) hata verir.
     oyunlar: z
