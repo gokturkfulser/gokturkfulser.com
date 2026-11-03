@@ -3,7 +3,8 @@
 tarih: 2026-10-28
 video: https://www.youtube.com/watch?v=KfQrq5D8s1E
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: orta (oy 3/3)
   # eylem diğer: Smaç 1/3
@@ -15,8 +16,8 @@ oyunlar:
   - sira: 1
     eylem: alley_oop
     etiketler: [ hizli_hucum, chase_down_blok ]
-    aciklama: Caleb Wilson blocks Jordan Hawkins at the rim and pushes transition to set up Matas Buzelis for a monster trailing dunk.
-    rakip: Jordan Hawkins
+    aciklama: Caleb Wilson blocks Jordan Clarkson at the rim and pushes transition to set up Matas Buzelis for a monster trailing dunk.
+    rakip: Jordan Clarkson
     zaman: "02:17"
     katkilar:
       - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 70 }
@@ -54,7 +55,7 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
-    eylem: ucluk
+    eylem: calim
     etiketler: [ crossover ]
     aciklama: Jalen Brunson puts Norman Powell on the floor with a crossover and drains the step-back three.
     rakip: Norman Powell
@@ -92,6 +93,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: blok
+    etiketler: [ chase_down_blok ]
     aciklama: Jalen Slawson meets LeBron James at the apex and swats his layup attempt off the glass.
     rakip: LeBron James
     zaman: "01:10"
@@ -127,7 +129,6 @@ oyunlar:
   # pay oyu 2/3
   - sira: 7
     eylem: alley_oop
-    etiketler: [ ters ]
     aciklama: Trae Young lobs an alley-oop to AJ Dybantsa, who finishes with a reverse two-handed slam.
     zaman: "00:41"
     katkilar:
@@ -151,7 +152,7 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 8
     eylem: orta_mesafe
-    etiketler: [ crossover ]
+    etiketler: [ crossover, clutch ]
     aciklama: Tyrese Maxey crosses over Aaron Nesmith and steps back to knock down a clutch three-pointer.
     rakip: Aaron Nesmith
     zaman: "00:26"
@@ -190,6 +191,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: Giannis Antetokounmpo drives through multiple Atlanta defenders and finishes with an emphatic two-handed slam.
+    rakip: Onyeka Okongwu
     zaman: "00:00"
     katkilar:
       - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
