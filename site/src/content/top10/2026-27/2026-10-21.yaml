@@ -3,7 +3,8 @@
 tarih: 2026-10-21
 video: https://www.youtube.com/watch?v=CY1v1nEaQZE
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 2/2)
   # model güveni: yüksek; yüksek
@@ -11,6 +12,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, tek_el ]
     aciklama: Brandon Miller glides into the lane, extends back, and throws down a massive one-handed poster dunk.
+    rakip: Mo Wagner
     zaman: "02:05"
     katkilar:
       - { oyuncu: Brandon Miller, takim: CHA, rol: bitiren, pay: 100 }
@@ -24,9 +26,8 @@ oyunlar:
   # model güveni: yüksek; yüksek
   - sira: 2
     eylem: smac
-    etiketler: [ putback, poster ]
-    aciklama: Bilal Coulibaly flies in over Anthony Davis to slam down a contested putback dunk.
-    rakip: Anthony Davis
+    etiketler: [ putback ]
+    aciklama: Bilal Coulibaly flies in over miss of Anthony Davis to slam down a contested putback dunk.
     zaman: "01:51"
     katkilar:
       - { oyuncu: Bilal Coulibaly, takim: WAS, rol: bitiren, pay: 100 }
@@ -61,6 +62,7 @@ oyunlar:
     eylem: alley_oop
     etiketler: [ poster ]
     aciklama: Jalen Johnson lofts an alley-oop pass to Onyeka Okongwu, who throws down a powerful two-handed slam.
+    rakip: Desmond Bane
     zaman: "01:22"
     katkilar:
       - { oyuncu: Jalen Johnson, takim: ATL, rol: pasor, pay: 50 }
@@ -81,7 +83,9 @@ oyunlar:
   # model güveni: yüksek; yüksek
   - sira: 5
     eylem: smac
+    etiketler: [ poster ]
     aciklama: Keyonte George executes a hesitation move and attacks the rim for an explosive baseline dunk.
+    rakip: Cedric Coward
     zaman: "01:09"
     katkilar:
       - { oyuncu: Keyonte George, takim: UTA, rol: bitiren, pay: 100 }
@@ -97,6 +101,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: Kevin Durant blows by his defender on the baseline and throws down a vicious one-handed dunk.
+    rakip: Cooper Flagg
     zaman: "00:55"
     katkilar:
       - { oyuncu: Kevin Durant, takim: HOU, rol: bitiren, pay: 100 }
@@ -120,8 +125,8 @@ oyunlar:
     aciklama: Luka Doncic threads a behind-the-back pass to Walker Kessler for a reverse slam.
     zaman: "00:41"
     katkilar:
-      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 50 }
-      - { oyuncu: Walker Kessler, takim: LAL, rol: bitiren, pay: 50 }
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
+      - { oyuncu: Walker Kessler, takim: LAL, rol: bitiren, pay: 30 }
     kontrol:
       guven: dusuk
       oy: 2/2
