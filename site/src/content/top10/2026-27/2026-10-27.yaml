@@ -3,13 +3,14 @@
 tarih: 2026-10-27
 video: https://www.youtube.com/watch?v=ko4Zrm2hobA
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: orta_mesafe
-    etiketler: [ son_saniye, mac_kazandiran ]
+    etiketler: [ son_saniye, mac_kazandiran, clutch ]
     aciklama: Jayson Tatum sinks a contested mid-range jumper at the overtime buzzer to win the game.
     zaman: "01:53"
     katkilar:
@@ -26,6 +27,7 @@ oyunlar:
   # olası takma ad: Michael Brown Jr. → Mikel Brown Jr., sözlüğe ekle
   - sira: 2
     eylem: ucluk
+    etiketler: [ clutch ]
     aciklama: Mikel Brown Jr. drains a turnaround corner three-pointer with under a second left to send the game to overtime.
     zaman: "01:41"
     katkilar:
@@ -48,8 +50,7 @@ oyunlar:
     aciklama: Tyler Kolek whips a no-look behind-the-back pass to Karl-Anthony Towns for an easy slam.
     zaman: "01:28"
     katkilar:
-      - { oyuncu: Tyler Kolek, takim: NYK, rol: pasor, pay: 70 }
-      - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: bitiren, pay: 30 }
+      - { oyuncu: Tyler Kolek, takim: NYK, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -64,6 +65,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, tek_el ]
     aciklama: Harrison Barnes drives into the paint and elevates over a defender for a poster dunk.
+    rakip: Alex Karaban
     zaman: "01:17"
     katkilar:
       - { oyuncu: Harrison Barnes, takim: SAS, rol: bitiren, pay: 100 }
@@ -126,8 +128,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: blok
+    etiketler: [ chase_down_blok ]
     aciklama: Michael Porter Jr. rotates inside and swats away a shot attempt at the rim.
-    rakip: Neemias Queta
+    rakip: Baylor Scheierman
     zaman: "00:31"
     katkilar:
       - { oyuncu: Michael Porter Jr., takim: BKN, rol: bloklayan, pay: 100 }
@@ -164,8 +167,7 @@ oyunlar:
     aciklama: Ziaire Williams delivers a behind-the-back pass in transition to Luka Doncic for a layup.
     zaman: "00:03"
     katkilar:
-      - { oyuncu: Ziaire Williams, takim: LAL, rol: pasor, pay: 70 }
-      - { oyuncu: Luka Doncic, takim: LAL, rol: bitiren, pay: 30 }
+      - { oyuncu: Ziaire Williams, takim: LAL, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
