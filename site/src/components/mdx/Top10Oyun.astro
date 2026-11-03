@@ -1,0 +1,182 @@
+---
+// Bir Top 10 oyununun ayrıntısı (Top10SonGece'nin iç parçası; sayfaya tek başına konmaz): eylem, katkı sahipleri (rol ve kişi başı puanla),
+// etiketler, varsa açıklama, videonun o anına bağlantı ve rakip. `buyuk`: gecenin 1 numarası için büyütülmüş yazım.
+import { ondalikYaz } from '../../lib/format';
+import { katkiBirimi, katkiPaylari, PUAN_BIRIMI, videoZamanAdresi, type Oyun } from '../../lib/top10';
+import { etiketAdi, eylemAdi, rolAdi } from '../../lib/top10-sozluk';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  oyun: Oyun;
+  /** Gecenin video adresi (zaman bağlantısı için). */
+  video: string;
+  buyuk?: boolean;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { oyun: o, video, buyuk = false } = Astro.props;
+const paylar = katkiPaylari(o.katkilar);
+const zamanAdresi = o.zaman ? videoZamanAdresi(video, o.zaman) : undefined;
+---
+
+<div class:list={['oyun', buyuk && 'buyuk']}>
+  {o.eylem && <p class="eylem">{eylemAdi(o.eylem, dil)}</p>}
+  <ul class="katkilar" role="list">
+    {
+      o.katkilar.map((k, i) => {
+        const deger = katkiBirimi(o.sira, paylar[i]!) / PUAN_BIRIMI;
+        return (
+          <li>
+            <span class="kim">
+              <span class="ad">{k.oyuncu}</span>{' '}
+              <span class="takim">{k.takim}</span>{' '}
+              {(o.katkilar.length > 1 || k.rol !== 'bitiren') && <span class="rol">{rolAdi(k.rol, dil)}</span>}
+            </span>
+            <span class="puan">{s.puanlar(deger, ondalikYaz(deger, dil))}</span>
+          </li>
+        );
+      })
+    }
+  </ul>
+  {
+    o.etiketler && o.etiketler.length > 0 && (
+      <ul class="oyun-etiketleri" role="list">
+        {o.etiketler.map((e) => (
+          <li>{etiketAdi(e, dil)}</li>
+        ))}
+      </ul>
+    )
+  }
+  {o.aciklama && <p class="ek aciklama">{o.aciklama}</p>}
+  {
+    o.zaman && (
+      <p class="ek zaman">
+        {zamanAdresi ? <a href={zamanAdresi} rel="noopener noreferrer">{s.videodaZaman(o.zaman)}</a> : s.videodaZaman(o.zaman)}
+      </p>
+    )
+  }
+  {
+    o.rakip && (
+      <p class="ek">
+        {s.rakip}: {o.rakip}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .oyun {
+    display: grid;
+    gap: 0.3rem;
+    padding-block: var(--aralik-2);
+  }
+
+  .oyun p,
+  .oyun ul {
+    margin: 0;
+  }
+
+  .eylem {
+    font-weight: 800;
+    font-size: var(--yazi-xs);
+  }
+
+  .katkilar,
+  .oyun-etiketleri {
+    padding: 0;
+    list-style: none;
+  }
+
+  /* İç li'ler kendi satırında; dıştaki sıralı liste kuralları (kenar çizgisi, işaret) buraya inmez. */
+  .katkilar > li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: var(--aralik-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .kim {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--aralik-2);
+  }
+
+  .ad {
+    font-weight: 700;
+  }
+
+  .rol {
+    font-size: var(--yazi-xs);
+  }
+
+  .puan {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .oyun-etiketleri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aralik-1) var(--aralik-2);
+    font-size: var(--yazi-xs);
+  }
+
+  .oyun-etiketleri > li {
+    margin: 0;
+    padding: 0 0.5rem;
+    border: 1px solid var(--cizgi);
+  }
+
+  .ek {
+    font-size: var(--yazi-xs);
+  }
+
+  /* Oyunun videodaki zamanına bağlantı: ink metin, vurgu renkli alt çizgi (genel bağlantı stili) */
+  .zaman a {
+    color: var(--murekkep);
+    font-weight: 600;
+  }
+
+  /* Gecenin 1 numarası: Hanken (kâğıt bandı), ≥ 24 px ad ve puan; açıklama gövde boyunda */
+  .buyuk {
+    gap: 0.5rem;
+    padding-block: var(--aralik-3);
+  }
+
+  .buyuk .eylem {
+    font-size: var(--yazi-sm);
+  }
+
+  .buyuk .ad {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .buyuk .takim {
+    font-size: var(--yazi-sm);
+    font-weight: 600;
+  }
+
+  .buyuk .rol {
+    font-size: var(--yazi-sm);
+  }
+
+  .buyuk .puan {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .buyuk .aciklama {
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+  }
+</style>

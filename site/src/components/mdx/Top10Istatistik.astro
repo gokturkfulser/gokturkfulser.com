@@ -1,0 +1,198 @@
+---
+// Küçük istatistikler: eylem dağılımı (yatay çubuk grafik, SVG; sayılar çubuğun yanında metin) ve takım sıralaması (takımın oyuncularının
+// toplam puanı, ilk 10, tablo). Hesap ve yerleşim lib/top10-ozet.ts'te; sıfır JS, style="" yok. Gece verisi yoksa boş durum.
+import Top10Bos from './Top10Bos.astro';
+import { top10Geceleri } from '../../lib/content';
+import { listeYaz, ondalikYaz, sayiYaz } from '../../lib/format';
+import { cubukDuzeni, eylemDagilimi, takimToplami } from '../../lib/top10-ozet';
+import { eylemAdi } from '../../lib/top10-sozluk';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+  /** Takım tablosunda gösterilecek satır sayısı (varsayılan 10). */
+  takim?: number;
+}
+
+const GENISLIK = 300; // dar viewBox: telefonda ölçek ≥ 1, 14 px metin ≥ 14 px görünür
+const SATIR = 44;
+const ETIKET = 17;
+const CUBUK = 14;
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
+const eylem = eylemDagilimi(geceler);
+const satirlar = [
+  ...eylem.dagilim.map((e) => ({ ad: eylemAdi(e.eylem, dil), sayi: e.sayi, belirsiz: false })),
+  ...(eylem.belirtilmemis > 0 ? [{ ad: s.belirtilmemis, sayi: eylem.belirtilmemis, belirsiz: true }] : []),
+];
+const cubuk = cubukDuzeni(
+  satirlar.map((x) => x.sayi),
+  { genislik: GENISLIK, satirYuksekligi: SATIR, sayiPayi: 44, etiketYuksekligi: ETIKET, cubukYuksekligi: CUBUK },
+);
+const eylemBaslik = s.eylemAciklama(sezon ?? '', eylem.toplam);
+const eylemDesc = listeYaz(satirlar.map((x) => `${x.ad}: ${sayiYaz(x.sayi, dil)}`), dil);
+const takimlar = takimToplami(geceler, Astro.props.takim ?? 10);
+const takimBaslik = s.takimAciklama(sezon ?? '', takimlar.length);
+---
+
+{
+  eylem.toplam === 0 ? (
+    <Top10Bos />
+  ) : (
+    <div class="kutu">
+      <section class="blok" aria-labelledby="top10-eylem-baslik">
+        <h3 id="top10-eylem-baslik">{s.eylemBaslik}</h3>
+        <svg class="svg" viewBox={`0 0 ${GENISLIK} ${cubuk.yukseklik}`} role="img" aria-labelledby="top10-eylem-t top10-eylem-d">
+          <title id="top10-eylem-t">{eylemBaslik}</title>
+          <desc id="top10-eylem-d">{eylemDesc}</desc>
+          {cubuk.satirlar.map((c) => (
+            <g aria-hidden="true">
+              <text class="etiket" x="0" y={c.etiketY}>{satirlar[c.indeks]!.ad}</text>
+              <rect class={satirlar[c.indeks]!.belirsiz ? 'cubuk soluk' : 'cubuk'} x="0" y={c.cubukY} width={Math.max(c.cubukGenislik, 2)} height={CUBUK}></rect>
+              <text class="sayi-metin" x={Math.max(c.cubukGenislik, 2) + 8} y={c.sayiY}>{sayiYaz(satirlar[c.indeks]!.sayi, dil)}</text>
+            </g>
+          ))}
+        </svg>
+        <p class="not">{eylemBaslik}</p>
+      </section>
+
+      <section class="blok" aria-labelledby="top10-takim-baslik">
+        <h3 id="top10-takim-baslik">{s.takimBaslik}</h3>
+        <div class="sarmal" role="region" aria-label={takimBaslik} tabindex="0">
+          <table>
+            <caption>{takimBaslik}</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="sayi">{s.sutun.sira}</th>
+                <th scope="col">{s.sutun.takim}</th>
+                <th scope="col" class="sayi">{s.sutun.puan}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {takimlar.map((t, i) => (
+                <tr>
+                  <td class="sayi">{sayiYaz(i + 1, dil)}</td>
+                  <th scope="row">{t.takim}</th>
+                  <td class="sayi puan">{ondalikYaz(t.puan, dil)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .blok + .blok {
+    margin-block-start: var(--aralik-5);
+  }
+
+  h3 {
+    margin: 0 0 var(--aralik-2);
+    padding-block-start: var(--aralik-2);
+    border-block-start: 3px solid var(--dunya-bant);
+    font-family: var(--font-baslik-yigin);
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .svg {
+    display: block;
+    width: 100%;
+    max-width: 24rem;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  /* Küçük metin yalnızca --murekkep (≥ 7:1); çubuklar turuncu metin tonunda (≥ 3:1) */
+  .etiket,
+  .sayi-metin {
+    fill: var(--murekkep);
+    font-size: 14px;
+  }
+
+  .etiket {
+    font-weight: 600;
+  }
+
+  .sayi-metin {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cubuk {
+    fill: var(--dunya-metin);
+  }
+
+  .cubuk.soluk {
+    fill: var(--soluk);
+  }
+
+  .not {
+    margin: var(--aralik-2) 0 0;
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+  }
+
+  .sarmal {
+    overflow-x: auto;
+    background: var(--yuzey);
+    max-inline-size: 36rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--yazi-sm);
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    hyphens: manual;
+  }
+
+  caption {
+    padding: var(--aralik-2) var(--aralik-3);
+    text-align: start;
+    font-size: var(--yazi-xs);
+    line-height: 1.4;
+  }
+
+  th,
+  td {
+    padding: var(--aralik-2) var(--aralik-3);
+    text-align: start;
+  }
+
+  thead th {
+    font-weight: 700;
+    border-block-end: 3px solid var(--dunya-bant);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  tbody tr + tr > * {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+
+  .puan {
+    font-weight: 700;
+  }
+</style>

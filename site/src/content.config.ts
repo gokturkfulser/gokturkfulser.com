@@ -257,7 +257,7 @@ const hakkimda = defineCollection({
   schema: z.object({ baslik: z.string().trim().default('') }),
 });
 
-// "İnsan highlight makarası": NBA Top 10 gecelerinin verisi. Her gece bir dosya: top10/<sezon>/<YYYY-AA-GG>.yaml (tarih = maçların ABD gecesi).
+// "NBA izlemesi en keyifli oyuncu": NBA Top 10 gecelerinin verisi. Her gece bir dosya: top10/<sezon>/<YYYY-AA-GG>.yaml (tarih = maçların ABD gecesi).
 // Puanlama ve doğrulama kuralları lib/top10.ts'te. Doğrulama build'i durdurur: şema (sıralar 1..N, tekil, eksiksiz; video adresi) ve
 // yükleyicinin kimlik üretimi (dosya adı ile `tarih` aynı gün). id: `<sezon>/<YYYY-AA-GG>`. `taslak: true` dosyalar production'da
 // yüklenmez (içerik taslak sistemiyle aynı üç katman: yükleyici deseni, lib/content.ts süzgeci, sayfada getCollection yok).

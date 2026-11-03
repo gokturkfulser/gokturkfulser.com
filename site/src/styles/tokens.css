@@ -94,7 +94,11 @@
   --bas-aralik: -0.03em;
 }
 
-[data-dunya='sinema'] {
+/* Dünya renkleri, kâğıt bandı dünyanın içindeyse kâğıt değerleriyle yeniden hesaplanır: `var(--turuncu-metin)` tanımlandığı
+   öğede çözülür, bu yüzden ata öğedeki (koyu) sonuç kâğıt bandına miras kalırdı; `.bant--acik` da kendi varsayılanını (turkuaz)
+   üstüne yazardı. Aşağıdaki `... .bant--acik` seçicileri bunu bant başına yama yapmadan çözer. */
+[data-dunya='sinema'],
+[data-dunya='sinema'] .bant--acik {
   --dunya: var(--turkuaz);
   --dunya-metin: var(--turkuaz-metin);
   --dunya-alan-metin: var(--turkuaz-alan-metin);
@@ -102,7 +106,8 @@
   --vurgu: var(--turkuaz-metin);
 }
 
-[data-dunya='basketbol'] {
+[data-dunya='basketbol'],
+[data-dunya='basketbol'] .bant--acik {
   --dunya: var(--turuncu);
   --dunya-metin: var(--turuncu-metin);
   --dunya-alan-metin: var(--turuncu-alan-metin);
@@ -110,7 +115,8 @@
   --vurgu: var(--turuncu-metin);
 }
 
-/* Projeler bir dünyaya ait değildir: nötr (metin) tonlar */
+/* Projeler bir dünyaya ait değildir: nötr (metin) tonlar. Kâğıt bandı içindeki proje sayfaları bilerek bu yeniden hesaba katılmaz
+   (görünümleri değişmesin); renkleri `.bant--acik` varsayılanından gelir. */
 [data-dunya='proje'] {
   --dunya: var(--murekkep);
   --dunya-metin: var(--murekkep);

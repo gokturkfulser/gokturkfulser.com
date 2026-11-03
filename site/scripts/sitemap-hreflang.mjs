@@ -32,7 +32,8 @@ export function sitemapDilAlternatifleri() {
         for (const ad of dosyalar) {
           const yol = join(dist, ad);
           const xml = readFileSync(yol, 'utf8');
-          const yeni = xml.replace(/<url>\s*<loc>([^<]+)<\/loc>\s*<\/url>/g, (tam, loc) => {
+          // <loc> ve varsa <lastmod> (sitemap `serialize` ile eklenir) korunur; dil alternatifleri bunların ardına yazılır.
+          const yeni = xml.replace(/<url>\s*<loc>([^<]+)<\/loc>(\s*<lastmod>[^<]*<\/lastmod>)?\s*<\/url>/g, (tam, loc, lastmod = '') => {
             const html = htmlYolu(dist, loc);
             if (!html) return tam;
             const kaynak = readFileSync(html, 'utf8');
@@ -40,7 +41,7 @@ export function sitemapDilAlternatifleri() {
             if (linkler.length === 0) return tam;
             eklenen++;
             const satirlar = linkler.map(([, dil, href]) => `<xhtml:link rel="alternate" hreflang="${dil}" href="${href}"/>`).join('');
-            return `<url><loc>${loc}</loc>${satirlar}</url>`;
+            return `<url><loc>${loc}</loc>${lastmod.trim()}${satirlar}</url>`;
           });
           writeFileSync(yol, yeni);
         }

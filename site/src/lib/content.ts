@@ -161,7 +161,7 @@ export async function etiketHaritasi() {
   return harita;
 }
 
-// ——— Top 10 (İnsan highlight makarası) ———
+// ——— Top 10 (NBA izlemesi en keyifli oyuncu) ———
 
 const top10Uyarilan = new Set<string>();
 

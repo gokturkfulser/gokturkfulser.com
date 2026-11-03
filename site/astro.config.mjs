@@ -3,6 +3,7 @@ import { defineConfig, envField, fontProviders } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { sitemapDilAlternatifleri } from './scripts/sitemap-hreflang.mjs';
+import { top10Serialize, top10SonTarih } from './scripts/sitemap-lastmod.mjs';
 
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -37,7 +38,16 @@ export default defineConfig({
   },
   // Sitemap'in kendi i18n eşlemesi yol önekine bakar; yollar dile göre değiştiği için dil alternatifleri sayfalardaki
   // hreflang bağlantılarından okunup sitemap'e yazılır (scripts/sitemap-hreflang.mjs). Sıra önemli: sitemap'ten sonra.
-  integrations: [mdx(), kontrolSayfasi, sitemap({ filter: (sayfa) => !/\/404\/?$/.test(sayfa) && !/\/kontrol\//.test(sayfa) }), sitemapDilAlternatifleri()],
+  // Sitemap `lastmod`: yalnızca Top 10 yazılarında, en yeni gecenin tarihi (taslak geceler production'da sayılmaz); diğer girdilerde lastmod yok.
+  integrations: [
+    mdx(),
+    kontrolSayfasi,
+    sitemap({
+      filter: (sayfa) => !/\/404\/?$/.test(sayfa) && !/\/kontrol\//.test(sayfa),
+      serialize: top10Serialize(top10SonTarih('src/content/top10', taslakGorunur)),
+    }),
+    sitemapDilAlternatifleri(),
+  ],
   devToolbar: { enabled: false },
   // CSP (hash tabanlı, 'unsafe-inline' yok). Astro her sayfaya <meta http-equiv="content-security-policy">
   // koyar: script-src/style-src hash'leri otomatik, aşağıdaki directives tüm sayfalara eklenir.

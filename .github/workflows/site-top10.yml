@@ -1,6 +1,6 @@
 name: site-top10
 
-# "İnsan highlight makarası" günlük otomasyonu: NBA kanalındaki yeni "Top 10/5 Plays of the Night" videosunu bulur, Gemini ile
+# "NBA izlemesi en keyifli oyuncu" günlük otomasyonu: NBA kanalındaki yeni "Top 10/5 Plays of the Night" videosunu bulur, Gemini ile
 # gece dosyasını (site/src/content/top10/<sezon>/<tarih>.yaml) üretir, site şemasıyla doğrular ve DOĞRUDAN main'e commit'ler (PR yok).
 # Bot yalnızca site/src/content/top10/** yazar; başka bir dosya değişirse commit atılmaz, iş hata verir.
 # Kurulum, sırlar ve ilk çalıştırma kontrolleri: site/DEPLOY.md "Top 10 günlük otomasyonu". Mantık: site/scripts/top10/.

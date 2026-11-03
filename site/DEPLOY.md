@@ -134,7 +134,7 @@ Site statik olduğundan "Son izlediklerim" şeridi yalnızca build anında günc
 - Deploy Hook ile tetiklenen build'in **Build watch paths** kuralından muaf olup olmadığı dokümanda yazmıyor; yol kuralları dosya değişikliğine baktığı için hook build'inin çalışması beklenir. İlk elle çalıştırmada build history'de "Skipped" görürseniz watch paths'e `site/*` zaten ekli olduğundan bunu bildirin.
 - GitHub zamanlanmış workflow'ları yoğun saatlerde birkaç dakika gecikebilir; 60 gün hiç etkinlik olmayan **public** repolarda otomatik durdurulur (bu repo private).
 
-## 10. Top 10 günlük otomasyonu (İnsan highlight makarası)
+## 10. Top 10 günlük otomasyonu (NBA izlemesi en keyifli oyuncu)
 
 `.github/workflows/site-top10.yml` günde iki kez (**10:00 ve 16:00 İstanbul**; GitHub cron'u UTC olduğundan `0 7 * * *` ve `0 13 * * *`) NBA resmi YouTube kanalının son videolarına bakar. "NBA's Top 10 (ya da 5) Plays of the Night | <tarih>" başlıklı ve son 3 ABD gecesine denk gelen videolar için, dosyası yoksa Gemini'ye videonun resmi YouTube adresini verip `site/src/content/top10/<sezon>/<tarih>.yaml` dosyasını üretir, sitenin kendi içerik şemasıyla doğrular ve **doğrudan `main`'e commit'ler (PR yok)**. Bot yalnızca `site/src/content/top10/**` yazar. Mantık: `site/scripts/top10/`; kurallar: `site/CLAUDE.md` "Top 10 verisi".
 

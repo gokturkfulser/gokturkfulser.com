@@ -16,7 +16,7 @@ const gece = sonGece((await top10Geceleri(Astro.props.sezon)).geceler);
 
 {
   gece && (
-    <p class="guncelleme" data-dunya="basketbol">
+    <p class="guncelleme">
       <span>{s.sonGuncelleme}</span>{' '}
       <time datetime={tarihIso(gece.tarih)}>{tarihYaz(gece.tarih, dil)}</time>
     </p>

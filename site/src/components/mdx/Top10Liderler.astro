@@ -21,7 +21,7 @@ const degisimler = liderGecmisi(geceler);
   degisimler.length === 0 ? (
     <Top10Bos />
   ) : (
-    <section class="kutu" data-dunya="basketbol" aria-label={s.liderler(sezon ?? '')}>
+    <section class="kutu" aria-label={s.liderler(sezon ?? '')}>
       <ul role="list">
         {degisimler.map((d) => (
           <li>

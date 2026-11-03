@@ -1,0 +1,251 @@
+---
+// Liderlik yarışı: güncel sıralamadaki ilk 5 oyuncunun gece gece birikimli puanı, çizgi grafik. Build sırasında üretilen satır içi SVG
+// (client JS yok, style="" yok): renk ve çizgi biçimi sınıflarla ve token'larla gelir. Seriler renkle birlikte çizgi deseniyle
+// ve çizgi sonundaki oyuncu adıyla ayrılır; altında aynı verinin düz tablosu ("Grafiğin verisi") vardır. Koordinatlar lib/top10-ozet.ts'tedir.
+import Top10Bos from './Top10Bos.astro';
+import { top10Geceleri } from '../../lib/content';
+import { listeYaz, ondalikYaz, tarihIso } from '../../lib/format';
+import { grafikDuzeni, liderlikSerileri } from '../../lib/top10-ozet';
+import { AYAR, dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+  /** Çizgisi çizilecek oyuncu sayısı (varsayılan 5). */
+  oyuncu?: number;
+}
+
+// viewBox genişliği dar tutulur: telefonda (~300–340 px) ölçek ≥ 1 olur, yani 14 px'lik metin ≥ 14 px görünür.
+const GENISLIK = 300;
+const YUKSEKLIK = 300;
+const KENAR = { ust: 16, sag: 104, alt: 34, sol: 30 };
+const SATIR = 17; // etiket satır yüksekliği (14 px yazı)
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
+const veri = liderlikSerileri(geceler, Astro.props.oyuncu ?? 5);
+const d = grafikDuzeni(veri, { genislik: GENISLIK, yukseklik: YUKSEKLIK, kenar: KENAR, satirYuksekligi: SATIR, etiketSatirUzunlugu: 11 });
+const kisaTarih = new Intl.DateTimeFormat(AYAR[dil].intl, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const baslik = s.grafikBaslik(sezon ?? '', veri.seriler.length);
+const durum = listeYaz(
+  veri.seriler.map((x) => `${x.oyuncu}, ${s.puanlar(x.puanlar.at(-1) ?? 0, ondalikYaz(x.puanlar.at(-1) ?? 0, dil))}`),
+  dil,
+);
+const aciklama = s.grafikAciklama(veri.tarihler.length, durum);
+---
+
+{
+  veri.seriler.length === 0 ? (
+    <Top10Bos />
+  ) : (
+    <div class="kutu">
+      <figure class="grafik">
+        <figcaption id="top10-grafik-baslik">{baslik}</figcaption>
+        <svg class="svg" viewBox={`0 0 ${GENISLIK} ${YUKSEKLIK}`} role="img" aria-labelledby="top10-grafik-t top10-grafik-d">
+          <title id="top10-grafik-t">{baslik}</title>
+          <desc id="top10-grafik-d">{aciklama}</desc>
+          <line class="taban" x1={d.alan.x0} x2={d.alan.x0} y1={d.alan.y0} y2={d.alan.y1} aria-hidden="true"></line>
+          <line class="taban" x1={d.alan.x0} x2={d.alan.x1} y1={d.alan.y1} y2={d.alan.y1} aria-hidden="true"></line>
+          {d.eksen.tikler.map((t) => (
+            <g>
+              <line class="taban" x1={d.alan.x0 - 4} x2={d.alan.x0} y1={t.y} y2={t.y} aria-hidden="true"></line>
+              <text class="eksen" x={d.alan.x0 - 8} y={t.y + 5} text-anchor="end" aria-hidden="true">{ondalikYaz(t.deger, dil)}</text>
+            </g>
+          ))}
+          {d.xTikleri.map((t) => (
+            <text class="eksen" x={t.x} y={d.alan.y1 + 22} text-anchor="middle" aria-hidden="true">{kisaTarih.format(veri.tarihler[t.indeks])}</text>
+          ))}
+          {d.seriler.map((x, i) => (
+            <g aria-hidden="true">
+              <path class={`cizgi s${i}`} d={x.yol}></path>
+              <circle class={`nokta s${i}`} cx={x.son.x} cy={x.son.y} r="4"></circle>
+              {Math.abs(x.etiket.y - x.son.y) > 4 && <line class="baglanti" x1={x.son.x + 4} y1={x.son.y} x2={x.etiket.x - 3} y2={x.etiket.y}></line>}
+              <text class="etiket" x={x.etiket.x} y={x.etiket.y - (x.etiket.satirlar.length * SATIR) / 2 + 13}>
+                {x.etiket.satirlar.map((satir, k) => (
+                  <tspan x={x.etiket.x} dy={k === 0 ? 0 : SATIR}>{satir}</tspan>
+                ))}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </figure>
+      <h3 class="veri-baslik">{s.grafikVeri}</h3>
+      <div class="sarmal" role="region" aria-label={s.grafikVeri} tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{s.grafikGece}</th>
+              {veri.seriler.map((x) => (
+                <th scope="col" class="sayi">{x.oyuncu}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {veri.tarihler.map((t, i) => (
+              <tr>
+                <th scope="row"><time datetime={tarihIso(t)}>{kisaTarih.format(t)}</time></th>
+                {veri.seriler.map((x) => (
+                  <td class="sayi">{ondalikYaz(x.puanlar[i]!, dil)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .grafik {
+    margin: 0;
+  }
+
+  figcaption {
+    margin-block-end: var(--aralik-2);
+    padding-block-start: var(--aralik-2);
+    border-block-start: 3px solid var(--dunya-bant);
+    font-size: var(--yazi-sm);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .svg {
+    display: block;
+    width: 100%;
+    max-width: 24rem;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-baslik-yigin);
+  }
+
+  /* Eksen çizgileri ve işaretleri (soluk, ≥ 3:1); açık renkli ızgara çizgisi yok: değerler eksen etiketlerinden ve veri tablosundan okunur. */
+  .taban {
+    stroke: var(--soluk);
+    stroke-width: 1.5;
+  }
+
+  /* Küçük metin yalnızca --murekkep (≥ 7:1) */
+  .eksen,
+  .etiket {
+    fill: var(--murekkep);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .etiket {
+    font-weight: 700;
+  }
+
+  .cizgi {
+    fill: none;
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .baglanti {
+    stroke: var(--soluk);
+    stroke-width: 1;
+  }
+
+  /* Seriler: renk + çizgi deseni + uçtaki ad. Düz mürekkep, düz turuncu, mürekkep tire, turuncu tire, soluk nokta. */
+  .s0 {
+    stroke: var(--murekkep);
+    fill: var(--murekkep);
+  }
+
+  .s1 {
+    stroke: var(--dunya-metin);
+    fill: var(--dunya-metin);
+  }
+
+  .s2 {
+    stroke: var(--murekkep);
+    fill: var(--murekkep);
+  }
+
+  .s3 {
+    stroke: var(--dunya-metin);
+    fill: var(--dunya-metin);
+  }
+
+  .s4 {
+    stroke: var(--soluk);
+    fill: var(--soluk);
+  }
+
+  .cizgi.s0,
+  .cizgi.s1 {
+    stroke-dasharray: none;
+  }
+
+  .cizgi.s2,
+  .cizgi.s3 {
+    stroke-dasharray: 9 6;
+  }
+
+  .cizgi.s4 {
+    stroke-dasharray: 0.1 6;
+    stroke-width: 3.5;
+  }
+
+  .cizgi {
+    fill: none;
+  }
+
+  .veri-baslik {
+    margin-block: var(--aralik-4) var(--aralik-2);
+    font-size: var(--yazi-sm);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .sarmal {
+    max-block-size: 18rem;
+    overflow: auto;
+    background: var(--yuzey);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--yazi-xs);
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    hyphens: manual;
+  }
+
+  th,
+  td {
+    padding: 0.3rem 0.6rem;
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  thead th {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--yuzey);
+    border-block-end: 2px solid var(--dunya-bant);
+    font-weight: 700;
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  tbody tr + tr > * {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+</style>

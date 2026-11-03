@@ -211,13 +211,14 @@ export const tr = {
     eposta: 'E-posta',
     suruyor: 'devam ediyor',
   },
-  /** "İnsan highlight makarası": NBA Top 10 gecelerinden sezonluk puan tablosu (components/top10). */
+  /** "NBA izlemesi en keyifli oyuncu": NBA Top 10 gecelerinden sezonluk puan tablosu (components/top10). */
   top10: {
     bos: 'Henüz gece verisi yok. İlk liste eklendiğinde burada görünecek.',
-    siralama: (sezon: string) => `${sezon} sezonu genel sıralama`,
+    siralama: (sezon: string, n: number) => `${sezon} sezonu sıralaması, ilk ${n}`,
     puanNotu:
       'Puan = 11 − sıra: gecenin 1. sırası 10, 10. sırası 1 puan alır; Top 5 gecelerinde de aynı. Puan oyuna verilir ve katkı sahiplerine bölünür (pasör, bloklayan, bitiren…); bölüşüm belirtilmemişse eşittir. Bir oyuncunun aynı gecedeki puanları toplanır. Rakip puan almaz.',
-    sutun: { sira: 'Sıra', oyuncu: 'Oyuncu', takim: 'Takım', puan: 'Puan', gece: 'Gece', birinci: '1 numara' },
+    sutun: { sira: 'Sıra', oyuncu: 'Oyuncu', takim: 'Takım', puan: 'Puan', gece: 'Gece', birinci: '1 numara', degisim: 'Değişim' },
+    degisimYeni: 'yeni',
     sonGuncelleme: 'Son güncelleme',
     sonGece: 'Son gece',
     tur: { top10: 'Top 10', top5: 'Top 5' },
@@ -229,6 +230,18 @@ export const tr = {
     liderler: (sezon: string) => `${sezon} sezonu lider değişimleri`,
     ilkLider: 'İlk gecenin lideri',
     onceki: 'Önceki lider',
+    birinciBaslik: 'Gecenin 1 numarası',
+    kalanSiralar: (son: number) => `2 ile ${son} arasındaki sıralar`,
+    grafikBaslik: (sezon: string, n: number) => `${sezon} sezonu, ilk ${n} oyuncunun gece gece birikimli puanı`,
+    grafikAciklama: (geceSayisi: number, durum: string) => `Çizgi grafik: yatay eksende ${geceSayisi} gece, dikey eksende birikimli puan. Son durum: ${durum}.`,
+    grafikVeri: 'Grafiğin verisi',
+    grafikGece: 'Gece',
+    eylemBaslik: 'Eylem dağılımı',
+    eylemAciklama: (sezon: string, toplam: number) => `${sezon} sezonunda ${toplam} hareketin eylemlere göre dağılımı`,
+    belirtilmemis: 'Belirtilmemiş',
+    takimBaslik: 'Takım sıralaması',
+    takimAciklama: (sezon: string, n: number) => `${sezon} sezonu: takımın oyuncularının toplam puanı, ilk ${n}`,
+    yontem: 'Veriler her sabah otomatik olarak çıkarılıyor; henüz kontrol etmediğim geceler bunu belirten bir notla görünüyor.',
   },
   /** Top 10 kontrol sayfası (/kontrol/top10/, yalnızca SHOW_DRAFTS build'lerinde; components/sayfa/Top10Kontrol.astro). */
   top10Kontrol: {

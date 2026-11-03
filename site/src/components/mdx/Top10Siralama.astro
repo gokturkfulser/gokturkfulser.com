@@ -1,29 +1,32 @@
 ---
-// Genel sıralama tablosu (sezonluk): oyuncu, son takım, toplam puan, gece sayısı, 1 numara sayısı. Veri `top10` koleksiyonu,
-// hesap lib/top10.ts. `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum. Sıfır JS; geniş tablo yalnızca kendi kabında kayar.
+// Sezon sıralaması (ilk 20): sıra, oyuncu, son takım, toplam puan, gece sayısı, 1 numara sayısı ve bir önceki geceye kadarki sıraya göre
+// değişim ("+2", "−1", "=", "yeni"; metin, ok yok). Veri `top10` koleksiyonu, hesap lib/top10.ts ve lib/top10-ozet.ts. `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum. Sıfır JS; geniş tablo yalnızca kendi kabında kayar.
 import Top10Bos from './Top10Bos.astro';
 import { top10Geceleri } from '../../lib/content';
 import { ondalikYaz, sayiYaz } from '../../lib/format';
-import { sezonTablosu } from '../../lib/top10';
+import { degisimMetni, siralamaDegisimi } from '../../lib/top10-ozet';
 import { dilAl, sozluk } from '../../i18n';
 
 interface Props {
   /** Sezon klasörü adı (ör. "2026-27"); yoksa en yeni sezon. */
   sezon?: string;
+  /** Gösterilecek satır sayısı (varsayılan 20). */
+  sinir?: number;
 }
 
 const dil = dilAl(Astro);
 const s = sozluk(dil).top10;
 const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
-const tablo = sezonTablosu(geceler);
-const baslik = s.siralama(sezon ?? '');
+const sinir = Astro.props.sinir ?? 20;
+const tablo = siralamaDegisimi(geceler, sinir);
+const baslik = s.siralama(sezon ?? '', tablo.length);
 ---
 
 {
   tablo.length === 0 ? (
     <Top10Bos />
   ) : (
-    <div class="kutu" data-dunya="basketbol">
+    <div class="kutu">
       <div class="sarmal" role="region" aria-label={baslik} tabindex="0">
         <table>
           <caption>{baslik}</caption>
@@ -35,17 +38,19 @@ const baslik = s.siralama(sezon ?? '');
               <th scope="col" class="sayi">{s.sutun.puan}</th>
               <th scope="col" class="sayi">{s.sutun.gece}</th>
               <th scope="col" class="sayi">{s.sutun.birinci}</th>
+              <th scope="col" class="sayi">{s.sutun.degisim}</th>
             </tr>
           </thead>
           <tbody>
-            {tablo.map((satir, i) => (
+            {tablo.map(({ satir, sira, degisim }) => (
               <tr>
-                <td class="sayi">{sayiYaz(i + 1, dil)}</td>
+                <td class="sayi">{sayiYaz(sira, dil)}</td>
                 <th scope="row">{satir.oyuncu}</th>
                 <td>{satir.takim}</td>
                 <td class="sayi puan">{ondalikYaz(satir.puan, dil)}</td>
                 <td class="sayi">{sayiYaz(satir.gece, dil)}</td>
                 <td class="sayi">{sayiYaz(satir.birinci, dil)}</td>
+                <td class="sayi">{degisimMetni(degisim, s.degisimYeni)}</td>
               </tr>
             ))}
           </tbody>

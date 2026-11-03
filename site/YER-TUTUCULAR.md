@@ -41,14 +41,3 @@ Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden h
 | `src/content/hakkimda.en.md` | İngilizce metin (ve tüm İngilizce arayüz sözlüğü `src/i18n/en.ts`) Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
 | `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
 | `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Perde Perde Anadolu yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |
-
-## 6. Top 10 ("İnsan highlight makarası")
-
-Örnek gece verisi (uydurma `2026-27/*.yaml` dosyaları) **kaldırıldı**; `src/content/top10/` altında yalnızca gerçek veri ve `oyuncu-adlari.yaml` sözlüğü yer alır. Gece verisi yokken bileşenler boş durumu gösterir.
-
-| Dosya | Durum |
-| --- | --- |
-| `src/content/basketbol/insan-highlight-makarasi/index.mdx` | Taslak yazı (tr, `taslak: true`); giriş metni yer tutucu, yazılacak. |
-| `src/content/basketbol/human-highlight-reel/index.mdx` | Taslak çeviri (en, `taslak: true`); giriş metni yer tutucu. |
-
-Kontrol: production `dist/` içinde `insan-highlight`, `human-highlight`, `top10` bulunmamalı (`dist/pagefind*` ve bileşen CSS'i dışında; Top 10 bileşenlerinin stil kuralları paylaşılan `mdx.*.css` paketinde yer alır). Gerçeğe çevirirken iki yazıdan `taslak: true` satırını kaldırın.

@@ -1,0 +1,20 @@
+---
+// Kısa yöntem notu (tek cümle, i18n'den). Gövde metnini tekrar etmez; model, oylama ya da araç adı geçmez.
+import { dilAl, sozluk } from '../../i18n';
+
+const s = sozluk(dilAl(Astro)).top10;
+---
+
+<p class="yontem">{s.yontem}</p>
+
+<style>
+  .yontem {
+    margin-block: var(--aralik-5) 0;
+    padding-block-start: var(--aralik-2);
+    border-block-start: 1px solid var(--cizgi);
+    font-family: var(--font-baslik-yigin);
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+    color: var(--murekkep);
+  }
+</style>

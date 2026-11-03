@@ -210,10 +210,11 @@ export const en: Sozluk = {
   /** "Human highlight reel": season points table built from the NBA Top 10 nights (components/top10). */
   top10: {
     bos: 'No nights recorded yet. The first list will appear here once it is added.',
-    siralama: (sezon: string) => `Standings, ${sezon} season`,
+    siralama: (sezon: string, n: number) => `Standings, ${sezon} season, top ${n}`,
     puanNotu:
       'Points = 11 − rank: the night’s No. 1 gets 10 points and No. 10 gets 1, the same on Top 5 nights. The points go to the play and are split between the players who contributed (passer, blocker, finisher…), equally unless a split is given. A player’s points within a night are added together. The opponent scores nothing.',
-    sutun: { sira: 'Rank', oyuncu: 'Player', takim: 'Team', puan: 'Points', gece: 'Nights', birinci: 'No. 1s' },
+    sutun: { sira: 'Rank', oyuncu: 'Player', takim: 'Team', puan: 'Points', gece: 'Nights', birinci: 'No. 1s', degisim: 'Change' },
+    degisimYeni: 'new',
     sonGuncelleme: 'Last updated',
     sonGece: 'Latest night',
     tur: { top10: 'Top 10', top5: 'Top 5' },
@@ -225,6 +226,18 @@ export const en: Sozluk = {
     liderler: (sezon: string) => `Lead changes, ${sezon} season`,
     ilkLider: 'Leader after the first night',
     onceki: 'Previous leader',
+    birinciBaslik: 'The night’s No. 1',
+    kalanSiralar: (son: number) => `Ranks 2 to ${son}`,
+    grafikBaslik: (sezon: string, n: number) => `${sezon} season, running points total of the top ${n} players, night by night`,
+    grafikAciklama: (geceSayisi: number, durum: string) => `Line chart: ${geceSayisi} nights on the horizontal axis, running points total on the vertical axis. Latest standing: ${durum}.`,
+    grafikVeri: 'Chart data',
+    grafikGece: 'Night',
+    eylemBaslik: 'Plays by type',
+    eylemAciklama: (sezon: string, toplam: number) => `${toplam} plays in the ${sezon} season, grouped by type`,
+    belirtilmemis: 'Not specified',
+    takimBaslik: 'Team standings',
+    takimAciklama: (sezon: string, n: number) => `${sezon} season: total points of each team’s players, top ${n}`,
+    yontem: "The data is extracted automatically every morning; nights I haven't checked yet are marked with a note.",
   },
   /** Top 10 review page (/kontrol/top10/, only in SHOW_DRAFTS builds; components/sayfa/Top10Kontrol.astro). */
   top10Kontrol: {

@@ -77,7 +77,7 @@ Başlıkta `hyphens: manual`, gövdede `hyphens: auto` (`lang="tr"`); `text-wrap
 | Turuncu, koyu / kâğıt | `#FF8A3D` / `#B23E08` | basketbol vurgusu (metin); alan dolgusu `#E2661A` yalnızca dolgu |
 | Çizgi | `#34353A` (koyu) / `#C4C0B4` (kâğıt) | ayraç |
 
-Mod anahtarı yok: iki ton aynı sayfada yaşar; `prefers-color-scheme` etkisizdir. Dünya seçimi `data-dunya="sinema|basketbol|proje"` ile yapılır (`--dunya*`, `--vurgu`); vurgu bant tonuna göre çözülür.
+Mod anahtarı yok: iki ton aynı sayfada yaşar; `prefers-color-scheme` etkisizdir. Dünya seçimi `data-dunya="sinema|basketbol|proje"` ile yapılır (`--dunya*`, `--vurgu`); vurgu bant tonuna göre çözülür. **Kâğıt bandı dünyanın içindeyse** (`article[data-dunya] .bant--acik`) dünya değişkenleri kâğıt değerleriyle yeniden hesaplanır (`tokens.css`: `[data-dunya='sinema'], [data-dunya='sinema'] .bant--acik` ve `basketbol` için aynısı); aksi halde ata öğedeki koyu bant sonucu miras kalır ve `.bant--acik`'in kendi (turkuaz) varsayılanı dünya rengini ezerdi (basketbol yazılarının kâğıt bandı turkuaz çıkardı). Bileşenler `data-dunya` kabı koymaz. Proje sayfaları bu yeniden hesaba bilerek girmez (görünümleri korunur).
 
 | Çift | Oran |
 | --- | --- |
