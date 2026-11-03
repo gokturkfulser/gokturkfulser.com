@@ -94,6 +94,33 @@ describe('durumlariDogrula: form → gece nesnesi', () => {
     expect(s.oyunlar[0]!.etiketler).toEqual(['windmill', 'poster', 'clutch']);
   });
 
+  it('clutch tutarlılığı: kazandıran/eşitleyen kalmışsa formda kaldırılan clutch yine eklenir ve sıra bildirilir; yoksa eklenmez', () => {
+    const g = oku(geceMetni());
+    const d = g.gece.oyunlar.map((o) => oyundanDurum(o as never));
+    d[0]!.etiketler = ['mac_kazandiran'];
+    const s = durumlariDogrula(g.ham, d, harita);
+    if (!s.tamam) throw new Error(JSON.stringify(s));
+    expect(s.oyunlar[0]!.etiketler).toEqual(['mac_kazandiran', 'clutch']);
+    expect(s.clutchEklenen).toEqual([1]);
+    d[0]!.etiketler = ['esitleyen'];
+    const e = durumlariDogrula(g.ham, d, harita);
+    if (!e.tamam) throw new Error(JSON.stringify(e));
+    expect(e.oyunlar[0]!.etiketler).toEqual(['esitleyen', 'clutch']);
+    d[0]!.etiketler = ['son_saniye'];
+    const t = durumlariDogrula(g.ham, d, harita);
+    if (!t.tamam) throw new Error(JSON.stringify(t));
+    expect(t.oyunlar[0]!.etiketler).toEqual(['son_saniye']);
+    expect(t.clutchEklenen).toEqual([]);
+  });
+
+  it('bot ve düzenleyici aynı fonksiyonu kullanır (site/src/lib/top10-sozluk.ts → clutchTamamla)', () => {
+    const kaynak = readFileSync(new URL('./form.ts', import.meta.url), 'utf8');
+    expect(kaynak).toMatch(/import \{[^}]*clutchTamamla[^}]*\} from '\.\.\/\.\.\/site\/src\/lib\/top10-sozluk\.ts'/);
+    const bot = readFileSync(new URL('../../site/scripts/top10/gece.ts', import.meta.url), 'utf8');
+    expect(bot).toMatch(/import \{[^}]*clutchTamamla[^}]*\} from '\.\.\/\.\.\/src\/lib\/top10-sozluk\.ts'/);
+    expect(kaynak).not.toMatch(/function clutchTamamla|const clutchTamamla/);
+  });
+
   it('katkı ekle/çıkar: 3 katkı için 34-33-33 / 50-25-25 bölüşümleri, "esit" ise pay yazılmaz', () => {
     const d = degistir((d) => {
       d[0]!.katkilar.push({ oyuncu: 'Ucuncu Kisi', takim: 'SAS', rol: 'diger' });

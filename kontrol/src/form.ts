@@ -4,7 +4,7 @@ import { parse } from 'yaml';
 import { kanonikAd, type AdHaritasi } from '../../site/src/lib/top10-adlar.ts';
 import { izinliBolusumler, type Oyun } from '../../site/src/lib/top10.ts';
 import { top10Sema } from '../../site/src/lib/top10-sema.ts';
-import { ETIKET_ANAHTARLARI, EYLEM_ANAHTARLARI, ROL_ANAHTARLARI, TAKIM_KODLARI } from '../../site/src/lib/top10-sozluk.ts';
+import { clutchTamamla, ETIKET_ANAHTARLARI, EYLEM_ANAHTARLARI, ROL_ANAHTARLARI, TAKIM_KODLARI } from '../../site/src/lib/top10-sozluk.ts';
 
 export type KatkiDurumu = { oyuncu: string; takim: string; rol: string };
 /** Formun bir oyunu: gönderilen değerler olduğu gibi (geçersiz olsalar da) saklanır, hata sayfasında yeniden gösterilir. */
@@ -56,7 +56,7 @@ export function formdanDurumlar(f: FormOkuyucu, siralar: readonly number[]): Oyu
   });
 }
 
-export type DogrulamaSonucu = { tamam: true; oyunlar: OyunGirdisi[] } | { tamam: false; genel: string[]; oyun: Record<number, string[]> };
+export type DogrulamaSonucu = { tamam: true; oyunlar: OyunGirdisi[]; /** Ortak kuralın (clutchTamamla) clutch eklediği oyunların sıraları. */ clutchEklenen: number[] } | { tamam: false; genel: string[]; oyun: Record<number, string[]> };
 
 /**
  * Form durumlarını doğrular. `ham`: dosyanın ayrıştırılmış hâli (tarih, video, tur, kaynak, zaman, kontrol… korunur).
@@ -69,6 +69,7 @@ export function durumlariDogrula(ham: unknown, durumlar: readonly OyunDurumu[], 
   const hamNesne = (ham ?? {}) as Record<string, any>;
   const hamOyunlar: any[] = Array.isArray(hamNesne.oyunlar) ? hamNesne.oyunlar : [];
 
+  const clutchEklenen: number[] = [];
   const yeniOyunlar = durumlar.map((d) => {
     if (d.eylem !== '' && !(EYLEM_ANAHTARLARI as readonly string[]).includes(d.eylem)) ekle(d.sira, `eylem geçersiz: "${d.eylem}"`);
     for (const e of d.etiketler) if (!(ETIKET_ANAHTARLARI as readonly string[]).includes(e)) ekle(d.sira, `etiket geçersiz: "${e}"`);
@@ -89,7 +90,10 @@ export function durumlariDogrula(ham: unknown, durumlar: readonly OyunDurumu[], 
     if (d.eylem) oyun.eylem = d.eylem;
     if (d.etiketler.length) {
       // Dosyadaki mevcut etiket sırası korunur (dokunulmamış etiketlerde gereksiz fark çıkmasın); yeni etiketler sona eklenir.
-      const secili = [...new Set(d.etiketler)];
+      // Ortak tutarlılık kuralı (site/src/lib/top10-sozluk.ts → clutchTamamla): maçı kazandıran/eşitleyen varsa clutch, formda kaldırılmış olsa da eklenir.
+      const tamam = clutchTamamla([...new Set(d.etiketler)]);
+      if (tamam.eklendi) clutchEklenen.push(d.sira);
+      const secili: string[] = tamam.etiketler;
       const eskiSira: string[] = Array.isArray(eski.etiketler) ? eski.etiketler : [];
       oyun.etiketler = [...eskiSira.filter((e) => secili.includes(e)), ...secili.filter((e) => !eskiSira.includes(e))];
     }
@@ -119,6 +123,7 @@ export function durumlariDogrula(ham: unknown, durumlar: readonly OyunDurumu[], 
   if (genel.length || Object.keys(oyunHata).length) return { tamam: false, genel, oyun: oyunHata };
   return {
     tamam: true,
+    clutchEklenen,
     oyunlar: (sema.data!.oyunlar as unknown as Oyun[]).map((o) => ({
       sira: o.sira,
       ...(o.eylem ? { eylem: o.eylem } : {}),

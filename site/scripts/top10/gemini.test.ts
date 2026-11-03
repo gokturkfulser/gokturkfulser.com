@@ -34,6 +34,11 @@ describe('istem.md', () => {
     expect(istem).toContain('If you cannot access or watch the video, return an empty plays list. Never produce plays you did not see.');
     expect(istem.trimEnd().endsWith('set confidence to low.')).toBe(true);
     expect(istem).toContain('never output such a phrase as a player name');
+    // çalım / eşitleyen / rakip kuralları
+    expect(istem).toContain('dribble_move = the highlight is a dribble move (crossover, ankle breaker, behind-the-back or between-the-legs dribble)');
+    expect(istem).toContain('The ball handler gets role ball_handler.');
+    expect(istem).toContain('game_tying = a shot that ties the game late in the fourth quarter or overtime; never use game_winner for it.');
+    expect(istem).toContain('For every block, poster dunk, crossover and dribble_move, set opponent to the defender or shooter involved');
     // metindeki alan adları şemada var
     const oyun = YANIT_SEMASI.properties.plays.items.properties;
     for (const alan of ['rank', 'action', 'contributors', 'opponent', 'tags', 'description', 'timestamp', 'confidence']) {

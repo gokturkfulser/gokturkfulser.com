@@ -6,6 +6,7 @@ import { oyundanDurum, geceOku, type OyunDurumu } from './form.ts';
 import { isle } from './isleyici.ts';
 import { AUD, birlesikFetch, durumdanForm, GECE_YOLU, GECE_YOLU_2, geceMetni, gecerliYuk, ORIJIN, ortam, sahteAccess, sahteGitHub, SOZLUK_METNI, SOZLUK_YOLU, TAKIM, TOKEN } from './test-yardim.ts';
 import type { Env } from './ortam.ts';
+import { ETIKET_ANAHTARLARI } from '../../site/src/lib/top10-sozluk.ts';
 
 type Kurulum = Awaited<ReturnType<typeof kur>>;
 
@@ -110,7 +111,12 @@ describe('sayfalar', () => {
     expect(govde).toContain('name="o1_eylem"');
     expect(govde).toMatch(/<option value="alley_oop" selected>/);
     expect(govde).toContain('value="clutch"'); // clutch etiketi seçilebilir
-    expect(govde.match(/name="o1_etiket"/g)).toHaveLength(18);
+    expect(govde.match(/name="o1_etiket"/g)).toHaveLength(ETIKET_ANAHTARLARI.length); // sözlükteki her etiket formda
+    // yeni sözlük girdileri formda: çalım eylemi, çalım atan rolü, eşitleyen etiketi
+    expect(govde).toContain('<option value="calim">Çalım</option>');
+    expect(govde).toContain('<option value="calim_atan">Çalım atan</option>');
+    expect(govde).toContain('value="esitleyen"');
+    expect(govde).toContain('<span>Eşitleyen</span>');
     expect(govde).toContain('name="o1_k1_oyuncu"');
     expect(govde).toMatch(/<option value="70-30" selected>70 \/ 30<\/option>/);
     expect(govde).toContain('list="oyuncu-adlari"');
@@ -174,6 +180,22 @@ describe('kaydetme', () => {
     // sonuç sayfası
     expect((await k.iste('/gece/2026-11-01?ok=kaydedildi')).govde).toContain('Kaydedildi: değişiklik main');
     expect((await k.iste('/gece/2026-11-01')).govde).toContain('Elle düzenlendi (bot dokunmaz)');
+  });
+
+  it('clutch tutarlılığı: formda clutch kaldırılsa da kazandıran etiketi varsa eklenir; kayıt sonrası sayfada not görünür', async () => {
+    const k = await kur();
+    const sha = shaAl((await k.iste('/gece/2026-11-01')).govde);
+    const d = durumlar();
+    d[0]!.etiketler = ['mac_kazandiran']; // clutch yok
+    const r = await k.iste('/gece/2026-11-01', { form: durumdanForm(d, { sha, islem: 'kaydet' }) });
+    expect(r.basliklar.get('Location')).toBe('/gece/2026-11-01?ok=kaydedildi&clutch=1');
+    expect((parse(sonCommit(k).metin) as any).oyunlar[0].etiketler).toEqual(['mac_kazandiran', 'clutch']);
+    const sayfa = (await k.iste(r.basliklar.get('Location')!)).govde;
+    expect(sayfa).toContain('Clutch otomatik eklendi (sıra 1)');
+    // parametre yalnızca sayı listesi olarak kabul edilir (yansıtma güvenli)
+    const kotu = (await k.iste('/gece/2026-11-01?ok=kaydedildi&clutch=<script>x</script>')).govde;
+    expect(kotu).not.toContain('Clutch otomatik eklendi');
+    expect(kotu).not.toContain('<script>x');
   });
 
   it('Kaydet ve onayla: inceleme onaylandi, mesaj "top10: onay <tarih>"', async () => {

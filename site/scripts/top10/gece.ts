@@ -5,7 +5,7 @@ import { Document, parse, Scalar, YAMLMap, YAMLSeq } from 'yaml';
 import { aciklamaKontrolu, aciklamadanOyuncular, adNormallestir, type AciklamaKontrolu } from './aciklama.ts';
 import { top10Sema } from '../../src/lib/top10-sema.ts';
 import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, sezonKlasoru, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type Kontrol, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
-import { eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi, takimKodunuCevir } from '../../src/lib/top10-sozluk.ts';
+import { clutchTamamla, eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi, takimKodunuCevir } from '../../src/lib/top10-sozluk.ts';
 import { kanonikAd, type AdHaritasi } from '../../src/lib/top10-adlar.ts';
 import type { Guven, HamGece, HamOyun } from './gemini.ts';
 import { kontrolYorumlari, notuKontrole } from './kontrol.ts';
@@ -151,12 +151,13 @@ const EYLEM_ROL_UYUMU: Record<string, readonly string[]> = {
   pasor: ['pas'],
   bloklayan: ['blok'],
   top_calan: ['top_calma'],
+  calim_atan: ['calim'],
   bitiren: ['smac', 'turnike', 'ucluk', 'orta_mesafe'],
 };
 
 /**
  * Tutarlılık uyarısı (sonucu değiştirmez): eylem alley_oop değilse ve en büyük paylı katkının rolü eylemle uyuşmuyorsa
- * (pasor ↔ pas, bloklayan ↔ blok, top_calan ↔ top_calma, bitiren ↔ smac/turnike/ucluk/orta_mesafe). En büyük pay eşitse (eşit paylı oyun),
+ * (pasor ↔ pas, bloklayan ↔ blok, top_calan ↔ top_calma, calim_atan ↔ calim, bitiren ↔ smac/turnike/ucluk/orta_mesafe). En büyük pay eşitse (eşit paylı oyun),
  * rol ya da eylem `diger` ise ya da eylem yoksa uyarı yok.
  */
 export function eylemPayUyarisi(oyun: Gece['oyunlar'][number]): string | undefined {
@@ -174,7 +175,7 @@ export function eylemPayUyarisi(oyun: Gece['oyunlar'][number]): string | undefin
  * Gece verisini `yaml` paketinin Document API'siyle yazar. Her oyunun `kontrol` alanı yazılır ve oyunun üstündeki yorumlar o alandan üretilir
  * (tek kaynak kontrol alanıdır, kontrol.ts); dosyanın başına üretim zamanı + model yorumu eklenir.
  */
-export function geceYaml(veri: { tarih: string; video: string; tur: string; oyunlar: Record<string, unknown>[] }, baglam: Pick<Baglam, 'model' | 'uretildi'>): string {
+export function geceYaml(veri: { tarih: string; video: string; tur: string; oyunlar: Record<string, unknown>[] }, baglam: Pick<Baglam, 'model' | 'uretildi'>, bilgiYorumlari: ReadonlyMap<number, readonly string[]> = new Map()): string {
   const belge = new Document({
     tarih: veri.tarih,
     video: veri.video,
@@ -193,7 +194,9 @@ export function geceYaml(veri: { tarih: string; video: string; tur: string; oyun
     const zaman = oyun.get('zaman', true) as unknown as Scalar | undefined;
     if (zaman) zaman.type = 'QUOTE_DOUBLE'; // "1:05" metin kalsın (YAML 1.1 yükleyicileri 1:05'i sayı sanabilir)
     const kontrol = veri.oyunlar[i]!.kontrol as Kontrol | undefined;
-    if (kontrol) oyun.commentBefore = kontrolYorumlari(kontrol).map((satir) => ` ${satir}`).join(String.fromCharCode(10));
+    // Bilgi satırları (ör. "clutch otomatik eklendi") kontrol alanına/uyarılara değil, yalnızca yoruma yazılır.
+    const satirlar = [...(kontrol ? kontrolYorumlari(kontrol) : []), ...(bilgiYorumlari.get(i) ?? [])];
+    if (satirlar.length) oyun.commentBefore = satirlar.map((satir) => ` ${satir}`).join(String.fromCharCode(10));
   });
   return belge.toString({ lineWidth: 0 });
 }
@@ -257,7 +260,14 @@ export function dogrula(ham: HamGece, baglam: Baglam, mevcutGeceler: readonly Ge
  * Tek çalıştırma (`dogrula`) ve çoğunluk oylaması sonucu (`oylamaSonrasi`) aynı yolu kullanır.
  */
 export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: Tur }, mevcutGeceler: readonly Gece[], uyarilar: string[], bilgiler: string[] = [], bilinenAdlar: readonly string[] = []): DogrulamaHatasi | Uretilen {
-  const oyunlar = gece.oyunlar as unknown as Record<string, unknown>[];
+  // Etiket tutarlılığı (ortak kural, top10-sozluk.ts): maçı kazandıran / eşitleyen oyuna clutch eklenir; eklenirse yalnızca YAML yorumuna bilgi satırı yazılır.
+  const bilgiYorumlari = new Map<number, string[]>();
+  const oyunlar = (gece.oyunlar as unknown as Record<string, unknown>[]).map((o, i) => {
+    const sonuc = clutchTamamla((o.etiketler as string[] | undefined) ?? []);
+    if (!sonuc.eklendi) return o;
+    bilgiYorumlari.set(i, ['clutch otomatik eklendi']);
+    return { ...o, etiketler: sonuc.etiketler };
+  });
   const aday = { tarih: baglam.tarih, video: baglam.video, tur: baglam.tur, kaynak: 'gemini', inceleme: 'bekliyor', oyunlar };
   // Video açıklamasındaki oyuncu listesiyle çapraz kontrol (liste yalnızca kontrol içindir).
   const katkiAdlari = gece.oyunlar.flatMap((o) => o.katkilar.map((k) => k.oyuncu));
@@ -301,7 +311,7 @@ export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: 
   if (!kontrolSonuc.success) return { hata: `kontrol alanı şemadan geçmedi: ${semaHatasi(kontrolSonuc.error.issues, kontrolluAday)}` };
   return {
     gece: kontrolSonuc.data as unknown as Gece,
-    yaml: geceYaml(kontrolluAday, baglam),
+    yaml: geceYaml(kontrolluAday, baglam, bilgiYorumlari),
     oyunNotlari: notlar,
     adUyarilari: benzerAdlar([gece]).map(({ a, b }) => `"${a.oyuncu}" ile "${b.oyuncu}" çok benzer (yazım hatası olabilir)`),
     mevcutBenzerler,

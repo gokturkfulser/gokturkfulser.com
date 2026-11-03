@@ -241,6 +241,13 @@ export const tr = {
     belirtilmemis: 'Belirtilmemiş',
     takimBaslik: 'Takım sıralaması',
     takimAciklama: (sezon: string, n: number) => `${sezon} sezonu: takımın oyuncularının toplam puanı, ilk ${n}`,
+    sayim: {
+      rakipBaslik: 'Videolara istemeden girenler',
+      yetenekBaslik: 'En çok yapanlar',
+      liste: { posterlenen: 'En çok posterlenenler', bloklanan: 'En çok bloklananlar', calimlanan: 'En çok çalımlananlar', posterBasan: 'En çok poster basanlar', blokYapan: 'En çok blok yapanlar' },
+      sayi: 'Sayı',
+      not: "Sayılar yalnızca NBA'in Top 10 listelerine giren hareketleri kapsıyor.",
+    },
     yontem: 'Veriler her sabah otomatik olarak çıkarılıyor; henüz kontrol etmediğim geceler bunu belirten bir notla görünüyor.',
   },
   /** Top 10 kontrol sayfası (/kontrol/top10/, yalnızca SHOW_DRAFTS build'lerinde; components/sayfa/Top10Kontrol.astro). */

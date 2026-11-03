@@ -237,6 +237,13 @@ export const en: Sozluk = {
     belirtilmemis: 'Not specified',
     takimBaslik: 'Team standings',
     takimAciklama: (sezon: string, n: number) => `${sezon} season: total points of each team’s players, top ${n}`,
+    sayim: {
+      rakipBaslik: 'Unwilling co-stars',
+      yetenekBaslik: 'Most often doing it',
+      liste: { posterlenen: 'Most dunked on', bloklanan: 'Most blocked', calimlanan: 'Most crossed over', posterBasan: 'Most poster dunks', blokYapan: 'Most blocks' },
+      sayi: 'Count',
+      not: "Counts only include plays that made the NBA's Top 10 lists.",
+    },
     yontem: "The data is extracted automatically every morning; nights I haven't checked yet are marked with a note.",
   },
   /** Top 10 review page (/kontrol/top10/, only in SHOW_DRAFTS builds; components/sayfa/Top10Kontrol.astro). */

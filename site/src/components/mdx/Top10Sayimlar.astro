@@ -1,0 +1,143 @@
+---
+// Rakip ve yetenek listeleri: hareket sayısına göre ilk 5 (puan değil), her liste küçük bir tablo (caption, th scope: sıra, oyuncu, sayı).
+// `blok="rakip"`: en çok posterlenen / bloklanan / çalımlanan. `blok="yetenek"`: en çok poster basan / blok yapan.
+// Kaydı olmayan liste gösterilmez; blokta hiç liste yoksa blok (başlığıyla) hiç çizilmez. `not`: bloğun altına kapsam cümlesi.
+// Hesap lib/top10-ozet.ts → sayimListeleri. Sıfır JS, style="" yok. Mobilde tablolar alt alta, geniş ekranda yan yana (çizgiyle ayrılmış düz bloklar).
+import { top10Geceleri } from '../../lib/content';
+import { sayiYaz } from '../../lib/format';
+import { sayimListeleri, type SayimSatiri } from '../../lib/top10-ozet';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  blok: 'rakip' | 'yetenek';
+  sezon?: string;
+  /** Bloğun altına "Sayılar yalnızca…" cümlesini ekler. */
+  not?: boolean;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { blok, not = false } = Astro.props;
+const { geceler } = await top10Geceleri(Astro.props.sezon);
+const l = sayimListeleri(geceler);
+const baslik = blok === 'rakip' ? s.sayim.rakipBaslik : s.sayim.yetenekBaslik;
+const anahtarlar = blok === 'rakip' ? (['posterlenen', 'bloklanan', 'calimlanan'] as const) : (['posterBasan', 'blokYapan'] as const);
+const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarlar
+  .map((a) => ({ id: a, ad: s.sayim.liste[a], satirlar: l[a] }))
+  .filter((x) => x.satirlar.length > 0);
+---
+
+{
+  listeler.length > 0 && (
+    <section class="kutu" aria-labelledby={`top10-sayim-${blok}`}>
+      <h2 id={`top10-sayim-${blok}`}>{baslik}</h2>
+      <div class="listeler">
+        {listeler.map((x) => (
+          <div class="sarmal" role="region" aria-label={x.ad} tabindex="0">
+            <table>
+              <caption>{x.ad}</caption>
+              <thead>
+                <tr>
+                  <th scope="col" class="sayi">{s.sutun.sira}</th>
+                  <th scope="col">{s.sutun.oyuncu}</th>
+                  <th scope="col" class="sayi">{s.sayim.sayi}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {x.satirlar.map((r, i) => (
+                  <tr>
+                    <td class="sayi">{sayiYaz(i + 1, dil)}</td>
+                    <th scope="row">{r.oyuncu}</th>
+                    <td class="sayi puan">{sayiYaz(r.sayi, dil)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+      </div>
+      {not && <p class="not">{s.sayim.not}</p>}
+    </section>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .listeler {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--aralik-4) var(--aralik-4);
+  }
+
+  .sarmal {
+    overflow-x: auto;
+    border-block-start: 3px solid var(--dunya-bant);
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: var(--yazi-sm);
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    hyphens: manual;
+  }
+
+  caption {
+    padding: var(--aralik-2) 0;
+    text-align: start;
+    font-size: var(--yazi-sm);
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  th,
+  td {
+    padding: var(--aralik-2) var(--aralik-2);
+    text-align: start;
+    vertical-align: baseline;
+  }
+
+  thead th {
+    font-weight: 700;
+    font-size: var(--yazi-xs);
+    border-block-end: 1px solid var(--murekkep);
+  }
+
+  /* Sıra ve sayı sütunları sabit: adlar tablolar arasında aynı hizada başlar. */
+  thead th:first-child {
+    width: 3.25rem;
+  }
+
+  thead th:last-child {
+    width: 3.75rem;
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  tbody tr + tr > * {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+
+  .puan {
+    font-weight: 700;
+  }
+
+  .not {
+    margin: var(--aralik-3) 0 0;
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+  }
+</style>

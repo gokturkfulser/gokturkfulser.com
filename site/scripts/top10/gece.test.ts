@@ -21,6 +21,31 @@ describe('sezonKlasoru', () => {
   });
 });
 
+describe('dogrula: clutch tutarlılığı (ortak kural)', () => {
+  const etiketli = (etiketler: string[]) => {
+    const ham = gecerliHam('top10');
+    ham.plays[2]!.tags = etiketler;
+    return tamam(dogrula(ham, baglam));
+  };
+  it('game_winner ve game_tying ⇒ clutch eklenir; bilgi satırı yalnızca YAML yorumunda, kontrol.uyarilar içinde değil', () => {
+    for (const t of ['game_winner', 'game_tying']) {
+      const s = etiketli([t, 'buzzer_beater']);
+      expect(s.gece.oyunlar[2]!.etiketler, t).toEqual([t === 'game_winner' ? 'mac_kazandiran' : 'esitleyen', 'son_saniye', 'clutch']);
+      expect(s.yaml.match(/clutch otomatik eklendi/g), t).toHaveLength(1);
+      expect(JSON.stringify(s.gece.oyunlar[2]!.kontrol?.uyarilar ?? [])).not.toContain('clutch');
+      expect(yamlDogrula(s.yaml)).toHaveProperty('gece');
+    }
+  });
+  it('buzzer_beater tek başına clutch eklemez ve yorum yazılmaz; modelin verdiği clutch çift eklenmez', () => {
+    const s = etiketli(['buzzer_beater']);
+    expect(s.gece.oyunlar[2]!.etiketler).toEqual(['son_saniye']);
+    expect(s.yaml).not.toContain('clutch otomatik eklendi');
+    const c = etiketli(['game_winner', 'clutch']);
+    expect(c.gece.oyunlar[2]!.etiketler).toEqual(['mac_kazandiran', 'clutch']);
+    expect(c.yaml).not.toContain('clutch otomatik eklendi');
+  });
+});
+
 describe('dogrula: istem.md değerlerinden site anahtarlarına', () => {
   it('geçerli çıktı: eylem/etiket/rol/pay/zaman/rakip dönüştürülür; kaynak gemini, inceleme bekliyor', () => {
     const s = tamam(dogrula(gecerliHam('top10'), baglam));

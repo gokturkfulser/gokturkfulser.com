@@ -8,12 +8,14 @@ import {
   eylemDagilimi,
   grafikDuzeni,
   liderlikSerileri,
+  sayimListeleri,
   siralamaDegisimi,
   takimToplami,
   xTikIndeksleri,
 } from './top10-ozet';
 import { sezonTablosu, type Gece, type Oyun } from './top10';
-import type { Eylem } from './top10-sozluk';
+import type { Etiket, Eylem, Rol } from './top10-sozluk';
+import { sozlukHaritasi } from './top10-adlar';
 
 const VIDEO = 'https://www.youtube.com/watch?v=x';
 const oyun = (sira: number, oyuncu: string, takim = 'SAS', eylem?: Eylem): Oyun => ({
@@ -338,5 +340,94 @@ describe('cubukDuzeni', () => {
   it('hiç değer ya da hepsi sıfır: çökmez, çubuk yok', () => {
     expect(cubukDuzeni([], secenek)).toEqual({ yukseklik: 0, satirlar: [] });
     expect(cubukDuzeni([0, 0], secenek).satirlar.every((s) => s.cubukGenislik === 0)).toBe(true);
+  });
+});
+
+describe('sayimListeleri', () => {
+  type K = [string, Rol];
+  const o = (sira: number, kisiler: K[], ek: { eylem?: Eylem; etiketler?: Etiket[]; rakip?: string } = {}): Oyun => ({
+    sira,
+    ...ek,
+    katkilar: kisiler.map(([oyuncu, rol]) => ({ oyuncu, takim: 'SAS', rol })),
+  });
+  /** Verilen oyunlar 1..N sıralarında; kalan sıralar etiketsiz dolgu oyunlarıyla dolar (listeleri etkilemez). */
+  const g = (tarih: string, ...oyunlar: Oyun[]): Gece => {
+    const kalan = Array.from({ length: 10 }, (_, i) => i + 1).filter((n) => !oyunlar.some((x) => x.sira === n));
+    return { tarih: new Date(`${tarih}T00:00:00Z`), tur: 'top10', video: VIDEO, oyunlar: [...oyunlar, ...kalan.map((n) => o(n, [[`Dolgu ${tarih} ${n}`, 'bitiren']]))] };
+  };
+  const ad = (l: { oyuncu: string; sayi: number }[]) => l.map((x) => [x.oyuncu, x.sayi]);
+
+  it('posterlenen: poster etiketli oyunların rakibi; rakipsiz oyun atlanır', () => {
+    const l = sayimListeleri([
+      g('2026-11-01', o(1, [['Ada Aksoy', 'bitiren']], { etiketler: ['poster'], rakip: 'Ravi Rakip' }), o(2, [['Bora Berk', 'bitiren']], { etiketler: ['poster'] })),
+      g('2026-11-02', o(3, [['Can Ceylan', 'bitiren']], { etiketler: ['poster'], rakip: 'Ravi Rakip' }), o(4, [['Deniz Demir', 'bitiren']], { etiketler: ['poster'], rakip: 'Sena Savunma' })),
+    ]);
+    expect(ad(l.posterlenen)).toEqual([['Ravi Rakip', 2], ['Sena Savunma', 1]]);
+  });
+
+  it('bloklanan: eylemi blok olan oyunların rakibi; poster etiketli ama blok olmayan oyun girmez', () => {
+    const l = sayimListeleri([g('2026-11-01', o(1, [['Ada Aksoy', 'bloklayan']], { eylem: 'blok', rakip: 'Ravi Rakip' }), o(2, [['Bora Berk', 'bitiren']], { eylem: 'smac', etiketler: ['poster'], rakip: 'Sena Savunma' }))]);
+    expect(ad(l.bloklanan)).toEqual([['Ravi Rakip', 1]]);
+  });
+
+  it('calimlanan: calim eylemi ya da crossover etiketi; aynı oyunda ikisi de varsa bir kez sayılır', () => {
+    const l = sayimListeleri([
+      g(
+        '2026-11-01',
+        o(1, [['Ada Aksoy', 'calim_atan']], { eylem: 'calim', etiketler: ['crossover'], rakip: 'Ravi Rakip' }), // ikisi birden: tek sayı
+        o(2, [['Bora Berk', 'bitiren']], { eylem: 'turnike', etiketler: ['crossover'], rakip: 'Ravi Rakip' }), // yalnızca etiket
+        o(3, [['Can Ceylan', 'calim_atan']], { eylem: 'calim', rakip: 'Sena Savunma' }), // yalnızca eylem
+        o(4, [['Deniz Demir', 'calim_atan']], { eylem: 'calim', etiketler: ['crossover'] }), // rakipsiz
+      ),
+    ]);
+    expect(ad(l.calimlanan)).toEqual([['Ravi Rakip', 2], ['Sena Savunma', 1]]);
+  });
+
+  it('posterBasan: poster etiketli oyunlarda yalnızca bitiren rolü', () => {
+    const l = sayimListeleri([g('2026-11-01', o(1, [['Pasör Pınar', 'pasor'], ['Ada Aksoy', 'bitiren']], { eylem: 'alley_oop', etiketler: ['poster'] }), o(2, [['Ada Aksoy', 'bitiren']], { eylem: 'smac' }), o(3, [['Bora Berk', 'bitiren']], { etiketler: ['poster'] }))]);
+    expect(ad(l.posterBasan)).toEqual([['Ada Aksoy', 1], ['Bora Berk', 1]].sort((a, b) => (a[0] as string).localeCompare(b[0] as string, 'tr')));
+    expect(l.posterBasan.some((x) => x.oyuncu === 'Pasör Pınar')).toBe(false);
+  });
+
+  it('blokYapan: bloklayan rolü; rol yoksa tek katkı varsa o kişi, çok katkıda kimse', () => {
+    const l = sayimListeleri([
+      g(
+        '2026-11-01',
+        o(1, [['Ada Aksoy', 'bloklayan'], ['Bora Berk', 'bitiren']], { eylem: 'blok' }),
+        o(2, [['Can Ceylan', 'diger']], { eylem: 'blok' }), // tek katkı, bloklayan rolü yok → o kişi
+        o(3, [['Deniz Demir', 'diger'], ['Ece Eren', 'bitiren']], { eylem: 'blok' }), // çok katkı, bloklayan yok → kimse
+        o(4, [['Fikret Fidan', 'bloklayan']], { eylem: 'smac' }), // blok eylemi değil
+      ),
+    ]);
+    expect(ad(l.blokYapan)).toEqual([['Ada Aksoy', 1], ['Can Ceylan', 1]]);
+  });
+
+  it('takma adlar sözlükle tek kişide birleşir', () => {
+    const harita = sozlukHaritasi({ 'Victor Wembanyama': ['Victor Wembenyama'] });
+    const l = sayimListeleri(
+      [
+        g('2026-11-01', o(1, [['Ada Aksoy', 'bitiren']], { etiketler: ['poster'], rakip: 'Victor Wembanyama' })),
+        g('2026-11-02', o(1, [['Bora Berk', 'bitiren']], { etiketler: ['poster'], rakip: 'Victor Wembenyama' })),
+      ],
+      5,
+      harita,
+    );
+    expect(ad(l.posterlenen)).toEqual([['Victor Wembanyama', 2]]);
+    expect(sayimListeleri([g('2026-11-01', o(1, [['Ada Aksoy', 'bitiren']], { etiketler: ['poster'], rakip: 'Victor Wembanyama' })), g('2026-11-02', o(1, [['Bora Berk', 'bitiren']], { etiketler: ['poster'], rakip: 'Victor Wembenyama' }))]).posterlenen).toHaveLength(2);
+  });
+
+  it('eşitlikte daha yeni son görünme, sonra ad; ilk `sinir` döner', () => {
+    const p = (sira: number, rakip: string) => o(sira, [['Ada Aksoy', 'bitiren']], { etiketler: ['poster'], rakip });
+    const l = sayimListeleri([g('2026-11-01', p(1, 'Zeynep Z'), p(2, 'Ayşe A')), g('2026-11-02', p(1, 'Burak B')), g('2026-11-03', p(1, 'Cem C'))]);
+    // hepsi 1: en yeni görünme önce (Cem, Burak), sonra 11-01'dekiler ada göre (Ayşe, Zeynep)
+    expect(ad(l.posterlenen)).toEqual([['Cem C', 1], ['Burak B', 1], ['Ayşe A', 1], ['Zeynep Z', 1]]);
+    expect(sayimListeleri([g('2026-11-01', p(1, 'Zeynep Z'), p(2, 'Ayşe A'))], 1).posterlenen).toHaveLength(1);
+    const cok = sayimListeleri([g('2026-11-01', ...[1, 2, 3, 4, 5, 6, 7].map((n) => p(n, `Rakip ${String.fromCharCode(64 + n)}`)))]);
+    expect(cok.posterlenen).toHaveLength(5);
+  });
+
+  it('boş sezon ve kayıtsız listeler boş döner', () => {
+    expect(sayimListeleri([])).toEqual({ posterlenen: [], bloklanan: [], calimlanan: [], posterBasan: [], blokYapan: [] });
+    expect(sayimListeleri([g('2026-11-01')]).calimlanan).toEqual([]);
   });
 });

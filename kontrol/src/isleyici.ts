@@ -95,6 +95,9 @@ const oyundanGirdi = (o: Oyun): OyunGirdisi => ({
   katkilar: o.katkilar.map((k) => ({ oyuncu: k.oyuncu, takim: k.takim, rol: k.rol, ...(k.pay !== undefined ? { pay: k.pay } : {}) })),
 });
 
+/** `?clutch=1,3` parametresi: yalnızca rakamlar ve virgül kabul edilir (sayfaya yansıyan değer güvenli sayı listesi olur). */
+const clutchSiralari = (p: string | null): number[] => (p && /^\d{1,2}(,\d{1,2}){0,9}$/.test(p) ? p.split(',').map(Number) : []);
+
 const donus = (tarih: string, ok: string) => `/gece/${tarih}?ok=${ok}`;
 
 async function geceGet(tarih: string, url: URL, gh: GitHub): Promise<Response> {
@@ -105,7 +108,7 @@ async function geceGet(tarih: string, url: URL, gh: GitHub): Promise<Response> {
   const sozluk = sozlukOku((await gh.oku(SOZLUK_YOLU))?.metin ?? null);
   const adlar = [...new Set([...Object.keys(sozluk), ...g.gece.oyunlar.flatMap((o) => [...o.katkilar.map((k) => k.oyuncu), ...(o.rakip ? [o.rakip] : [])])])].sort((a, b) => a.localeCompare(b, 'tr'));
   const id = `${geceYolu(tarih).split('/').slice(-2).join('/').replace(/\.yaml$/, '')}`;
-  return html(geceSayfasi({ id, gece: g.gece as never, sha: dosya.sha, durumlar: g.gece.oyunlar.map((o) => oyundanDurum(o as never)), adlar, ok: url.searchParams.get('ok') }));
+  return html(geceSayfasi({ id, gece: g.gece as never, sha: dosya.sha, durumlar: g.gece.oyunlar.map((o) => oyundanDurum(o as never)), adlar, ok: url.searchParams.get('ok'), clutchEklenen: clutchSiralari(url.searchParams.get('clutch')) }));
 }
 
 async function gecePost(tarih: string, istek: Request, gh: GitHub): Promise<Response> {
@@ -123,6 +126,7 @@ async function gecePost(tarih: string, istek: Request, gh: GitHub): Promise<Resp
   const id = yol.split('/').slice(-2).join('/').replace(/\.yaml$/, '');
 
   let oyunlar: OyunGirdisi[];
+  let clutchEklenen: number[] = [];
   if (islem === 'onayla') {
     oyunlar = g.gece.oyunlar.map((o) => oyundanGirdi(o as never));
   } else {
@@ -134,6 +138,7 @@ async function gecePost(tarih: string, istek: Request, gh: GitHub): Promise<Resp
       return html(geceSayfasi({ id, gece: g.gece as never, sha: mevcut.sha, durumlar, oyunHatalari: sonuc.oyun, genelHatalar: sonuc.genel, adlar }), 422);
     }
     oyunlar = sonuc.oyunlar;
+    clutchEklenen = sonuc.clutchEklenen;
   }
   const onay = islem !== 'kaydet';
   let yeni: string;
@@ -149,7 +154,7 @@ async function gecePost(tarih: string, istek: Request, gh: GitHub): Promise<Resp
     if (e instanceof CakismaHatasi) return cakisma();
     throw e;
   }
-  return yonlendir(donus(tarih, onay ? 'onaylandi' : 'kaydedildi'));
+  return yonlendir(donus(tarih, onay ? 'onaylandi' : 'kaydedildi') + (clutchEklenen.length ? `&clutch=${clutchEklenen.join(',')}` : ''));
 }
 
 async function sozlukGet(url: URL, gh: GitHub): Promise<Response> {

@@ -1,11 +1,49 @@
 import { describe, expect, it } from 'vitest';
-import { ETIKET_ANAHTARLARI, ETIKETLER, GEMINI_ETIKET, TAKIM_KODLARI, TAKIM_VARYANTLARI, takimKodunuCevir } from './top10-sozluk';
+import { clutchTamamla, ETIKET_ANAHTARLARI, ETIKETLER, EYLEM_ANAHTARLARI, EYLEMLER, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, ROL_ANAHTARLARI, ROLLER, TAKIM_KODLARI, TAKIM_VARYANTLARI, takimKodunuCevir } from './top10-sozluk';
 
 describe('clutch etiketi', () => {
   it('anahtar, Gemini değeri ve görünen adlar', () => {
     expect(ETIKETLER.clutch).toEqual({ tr: 'Clutch', en: 'Clutch', gemini: 'clutch' });
     expect(ETIKET_ANAHTARLARI).toContain('clutch');
     expect(GEMINI_ETIKET.clutch).toBe('clutch');
+  });
+});
+
+describe('çalım eylemi, çalım atan rolü ve eşitleyen etiketi', () => {
+  it('anahtar, Gemini değeri ve görünen adlar', () => {
+    expect(EYLEMLER.calim).toEqual({ tr: 'Çalım', en: 'Handles', gemini: 'dribble_move' });
+    expect(ROLLER.calim_atan).toEqual({ tr: 'Çalım atan', en: 'Ball handler', gemini: 'ball_handler' });
+    expect(ETIKETLER.esitleyen).toEqual({ tr: 'Eşitleyen', en: 'Game-tying', gemini: 'game_tying' });
+    expect(EYLEM_ANAHTARLARI).toContain('calim');
+    expect(ROL_ANAHTARLARI).toContain('calim_atan');
+    expect(ETIKET_ANAHTARLARI).toContain('esitleyen');
+  });
+  it('Gemini değerleri site anahtarlarına eşlenir', () => {
+    expect(GEMINI_EYLEM.dribble_move).toBe('calim');
+    expect(GEMINI_ROL.ball_handler).toBe('calim_atan');
+    expect(GEMINI_ETIKET.game_tying).toBe('esitleyen');
+  });
+});
+
+describe('clutchTamamla (ortak etiket tutarlılığı)', () => {
+  it('maçı kazandıran ⇒ clutch eklenir, diğer etiketlere dokunulmaz', () => {
+    expect(clutchTamamla(['poster', 'mac_kazandiran'])).toEqual({ etiketler: ['poster', 'mac_kazandiran', 'clutch'], eklendi: true });
+  });
+  it('eşitleyen ⇒ clutch eklenir', () => {
+    expect(clutchTamamla(['esitleyen', 'son_saniye'])).toEqual({ etiketler: ['esitleyen', 'son_saniye', 'clutch'], eklendi: true });
+  });
+  it('son saniye tek başına clutch eklemez; etiketsiz oyuna da eklenmez', () => {
+    expect(clutchTamamla(['son_saniye'])).toEqual({ etiketler: ['son_saniye'], eklendi: false });
+    expect(clutchTamamla([])).toEqual({ etiketler: [], eklendi: false });
+    expect(clutchTamamla(['poster', 'crossover']).eklendi).toBe(false);
+  });
+  it('clutch zaten varsa çift eklenmez ve sıra korunur', () => {
+    expect(clutchTamamla(['clutch', 'mac_kazandiran'])).toEqual({ etiketler: ['clutch', 'mac_kazandiran'], eklendi: false });
+  });
+  it('girdiyi değiştirmez', () => {
+    const g = ['mac_kazandiran'] as const;
+    clutchTamamla(g);
+    expect(g).toEqual(['mac_kazandiran']);
   });
 });
 

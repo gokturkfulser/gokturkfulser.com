@@ -15,6 +15,7 @@ export const EYLEMLER = {
   ucluk: { tr: 'Üçlük', en: 'Three-pointer', gemini: 'three_pointer' },
   turnike: { tr: 'Turnike', en: 'Layup', gemini: 'layup' },
   orta_mesafe: { tr: 'Orta mesafe', en: 'Mid-range', gemini: 'mid_range' },
+  calim: { tr: 'Çalım', en: 'Handles', gemini: 'dribble_move' },
   diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 
@@ -23,6 +24,7 @@ export const ETIKETLER = {
   chase_down_blok: { tr: 'Arkadan blok', en: 'Chase-down block', gemini: 'chase_down_block' },
   son_saniye: { tr: 'Son saniye', en: 'Last second', gemini: 'buzzer_beater' },
   mac_kazandiran: { tr: 'Maçı kazandıran', en: 'Game-winner', gemini: 'game_winner' },
+  esitleyen: { tr: 'Eşitleyen', en: 'Game-tying', gemini: 'game_tying' },
   clutch: { tr: 'Clutch', en: 'Clutch', gemini: 'clutch' },
   and_one: { tr: 'And-one', en: 'And-one', gemini: 'and_one' },
   yari_saha_ve_otesi: { tr: 'Yarı saha ve ötesi', en: 'Half court and beyond', gemini: 'half_court_or_longer' },
@@ -44,6 +46,7 @@ export const ROLLER = {
   pasor: { tr: 'Pasör', en: 'Passer', gemini: 'passer' },
   bloklayan: { tr: 'Bloklayan', en: 'Blocker', gemini: 'blocker' },
   top_calan: { tr: 'Top çalan', en: 'Stealer', gemini: 'stealer' },
+  calim_atan: { tr: 'Çalım atan', en: 'Ball handler', gemini: 'ball_handler' },
   diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 
@@ -55,6 +58,20 @@ export type Rol = keyof typeof ROLLER;
 export const EYLEM_ANAHTARLARI = Object.keys(EYLEMLER) as [Eylem, ...Eylem[]];
 export const ETIKET_ANAHTARLARI = Object.keys(ETIKETLER) as [Etiket, ...Etiket[]];
 export const ROL_ANAHTARLARI = Object.keys(ROLLER) as [Rol, ...Rol[]];
+
+/** Bu etiketlerden biri varsa oyun clutch'tır (maçı kazandıran ve eşitleyen atış her zaman clutch). `son_saniye` tek başına clutch eklemez. */
+export const CLUTCH_GEREKTIREN = ['mac_kazandiran', 'esitleyen'] as const satisfies readonly Etiket[];
+
+/**
+ * Ortak etiket tutarlılığı kuralı (bot, kontrol düzenleyicisi ve testler aynısını kullanır): etiketlerde `mac_kazandiran` ya da `esitleyen`
+ * varsa ve `clutch` yoksa `clutch` sona eklenir. Başka hiçbir etiketi değiştirmez ya da silmez; girdiyi değiştirmez.
+ * `eklendi`: kural bir etiket ekledi mi.
+ */
+export function clutchTamamla<T extends string>(etiketler: readonly T[]): { etiketler: (T | 'clutch')[]; eklendi: boolean } {
+  const gerekli = etiketler.some((e) => (CLUTCH_GEREKTIREN as readonly string[]).includes(e));
+  if (!gerekli || etiketler.includes('clutch' as T)) return { etiketler: [...etiketler], eklendi: false };
+  return { etiketler: [...etiketler, 'clutch'], eklendi: true };
+}
 
 export const eylemAdi = (anahtar: Eylem, dil: Dil) => EYLEMLER[anahtar][dil];
 export const etiketAdi = (anahtar: Etiket, dil: Dil) => ETIKETLER[anahtar][dil];

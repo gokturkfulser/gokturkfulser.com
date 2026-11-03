@@ -166,6 +166,8 @@ export type GeceSayfasiGirdisi = {
   genelHatalar?: readonly string[];
   adlar: readonly string[];
   ok?: string | null;
+  /** Kayıtta ortak kuralın clutch eklediği oyun sıraları (kayıt sonrası not). */
+  clutchEklenen?: readonly number[];
 };
 
 export function geceSayfasi(g: GeceSayfasiGirdisi): string {
@@ -186,6 +188,7 @@ export function geceSayfasi(g: GeceSayfasiGirdisi): string {
       <li><a href="${duzenleAdresi(g.id)}" rel="noopener noreferrer">GitHub'da düzenle</a></li>
     </ul>
     ${duyuru(g.ok ?? null)}
+    ${g.clutchEklenen?.length ? h`<p class="duyuru" role="status">Clutch otomatik eklendi (sıra ${g.clutchEklenen.join(', ')}): maçı kazandıran ya da eşitleyen etiketi olan her oyun clutch sayılır.</p>` : ''}
     ${hataSayisi ? h`<p class="duyuru duyuru-hata" role="alert">Kaydedilmedi: ${hataSayisi} yerde hata var. Aşağıda satır satır işaretlendi; yazdığınız değerler korundu.</p>` : ''}
     ${g.genelHatalar?.length ? h`<ul class="hatalar" role="alert">${g.genelHatalar.map((m) => h`<li>${m}</li>`)}</ul>` : ''}
     <form method="post" action="/gece/${tarih}" class="gece-form" data-bolusumler="${JSON.stringify(tumBolusumler())}">

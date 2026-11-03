@@ -112,6 +112,9 @@ describe('eylem ile en büyük pay tutarlılığı (yalnızca uyarı)', () => {
     expect(eylemPayUyarisi(oyun('smac', [['A Bee', 'bloklayan', 70], ['C Dee', 'bitiren', 30]]))).toMatch(/uyuşmuyor/);
     expect(eylemPayUyarisi(oyun('top_calma', [['A Bee', 'top_calan', 70], ['C Dee', 'bitiren', 30]]))).toBeUndefined();
     expect(eylemPayUyarisi(oyun('blok', [['A Bee', 'top_calan', 70], ['C Dee', 'bitiren', 30]]))).toMatch(/uyuşmuyor/);
+    expect(eylemPayUyarisi(oyun('calim', [['A Bee', 'calim_atan', 70], ['C Dee', 'bitiren', 30]]))).toBeUndefined();
+    expect(eylemPayUyarisi(oyun('smac', [['A Bee', 'calim_atan', 70], ['C Dee', 'bitiren', 30]]))).toMatch(/uyuşmuyor/);
+    expect(eylemPayUyarisi(oyun('calim', [['A Bee', 'pasor', 70], ['C Dee', 'bitiren', 30]]))).toMatch(/uyuşmuyor/);
     for (const e of ['smac', 'turnike', 'ucluk', 'orta_mesafe']) expect(eylemPayUyarisi(oyun(e, [['A Bee', 'bitiren', 100]])), e).toBeUndefined();
     expect(eylemPayUyarisi(oyun('pas', [['A Bee', 'bitiren', 100]]))).toMatch(/uyuşmuyor/);
     expect(eylemPayUyarisi(oyun('diger', [['A Bee', 'pasor', 100]]))).toBeUndefined();

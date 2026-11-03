@@ -1,7 +1,8 @@
 // Top 10 yazı sayfasının ek hesapları: sıralama değişimi, takım toplamı, eylem dağılımı, liderlik serileri ve grafik koordinatları.
 // Saf fonksiyonlar: Astro'ya ve içerik koleksiyonuna dokunmaz; puan ve sıralama kuralları top10.ts'ten gelir (burada ikinci kopya yok).
 // Birim testleri `top10-ozet.test.ts`'tedir.
-import { katkiBirimi, katkiPaylari, PUAN_BIRIMI, sezonTablosu, type Gece, type Satir } from './top10.ts';
+import { katkiBirimi, katkiPaylari, kimlik, PUAN_BIRIMI, sezonTablosu, type Gece, type Satir } from './top10.ts';
+import { adlariUygula, type AdHaritasi } from './top10-adlar.ts';
 import { EYLEM_ANAHTARLARI, type Eylem } from './top10-sozluk.ts';
 
 const artan = (a: Gece, b: Gece) => a.tarih.valueOf() - b.tarih.valueOf();
@@ -258,4 +259,61 @@ export function cubukDuzeni(degerler: readonly number[], secenek: { genislik: nu
       return { indeks, y, cubukGenislik, cubukY, etiketY: y + etiketYuksekligi - 3, sayiX: cubukGenislik + 8, sayiY: cubukY + cubukYuksekligi - 2 };
     }),
   };
+}
+
+// ——— Rakip ve yetenek listeleri ———
+
+export type SayimSatiri = { kimlik: string; /** Son görünmedeki yazım. */ oyuncu: string; /** Hareket sayısı (puan değil). */ sayi: number; sonGorunme: Date };
+export type SayimListeleri = {
+  /** Poster etiketli oyunların rakibi: en çok posterlenenler. */
+  posterlenen: SayimSatiri[];
+  /** Eylemi blok olan oyunların rakibi: en çok bloklananlar. */
+  bloklanan: SayimSatiri[];
+  /** Eylemi çalım ya da etiketi crossover olan oyunların rakibi (aynı oyun bir kez): en çok çalımlananlar. */
+  calimlanan: SayimSatiri[];
+  /** Poster etiketli oyunlarda rolü bitiren olan katkı sahipleri. */
+  posterBasan: SayimSatiri[];
+  /** Eylemi blok olan oyunlarda rolü bloklayan olan katkı sahipleri (bloklayan rolü yoksa ve tek katkı varsa o kişi). */
+  blokYapan: SayimSatiri[];
+};
+
+/**
+ * Hareket sayılarına göre beş liste (puan değil), her biri ilk `sinir`: çoktan aza; eşitlikte daha yeni son görünme, sonra ad.
+ * Rakibi boş oyunlar rakip listelerine girmez. `harita` verilirse adlar önce ad sözlüğüyle kanonik ada çevrilir (içerik katmanı
+ * adları zaten çevirmiş olarak verir); oyuncular slug'a (top10.ts → kimlik) göre birleşir.
+ */
+export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdHaritasi): SayimListeleri {
+  const kaynak = harita ? adlariUygula(geceler, harita) : [...geceler];
+  type Sayac = Map<string, SayimSatiri>;
+  const yeni = (): Sayac => new Map();
+  const l = { posterlenen: yeni(), bloklanan: yeni(), calimlanan: yeni(), posterBasan: yeni(), blokYapan: yeni() };
+  const say = (sayac: Sayac, ad: string, tarih: Date) => {
+    const k = kimlik(ad);
+    const m = sayac.get(k);
+    if (!m) sayac.set(k, { kimlik: k, oyuncu: ad, sayi: 1, sonGorunme: tarih });
+    else {
+      m.sayi += 1;
+      if (tarih.valueOf() >= m.sonGorunme.valueOf()) Object.assign(m, { oyuncu: ad, sonGorunme: tarih });
+    }
+  };
+  for (const gece of [...kaynak].sort(artan)) {
+    for (const o of gece.oyunlar) {
+      const poster = o.etiketler?.includes('poster') ?? false;
+      const blok = o.eylem === 'blok';
+      const calim = o.eylem === 'calim' || (o.etiketler?.includes('crossover') ?? false);
+      if (o.rakip) {
+        if (poster) say(l.posterlenen, o.rakip, gece.tarih);
+        if (blok) say(l.bloklanan, o.rakip, gece.tarih);
+        if (calim) say(l.calimlanan, o.rakip, gece.tarih);
+      }
+      if (poster) for (const k of o.katkilar) if (k.rol === 'bitiren') say(l.posterBasan, k.oyuncu, gece.tarih);
+      if (blok) {
+        const bloklayanlar = o.katkilar.filter((k) => k.rol === 'bloklayan');
+        for (const k of bloklayanlar.length > 0 ? bloklayanlar : o.katkilar.length === 1 ? o.katkilar : []) say(l.blokYapan, k.oyuncu, gece.tarih);
+      }
+    }
+  }
+  const sirala = (sayac: Sayac) =>
+    [...sayac.values()].sort((a, b) => b.sayi - a.sayi || b.sonGorunme.valueOf() - a.sonGorunme.valueOf() || a.oyuncu.localeCompare(b.oyuncu, 'tr')).slice(0, sinir);
+  return { posterlenen: sirala(l.posterlenen), bloklanan: sirala(l.bloklanan), calimlanan: sirala(l.calimlanan), posterBasan: sirala(l.posterBasan), blokYapan: sirala(l.blokYapan) };
 }
