@@ -41,7 +41,7 @@ describe('dogrula: istem.md değerlerinden site anahtarlarına', () => {
   });
 
   it('bilinmeyen takım kodu şemadan geçmez (yeniden deneme yoluna giden hata)', () => {
-    for (const kod of ['GS', 'XYZ', 'GSTATE', 'SEA']) {
+    for (const kod of ['NJ', 'XYZ', 'GSTATE', 'SEA']) {
       const ham = gecerliHam('top10');
       ham.plays[2]!.contributors[0]!.team = kod;
       const s = dogrula(ham, baglam);
@@ -52,6 +52,39 @@ describe('dogrula: istem.md değerlerinden site anahtarlarına', () => {
     const ham = gecerliHam('top10');
     ham.plays[2]!.contributors[0]!.team = ' gsw ';
     expect(tamam(dogrula(ham, baglam)).gece.oyunlar[2]!.katkilar[0]!.takim).toBe('GSW');
+  });
+
+  it('takım kodu varyantları resmi koda çevrilir ve bilgi satırı verir (tekrar eden kod tek satır)', () => {
+    const ham = gecerliHam('top10');
+    ham.plays[2]!.contributors[0]!.team = 'GS';
+    ham.plays[3]!.contributors[0]!.team = 'pho';
+    ham.plays[4]!.contributors[0]!.team = 'GS';
+    const s = tamam(dogrula(ham, baglam));
+    expect(s.gece.oyunlar[2]!.katkilar[0]!.takim).toBe('GSW');
+    expect(s.gece.oyunlar[3]!.katkilar[0]!.takim).toBe('PHX');
+    expect(s.bilgiler.sort()).toEqual(['takım kodu çevrildi: GS → GSW', 'takım kodu çevrildi: PHO → PHX']);
+  });
+  it('doğrulanmamış ad: düşük güven + sözlükte/mevcut veride yok → işaretlenir; bilinen ad ya da yüksek güven → işaretlenmez', () => {
+    const dusuk = gecerliHam('top5');
+    dusuk.plays[3]!.confidence = 'low';
+    dusuk.plays[3]!.contributors = [{ player: 'Axl Rose', team: 'GSW', role: 'finisher', share: 100 }];
+    const s = tamam(dogrula(dusuk, { ...baglam, tur: 'top5' }));
+    expect(s.oyunNotlari[3]!.dogrulanmamisAdlar).toEqual(['Axl Rose']);
+    const b = tamam(dogrula(dusuk, { ...baglam, tur: 'top5' }, [], ['axl rose']));
+    expect(b.oyunNotlari[3]!.dogrulanmamisAdlar).toBeUndefined();
+    const yuksek = gecerliHam('top5');
+    yuksek.plays[3]!.confidence = 'high';
+    yuksek.plays[3]!.contributors = [{ player: 'Axl Rose', team: 'GSW', role: 'finisher', share: 100 }];
+    expect(tamam(dogrula(yuksek, { ...baglam, tur: 'top5' })).oyunNotlari[3]!.dogrulanmamisAdlar).toBeUndefined();
+  });
+  it('semaHatasi: en çok 3 hata, alan = değer', () => {
+    const ham = gecerliHam('top10');
+    for (const i of [0, 1, 2, 3]) ham.plays[i]!.contributors[0]!.team = 'NJ';
+    const s = dogrula(ham, baglam);
+    const h = 'hata' in s ? s.hata : '';
+    expect(h).toContain('= "NJ"');
+    expect(h).toContain('(+1 hata daha)');
+    expect(h.split('; ').length).toBe(3);
   });
 
   it('geçersiz pay bölüşümü ve bilinmeyen enum değerleri hata verir', () => {

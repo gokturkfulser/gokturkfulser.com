@@ -20,6 +20,10 @@ export type GeceSonucu = {
   adUyarilari?: string[];
   mevcutBenzerler?: MevcutBenzer[];
   uyarilar?: string[];
+  /** Bilgi satırları (ör. takım kodu çevrildi). */
+  bilgiler?: string[];
+  /** Başarısız denemelerin nedenleri (doğrulama hatası özeti ya da API hatası): "çalıştırma c, deneme d: …". */
+  denemeHatalari?: string[];
 };
 
 const DURUM_METNI: Record<GeceSonucu['durum'], string> = {
@@ -134,14 +138,21 @@ export function ozetMarkdown(
       if (n.payli) kontrol.push(`sıra ${n.sira}: pay gerekçesi: ${n.payNedeni ?? 'verilmedi'}`);
       if (n.zamanUyari) kontrol.push(`sıra ${n.sira}: ${n.zamanUyari}`);
       for (const a of n.adUyarilari) kontrol.push(`sıra ${n.sira}: ad uyarısı: ${a}`);
-      for (const a of n.takmaAdOnerileri ?? []) kontrol.push(`sıra ${n.sira}: ${a}`);
+      for (const a of n.benzerAdUyarilari ?? []) kontrol.push(`sıra ${n.sira}: ${a}`);
+      if (n.dogrulanmamisAdlar?.length) kontrol.push(`sıra ${n.sira}: doğrulanmamış ad: ${n.dogrulanmamisAdlar.join(', ')} (sözlükte ve mevcut veride yok, güven düşük)`);
       if (n.aciklamadaYok.length) kontrol.push(`sıra ${n.sira}: açıklamada yok: ${n.aciklamadaYok.join(', ')}`);
       if (n.eylemUyari) kontrol.push(`sıra ${n.sira}: ${n.eylemUyari}`);
     }
     for (const a of r.adUyarilari ?? []) kontrol.push(`ad uyarısı (gece içi): ${a}`);
     for (const u of r.uyarilar ?? []) kontrol.push(u);
+    for (const b of r.bilgiler ?? []) kontrol.push(`bilgi: ${b}`);
     s.push('', '**Kontrol edilecek satırlar**', '');
     s.push(...(kontrol.length ? kontrol.map((k) => `- ${k}`) : ['- (yok)']));
+  }
+  const denemeli = sonuclar.filter((r) => r.denemeHatalari?.length);
+  if (denemeli.length) {
+    s.push('', '### Başarısız denemeler (yeniden deneme nedenleri)', '');
+    for (const r of denemeli) for (const h of r.denemeHatalari!) s.push(`- ${r.tarih} ${h}`);
   }
   s.push('', toplamSatiri(bilgi));
   if (bilgi.kotaSatiri) s.push('', bilgi.kotaSatiri);

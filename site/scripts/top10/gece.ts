@@ -2,10 +2,10 @@
 // dosyaya yalnızca site build'inin de kabul edeceği veri yazılır. YAML, repoda kullanılan `yaml` paketinin Document API'siyle yazılır
 // (inceleme yorumlarıyla); yazılan metin yeniden okunup şemadan geçirilir.
 import { Document, parse, Scalar, YAMLMap, YAMLSeq } from 'yaml';
-import { aciklamaKontrolu, aciklamadanOyuncular, type AciklamaKontrolu } from './aciklama.ts';
+import { aciklamaKontrolu, aciklamadanOyuncular, adNormallestir, type AciklamaKontrolu } from './aciklama.ts';
 import { top10Sema } from '../../src/lib/top10-sema.ts';
 import { benzerAdlar, benzerAdlarMevcutla, kimlik, katkiPaylari, SIRA_SAYISI, zamanSaniye, ZAMAN_BICIMI, type Gece, type MevcutBenzer, type Tur } from '../../src/lib/top10.ts';
-import { eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi } from '../../src/lib/top10-sozluk.ts';
+import { eylemAdi, GEMINI_ETIKET, GEMINI_EYLEM, GEMINI_ROL, rolAdi, takimKodunuCevir } from '../../src/lib/top10-sozluk.ts';
 import { kanonikAd, type AdHaritasi } from '../../src/lib/top10-adlar.ts';
 import type { Guven, HamGece, HamOyun } from './gemini.ts';
 
@@ -40,8 +40,10 @@ export type OyunNotu = {
   aciklamadaYok: string[];
   /** Eylem ile en büyük paylı katkının rolü uyuşmuyor (yalnızca uyarı). */
   eylemUyari?: string;
-  /** Oylamada farklı yazımlar tek kişiye birleştirildi: "olası takma ad: X → Y, sözlüğe ekle" önerileri (sözlüğü betik değiştirmez). */
-  takmaAdOnerileri?: string[];
+  /** Aynı sırada, aynı takımda, aynı soyadlı ama farklı ön adlı adaylar (ayrı aday olarak oylandı): "benzer ad, aynı kişi mi? X / Y; aynıysa sözlüğe ekle, farklıysa yoksay". Yön belirtilmez; sözlüğü betik değiştirmez. */
+  benzerAdUyarilari?: string[];
+  /** Sözlükte ve mevcut top10 verisinde olmayan ad(lar) + düşük güven: "doğrulanmamış ad" (ör. spiker esprisinin oyuncu adı sanılması). */
+  dogrulanmamisAdlar?: string[];
   /** Çoğunluk oylaması (N ≥ 2): oy bilgisi. `guven` bu durumda oylamadan türetilir (oy birliği → high, çoğunluk → medium, uzlaşma yok → low). */
   oy?: OyBilgisi;
   /** Modelin kendi güveni ve gerekçesi (çalıştırma başına); oylamada da yorum olarak kalır. */
@@ -60,6 +62,8 @@ export type Uretilen = {
   uyarilar: string[];
   /** Video açıklaması çapraz kontrolü (liste yalnızca kontrol içindir, veri olarak yazılmaz). */
   aciklamaKontrol: AciklamaKontrolu;
+  /** Bilgi satırları (ör. "takım kodu çevrildi: PHO → PHX"); uyarı değildir. */
+  bilgiler: string[];
 };
 
 /** Takvim gününe göre sezon klasörü: Ağustos ve sonrası o yıl başlayan sezon (2026-27), öncesi önceki yıl başlayan (Ocak 2027 → 2026-27). */
@@ -70,11 +74,23 @@ export function sezonKlasoru(tarih: string): string {
   return `${baslangic}-${String((baslangic + 1) % 100).padStart(2, '0')}`;
 }
 
+/** Zod hata listesinin özeti: en çok 3 hata, her biri "alan = değer: ileti" (yeniden deneme nedeni; modele de geri verilir). */
+export function semaHatasi(issues: readonly { path: readonly PropertyKey[]; message: string }[], aday: unknown): string {
+  const yol = (p: readonly PropertyKey[]) => p.reduce<string>((m, k) => (typeof k === 'number' ? `${m}[${k}]` : m ? `${m}.${String(k)}` : String(k)), '');
+  const deger = (p: readonly PropertyKey[]) => p.reduce<any>((v, k) => v?.[k as any], aday);
+  const ozet = issues.slice(0, 3).map((i) => {
+    const d = deger(i.path);
+    const dm = d === undefined || (typeof d === 'object' && d !== null) ? '' : ` = ${JSON.stringify(d)}`;
+    return `${yol(i.path) || '(kök)'}${dm}: ${i.message}`;
+  });
+  return ozet.join('; ') + (issues.length > 3 ? ` (+${issues.length - 3} hata daha)` : '');
+}
+
 const tek = (metin: string | null | undefined) => (metin ?? '').replace(/\s+/g, ' ').trim();
 const nedenYok = (m: string | null | undefined) => (tek(m) ? tek(m) : undefined);
 
 /** İngilizce istem değerlerini sitenin anahtarlarına çevirir. Bilinmeyen değer → hata iletisi (yeniden deneme yoluna gider). */
-function oyunDonustur(o: HamOyun): { oyun: Record<string, unknown>; not: OyunNotu } | { hata: string } {
+function oyunDonustur(o: HamOyun, bilgiler: Set<string>): { oyun: Record<string, unknown>; not: OyunNotu } | { hata: string } {
   const eylem = GEMINI_EYLEM[o.action];
   if (!eylem) return { hata: `plays[rank ${o.rank}].action: "${o.action}" geçerli değil` };
   const etiketler: string[] = [];
@@ -87,7 +103,9 @@ function oyunDonustur(o: HamOyun): { oyun: Record<string, unknown>; not: OyunNot
   for (const k of o.contributors) {
     const rol = GEMINI_ROL[k.role];
     if (!rol) return { hata: `plays[rank ${o.rank}].contributors.role: "${k.role}" geçerli değil` };
-    katkilar.push({ oyuncu: tek(k.player), takim: tek(k.team).toUpperCase(), rol, pay: k.share });
+    const takim = takimKodunuCevir(tek(k.team));
+    if (takim.cevrildi) bilgiler.add(`takım kodu çevrildi: ${tek(k.team).toUpperCase()} → ${takim.kod}`);
+    katkilar.push({ oyuncu: tek(k.player), takim: takim.kod, rol, pay: k.share });
   }
   const zamanHam = tek(o.timestamp);
   const zamanGecerli = zamanHam !== '' && ZAMAN_BICIMI.test(zamanHam);
@@ -184,7 +202,8 @@ export function geceYaml(veri: { tarih: string; video: string; tur: string; oyun
     if (not.oy && not.modelGuvenleri?.length) satirlar.push(`model güveni: ${not.modelGuvenleri.map((m) => (m.guven === 'high' ? 'yüksek' : m.guven === 'medium' ? 'orta' : 'düşük') + (m.neden ? ` (${m.neden})` : '')).join('; ')}`);
     if (not.payli) satirlar.push(`pay: ${not.payNedeni ?? 'gerekçe verilmedi'}`);
     for (const a of not.adUyarilari) satirlar.push(`ad uyarısı: ${a}`);
-    for (const a of not.takmaAdOnerileri ?? []) satirlar.push(a);
+    for (const a of not.benzerAdUyarilari ?? []) satirlar.push(a);
+    if (not.dogrulanmamisAdlar?.length) satirlar.push(`doğrulanmamış ad: ${not.dogrulanmamisAdlar.join(', ')} (sözlükte ve mevcut veride yok, güven düşük)`);
     if (not.aciklamadaYok.length) satirlar.push(`açıklamada yok: ${not.aciklamadaYok.join(', ')}`);
     if (not.eylemUyari) satirlar.push(not.eylemUyari);
     if (not.zamanUyari) satirlar.push(not.zamanUyari);
@@ -202,10 +221,7 @@ export function yamlDogrula(metin: string): { hata: string } | { gece: Gece } {
     return { hata: `YAML okunamadı: ${(hata as Error).message}` };
   }
   const sonuc = top10Sema.safeParse(veri);
-  if (!sonuc.success) {
-    const s = sonuc.error.issues[0]!;
-    return { hata: `${s.path.join('.') || '(kök)'}: ${s.message}` };
-  }
+  if (!sonuc.success) return { hata: semaHatasi(sonuc.error.issues, veri) };
   return { gece: sonuc.data as unknown as Gece };
 }
 
@@ -216,8 +232,9 @@ export function yamlDogrula(metin: string): { hata: string } | { gece: Gece } {
  * "featuring" listesiyle katkı sahipleri (yarıdan azı listede yoksa "videoyla tutarsız").
  * `mevcutGeceler`: sitedeki mevcut top10 verisi (ad benzerliği uyarısı için; adlar değiştirilmez).
  */
-export function dogrula(ham: HamGece, baglam: Baglam, mevcutGeceler: readonly Gece[] = []): DogrulamaHatasi | Uretilen {
+export function dogrula(ham: HamGece, baglam: Baglam, mevcutGeceler: readonly Gece[] = [], bilinenAdlar: readonly string[] = []): DogrulamaHatasi | Uretilen {
   const uyarilar: string[] = [];
+  const bilgiler = new Set<string>();
   if (ham.plays.length === 0) {
     return { hata: 'model boş oyun listesi döndürdü (videoya erişemedi ya da hiç oyun göremedi); uydurma sonuç yazılmadı', kesin: true };
   }
@@ -228,17 +245,14 @@ export function dogrula(ham: HamGece, baglam: Baglam, mevcutGeceler: readonly Ge
     if (ham.type !== undefined && ham.type !== baglam.tur) return { hata: `type: model "${ham.type}" dedi ama video ${baglam.tur === 'top10' ? 'Top 10' : 'Top 5'} (başlık)` };
   }
   if (ham.date && ham.date !== baglam.tarih) uyarilar.push(`modelin tarihi (${ham.date}) başlıktaki tarihten (${baglam.tarih}) farklı; başlık esas alındı`);
-  const donusenler = [...ham.plays].sort((a, b) => a.rank - b.rank).map(oyunDonustur);
+  const donusenler = [...ham.plays].sort((a, b) => a.rank - b.rank).map((o) => oyunDonustur(o, bilgiler));
   const hatali = donusenler.find((d): d is { hata: string } => 'hata' in d);
   if (hatali) return { hata: hatali.hata };
   const oyunlar = (donusenler as { oyun: Record<string, unknown>; not: OyunNotu }[]).map((d) => d.oyun);
   const notlar = (donusenler as { oyun: Record<string, unknown>; not: OyunNotu }[]).map((d) => d.not);
   const aday = { tarih: baglam.tarih, video: baglam.video, tur, kaynak: 'gemini', inceleme: 'bekliyor', oyunlar };
   const sonuc = top10Sema.safeParse(aday);
-  if (!sonuc.success) {
-    const s = sonuc.error.issues[0]!;
-    return { hata: `${s.path.join('.') || '(kök)'}: ${s.message}` };
-  }
+  if (!sonuc.success) return { hata: semaHatasi(sonuc.error.issues, aday) };
   const gece = sonuc.data as unknown as Gece;
   // Zaman damgaları 0 ile video süresi arasında olmalı.
   if (baglam.sureSn !== undefined) {
@@ -249,14 +263,14 @@ export function dogrula(ham: HamGece, baglam: Baglam, mevcutGeceler: readonly Ge
       }
     }
   }
-  return sonIsle(gece, notlar, { ...baglam, tur }, mevcutGeceler, uyarilar);
+  return sonIsle(gece, notlar, { ...baglam, tur }, mevcutGeceler, uyarilar, [...bilgiler], bilinenAdlar);
 }
 
 /**
  * Doğrulanmış (şemadan geçmiş) bir gecenin son işlemleri: video açıklaması çapraz kontrolü, eylem/pay uyarısı, ad benzerliği ve YAML.
  * Tek çalıştırma (`dogrula`) ve çoğunluk oylaması sonucu (`oylamaSonrasi`) aynı yolu kullanır.
  */
-export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: Tur }, mevcutGeceler: readonly Gece[], uyarilar: string[]): DogrulamaHatasi | Uretilen {
+export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: Tur }, mevcutGeceler: readonly Gece[], uyarilar: string[], bilgiler: string[] = [], bilinenAdlar: readonly string[] = []): DogrulamaHatasi | Uretilen {
   const oyunlar = gece.oyunlar as unknown as Record<string, unknown>[];
   const aday = { tarih: baglam.tarih, video: baglam.video, tur: baglam.tur, kaynak: 'gemini', inceleme: 'bekliyor', oyunlar };
   // Video açıklamasındaki oyuncu listesiyle çapraz kontrol (liste yalnızca kontrol içindir).
@@ -272,6 +286,16 @@ export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: 
       notlar[i]!.aciklamadaYok = o.katkilar.map((k) => k.oyuncu).filter((a) => eksik.has(a));
     });
   }
+  // Doğrulanmamış ad: sözlükte ve mevcut top10 verisinde olmayan ad + düşük güven (oylamada türetilen ya da modelin kendi düşük güveni).
+  // Spiker esprileri/şarkı adları oyuncu adı sanılabiliyor; bu uyarı o satırı gözden geçirmeye çağırır.
+  const bilinen = new Set(bilinenAdlar.map(adNormallestir));
+  gece.oyunlar.forEach((o, i) => {
+    const dusuk = notlar[i]!.guven === 'low' || (notlar[i]!.modelGuvenleri ?? []).some((m) => m.guven === 'low');
+    if (!dusuk) return;
+    const adlar = [...new Set([...o.katkilar.map((k) => k.oyuncu), ...(o.rakip ? [o.rakip] : [])])];
+    const bilinmeyen = adlar.filter((a) => !bilinen.has(adNormallestir(a)));
+    if (bilinmeyen.length) notlar[i]!.dogrulanmamisAdlar = bilinmeyen;
+  });
   // Eylem ile en büyük pay tutarlılığı (yalnızca uyarı).
   gece.oyunlar.forEach((o, i) => {
     notlar[i]!.eylemUyari = eylemPayUyarisi(o);
@@ -292,6 +316,7 @@ export function sonIsle(gece: Gece, notlar: OyunNotu[], baglam: Baglam & { tur: 
     mevcutBenzerler,
     uyarilar,
     aciklamaKontrol: kontrol,
+    bilgiler,
   };
 }
 

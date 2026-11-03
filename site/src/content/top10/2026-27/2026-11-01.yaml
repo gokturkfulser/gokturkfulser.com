@@ -1,0 +1,61 @@
+# Gemini ile üretildi: 2026-11-02T22:49:24.548Z, model gemini-3.8-flash
+
+tarih: 2026-11-01
+video: https://www.youtube.com/watch?v=WICJbDrybJc
+tur: top5
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Neemias Queta gathers a drop-off pass from Paul George and powers up for a thunderous two-handed poster dunk.
+    zaman: "00:48"
+    katkilar:
+      - { oyuncu: Neemias Queta, takim: BOS, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    etiketler: [ chase_down_blok, hizli_hucum ]
+    aciklama: Al Horford sprints back in transition to deny Gradey Dick with a chase-down block against the backboard.
+    rakip: Gradey Dick
+    zaman: "00:37"
+    katkilar:
+      - { oyuncu: Al Horford, takim: GSW, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ crossover, tek_el ]
+    aciklama: Pascal Siakam freezes Moritz Wagner with a crossover dribble and attacks the paint for a one-handed dunk.
+    rakip: Moritz Wagner
+    zaman: "00:26"
+    katkilar:
+      - { oyuncu: Pascal Siakam, takim: IND, rol: bitiren, pay: 100 }
+  # güven: orta (oy 3/3; eylem 2/3; pay 2/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Melton swats the shot at the rim to start the break and lobs the alley-oop to Bassey.
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ hizli_hucum, poster ]
+    aciklama: De'Anthony Melton rejects Cam Christie at the rim and races up the court to set up Charles Bassey for an alley-oop dunk.
+    rakip: Cam Christie
+    zaman: "00:11"
+    katkilar:
+      - { oyuncu: De'Anthony Melton, takim: GSW, rol: bloklayan, pay: 50 }
+      - { oyuncu: Charles Bassey, takim: GSW, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Walker Kessler tracks back on defense and swats Collin Murray-Boyles' shot at the rim.
+    rakip: Collin Murray-Boyles
+    zaman: "00:01"
+    katkilar:
+      - { oyuncu: Walker Kessler, takim: LAL, rol: bloklayan, pay: 100 }

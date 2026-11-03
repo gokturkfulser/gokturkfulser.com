@@ -1,0 +1,111 @@
+# Gemini ile üretildi: 2026-11-02T22:37:57.359Z, model gemini-3.8-flash
+
+tarih: 2026-10-29
+video: https://www.youtube.com/watch?v=OL5_fLX8dww
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, hizli_hucum, tek_el ]
+    aciklama: Darius Acuff Jr. attacks the rim in transition and throws down a monstrous poster dunk over Trey Murphy III.
+    rakip: Trey Murphy III
+    zaman: "02:35"
+    katkilar:
+      - { oyuncu: Darius Acuff Jr., takim: SAC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    etiketler: [ chase_down_blok, hizli_hucum ]
+    aciklama: Jeremiah Fears sprints down the floor for an emphatic chase-down block off the glass against Darius Acuff Jr.
+    rakip: Darius Acuff Jr.
+    zaman: "02:19"
+    katkilar:
+      - { oyuncu: Jeremiah Fears, takim: NOP, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Morant delivers a pinpoint one-handed bounce pass through the defense.
+  - sira: 3
+    eylem: smac
+    etiketler: [ ters ]
+    aciklama: Ja Morant threads a left-handed bounce pass to Sidy Cissoko for a double-clutch reverse dunk.
+    zaman: "02:02"
+    katkilar:
+      - { oyuncu: Ja Morant, takim: POR, rol: pasor, pay: 50 }
+      - { oyuncu: Sidy Cissoko, takim: POR, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: De'Andre Hunter creates room off the dribble and sinks a buzzer-beating three-pointer to close the first half.
+    zaman: "01:45"
+    katkilar:
+      - { oyuncu: De'Andre Hunter, takim: SAC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: McCollum creates the transition opportunity and delivers a flashy behind-the-back no-look dime.
+  - sira: 5
+    eylem: pas
+    etiketler: [ sirt_arkasi, bakmadan, hizli_hucum ]
+    aciklama: CJ McCollum pushes the ball in transition and finds Onyeka Okongwu with a behind-the-back no-look pass for a layup.
+    zaman: "01:25"
+    katkilar:
+      - { oyuncu: CJ McCollum, takim: ATL, rol: pasor, pay: 70 }
+      - { oyuncu: Onyeka Okongwu, takim: ATL, rol: bitiren, pay: 30 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Karlo Matkovic elevates to deny Precious Achiuwa's rim attempt.
+    rakip: Precious Achiuwa
+    zaman: "01:12"
+    katkilar:
+      - { oyuncu: Karlo Matkovic, takim: NOP, rol: bloklayan, pay: 100 }
+  # güven: orta (oy 3/3; eylem 2/3; pay 2/3)
+  # eylem diğer: Alley-oop 1/3
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: LaVine leads the fast break and feeds Monk in stride.
+  - sira: 7
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Zach LaVine hits Malik Monk on the break for a soaring one-handed dunk.
+    zaman: "00:56"
+    katkilar:
+      - { oyuncu: Zach LaVine, takim: SAC, rol: pasor, pay: 30 }
+      - { oyuncu: Malik Monk, takim: SAC, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Bryce McGowens takes it coast to coast on the break for a two-handed jam.
+    zaman: "00:41"
+    katkilar:
+      - { oyuncu: Bryce McGowens, takim: NOP, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: turnike
+    etiketler: [ crossover ]
+    aciklama: Kingston Flemings shakes James Harden with a sharp crossover and drives in for a layup.
+    rakip: James Harden
+    zaman: "00:19"
+    katkilar:
+      - { oyuncu: Kingston Flemings, takim: ATL, rol: bitiren, pay: 100 }
+  # güven: orta (oy 2/3; eylem 3/3; pay 2/2)
+  # diğer: Jalen Johnson 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Daniels pushes ahead in transition and sets up Johnson with a timely pass.
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Dyson Daniels feeds Jalen Johnson ahead on the break for an emphatic slam.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Dyson Daniels, takim: ATL, rol: pasor, pay: 30 }
+      - { oyuncu: Jalen Johnson, takim: ATL, rol: bitiren, pay: 70 }

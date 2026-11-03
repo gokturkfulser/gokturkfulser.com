@@ -1,0 +1,111 @@
+# Gemini ile üretildi: 2026-11-02T22:35:39.553Z, model gemini-3.8-flash
+
+tarih: 2026-10-28
+video: https://www.youtube.com/watch?v=KfQrq5D8s1E
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: orta (oy 3/3; eylem 2/3; pay 2/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Caleb Wilson's emphatic rim rejection and fast-break push share equal credit with Matas Buzelis's finish.
+  - sira: 1
+    eylem: alley_oop
+    etiketler: [ hizli_hucum, chase_down_blok ]
+    aciklama: Caleb Wilson blocks Jordan Hawkins at the rim and pushes transition to set up Matas Buzelis for a monster trailing dunk.
+    rakip: Jordan Hawkins
+    zaman: "02:17"
+    katkilar:
+      - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 70 }
+      - { oyuncu: Matas Buzelis, takim: CHI, rol: bitiren, pay: 30 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: ucluk
+    etiketler: [ son_saniye, yari_saha_ve_otesi ]
+    aciklama: Daniss Jenkins launches and buries a three-quarter court heave at the halftime buzzer.
+    zaman: "01:57"
+    katkilar:
+      - { oyuncu: Daniss Jenkins, takim: DET, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: ucluk
+    etiketler: [ crossover ]
+    aciklama: Jalen Brunson puts Norman Powell on the floor with a crossover and drains the step-back three.
+    rakip: Norman Powell
+    zaman: "01:39"
+    katkilar:
+      - { oyuncu: Jalen Brunson, takim: NYK, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Darius Garland delivers the alley-oop pass, while Isaiah Jackson provides an incredible reach and poster finish.
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ poster, tek_el, hizli_hucum ]
+    aciklama: Darius Garland tosses a lob to Isaiah Jackson, who extends backward for a one-handed poster slam over Walker Kessler.
+    rakip: Walker Kessler
+    zaman: "01:23"
+    katkilar:
+      - { oyuncu: Darius Garland, takim: LAC, rol: pasor, pay: 30 }
+      - { oyuncu: Isaiah Jackson, takim: LAC, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Jalen Slawson meets LeBron James at the apex and swats his layup attempt off the glass.
+    rakip: LeBron James
+    zaman: "01:10"
+    katkilar:
+      - { oyuncu: Jalen Slawson, takim: IND, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Scottie Barnes streaks out in transition and throws down a smooth 360 dunk.
+    zaman: "00:54"
+    katkilar:
+      - { oyuncu: Scottie Barnes, takim: TOR, rol: bitiren, pay: 100 }
+  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Trae Young lofts a precise pass, but AJ Dybantsa's high-flying reverse finish is the primary highlight.
+  - sira: 7
+    eylem: alley_oop
+    etiketler: [ ters ]
+    aciklama: Trae Young lobs an alley-oop to AJ Dybantsa, who finishes with a reverse two-handed slam.
+    zaman: "00:41"
+    katkilar:
+      - { oyuncu: Trae Young, takim: WAS, rol: pasor, pay: 50 }
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 50 }
+  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+  # eylem diğer: Üçlük 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: orta_mesafe
+    etiketler: [ crossover ]
+    aciklama: Tyrese Maxey crosses over Aaron Nesmith and steps back to knock down a clutch three-pointer.
+    rakip: Aaron Nesmith
+    zaman: "00:26"
+    katkilar:
+      - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: ucluk
+    etiketler: [ son_saniye, yari_saha_ve_otesi ]
+    aciklama: VJ Edgecombe beats the second-quarter buzzer with a heave from beyond half court.
+    zaman: "00:13"
+    katkilar:
+      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Giannis Antetokounmpo drives through multiple Atlanta defenders and finishes with an emphatic two-handed slam.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }

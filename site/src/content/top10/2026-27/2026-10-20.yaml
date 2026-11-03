@@ -1,0 +1,107 @@
+# Gemini ile üretildi: 2026-11-02T22:09:17.741Z, model gemini-3.8-flash
+
+tarih: 2026-10-20
+video: https://www.youtube.com/watch?v=MuHLdhZ4zh8
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: düşük (oy 2/3; eylem 1/3; pay 2/2)
+  # diğer: Cade Cunningham + Ausar Thompson 1/3
+  # eylem diğer: Smaç 1/3
+  # eylem diğer: Turnike 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: alley_oop
+    aciklama: Ausar Thompson soars in from the perimeter to snare an offensive rebound in mid-air and throw down a vicious one-handed putback slam.
+    rakip: Hugo Gonzalez
+    zaman: "02:11"
+    katkilar:
+      - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren, pay: 100 }
+  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+  # eylem diğer: Smaç 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    aciklama: Aday Mara rises up at the rim to deny Victor Wembanyama's dunk attempt.
+    rakip: Victor Wembanyama
+    zaman: "01:53"
+    katkilar:
+      - { oyuncu: Aday Mara, takim: OKC, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Tyrese Maxey hustles back for a chase-down block on Landry Shamet's layup attempt.
+    rakip: Landry Shamet
+    zaman: "01:39"
+    katkilar:
+      - { oyuncu: Tyrese Maxey, takim: PHI, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: blok
+    aciklama: John Collins swats Sam Hauser's layup attempt against the backboard.
+    rakip: Sam Hauser
+    zaman: "01:25"
+    katkilar:
+      - { oyuncu: John Collins, takim: DET, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Victor Wembanyama rises at the rim to emphatically reject Chet Holmgren again.
+    rakip: Chet Holmgren
+    zaman: "01:10"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Victor Wembanyama recovers to swat Chet Holmgren's driving attempt inside.
+    rakip: Chet Holmgren
+    zaman: "00:58"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: James finds Brown on the wing just before the third-quarter buzzer.
+  - sira: 7
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: LeBron James finds Jaylen Brown on the perimeter for a buzzer-beating three-pointer.
+    zaman: "00:46"
+    katkilar:
+      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 30 }
+      - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: turnike
+    etiketler: [ ters ]
+    aciklama: Shai Gilgeous-Alexander spins around Carter Bryant and converts a tough layup.
+    rakip: Carter Bryant
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Shai Gilgeous-Alexander, takim: OKC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Brown delivers a pinpoint transition lob and James finishes with a strong alley-oop slam.
+  - sira: 9
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Jaylen Brown delivers a transition lob to LeBron James for an alley-oop dunk.
+    zaman: "00:18"
+    katkilar:
+      - { oyuncu: Jaylen Brown, takim: PHI, rol: pasor, pay: 50 }
+      - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Cade Cunningham secures the loose ball and dashes ahead for a fast-break slam.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Cade Cunningham, takim: DET, rol: bitiren, pay: 100 }

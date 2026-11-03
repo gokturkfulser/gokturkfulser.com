@@ -174,7 +174,7 @@ Varsayılan model `gemini-3.8-flash`'tır (`scripts/top10/ayarlar.ts`). GitHub'd
 
 ### Oyuncu adları
 
-Model aynı oyuncuyu farklı yazabilir ("Brayden Burries" / "Braden Burries"). Betik oylamada bunları aynı kişi sayar ve step summary'de "olası takma ad: X → Y, sözlüğe ekle" önerir; öneriyi `site/src/content/top10/oyuncu-adlari.yaml`'a elle ekleyin (`Kanonik Ad: [Takma Ad]`). Sözlük çakışmaları (bir takma adın iki kanonik ada bağlanması vb.) hem betiği (çıkış 2) hem site build'ini durdurur.
+Model aynı oyuncuyu farklı yazabilir ("Brayden Burries" / "Braden Burries"). Betik yalnızca sözlükteki takma adları ve normalleştirilmiş tam adı aynı olanları aynı kişi sayar; aynı takımda aynı soyadlı ama farklı ön adlı adayları (Jaylin / Jalen Williams gibi) ayrı bırakır ve step summary'de "benzer ad, aynı kişi mi? X / Y; aynıysa sözlüğe ekle, farklıysa yoksay" uyarısı verir; aynı kişiyse `site/src/content/top10/oyuncu-adlari.yaml`'a elle ekleyin (`Kanonik Ad: [Takma Ad]`). Sözlük çakışmaları (bir takma adın iki kanonik ada bağlanması vb.) hem betiği (çıkış 2) hem site build'ini durdurur.
 
 ### Workflow'u elle çalıştırma
 

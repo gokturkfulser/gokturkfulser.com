@@ -20,3 +20,4 @@ Use the commentator's audio, jersey names/numbers and on-screen graphics. Do not
 Return only JSON: {"date": "...", "type": "top10" | "top5", "plays": [...]}
 Determine each player's team only from what is visible or audible in this video (jersey, court, scoreboard graphic, commentary), not from prior knowledge: rosters change every season. If the team cannot be determined from the video, set confidence to low and explain.
 If you cannot access or watch the video, return an empty plays list. Never produce plays you did not see.
+Use only the official names of real NBA players on the rosters of the teams in this game. Commentators often use nicknames, jokes, song titles or pop-culture references; never output such a phrase as a player name. If you cannot match a player to an official name, give the jersey number and team in the description and set confidence to low.

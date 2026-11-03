@@ -136,7 +136,7 @@ describe('--otomatik', () => {
       videolar: [oge(V5, T5, '2026-11-02T05:26:50Z')],
       gemini: (tur, n) => {
         const h = gecerliHam(tur);
-        if (n === 1) h.plays[1]!.contributors[0]!.team = 'GS';
+        if (n === 1) h.plays[1]!.contributors[0]!.team = 'NJ';
         return h;
       },
     });
@@ -145,6 +145,45 @@ describe('--otomatik', () => {
     expect(geminiGovdeleri).toHaveLength(2);
     expect(geminiGovdeleri[1]!.istem).toMatch(/takım NBA'in 30 kısaltmasından biri olmalı/);
     expect(existsSync(dosya('2026-11-01'))).toBe(true);
+  });
+
+  it('başarısız her deneme için neden (alan = değer, en çok 3 hata) terminale ve step summary\'ye yazılır (kuru olmayan modda da)', async () => {
+    const b = bag({
+      videolar: [oge(V5, T5, '2026-11-01T05:26:50Z'.replace('11-01', '11-02'))],
+      gemini: (tur, n) => {
+        const h = gecerliHam(tur);
+        if (n === 1) for (const i of [0, 1, 2, 3]) h.plays[i]!.contributors[0]!.team = 'NJ';
+        return h;
+      },
+    });
+    const s = await tek(['--otomatik'], b);
+    expect(s.kod).toBe(0);
+    const log = cikti.join('\n');
+    expect(log).toMatch(/UYARI: 2026-11-01 çalıştırma 1, deneme 1 başarısız: .*= "NJ"/);
+    expect(log).toContain('(+1 hata daha)');
+    const ozet = readFileSync(b.ozetDosyasi!, 'utf8');
+    expect(ozet).toContain('Başarısız denemeler');
+    expect(ozet).toMatch(/2026-11-01 çalıştırma 1, deneme 1 başarısız: .*= "NJ"/);
+  });
+
+  it('takım kodu varyantı (PHO) çevrilir; dosyada PHX yazar; bilgi satırı bir kez basılır ve yeniden deneme olmaz', async () => {
+    const b = bag({
+      videolar: [oge(V5, T5, '2026-11-02T05:26:50Z')],
+      gemini: (tur) => {
+        const h = gecerliHam(tur);
+        h.plays[1]!.contributors[0]!.team = 'PHO';
+        h.plays[2]!.contributors[0]!.team = 'PHO';
+        return h;
+      },
+    });
+    const s = await tek(['--otomatik'], b);
+    expect(s.kod).toBe(0);
+    expect(geminiGovdeleri).toHaveLength(1);
+    expect(cikti.filter((l) => l.includes('BİLGİ: takım kodu çevrildi: PHO → PHX'))).toHaveLength(1);
+    const y = readFileSync(dosya('2026-11-01'), 'utf8');
+    expect(y).toContain('takim: PHX');
+    expect(y).not.toContain('PHO');
+    expect(readFileSync(b.ozetDosyasi!, 'utf8')).toContain('bilgi: takım kodu çevrildi: PHO → PHX');
   });
 
   it('bir gece başarısız, biri başarılıysa çıkış 0', async () => {

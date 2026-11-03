@@ -1,0 +1,106 @@
+# Gemini ile üretildi: 2026-11-02T22:28:25.953Z, model gemini-3.8-flash
+
+tarih: 2026-10-25
+video: https://www.youtube.com/watch?v=2xh6VkcMwoA
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Kris Dunn blows into the lane and throws down a monster one-handed poster dunk over Chet Holmgren.
+    rakip: Chet Holmgren
+    zaman: "02:28"
+    katkilar:
+      - { oyuncu: Kris Dunn, takim: LAC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: ucluk
+    etiketler: [ bacak_arasi ]
+    aciklama: LaMelo Ball strings together a between-the-legs dribble move and drills a step-back three-pointer.
+    zaman: "02:06"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: Lauri Markkanen catches the inbounds pass and banks in a buzzer-beating three-pointer to close the first quarter.
+    zaman: "01:51"
+    katkilar:
+      - { oyuncu: Lauri Markkanen, takim: UTA, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ kendine_alley_oop, hizli_hucum ]
+    aciklama: Tyrese Haliburton tosses the ball off the backboard on the break and finishes the self-alley-oop dunk.
+    zaman: "01:31"
+    katkilar:
+      - { oyuncu: Tyrese Haliburton, takim: IND, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Keyonte George lofts a high alley-oop pass into the paint.
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Keyonte George connects with Ace Bailey for an airborne alley-oop slam.
+    zaman: "01:18"
+    katkilar:
+      - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 50 }
+      - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Tyrese Maxey sprints down the floor on the fast break and throws down a high-flying one-handed slam.
+    rakip: Cade Cunningham
+    zaman: "01:05"
+    katkilar:
+      - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: LaMelo Ball launches an accurate transition alley-oop pass from beyond the arc.
+  - sira: 7
+    eylem: alley_oop
+    etiketler: [ poster, hizli_hucum ]
+    aciklama: LaMelo Ball tosses a half-court lob to Joan Beringer, who flushes the alley-oop over Ulrich Chomche.
+    rakip: Ulrich Chomche
+    zaman: "00:50"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 50 }
+      - { oyuncu: Joan Beringer, takim: MIN, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Zach LaVine drives hard to the cup and throws down an emphatic poster slam over Quinten Post.
+    rakip: Quinten Post
+    zaman: "00:38"
+    katkilar:
+      - { oyuncu: Zach LaVine, takim: SAC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Jay Huff swats a shot at the rim on defense and hustles down the floor to throw down a transition dunk.
+    rakip: Dennis Schröder
+    zaman: "00:19"
+    katkilar:
+      - { oyuncu: Jay Huff, takim: MEM, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Jalen Williams leaks out in transition and finishes with a powerful two-handed dunk.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 100 }

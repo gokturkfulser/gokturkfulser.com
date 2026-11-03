@@ -1,0 +1,113 @@
+# Gemini ile üretildi: 2026-11-02T22:43:20.283Z, model gemini-3.8-flash
+
+tarih: 2026-10-30
+video: https://www.youtube.com/watch?v=3A-KG4CvN2s
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: ucluk
+    etiketler: [ crossover ]
+    aciklama: Stephen Curry drops Luka Doncic with a crossover and drills the step-back three-pointer.
+    rakip: Luka Doncic
+    zaman: "02:08"
+    katkilar:
+      - { oyuncu: Stephen Curry, takim: GSW, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Jaden McDaniels drives through the paint and hammers a ferocious poster slam over Baba Miller.
+    rakip: Baba Miller
+    zaman: "01:51"
+    katkilar:
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Kevin Durant drives down the lane and throws down a poster dunk over Daniel Gafford.
+    rakip: Daniel Gafford
+    zaman: "01:38"
+    katkilar:
+      - { oyuncu: Kevin Durant, takim: HOU, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Tyrese Maxey attacks the lane with a hesitation drive and throws down a one-handed slam.
+    zaman: "01:25"
+    katkilar:
+      - { oyuncu: Tyrese Maxey, takim: PHI, rol: bitiren, pay: 100 }
+  # güven: düşük (oy 2/3; eylem 1/3; pay 1/2)
+  # diğer: Charles Bassey + Buddy Hield 1/3
+  # eylem diğer: Blok 1/3
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 50/50 1/2
+  # pay diğer: 70/30 1/2
+  # model güveni: orta (Finisher is identified by audio and jersey name as Rose, likely a rookie or custom roster player.); orta (Finisher named Axl Rose as heard in commentary, likely a custom/rookie player.); orta (The commentator referred to GSW #7 as 'Axl Rose' as part of a Guns N' Roses pun ('Welcome to the Jungle' and 'Paradise City').)
+  # pay: Swats Walker Kessler at the rim to spark the fast break
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Charles Bassey blocks Walker Kessler at the rim, igniting a fast break that ends with an alley-oop dunk.
+    rakip: Walker Kessler
+    zaman: "01:09"
+    katkilar:
+      - { oyuncu: Charles Bassey, takim: GSW, rol: bloklayan, pay: 50 }
+      - { oyuncu: Axl Rose, takim: GSW, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ putback, tek_el ]
+    aciklama: Matas Buzelis flies in for a one-handed putback slam off the offensive rebound.
+    zaman: "00:57"
+    katkilar:
+      - { oyuncu: Matas Buzelis, takim: CHI, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Throws the transition lob right on target
+  - sira: 7
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Kyrie Irving tosses a fast-break lob to Cooper Flagg for a two-handed alley-oop slam.
+    zaman: "00:42"
+    katkilar:
+      - { oyuncu: Kyrie Irving, takim: DAL, rol: pasor, pay: 50 }
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Executes a flashy behind-the-back dime on the fast break
+  - sira: 8
+    eylem: pas
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: Caleb Wilson dishes a behind-the-back pass in transition to Josh Giddey for the layup.
+    zaman: "00:29"
+    katkilar:
+      - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 70 }
+      - { oyuncu: Josh Giddey, takim: CHI, rol: bitiren, pay: 30 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: turnike
+    aciklama: Cooper Flagg spins past Tari Eason and sinks a tough one-handed runner in crunch time.
+    rakip: Tari Eason
+    zaman: "00:13"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Delivers an accurate baseline lob off the dribble
+  - sira: 10
+    eylem: alley_oop
+    aciklama: Bones Hyland finds Jonathan Kuminga on a baseline alley-oop reverse slam.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Bones Hyland, takim: MIN, rol: pasor, pay: 50 }
+      - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 50 }

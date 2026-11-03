@@ -167,15 +167,15 @@ export function mevcutGeceleriOku(klasor: string, haric: string): Gece[] {
 }
 
 /** Oyuncu adı sözlüğü (src/content/top10/oyuncu-adlari.yaml: kanonik ad → takma adlar). Betik sözlüğü yalnızca OKUR; değiştirmez. Dosya yoksa boş; geçersizse (çakışma) hata. */
-export function sozlukOku(klasor: string): { harita: AdHaritasi; kanonikAdlar: string[] } {
+export function sozlukOku(klasor: string): { harita: AdHaritasi; kanonikAdlar: string[]; tumAdlar: string[] } {
   const dosya = join(klasor, 'oyuncu-adlari.yaml');
-  if (!existsSync(dosya)) return { harita: new Map(), kanonikAdlar: [] };
+  if (!existsSync(dosya)) return { harita: new Map(), kanonikAdlar: [], tumAdlar: [] };
   const veri = (yamlOku(readFileSync(dosya, 'utf8')) ?? {}) as Record<string, unknown>;
   const sozluk: Record<string, string[]> = {};
   for (const [kanonik, takmalar] of Object.entries(veri)) sozluk[kanonik] = Array.isArray(takmalar) ? takmalar.map(String) : [];
   const hata = sozlukHatasi(sozluk as AdSozlugu);
   if (hata) throw new KullanimHatasi(`oyuncu-adlari.yaml geçersiz: ${hata}`);
-  return { harita: sozlukHaritasi(sozluk), kanonikAdlar: Object.keys(sozluk) };
+  return { harita: sozlukHaritasi(sozluk), kanonikAdlar: Object.keys(sozluk), tumAdlar: Object.entries(sozluk).flatMap(([k, t]) => [k, ...t]) };
 }
 
 /** Terminal için güven satırı. Oylamada: "[güven: orta (oy 2/3; diğer: A + B 1/3)]"; oylamasızda: "[güven: orta: gerekçe]". */
@@ -257,7 +257,9 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
   let etkinCozunurluk: Cozunurluk = cozunurluk;
 
   try {
-    const { harita: adHaritasi, kanonikAdlar } = sozlukOku(bag.icerikKlasoru);
+    const { harita: adHaritasi, kanonikAdlar, tumAdlar } = sozlukOku(bag.icerikKlasoru);
+    /** Çevrilen takım kodları için bilgi satırı çalıştırma başına bir kez basılır. */
+    const takimBilgileri = new Set<string>();
     // 1) Planı kur: hangi geceler, hangi videolar, hangi karar
     let plan: Plan[];
     const hedefOlustur = async (tarih: string | undefined, url: string): Promise<{ tarih: string; plan: Plan }> => {
@@ -332,8 +334,9 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
         bag.yaz(`${p.tarih}: ${p.karar}${p.karar === 'bekliyor' ? ' (yeniden üretmek için --uzerine-yaz; workflow\'da uzerine_yaz)' : ''}`);
         continue;
       }
+      const denemeHatalari: string[] = [];
       const basarisiz = (neden: string) => {
-        sonuclar.push({ ...temel, durum: 'basarisiz', hata: neden });
+        sonuclar.push({ ...temel, durum: 'basarisiz', hata: neden, denemeHatalari });
         bag.yaz(`::warning::${p.tarih}: üretilemedi: ${neden}`);
       };
       // Video meta verisi zorunlu: yoksa/herkese açık değilse/süresiz ise Gemini çağrılmaz. Başlık kalıbı varsayılmaz.
@@ -348,11 +351,20 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
       const baglam = { tarih: p.tarih, video: temel.video!, tur: cozulen?.tur, model, sureSn: meta.sureSn, aciklama: meta.aciklama };
       const geceIstemi = istemHazirla(istem, { tarih: p.tarih, sezon: sezonKlasoru(p.tarih) });
 
-      const mevcut = adlariUygula(mevcutGeceleriOku(bag.icerikKlasoru, p.tarih), adHaritasi); // mevcut veri de kanonik adlarla karşılaştırılır (sözlükle eşleşmiş çiftler benzer ad uyarısı vermez)
+      const mevcutGeceler = mevcutGeceleriOku(bag.icerikKlasoru, p.tarih);
+      const mevcut = adlariUygula(mevcutGeceler, adHaritasi); // mevcut veri de kanonik adlarla karşılaştırılır (sözlükle eşleşmiş çiftler benzer ad uyarısı vermez)
+      // Bilinen adlar (sözlük kanonik + takma adlar ve mevcut top10 verisi): düşük güvenli satırda dışında kalan ad "doğrulanmamış ad" uyarısı alır.
+      const bilinen = [...tumAdlar, ...mevcut.flatMap((g) => g.oyunlar.flatMap((o) => [...o.katkilar.map((k) => k.oyuncu), ...(o.rakip ? [o.rakip] : [])]))];
       // Her çalıştırma tek başına doğrulamadan geçmeli (en çok bir yeniden deneme); geçmeyen çalıştırma oylamaya katılmaz.
       const gecerli: Uretilen[] = [];
       const calismaHatalari: string[] = [];
       let cagriBu = 0;
+      /** Başarısız her deneme: doğrulama hatası özeti (alan = değer: ileti, en çok 3 hata) terminale ve step summary'ye (kuru olmayan modda da). */
+      const denemeBasarisiz = (calisma: number, deneme: number, neden: string) => {
+        const metin = `çalıştırma ${calisma}, deneme ${deneme} başarısız: ${neden.length > 500 ? `${neden.slice(0, 500)}…` : neden}`;
+        denemeHatalari.push(metin);
+        bag.yaz(`  UYARI: ${p.tarih} ${metin}`);
+      };
       for (let calisma = 1; calisma <= secenek.oylama; calisma++) {
         if (gecerli.length + (secenek.oylama - calisma + 1) < enAz) break; // kalan çalıştırmalarla en az geçerli sayıya ulaşılamaz: token yakma
         let oncekiHata: string | undefined;
@@ -373,15 +385,17 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
               etkinCozunurluk = 'unspecified';
             }
             // Adlar sözlükle kanonik ada çevrilir (oylamadan ve doğrulamadan önce).
-            const d = dogrula(hamAdlariniUygula(ham, adHaritasi), { ...baglam, uretildi: bag.simdi() }, mevcut);
+            const d = dogrula(hamAdlariniUygula(ham, adHaritasi), { ...baglam, uretildi: bag.simdi() }, mevcut, bilinen);
             if (!('hata' in d)) {
               sonuc = d;
               break;
             }
             oncekiHata = d.hata;
+            denemeBasarisiz(calisma, deneme, d.hata);
             if (d.kesin) break; // yeniden denemenin anlamı yok (ör. boş liste): videoyu bir daha göndermeyiz
           } catch (e) {
             oncekiHata = (e as Error).message;
+            denemeBasarisiz(calisma, deneme, oncekiHata);
           }
         }
         if (sonuc) gecerli.push(sonuc);
@@ -397,7 +411,7 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
       let ilk: Uretilen;
       if (secenek.oylama === 1) ilk = gecerli[0]!;
       else {
-        const o = oylamaSonrasi(gecerli, { ...baglam, uretildi: bag.simdi() }, mevcut, enAz, kanonikAdlar);
+        const o = oylamaSonrasi(gecerli, { ...baglam, uretildi: bag.simdi() }, mevcut, enAz, kanonikAdlar, bilinen);
         if ('hata' in o) {
           basarisiz(o.hata);
           continue;
@@ -413,9 +427,16 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
         if (n?.aciklamadaYok.length) bag.yaz(`     UYARI: açıklamada yok: ${n.aciklamadaYok.join(', ')}`);
         if (n?.eylemUyari) bag.yaz(`     UYARI: ${n.eylemUyari}`);
         for (const a of n?.adUyarilari ?? []) bag.yaz(`     UYARI: ad uyarısı: ${a}`);
-        for (const a of n?.takmaAdOnerileri ?? []) bag.yaz(`     UYARI: ${a}`);
+        for (const a of n?.benzerAdUyarilari ?? []) bag.yaz(`     UYARI: ${a}`);
+        if (n?.dogrulanmamisAdlar?.length) bag.yaz(`     UYARI: doğrulanmamış ad: ${n.dogrulanmamisAdlar.join(', ')} (sözlükte ve mevcut veride yok, güven düşük)`);
       }
       for (const u of ilk.uyarilar) bag.yaz(`  UYARI: ${u}`);
+      for (const b of ilk.bilgiler) {
+        if (!takimBilgileri.has(b)) {
+          takimBilgileri.add(b);
+          bag.yaz(`  BİLGİ: ${b}`);
+        }
+      }
       if (secenek.kuru) {
         mkdirSync(ciktiKlasoru, { recursive: true });
         writeFileSync(join(ciktiKlasoru, `${p.tarih}.json`), `${JSON.stringify({ tarih: p.tarih, video: temel.video, tur: cozulen?.tur ?? ilk.gece.tur, model, cozunurluk: etkinCozunurluk, oylama: { istenen: secenek.oylama, gecerli: gecerli.length, hatalar: calismaHatalari }, sureSn: meta.sureSn, yaml: ilk.yaml, gece: ilk.gece, oyunNotlari: ilk.oyunNotlari, adUyarilari: ilk.adUyarilari, mevcutBenzerler: ilk.mevcutBenzerler, uyarilar: ilk.uyarilar, aciklamaKontrol: ilk.aciklamaKontrol, tokenCagrilari: cagrilar.filter((c) => c.tarih === p.tarih) }, null, 2)}\n`, 'utf8');
@@ -434,7 +455,7 @@ export async function calistir(argv: readonly string[], bag: Bagimliliklar): Pro
         bag.yaz(`${p.tarih}: yazıldı: ${dosyaAdi}`);
       }
       uretilen += 1;
-      sonuclar.push({ ...temel, tur: ilk.gece.tur, durum: 'uretildi', dosya: dosyaAdi, gece: ilk.gece, oyunNotlari: ilk.oyunNotlari, adUyarilari: ilk.adUyarilari, mevcutBenzerler: ilk.mevcutBenzerler, uyarilar: ilk.uyarilar });
+      sonuclar.push({ ...temel, tur: ilk.gece.tur, durum: 'uretildi', dosya: dosyaAdi, gece: ilk.gece, oyunNotlari: ilk.oyunNotlari, adUyarilari: ilk.adUyarilari, mevcutBenzerler: ilk.mevcutBenzerler, uyarilar: ilk.uyarilar, bilgiler: ilk.bilgiler, denemeHatalari });
     }
     // Hiç video işlenemediyse ve işlenecek video bulunduysa hata; "henüz video yok" ya da hepsi kilitli ise 0.
     return bitir(uretilecek.length > 0 && uretilen === 0 ? 1 : 0);

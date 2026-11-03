@@ -1,0 +1,113 @@
+# Gemini ile üretildi: 2026-11-02T22:47:03.157Z, model gemini-3.8-flash
+
+tarih: 2026-10-31
+video: https://www.youtube.com/watch?v=u7oaBlNbO5s
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: alley_oop
+    etiketler: [ kendine_alley_oop, poster ]
+    aciklama: Victor Wembanyama tosses the ball off the backboard to himself and flushes a self-alley-oop dunk over Trey Lyles.
+    rakip: Trey Lyles
+    zaman: "02:08"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Brayden Burries drives into the paint and detonates a one-handed poster slam over Tristan Thompson.
+    rakip: Tristan Thompson
+    zaman: "01:54"
+    katkilar:
+      - { oyuncu: Brayden Burries, takim: MIL, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Tari Eason drives into the paint and elevates over Aday Mara for a ferocious poster dunk.
+    rakip: Aday Mara
+    zaman: "01:40"
+    katkilar:
+      - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Zion Williamson initiates the break and serves a pinpoint lob to Trey Murphy III.
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Zion Williamson leads the fast break and connects with Trey Murphy III for an explosive alley-oop slam.
+    zaman: "01:26"
+    katkilar:
+      - { oyuncu: Zion Williamson, takim: NOP, rol: pasor, pay: 50 }
+      - { oyuncu: Trey Murphy III, takim: NOP, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # olası takma ad: Jaylin Williams → Jalen Williams, sözlüğe ekle
+  - sira: 5
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Jaylin Williams drives right down Broadway and hammers down a poster slam over Alperen Sengun.
+    rakip: Alperen Sengun
+    zaman: "01:12"
+    katkilar:
+      - { oyuncu: Jalen Williams, takim: OKC, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Tidjane Salaün elevates over Adem Bona for a vicious one-handed poster dunk.
+    rakip: Adem Bona
+    zaman: "00:58"
+    katkilar:
+      - { oyuncu: Tidjane Salaun, takim: CHA, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Sion James drives the lane and takes off for a high-flying one-handed slam.
+    zaman: "00:43"
+    katkilar:
+      - { oyuncu: Sion James, takim: CHA, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Jonathan Kuminga drives hard into the paint and posters Victor Wembanyama with a one-handed dunk.
+    rakip: Victor Wembanyama
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 100 }
+  # güven: düşük (oy 1/3, uzlaşma yok; eylem 2/3; pay 1/1)
+  # diğer: Svi Mykhailiuk + Isaiah Jackson + Jaxson Hayes 1/3
+  # diğer: Svi Mykhailiuk + Jordan Clarkson + Jaxson Hayes 1/3
+  # eylem diğer: Pas 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Svi Mykhailiuk's nutmeg bounce pass between the defender's legs is the standout highlight setting up the dunk.
+  - sira: 9
+    eylem: alley_oop
+    etiketler: [ bacak_arasi, ters ]
+    aciklama: Svi Mykhailiuk threads a nutmeg bounce pass through Robert Williams III to Jaxson Hayes for a reverse dunk.
+    rakip: Robert Williams III
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Svi Mykhailiuk, takim: UTA, rol: pasor, pay: 70 }
+      - { oyuncu: Jaxson Hayes, takim: UTA, rol: bitiren, pay: 30 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Victor Wembanyama blocks Jonathan Kuminga, runs the floor in transition, and throws down a two-handed slam.
+    rakip: Jonathan Kuminga
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }

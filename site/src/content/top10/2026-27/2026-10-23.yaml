@@ -1,0 +1,110 @@
+# Gemini ile üretildi: 2026-11-02T22:22:52.420Z, model gemini-3.8-flash
+
+tarih: 2026-10-23
+video: https://www.youtube.com/watch?v=9nIHPqjNb1g
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: blok
+    etiketler: [ mac_kazandiran ]
+    aciklama: Amen Thompson denies Victor Wembanyama at the rim in the final seconds to seal the victory for Houston.
+    rakip: Victor Wembanyama
+    zaman: "02:13"
+    katkilar:
+      - { oyuncu: Amen Thompson, takim: HOU, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Jerami Grant fights through heavy contact in the lane to finish a tough and-one layup.
+    zaman: "01:58"
+    katkilar:
+      - { oyuncu: Jerami Grant, takim: MEM, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: White leads the fast break and delivers an on-target lob.
+  - sira: 3
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Mitchell Robinson rejects a shot on defense and sprints ahead to hammer home an alley-oop on the break.
+    rakip: Karl-Anthony Towns
+    zaman: "01:41"
+    katkilar:
+      - { oyuncu: Derrick White, takim: BOS, rol: pasor, pay: 30 }
+      - { oyuncu: Mitchell Robinson, takim: BOS, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Castle delivers an extraordinarily high lob pass.
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ tek_el ]
+    aciklama: Stephon Castle connects with Victor Wembanyama for an impossibly high alley-oop slam.
+    zaman: "01:27"
+    katkilar:
+      - { oyuncu: Stephon Castle, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Haliburton initiates the break and lofts a perfect alley-oop feed.
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ windmill, hizli_hucum ]
+    aciklama: Tyrese Haliburton sets up Obi Toppin on the break for an explosive windmill alley-oop jam.
+    zaman: "01:09"
+    katkilar:
+      - { oyuncu: Tyrese Haliburton, takim: IND, rol: pasor, pay: 30 }
+      - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Justin Champagnie elevates at the rim to emphatically reject Collin Murray-Boyles' dunk attempt.
+    rakip: Collin Murray-Boyles
+    zaman: "00:57"
+    katkilar:
+      - { oyuncu: Justin Champagnie, takim: WAS, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Ausar Thompson hustles back to pull off an emphatic chase-down block on Andrew Wiggins.
+    rakip: Andrew Wiggins
+    zaman: "00:45"
+    katkilar:
+      - { oyuncu: Ausar Thompson, takim: DET, rol: bloklayan, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Jaime Jaquez Jr. drives along the baseline and throws down a thunderous one-handed dunk.
+    zaman: "00:32"
+    katkilar:
+      - { oyuncu: Jaime Jaquez Jr., takim: MIL, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Doncic creates the basket with a flashy no-look pass through traffic.
+  - sira: 9
+    eylem: pas
+    etiketler: [ bakmadan ]
+    aciklama: Luka Doncic finds Matisse Thybulle with a brilliant no-look pass for a layup.
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
+      - { oyuncu: Matisse Thybulle, takim: LAL, rol: bitiren, pay: 30 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Fox delivers a precise lob pass towards the rim.
+  - sira: 10
+    eylem: alley_oop
+    etiketler: [ ters ]
+    aciklama: De'Aaron Fox tosses a lob to Victor Wembanyama for a powerful reverse alley-oop dunk.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }

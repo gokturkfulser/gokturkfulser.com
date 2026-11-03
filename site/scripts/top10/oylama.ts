@@ -5,7 +5,7 @@ import { top10Sema } from '../../src/lib/top10-sema.ts';
 import { katkiPaylari, type Gece, type Tur } from '../../src/lib/top10.ts';
 import { eylemAdi, type Eylem } from '../../src/lib/top10-sozluk.ts';
 import { adNormallestir } from './aciklama.ts';
-import { sonIsle, type Baglam, type DogrulamaHatasi, type OyBilgisi, type OyunNotu, type Uretilen } from './gece.ts';
+import { semaHatasi, sonIsle, type Baglam, type DogrulamaHatasi, type OyBilgisi, type OyunNotu, type Uretilen } from './gece.ts';
 
 type Seviye = OyBilgisi['seviye'];
 const SIRALAMA: Seviye[] = ['yuksek', 'orta', 'dusuk'];
@@ -32,8 +32,8 @@ const payMetni = (o: Oyun) => katkiPaylari(o.katkilar).join('/');
 const cogu = (degerler: readonly string[]) => say(degerler).kazanan;
 
 export type OylamaSecenek = {
-  /** Sözlükteki kanonik adlar (normalleştirilmiş): birleştirmede yazım önceliği 1. */
-  kanonik?: ReadonlySet<string>;
+  /** Sözlükteki kanonik adlar (normalleştirilmiş → kanonik yazım): birleştirmede yazım önceliği 1. */
+  kanonik?: ReadonlyMap<string, string>;
   /** Mevcut top10 verisinde geçen adlar (normalleştirilmiş → yazım): yazım önceliği 2. */
   mevcut?: ReadonlyMap<string, string>;
 };
@@ -41,48 +41,46 @@ export type OylamaSecenek = {
 const soyadi = (norm: string) => norm.split(' ').at(-1) ?? '';
 
 /**
- * Aynı sıradaki çalıştırmalar arasında aynı kişiyi farklı yazan adları birleştirir: aynı normalleştirilmiş ad YA DA aynı takım + aynı normalleştirilmiş soyadı.
- * Yalnızca aynı sıra içinde ve aynı takımda; bir çalıştırmanın aynı satırındaki iki katkı sahibi asla birleştirilmez (ayrı kişilerdir).
- * Yazım önceliği: sözlükteki kanonik ad, sonra mevcut top10 verisinde geçen yazım, sonra çoğunluk yazımı (eşitlikte ilk çalıştırma).
- * Girdiyi değiştirmez. Birden çok farklı yazım birleştiğinde "olası takma ad: X → Y, sözlüğe ekle" önerisi üretir (sözlüğü betik yazmaz).
+ * Oylamadan önce yazım birleştirme: YALNIZCA normalleştirilmiş tam adı aynı olan adlar (aksan, büyük/küçük harf, nokta, Jr./III farkı) aynı kişi sayılır;
+ * sözlükle eşleşen takma adlar bu aşamadan önce kanonik ada çevrilmiştir. Soyadı + takım üzerinden OTOMATİK BİRLEŞTİRME YOKTUR (iki farklı
+ * gerçek oyuncu, ör. Jaylin Williams ve Jalen Williams, sessizce tek kişiye yazılmasın). Bunun yerine aynı sırada, aynı takımda, aynı soyadlı ama farklı
+ * ön adlı adaylar AYRI aday olarak oylanır ve satıra "benzer ad, aynı kişi mi? X / Y; aynıysa sözlüğe ekle, farklıysa yoksay" uyarısı yazılır
+ * (öneri yönü belirtilmez; aynı çalıştırmada ikisi birlikte geçiyorsa ayrı kişidir, uyarı yok).
+ * Yazım önceliği (aynı ad, farklı yazım): sözlükteki kanonik ad → mevcut top10 verisinde geçen yazım → çoğunluk yazımı (eşitlikte ilk çalıştırma).
+ * Girdiyi değiştirmez.
  */
-export function adlariBirlestir(calismalar: readonly Uretilen[], secenek: OylamaSecenek = {}): { calismalar: Uretilen[]; oneriler: Map<number, string[]> } {
-  const oneriler = new Map<number, string[]>();
+export function adlariBirlestir(calismalar: readonly Uretilen[], secenek: OylamaSecenek = {}): { calismalar: Uretilen[]; uyarilar: Map<number, string[]> } {
+  const uyarilar = new Map<number, string[]>();
   const yeni: Uretilen[] = calismalar.map((c) => ({ ...c, gece: { ...c.gece, oyunlar: c.gece.oyunlar.map((o) => ({ ...o, katkilar: o.katkilar.map((k) => ({ ...k })) })) } }));
   const siralar = [...new Set(yeni.flatMap((c) => c.gece.oyunlar.map((o) => o.sira)))];
   for (const sira of siralar) {
     const girdiler = yeni.flatMap((c, run) => (c.gece.oyunlar.find((o) => o.sira === sira)?.katkilar ?? []).map((k) => ({ run, k, norm: adNormallestir(k.oyuncu) })));
-    const ebeveyn = girdiler.map((_, i) => i);
-    const calismaKumesi = girdiler.map((g) => new Set([g.run]));
-    const kok = (i: number): number => (ebeveyn[i] === i ? i : (ebeveyn[i] = kok(ebeveyn[i]!)));
+    // Aynı normalleştirilmiş ad: tek yazıma indirilir (kanonik → mevcut veri → çoğunluk).
+    const normlar = [...new Set(girdiler.map((g) => g.norm))];
+    for (const norm of normlar) {
+      const uyeler = girdiler.filter((g) => g.norm === norm);
+      const secilen = secenek.kanonik?.has(norm) ? secenek.kanonik.get(norm)! : secenek.mevcut?.has(norm) ? secenek.mevcut.get(norm)! : say(uyeler.map((u) => u.k.oyuncu)).kazanan;
+      for (const u of uyeler) u.k.oyuncu = secilen;
+    }
+    // Benzer ad uyarısı: aynı takım + aynı soyadı + farklı normalleştirilmiş ad (aynı çalıştırmada birlikte geçenler hariç).
+    const ciftler = new Set<string>();
+    const metinler: string[] = [];
     for (let i = 0; i < girdiler.length; i++) {
       for (let j = i + 1; j < girdiler.length; j++) {
         const a = girdiler[i]!;
         const b = girdiler[j]!;
-        if (a.run === b.run) continue;
-        const ayniKisi = a.norm === b.norm || (a.k.takim === b.k.takim && soyadi(a.norm) !== '' && soyadi(a.norm) === soyadi(b.norm));
-        if (!ayniKisi) continue;
-        const ka = kok(i);
-        const kb = kok(j);
-        if (ka === kb || [...calismaKumesi[ka]!].some((r) => calismaKumesi[kb]!.has(r))) continue; // aynı çalıştırmadan iki giriş = ayrı kişiler
-        ebeveyn[kb] = ka;
-        for (const r of calismaKumesi[kb]!) calismaKumesi[ka]!.add(r);
+        if (a.norm === b.norm || a.k.takim !== b.k.takim || soyadi(a.norm) === '' || soyadi(a.norm) !== soyadi(b.norm)) continue;
+        const birlikte = yeni.some((_, run) => girdiler.some((g) => g.run === run && g.norm === a.norm) && girdiler.some((g) => g.run === run && g.norm === b.norm));
+        if (birlikte) continue;
+        const anahtar = [a.norm, b.norm].sort().join('|');
+        if (ciftler.has(anahtar)) continue;
+        ciftler.add(anahtar);
+        metinler.push(`benzer ad, aynı kişi mi? ${a.k.oyuncu} / ${b.k.oyuncu}; aynıysa sözlüğe ekle, farklıysa yoksay`);
       }
     }
-    const kumeler = new Map<number, typeof girdiler>();
-    girdiler.forEach((g, i) => kumeler.set(kok(i), [...(kumeler.get(kok(i)) ?? []), g]));
-    for (const uyeler of kumeler.values()) {
-      const normlar = [...new Set(uyeler.map((u) => u.norm))];
-      const sozlukte = uyeler.find((u) => secenek.kanonik?.has(u.norm));
-      const mevcutNorm = normlar.find((n) => secenek.mevcut?.has(n));
-      const secilen = sozlukte ? sozlukte.k.oyuncu : mevcutNorm ? secenek.mevcut!.get(mevcutNorm)! : say(uyeler.map((u) => u.k.oyuncu)).kazanan;
-      const secilenNorm = adNormallestir(secilen);
-      const varyantlar = normlar.filter((n) => n !== secilenNorm).map((n) => uyeler.find((u) => u.norm === n)!.k.oyuncu);
-      for (const u of uyeler) u.k.oyuncu = secilen;
-      if (varyantlar.length) oneriler.set(sira, [...(oneriler.get(sira) ?? []), ...varyantlar.map((v) => `olası takma ad: ${v} → ${secilen}, sözlüğe ekle`)]);
-    }
+    if (metinler.length) uyarilar.set(sira, metinler);
   }
-  return { calismalar: yeni, oneriler };
+  return { calismalar: yeni, uyarilar };
 }
 
 export type OylamaSonucu = { tur: Tur; oyunlar: Record<string, unknown>[]; notlar: OyunNotu[]; calismaSayisi: number };
@@ -100,8 +98,8 @@ export function oyla(ilkCalismalar: readonly Uretilen[], enAz: number, secenek: 
   }
   const turUyanlar = calismalar.filter((c) => c.gece.tur === turler.kazanan);
   if (turUyanlar.length < enAz) return { hata: `tür çoğunluğuna uyan geçerli çalıştırma sayısı ${turUyanlar.length}; oylama için en az ${enAz} gerekir` };
-  // Aynı kişiyi farklı yazan adlar oylamadan önce birleştirilir.
-  const { calismalar: calis, oneriler } = adlariBirlestir(turUyanlar, secenek);
+  // Aynı (normalleştirilmiş) adın farklı yazımları tek yazıma indirilir; benzer ama farklı adlar ayrı aday kalır ve uyarılır.
+  const { calismalar: calis, uyarilar: benzerUyarilar } = adlariBirlestir(turUyanlar, secenek);
   const m = calis.length;
   const siralar = calis[0]!.gece.oyunlar.map((o) => o.sira).sort((a, b) => a - b);
   const oyunlar: Record<string, unknown>[] = [];
@@ -166,7 +164,7 @@ export function oyla(ilkCalismalar: readonly Uretilen[], enAz: number, secenek: 
       zamanUyari: ilkNot.zamanUyari,
       adUyarilari: [],
       aciklamadaYok: [],
-      takmaAdOnerileri: oneriler.get(sira),
+      benzerAdUyarilari: benzerUyarilar.get(sira),
       oy,
       modelGuvenleri: satirNotlari.map((n) => ({ guven: n.guven, neden: n.guvenNedeni })),
     });
@@ -182,19 +180,19 @@ export function oylamaSonrasi(
   enAz: number,
   /** Sözlükteki kanonik adlar (birleştirmede yazım önceliği 1). */
   kanonikAdlar: readonly string[] = [],
+  /** Bilinen adlar (sözlük + mevcut veri): düşük güvenli satırda dışında kalan ad "doğrulanmamış ad" uyarısı alır. */
+  bilinenAdlar: readonly string[] = [],
 ): DogrulamaHatasi | (Uretilen & { calismaSayisi: number }) {
   const mevcut = new Map<string, string>();
   for (const g of mevcutGeceler) for (const o of g.oyunlar) for (const k of o.katkilar) mevcut.set(adNormallestir(k.oyuncu), k.oyuncu);
-  const sonuc = oyla(calismalar, enAz, { kanonik: new Set(kanonikAdlar.map(adNormallestir)), mevcut });
+  const sonuc = oyla(calismalar, enAz, { kanonik: new Map(kanonikAdlar.map((a) => [adNormallestir(a), a] as const)), mevcut });
   if ('hata' in sonuc) return sonuc;
   const aday = { tarih: baglam.tarih, video: baglam.video, tur: sonuc.tur, kaynak: 'gemini', inceleme: 'bekliyor', oyunlar: sonuc.oyunlar };
   const ayrik = top10Sema.safeParse(aday);
-  if (!ayrik.success) {
-    const s = ayrik.error.issues[0]!;
-    return { hata: `oylama sonucu şemadan geçmedi: ${s.path.join('.') || '(kök)'}: ${s.message}` };
-  }
+  if (!ayrik.success) return { hata: `oylama sonucu şemadan geçmedi: ${semaHatasi(ayrik.error.issues, aday)}` };
   const uyarilar = [...new Set(calismalar.flatMap((c) => c.uyarilar))].filter((u) => !/açıklama çapraz kontrolü atlandı/.test(u));
-  const son = sonIsle(ayrik.data as unknown as Gece, sonuc.notlar, { ...baglam, tur: sonuc.tur }, mevcutGeceler, uyarilar);
+  const bilgiler = [...new Set(calismalar.flatMap((c) => c.bilgiler))];
+  const son = sonIsle(ayrik.data as unknown as Gece, sonuc.notlar, { ...baglam, tur: sonuc.tur }, mevcutGeceler, uyarilar, bilgiler, bilinenAdlar);
   if ('hata' in son) return son;
   return { ...son, calismaSayisi: sonuc.calismaSayisi };
 }

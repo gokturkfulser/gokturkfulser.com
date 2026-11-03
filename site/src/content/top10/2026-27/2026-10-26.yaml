@@ -1,0 +1,116 @@
+# Gemini ile üretildi: 2026-11-02T22:30:41.920Z, model gemini-3.8-flash
+
+tarih: 2026-10-26
+video: https://www.youtube.com/watch?v=FjY3D0xwrrY
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Giannis Antetokounmpo drives hard into the paint and throws down a colossal one-handed poster dunk over Daniel Gafford.
+    rakip: Daniel Gafford
+    zaman: "02:20"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ace Bailey drives into the key and throws a high lob over the defense.
+  - sira: 2
+    eylem: alley_oop
+    etiketler: [ poster, tek_el ]
+    aciklama: Ace Bailey lobs to Mo Bamba, who throws down a thunderous one-handed alley-oop poster over Zach Edey.
+    rakip: Zach Edey
+    zaman: "02:07"
+    katkilar:
+      - { oyuncu: Ace Bailey, takim: UTA, rol: pasor, pay: 30 }
+      - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 70 }
+  # güven: orta (oy 3/3; eylem 3/3; pay 2/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Trae Young receives Anthony Davis's between-the-legs pass and lofts a pinpoint lob back to him.
+  - sira: 3
+    eylem: alley_oop
+    etiketler: [ bacak_arasi ]
+    aciklama: Anthony Davis dishes between a defender's legs to Trae Young, who lobs it back for Davis to finish a one-handed alley-oop.
+    zaman: "01:49"
+    katkilar:
+      - { oyuncu: Trae Young, takim: WAS, rol: pasor, pay: 50 }
+      - { oyuncu: Anthony Davis, takim: WAS, rol: bitiren, pay: 50 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Ayo Dosunmu attacks the rim downhill and detonates a poster slam over Evan Mobley.
+    rakip: Evan Mobley
+    zaman: "01:34"
+    katkilar:
+      - { oyuncu: Ayo Dosunmu, takim: MIN, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: LaMelo Ball creates the highlight with a stunning behind-the-back no-look pass in transition.
+  - sira: 5
+    eylem: pas
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: LaMelo Ball delivers a dazzling behind-the-back no-look pass to Jaden McDaniels for a breakaway dunk.
+    zaman: "01:16"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 30 }
+  # güven: orta (oy 3/3; eylem 2/3; pay 3/3)
+  # eylem diğer: Smaç 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Jalen Green drives baseline and floats a lob toward the rim.
+  - sira: 6
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: Miles Bridges catches Jalen Green's lob and posterizes Isaiah Hartenstein with an alley-oop jam.
+    rakip: Isaiah Hartenstein
+    zaman: "01:04"
+    katkilar:
+      - { oyuncu: Jalen Green, takim: PHX, rol: pasor, pay: 30 }
+      - { oyuncu: Miles Bridges, takim: PHX, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Keyonte George delivers a high lob off the pick and roll to set up Mo Bamba's high-flying finish.
+  - sira: 7
+    eylem: alley_oop
+    etiketler: [ tek_el ]
+    aciklama: Keyonte George feeds Mo Bamba for a high one-handed alley-oop slam.
+    zaman: "00:49"
+    katkilar:
+      - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 30 }
+      - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 70 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: diger
+    aciklama: Dillon Brooks drives into the lane and loses control of the ball, bouncing it off the floor and miraculously into the basket.
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Dillon Brooks, takim: PHX, rol: bitiren, pay: 100 }
+  # güven: yüksek (oy 3/3; eylem 3/3; pay 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Kelly Oubre Jr. elevates at the rim and emphatically swats Bobby Portis's shot attempt.
+    rakip: Bobby Portis
+    zaman: "00:18"
+    katkilar:
+      - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
+  # güven: düşük (oy 1/3, uzlaşma yok; eylem 2/3; pay 1/1)
+  # diğer: Dennis Schröder + Paul Reed 1/3
+  # diğer: Dennis Schröder + Naz Reid 1/3
+  # eylem diğer: Smaç 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: Paul Reed rises up and throws down a powerful two-handed poster dunk over Alexandre Sarr.
+    rakip: Alexandre Sarr
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Paul Reed, takim: CHA, rol: bitiren, pay: 100 }

@@ -67,6 +67,30 @@ export const TAKIM_KODLARI = [
 ] as const;
 export type TakimKodu = (typeof TAKIM_KODLARI)[number];
 
+/**
+ * Yaygın takım kodu varyantları → resmi 30 kod. Doğrulamadan önce betik bunları çevirir (çevrilen her kod için bir kez bilgi satırı).
+ * Tablo dışındaki değer çevrilmez ve doğrulama hatası olarak kalır (ör. NJ: eski New Jersey Nets, geçerli bir takım değil).
+ * Resmi kodların kendisi tabloda yoktur (olduğu gibi geçerlidir); WSH → WAS gibi varyantlar vardır.
+ */
+export const TAKIM_VARYANTLARI: Readonly<Record<string, TakimKodu>> = {
+  PHO: 'PHX',
+  GS: 'GSW', GOS: 'GSW',
+  NO: 'NOP', NOR: 'NOP', NOH: 'NOP',
+  SA: 'SAS', SAN: 'SAS',
+  NY: 'NYK', NYC: 'NYK',
+  BRK: 'BKN', BKLYN: 'BKN',
+  CHO: 'CHA', CHH: 'CHA',
+  UTAH: 'UTA', UTH: 'UTA',
+  WSH: 'WAS',
+};
+
+/** Takım kodunu (büyük harfe çevirip) resmi koda çevirir. `cevrildi`: varyanttı ve çevrildi; resmi kod ya da bilinmeyen değer aynen döner. */
+export function takimKodunuCevir(kod: string): { kod: string; cevrildi: boolean } {
+  const k = kod.trim().toUpperCase();
+  const resmi = TAKIM_VARYANTLARI[k];
+  return resmi ? { kod: resmi, cevrildi: true } : { kod: k, cevrildi: false };
+}
+
 // Gemini'nin (istem.md) İngilizce değerleri ↔ sitenin anahtarları. Sözlükteki `gemini` alanlarından türetilir.
 type Anahtarli = Record<string, Adlar>;
 const gemini = <T extends string>(tablo: Anahtarli) => {

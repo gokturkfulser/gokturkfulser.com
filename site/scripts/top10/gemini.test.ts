@@ -31,7 +31,9 @@ describe('istem.md', () => {
     // sonradan eklenen kurallar (mevcut metin silinmeden sona/action tanımının altına)
     expect(istem).toContain('The action must match the most spectacular part of the play');
     expect(istem).toContain("Determine each player's team only from what is visible or audible in this video");
-    expect(istem.endsWith('If you cannot access or watch the video, return an empty plays list. Never produce plays you did not see.')).toBe(true);
+    expect(istem).toContain('If you cannot access or watch the video, return an empty plays list. Never produce plays you did not see.');
+    expect(istem.trimEnd().endsWith('set confidence to low.')).toBe(true);
+    expect(istem).toContain('never output such a phrase as a player name');
     // metindeki alan adları şemada var
     const oyun = YANIT_SEMASI.properties.plays.items.properties;
     for (const alan of ['rank', 'action', 'contributors', 'opponent', 'tags', 'description', 'timestamp', 'confidence']) {
