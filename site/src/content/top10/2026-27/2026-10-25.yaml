@@ -148,7 +148,7 @@ oyunlar:
     eylem: blok
     etiketler: [ hizli_hucum ]
     aciklama: Jay Huff swats a shot at the rim on defense and hustles down the floor to throw down a transition dunk.
-    rakip: Micheal Porter Jr.
+    rakip: Michael Porter Jr.
     zaman: "00:19"
     katkilar:
       - { oyuncu: Jay Huff, takim: MEM, rol: bitiren, pay: 100 }
