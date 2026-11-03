@@ -3,7 +3,8 @@
 tarih: 2026-10-24
 video: https://www.youtube.com/watch?v=V6wyTk_Nos8
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -100,8 +101,7 @@ oyunlar:
     aciklama: De'Aaron Fox connects with Victor Wembanyama for a high-flying one-handed alley-oop dunk.
     zaman: "00:55"
     katkilar:
-      - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
-      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -118,7 +118,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: ucluk
-    etiketler: [ and_one ]
+    etiketler: [ and_one, clutch ]
     aciklama: Grayson Allen hits a clutch corner three while being fouled for a four-point play opportunity.
     zaman: "00:42"
     katkilar:
@@ -136,11 +136,11 @@ oyunlar:
   - sira: 8
     eylem: blok
     etiketler: [ chase_down_blok ]
-    aciklama: Anton Watson tracks back in transition to swat Keon Ellis' layup against the glass.
+    aciklama: Peyton Watson tracks back in transition to swat Keon Ellis' layup against the glass.
     rakip: Keon Ellis
     zaman: "00:29"
     katkilar:
-      - { oyuncu: Anton Watson, takim: CLE, rol: bloklayan, pay: 100 }
+      - { oyuncu: Peyton Watson, takim: CLE, rol: bloklayan, pay: 100 }
     kontrol:
       guven: orta
       oy: 2/3
@@ -156,14 +156,13 @@ oyunlar:
   # pay: Gillespie pulls off an incredible nutmeg steal through Niang's legs and pushes the break.
   # eylem oyu 2/3
   - sira: 9
-    eylem: pas
-    etiketler: [ bacak_arasi, hizli_hucum ]
+    eylem: diger
+    etiketler: [ bacak_arasi, hizli_hucum, crossover ]
     aciklama: Collin Gillespie pokes a steal through Georges Niang's legs and sets up Luke Kennard for a transition three.
     rakip: Georges Niang
     zaman: "00:13"
     katkilar:
-      - { oyuncu: Collin Gillespie, takim: PHX, rol: pasor, pay: 70 }
-      - { oyuncu: Luke Kennard, takim: PHX, rol: bitiren, pay: 30 }
+      - { oyuncu: Collin Gillespie, takim: PHX, rol: pasor, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -187,8 +186,7 @@ oyunlar:
     aciklama: Nikola Jokic dishes a behind-the-back bounce pass to Aaron Gordon for a reverse slam.
     zaman: "00:03"
     katkilar:
-      - { oyuncu: Nikola Jokic, takim: DEN, rol: pasor, pay: 30 }
-      - { oyuncu: Aaron Gordon, takim: DEN, rol: bitiren, pay: 70 }
+      - { oyuncu: Aaron Gordon, takim: DEN, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
