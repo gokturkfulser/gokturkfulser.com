@@ -3,18 +3,19 @@
 tarih: 2026-10-30
 video: https://www.youtube.com/watch?v=3A-KG4CvN2s
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
-    eylem: ucluk
+    eylem: calim
     etiketler: [ crossover ]
     aciklama: Stephen Curry drops Luka Doncic with a crossover and drills the step-back three-pointer.
     rakip: Luka Doncic
     zaman: "02:08"
     katkilar:
-      - { oyuncu: Stephen Curry, takim: GSW, rol: bitiren, pay: 100 }
+      - { oyuncu: Stephen Curry, takim: GSW, rol: calim_atan, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -26,7 +27,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: smac
-    etiketler: [ poster ]
+    etiketler: [ poster, tek_el ]
     aciklama: Jaden McDaniels drives through the paint and hammers a ferocious poster slam over Baba Miller.
     rakip: Baba Miller
     zaman: "01:51"
@@ -90,7 +91,7 @@ oyunlar:
     zaman: "01:09"
     katkilar:
       - { oyuncu: Charles Bassey, takim: GSW, rol: bloklayan, pay: 50 }
-      - { oyuncu: Axl Rose, takim: GSW, rol: bitiren, pay: 50 }
+      - { oyuncu: Yaxel Lendeborg, takim: GSW, rol: bitiren, pay: 50 }
     kontrol:
       guven: dusuk
       oy: 2/3
@@ -128,7 +129,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # pay: Throws the transition lob right on target
   - sira: 7
-    eylem: alley_oop
+    eylem: smac
     etiketler: [ hizli_hucum ]
     aciklama: Kyrie Irving tosses a fast-break lob to Cooper Flagg for a two-handed alley-oop slam.
     zaman: "00:42"
@@ -152,8 +153,7 @@ oyunlar:
     aciklama: Caleb Wilson dishes a behind-the-back pass in transition to Josh Giddey for the layup.
     zaman: "00:29"
     katkilar:
-      - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 70 }
-      - { oyuncu: Josh Giddey, takim: CHI, rol: bitiren, pay: 30 }
+      - { oyuncu: Caleb Wilson, takim: CHI, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -165,9 +165,9 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
-    eylem: turnike
+    eylem: orta_mesafe
+    etiketler: [ clutch ]
     aciklama: Cooper Flagg spins past Tari Eason and sinks a tough one-handed runner in crunch time.
-    rakip: Tari Eason
     zaman: "00:13"
     katkilar:
       - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
