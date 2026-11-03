@@ -1,5 +1,5 @@
 ---
-// Ana sayfa proje vitrini: dikey çerçeveler, çift sıradaki kareler aşağı kaymış (kademeli). Her proje için tür ve durum ayrı satır.
+// Ana sayfa proje vitrini: dikey çerçeveler tek hizada, `sira` düzeninde (kademeli kayma yok). Her proje için tür ve durum ayrı satır.
 import type { Proje } from '../lib/content';
 import Medya from './Medya.astro';
 import { dilAl, sozluk } from '../i18n';
@@ -74,10 +74,6 @@ const s = sozluk(dil);
     text-decoration: none;
   }
 
-  li:nth-child(even) .dikey {
-    margin-block-start: clamp(2rem, 6vw, 6rem);
-  }
-
   h3 {
     font-size: clamp(1.625rem, 2.2vw, 2.2rem);
   }
@@ -95,11 +91,5 @@ const s = sozluk(dil);
   dd {
     margin: 0;
     color: var(--murekkep);
-  }
-
-  @media (max-width: 36rem) {
-    li:nth-child(even) .dikey {
-      margin-block-start: 0;
-    }
   }
 </style>

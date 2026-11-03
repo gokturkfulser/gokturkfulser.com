@@ -155,7 +155,7 @@ Okunabilirlik kuralları (ölçülüp ayarlandı; uygulamada aynen korunur):
 - **Dil düğmesi:** (tek `<a>` kaydırmalı anahtar) bulunulan sayfanın diğer dildeki gerçek karşılığına gider; yoksa (ör. yalnızca bir dilde yazılmış yazı) diğer dilin ilgili liste sayfasına. Karşılıklar her sayfada `<Base esdeger yedek>` ile verilir ve hreflang'ı da besler.
 - **SEO:** her sayfada `hreflang` alternatifleri (x-default İngilizce), `og:locale` + `og:locale:alternate`, dilin OG görseli (`/og/<dil>/…`), RSS (`/rss.xml` en, `/tr/rss.xml` tr; bölüm feed'leri de): liste sayfalarıyla aynı mantıkta iki dilin yazılarını da içerir, her öğe `dc:language` taşır. Sitemap'e dil alternatifleri build sonrası sayfaların hreflang'ından yazılır (`scripts/sitemap-hreflang.mjs`).
 - **Dil etiketi:** liste sayfalarında sayfanın dilinde olmayan yazı küçük bir etiketle ("In Turkish" / "İngilizce") işaretlenir ve kendi adresine bağlanır.
-- **Değişmeyenler:** `lab.gokturkfulser.com` ve `citiesofanatolia.gokturkfulser.com` Türkçe kalır; Türkçe oyunlar (Kelime Avı, Perde Perde Anadolu) İngilizce sayfalarda belirtilir.
+- **Değişmeyenler:** `lab.gokturkfulser.com` ve `citiesofanatolia.gokturkfulser.com` Türkçe kalır; Türkçe oyunlar (Kelime Avı, Cities of Anatolia) İngilizce sayfalarda belirtilir.
 
 ## Hareket
 

@@ -7,7 +7,7 @@ Her madde işaretlenmeden `gokturkfulser.com` custom domain'i bağlanmaz. Sıray
 - [ ] **`YER-TUTUCULAR.md` boş.** Dosyadaki tüm yer tutucular gerçek içerikle değiştirildi ya da silindi, listede satır kalmadı; ardından dosyanın kendisi silindi. Doğrulama: production build'den sonra aşağıdaki komut **hiç satır** döndürmemeli:
 
   ```powershell
-  Get-ChildItem site/dist -Recurse -File | Where-Object { $_.FullName -notlike '*\pagefind\*' } | Select-String -SimpleMatch -Pattern 'Paris, Texas','Pick and roll','Dakika','Salon Rehberi','Eski Portföy','flower.mp4','github.io'
+  Get-ChildItem site/dist -Recurse -File | Where-Object { $_.FullName -notlike '*\pagefind\*' } | Select-String -SimpleMatch -Pattern 'Paris, Texas','Pick and roll','flower.mp4','github.io'
   ```
 
   (`dist/pagefind/` dışarıda bırakılır: Pagefind'ın kendi betiği `github.io` içerir. Aranacak dizeleri yer tutucu listesine göre güncelleyin; kendi gerçek içeriğinizde geçen bir ad yanlış alarm verirse listeden çıkarın.)

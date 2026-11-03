@@ -2,7 +2,7 @@
 
 Bu klasördeki **tüm örnek içerik uydurmadır** ve `taslak: true` ile işaretlidir. Production build'de hiçbiri bulunmaz (sayfa, RSS, sitemap, OG görseli, Pagefind dizini, görsel dosyaları dahil); `SHOW_DRAFTS=true` ile alınan preview build'inde tasarımı denemek için görünürler.
 
-Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `Dakika`, `Salon Rehberi`, `Eski Portföy`, `flower.mp4`, `gokturkfulser.github.io/"` (`eski-portfoy` uydurma projesinin adresi; kapanış tırnağıyla, çünkü gerçek `ece-ismail-dugun-davetiyesi` projesinin adresi de `gokturkfulser.github.io/` ile başlar), `gokturkfulser.github.io/salon-rehberi` (`salon-rehberi` uydurma projesinin adresi). Eski kontroldeki yalın `github.io` dizesi kaldırıldı: gerçek proje yüzünden her zaman eşleşir. `dist/pagefind/` ve `dist/pagefind-b/` (Pagefind'ın kendi dosyaları) hariç aranır. (Doğrulandı: 0 eşleşme; `dist/` 28 HTML içeriyor, her dilde 14: ana sayfa, 404, hakkımda, arama, yazı listesi + 2 bölüm listesi, 1 çeviri yazısı, projeler, 3 proje sayfası (`kelime-avi`, `perde-perde-anadolu`, `ece-ismail-dugun-davetiyesi`) ve 2 tür sayfası (oyun, site).)
+Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden hiçbiri bulunmamalı: `Paris, Texas`, `Pick and roll`, `flower.mp4`, `dist/pagefind/` ve `dist/pagefind-b/` (Pagefind'ın kendi dosyaları) hariç aranır. (Doğrulandı: 0 eşleşme; `dist/` 28 HTML içeriyor, her dilde 14: ana sayfa, 404, hakkımda, arama, yazı listesi + 2 bölüm listesi, 1 çeviri yazısı, projeler, 3 proje sayfası (`kelime-avi`, `cities-of-anatolia`, `ece-ismail-dugun-davetiyesi`) ve 2 tür sayfası (oyun, site).)
 
 ## 3. Sayfa metinleri ve tasarım yer tutucuları
 
@@ -40,4 +40,4 @@ Kontrol: `pnpm site:build`, sonra `site/dist/` içinde aşağıdaki dizelerden h
 | --- | --- |
 | `src/content/hakkimda.en.md` | İngilizce metin (ve tüm İngilizce arayüz sözlüğü `src/i18n/en.ts`) Claude tarafından Türkçe metnin tonunda yazıldı; gözden geçirilmeli. |
 | `ozgecmis.yaml` → `kisa`, `duraklar`, beceri `cumle`, `sayilar` | Cümleleri Claude özgeçmiş verisinden yazdı (tr + en); gözden geçirilmeli. `duraklar` içindeki "Kendi projelerim" yılı (2026) lab/apps/kelime-avi'nin ilk commit tarihinden (Ekim 2026) alındı. |
-| `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Perde Perde Anadolu yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |
+| `ozgecmis.yaml` → `su_siralar` | Her iki grup da boş (Cities of Anatolia yayında olduğu için "Üzerinde çalıştığım"dan çıkarıldı); doldurulana kadar görünmez: doldurulana kadar görünmez. İzlediklerim Letterboxd'dan gelir (`LETTERBOXD_RSS`). |

@@ -7,5 +7,6 @@ url: "https://gokturkfulser.github.io/ece-ismail-wedding/"
 repo: "https://github.com/gokturkfulser/ece-ismail-wedding"
 stack: ["HTML", "CSS", "JavaScript", "Google Apps Script", "Google Sheets", "GitHub Pages"]
 gorsel: ./kapak.png
-sira: 3
+oneCikan: true
+sira: 1
 taslak: false

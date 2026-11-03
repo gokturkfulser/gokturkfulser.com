@@ -179,7 +179,7 @@ su_siralar:
   - baslik:
       en: Working on
       tr: Üzerinde çalıştığım
-    # Perde Perde Anadolu yayında; "üzerinde çalıştığım" değil, Projeler'de ve özgeçmişte yer alır. Boş grup gösterilmez.
+    # Cities of Anatolia yayında; "üzerinde çalıştığım" değil, Projeler'de ve özgeçmişte yer alır. Boş grup gösterilmez.
     ogeler: []
   - baslik:
       en: Following
@@ -188,7 +188,7 @@ su_siralar:
 
 projeler:
   # Site içindeki proje sayfalarına bağlanır (slug).
-  - slug: perde-perde-anadolu
+  - slug: cities-of-anatolia
   - slug: kelime-avi
 
 diller:
