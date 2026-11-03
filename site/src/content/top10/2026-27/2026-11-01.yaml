@@ -4,7 +4,8 @@ tarih: 2026-11-01
 video: https://www.youtube.com/watch?v=WICJbDrybJc
 tur: top5
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -12,6 +13,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, tek_el ]
     aciklama: Neemias Queta gathers a drop-off pass from Paul George and powers up for a thunderous two-handed poster dunk.
+    rakip: Jamal Cain
     zaman: "00:48"
     katkilar:
       - { oyuncu: Neemias Queta, takim: BOS, rol: bitiren, pay: 100 }
@@ -42,8 +44,8 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 3
-    eylem: smac
-    etiketler: [ crossover, tek_el ]
+    eylem: calim
+    etiketler: [ crossover ]
     aciklama: Pascal Siakam freezes Moritz Wagner with a crossover dribble and attacks the paint for a one-handed dunk.
     rakip: Moritz Wagner
     zaman: "00:26"
