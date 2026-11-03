@@ -3,7 +3,8 @@
 tarih: 2026-11-02
 video: https://www.youtube.com/watch?v=LXor_pP78A8
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: orta (oy 3/3)
   # pay diğer: 50/50 1/3
@@ -11,13 +12,12 @@ oyunlar:
   # pay: DeRozan creates the highlight with a stunning no-look, over-the-head pass right to the rim.
   # pay oyu 2/3
   - sira: 1
-    eylem: alley_oop
-    etiketler: [ bakmadan ]
+    eylem: pas
+    etiketler: [ bakmadan, sirt_arkasi ]
     aciklama: DeMar DeRozan dishes an unbelievable no-look pass over his head to Trevon Brazile for an alley-oop slam.
     zaman: "02:14"
     katkilar:
-      - { oyuncu: DeMar DeRozan, takim: DEN, rol: pasor, pay: 70 }
-      - { oyuncu: Trevon Brazile, takim: DEN, rol: bitiren, pay: 30 }
+      - { oyuncu: DeMar DeRozan, takim: DEN, rol: pasor, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -82,7 +82,7 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
-    eylem: smac
+    eylem: alley_oop
     etiketler: [ hizli_hucum, tek_el ]
     aciklama: Stephon Castle explodes down the lane in transition and throws down a thunderous one-handed slam.
     zaman: "01:19"
@@ -114,6 +114,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: turnike
+    etiketler: [ esitleyen, clutch ]
     aciklama: Ty Jerome drives between two defenders in the clutch and sinks a floating layup off the glass.
     zaman: "00:48"
     katkilar:
@@ -131,6 +132,7 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 8
     eylem: turnike
+    etiketler: [ crossover ]
     aciklama: Aday Mara shakes Evan Mobley with an up-and-under pump fake and finishes the reverse layup.
     rakip: Evan Mobley
     zaman: "00:30"
@@ -156,7 +158,6 @@ oyunlar:
     eylem: smac
     etiketler: [ hizli_hucum, tek_el ]
     aciklama: LeBron James launches a full-court outlet pass to V.J. Edgecombe for an alley-oop slam over Julian Phillips.
-    rakip: Julian Phillips
     zaman: "00:17"
     katkilar:
       - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 50 }
