@@ -3,7 +3,8 @@
 tarih: 2026-10-26
 video: https://www.youtube.com/watch?v=FjY3D0xwrrY
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -32,8 +33,7 @@ oyunlar:
     rakip: Zach Edey
     zaman: "02:07"
     katkilar:
-      - { oyuncu: Ace Bailey, takim: UTA, rol: pasor, pay: 30 }
-      - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 70 }
+      - { oyuncu: Mo Bamba, takim: UTA, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -93,8 +93,7 @@ oyunlar:
     aciklama: LaMelo Ball delivers a dazzling behind-the-back no-look pass to Jaden McDaniels for a breakaway dunk.
     zaman: "01:16"
     katkilar:
-      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
-      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 30 }
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -152,6 +151,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: diger
+    etiketler: [ bakmadan ]
     aciklama: Dillon Brooks drives into the lane and loses control of the ball, bouncing it off the floor and miraculously into the basket.
     zaman: "00:30"
     katkilar:
@@ -168,7 +168,7 @@ oyunlar:
   - sira: 9
     eylem: blok
     aciklama: Kelly Oubre Jr. elevates at the rim and emphatically swats Bobby Portis's shot attempt.
-    rakip: Bobby Portis
+    rakip: Myles Turner
     zaman: "00:18"
     katkilar:
       - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
@@ -189,11 +189,11 @@ oyunlar:
   - sira: 10
     eylem: alley_oop
     etiketler: [ poster ]
-    aciklama: Paul Reed rises up and throws down a powerful two-handed poster dunk over Alexandre Sarr.
+    aciklama: Naz Reid rises up and throws down a powerful two-handed poster dunk over Alexandre Sarr.
     rakip: Alexandre Sarr
     zaman: "00:03"
     katkilar:
-      - { oyuncu: Paul Reed, takim: CHA, rol: bitiren, pay: 100 }
+      - { oyuncu: Naz Reid, takim: CHA, rol: bitiren, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 1/3
