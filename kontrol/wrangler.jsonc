@@ -1,9 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "gokturkfulser-kontrol",
+  "name": "nba-daily-top10-control",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-24",
-  // Yalnızca kontrol.gokturkfulser.com (custom domain, dashboard'dan; bkz. kontrol/DEPLOY.md). workers.dev ve önizleme adresleri kapalı:
+  // Yalnızca nba-daily-top10-control.gokturkfulser.com (custom domain, dashboard'dan; bkz. kontrol/DEPLOY.md). workers.dev ve önizleme adresleri kapalı:
   // Access yalnızca custom domain'i korur; her istekte Cf-Access-Jwt-Assertion yine de Worker içinde doğrulanır (src/erisim.ts).
   "workers_dev": false,
   "preview_urls": false,

@@ -1,5 +1,5 @@
 # Yerel geliştirme (pnpm kontrol:dev): bu dosyayı .dev.vars olarak kopyalayın. .dev.vars repoya girmez.
-# Access atlama YALNIZCA bu bayrak "evet" ve istek localhost/127.0.0.1'e geliyorsa çalışır; production'da (kontrol.gokturkfulser.com) yok sayılır.
+# Access atlama YALNIZCA bu bayrak "evet" ve istek localhost/127.0.0.1'e geliyorsa çalışır; production'da (nba-daily-top10-control.gokturkfulser.com) yok sayılır.
 KONTROL_GELISTIRME="evet"
 # Gerçek GitHub yerine sahte sunucu (scripts/gelistirme/sahte-github.mjs). Yalnızca geliştirme bayrağıyla birlikte kullanılır.
 GITHUB_API_TABANI="http://127.0.0.1:8799"

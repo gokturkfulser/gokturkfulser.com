@@ -22,6 +22,9 @@ export type Bagimlilik = { fetch: typeof fetch; simdi: () => number };
 
 /** Repo ve dal sabittir (kullanıcı girdisi değildir). */
 export const DEPO = { sahip: 'gokturkfulser', ad: 'gokturkfulser.com', dal: 'main' } as const;
+/** Dışarıya görünen Worker adı ve alan adı: kodda tek kaynak (wrangler.jsonc `name` ve DEPLOY.md ile aynı olmalı). */
+export const WORKER_ADI = 'nba-daily-top10-control';
+export const ALAN_ADI = `${WORKER_ADI}.gokturkfulser.com`;
 export const GITHUB_API_TABANI = 'https://api.github.com';
 /** GitHub REST API sürümü (docs.github.com/en/rest/repos/contents sayfasında listelenen). */
 export const GITHUB_API_SURUMU = '2026-03-10';

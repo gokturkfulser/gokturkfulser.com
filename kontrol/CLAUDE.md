@@ -1,8 +1,8 @@
-# kontrol/ — Top 10 özel düzenleyici (kontrol.gokturkfulser.com)
+# kontrol/ — Top 10 özel düzenleyici (nba-daily-top10-control.gokturkfulser.com)
 
 Kök [CLAUDE.md](../CLAUDE.md) ve [site/CLAUDE.md](../site/CLAUDE.md) (özellikle "Top 10 verisi") bu klasör için de geçerlidir. Kurulum ve sırlar: [DEPLOY.md](DEPLOY.md).
 
-Ayrı bir Cloudflare Worker (`gokturkfulser-kontrol`, Cloudflare Access arkasında): gece dosyalarını telefondan da düzenleyip onaylamak için. Değişiklik GitHub contents API ile `main`'e commit edilir; ana site her zamanki gibi yayınlanır. **Ana sitenin kodu, rotaları, CSP'si ve sıfır-JS kuralı bu klasörden etkilenmez; ana sitede bu uygulamaya hiçbir bağlantı yoktur.**
+Ayrı bir Cloudflare Worker (`nba-daily-top10-control`, Cloudflare Access arkasında): gece dosyalarını telefondan da düzenleyip onaylamak için. Değişiklik GitHub contents API ile `main`'e commit edilir; ana site her zamanki gibi yayınlanır. **Ana sitenin kodu, rotaları, CSP'si ve sıfır-JS kuralı bu klasörden etkilenmez; ana sitede bu uygulamaya hiçbir bağlantı yoktur.**
 
 ## Kurallar
 

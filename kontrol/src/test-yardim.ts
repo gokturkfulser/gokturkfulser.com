@@ -1,11 +1,11 @@
 // Testler için: sahte GitHub contents API, sahte Access (RSA anahtarı + imzalı JWT) ve örnek gece/sözlük dosyaları. Ağ yok.
-import { DEPO, type Bagimlilik, type Env } from './ortam.ts';
+import { ALAN_ADI, DEPO, type Bagimlilik, type Env } from './ortam.ts';
 import { ESIT, type OyunDurumu } from './form.ts';
 
 export const TOKEN = 'ghp_SAHTE_GIZLI_TOKEN_0123456789';
 export const TAKIM = 'https://takim.cloudflareaccess.com';
 export const AUD = 'aud-etiketi-123';
-export const ORIJIN = 'https://kontrol.gokturkfulser.com';
+export const ORIJIN = `https://${ALAN_ADI}`;
 
 export const GECE_YOLU = 'site/src/content/top10/2026-27/2026-11-01.yaml';
 export const GECE_YOLU_2 = 'site/src/content/top10/2026-27/2026-10-31.yaml';

@@ -1,6 +1,6 @@
 // GitHub REST contents API istemcisi (docs.github.com/en/rest/repos/contents). Repo ve dal sabit (ortam.ts → DEPO); her çağrıdan önce yol
 // beyaz listeden geçer (yollar.ts). Token yalnızca Authorization başlığına gider; hata iletilerine, loga ya da yanıta yazılmaz.
-import { DEPO, GITHUB_API_SURUMU, GITHUB_API_TABANI } from './ortam.ts';
+import { DEPO, GITHUB_API_SURUMU, GITHUB_API_TABANI, WORKER_ADI } from './ortam.ts';
 import { yolDogrula } from './yollar.ts';
 
 /** Dosya, okunduktan sonra başkası tarafından değiştirildi (sha uyuşmuyor). */
@@ -48,7 +48,7 @@ export class GitHub {
       Authorization: `Bearer ${this.token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': GITHUB_API_SURUMU,
-      'User-Agent': 'gokturkfulser-kontrol',
+      'User-Agent': WORKER_ADI,
     };
   }
 

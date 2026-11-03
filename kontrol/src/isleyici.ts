@@ -1,4 +1,4 @@
-// Top 10 kontrol düzenleyicisi: istek işleyici (kontrol.gokturkfulser.com, Cloudflare Access arkasında). Her istek önce Access JWT doğrulamasından geçer;
+// Top 10 kontrol düzenleyicisi: istek işleyici (nba-daily-top10-control.gokturkfulser.com, Cloudflare Access arkasında). Her istek önce Access JWT doğrulamasından geçer;
 // GitHub'a yalnızca iki beyaz listeli yol türü (gece dosyaları, ad sözlüğü) üzerinden, sabit repo ve main dalı ile erişilir.
 import { erisimDogrula } from './erisim.ts';
 import { geceOku, durumlariDogrula, formdanDurumlar, oyundanDurum, type OyunGirdisi } from './form.ts';

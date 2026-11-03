@@ -101,7 +101,7 @@ describe('erisimDogrula', () => {
     it('production adresinde bayrak yok sayılır (JWT yoksa 403); localhost olsa bile bayrak "evet" değilse yok sayılır', async () => {
       const { dep } = await kur();
       expect((await erisimDogrula(istek(undefined, `${ORIJIN}/`), ortam({ KONTROL_GELISTIRME: 'evet' }), dep)).tamam).toBe(false);
-      expect((await erisimDogrula(istek(undefined, 'https://gokturkfulser-kontrol.hesap.workers.dev/'), ortam({ KONTROL_GELISTIRME: 'evet' }), dep)).tamam).toBe(false);
+      expect((await erisimDogrula(istek(undefined, 'https://nba-daily-top10-control.hesap.workers.dev/'), ortam({ KONTROL_GELISTIRME: 'evet' }), dep)).tamam).toBe(false);
       expect((await erisimDogrula(istek(undefined, 'http://localhost:8787/'), ortam({ KONTROL_GELISTIRME: 'true' }), dep)).tamam).toBe(false);
       expect((await erisimDogrula(istek(undefined, 'http://localhost.gokturkfulser.com/'), ortam({ KONTROL_GELISTIRME: 'evet' }), dep)).tamam).toBe(false);
     });

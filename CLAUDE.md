@@ -13,7 +13,7 @@ Sonraki tüm görevler adları buradan okur; başka yerde sabit kodlamak yerine 
 - Worker'lar:
   - gokturkfulser-site → gokturkfulser.com
   - gokturkfulser-lab → lab.gokturkfulser.com
-  - gokturkfulser-kontrol → kontrol.gokturkfulser.com (Cloudflare Access arkasında; yalnızca sahibi)
+  - nba-daily-top10-control → nba-daily-top10-control.gokturkfulser.com (Cloudflare Access arkasında; yalnızca sahibi)
 - servis image'ları: `ghcr.io/gokturkfulser/gokturkfulser-<app>`, adresleri `<app>.gokturkfulser.com`
 - tunnel: gokturkfulser-vps
 - yedek bucket: gokturkfulser-backup
@@ -25,10 +25,12 @@ Sonraki tüm görevler adları buradan okur; başka yerde sabit kodlamak yerine 
 | `site/` | Ana site (Astro) | Cloudflare Worker `gokturkfulser-site` → gokturkfulser.com |
 | `lab/` | Lab sitesi/Worker'ı | Cloudflare Worker `gokturkfulser-lab` → lab.gokturkfulser.com |
 | `lab/apps/` | Lab'ın alt uygulamaları (her biri ayrı pnpm paketi) | `lab` ile birlikte |
-| `kontrol/` | Top 10 özel düzenleyici (ayrı Worker; gece dosyalarını telefondan da düzenleyip onaylar, GitHub contents API ile `main`'e commit eder) | Cloudflare Worker `gokturkfulser-kontrol` → kontrol.gokturkfulser.com (Access arkasında); kurulum `kontrol/DEPLOY.md` |
+| `kontrol/` | Top 10 özel düzenleyici (ayrı Worker; gece dosyalarını telefondan da düzenleyip onaylar, GitHub contents API ile `main`'e commit eder) | Cloudflare Worker `nba-daily-top10-control` → nba-daily-top10-control.gokturkfulser.com (Access arkasında); kurulum `kontrol/DEPLOY.md` |
 | `services/` | VPS'te konteyner olarak çalışan servisler | Image `ghcr.io/gokturkfulser/gokturkfulser-<app>`, `<app>.gokturkfulser.com` (tunnel `gokturkfulser-vps` üzerinden) |
 | `infra/` | VPS altyapısı (compose, script'ler, yedekleme) | VPS; yedekler `gokturkfulser-backup` bucket'ına |
 | `infra/templates/` | Yeni servis için şablonlar | — |
+
+`kontrol/` klasörü "klasör adı Worker adının son parçası" düzeninin istisnasıdır: dışarıya görünen Worker/alan adı (`nba-daily-top10-control`) ile repo içi klasör adı bilerek ayrı tutuldu.
 
 pnpm workspace: `site`, `lab`, `lab/apps/*`, `kontrol`. Kök `package.json` kısayolları: `site:dev`, `site:build`, `lab:dev` (`pnpm lab:dev [slug]`), `lab:build`, `lab:new` (`pnpm lab:new <slug>`); `kontrol:dev` (sahte GitHub + `wrangler dev`), `kontrol:build`, `kontrol:test`; `infra:up`, `infra:down`, `infra:logs`, `infra:check` (yerel Docker; ayrıntı `infra/CLAUDE.md`); `service:new` (`pnpm service:new <ad>`: `infra/templates/fastapi-service` şablonundan `services/<ad>/`, `infra/apps/<ad>/compose.yml` ve `.github/workflows/service-<ad>.yml` üretir).
 
