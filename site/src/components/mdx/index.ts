@@ -7,6 +7,7 @@ import Top10Guncelleme from './Top10Guncelleme.astro';
 import Top10Istatistik from './Top10Istatistik.astro';
 import Top10Liderler from './Top10Liderler.astro';
 import Top10Sayimlar from './Top10Sayimlar.astro';
+import Top10Versus from './Top10Versus.astro';
 import Top10Siralama from './Top10Siralama.astro';
 import Top10SonGece from './Top10SonGece.astro';
 import Top10Yontem from './Top10Yontem.astro';
@@ -25,6 +26,7 @@ export const mdxBilesenleri = {
   Top10Istatistik,
   Top10Liderler,
   Top10Sayimlar,
+  Top10Versus,
   Top10Siralama,
   Top10SonGece,
   Top10Yontem,

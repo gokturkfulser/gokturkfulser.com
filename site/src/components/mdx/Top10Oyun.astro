@@ -52,7 +52,7 @@ const zamanAdresi = o.zaman ? videoZamanAdresi(video, o.zaman) : undefined;
   {
     o.zaman && (
       <p class="ek zaman">
-        {zamanAdresi ? <a href={zamanAdresi} rel="noopener noreferrer">{s.videodaZaman(o.zaman)}</a> : s.videodaZaman(o.zaman)}
+        {zamanAdresi ? <a href={zamanAdresi} target="_blank" rel="noopener noreferrer">{s.videodaZaman(o.zaman)}<span class="sr-only"> {s.yeniSekmeNotu}</span></a> : s.videodaZaman(o.zaman)}
       </p>
     )
   }

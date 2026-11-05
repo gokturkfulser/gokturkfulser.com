@@ -332,3 +332,66 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
   }));
   return { rakipToplam, posterlenen: sirala(l.posterlenen), bloklanan: sirala(l.bloklanan), calimlanan: sirala(l.calimlanan), posterBasan: sirala(l.posterBasan), blokYapan: sirala(l.blokYapan) };
 }
+
+// ——— Kim kime: oyuncu–rakip çiftleri ———
+
+export type CiftTurleri = { poster: number; blok: number; crossover: number };
+export type Cift = {
+  yapanKimlik: string;
+  rakipKimlik: string;
+  /** Son görünmedeki yazımlar. */
+  yapan: string;
+  rakip: string;
+  /** Bu çiftin kaç ayrı oyunda yaşandığı (aynı oyun bir kez). */
+  sayi: number;
+  /** Türlere göre dağılım (bir oyun birden çok türde olabilir; toplam `sayi`'dan büyük çıkabilir). */
+  turler: CiftTurleri;
+  sonGorunme: Date;
+};
+
+/**
+ * "X, Y'ye şunu yaptı" çiftleri: poster (yapan = rolü bitiren), blok (rolü bloklayan; yoksa ve tek katkı varsa o kişi), crossover
+ * (eylem çalım ya da etiket crossover; yapan = rolü çalım atan). Rakibi boş oyunlar ve yapanı belirsiz oyunlar girmez; kişi kendine rakip olamaz.
+ * Yalnızca en az `enAz` (varsayılan 2) kez yaşanan çiftler döner; çoktan aza, eşitlikte daha yeni son görünme, sonra adlar.
+ * `harita` verilirse adlar önce ad sözlüğüyle kanonik ada çevrilir.
+ */
+export function ciftler(geceler: readonly Gece[], enAz = 2, harita?: AdHaritasi): Cift[] {
+  const kaynak = harita ? adlariUygula(geceler, harita) : [...geceler];
+  const tum = new Map<string, Cift>();
+  for (const gece of [...kaynak].sort(artan)) {
+    for (const o of gece.oyunlar) {
+      const rakip = o.rakip;
+      if (!rakip) continue;
+      const poster = o.etiketler?.includes('poster') ?? false;
+      const blok = o.eylem === 'blok';
+      const crossover = o.eylem === 'calim' || (o.etiketler?.includes('crossover') ?? false);
+      const buOyunda = new Map<string, Partial<CiftTurleri>>();
+      const ekle = (ad: string, tur: keyof CiftTurleri) => {
+        if (kimlik(ad) === kimlik(rakip)) return;
+        buOyunda.set(ad, { ...buOyunda.get(ad), [tur]: 1 });
+      };
+      if (poster) for (const k of o.katkilar) if (k.rol === 'bitiren') ekle(k.oyuncu, 'poster');
+      if (blok) {
+        const bloklayanlar = o.katkilar.filter((k) => k.rol === 'bloklayan');
+        for (const k of bloklayanlar.length > 0 ? bloklayanlar : o.katkilar.length === 1 ? o.katkilar : []) ekle(k.oyuncu, 'blok');
+      }
+      if (crossover) for (const k of o.katkilar) if (k.rol === 'calim_atan') ekle(k.oyuncu, 'crossover');
+      for (const [yapan, t] of buOyunda) {
+        const anahtar = `${kimlik(yapan)}|${kimlik(rakip)}`;
+        const c: Cift = tum.get(anahtar) ?? { yapanKimlik: kimlik(yapan), rakipKimlik: kimlik(rakip), yapan, rakip, sayi: 0, turler: { poster: 0, blok: 0, crossover: 0 }, sonGorunme: gece.tarih };
+        c.sayi += 1;
+        c.turler.poster += t.poster ?? 0;
+        c.turler.blok += t.blok ?? 0;
+        c.turler.crossover += t.crossover ?? 0;
+        if (gece.tarih.valueOf() >= c.sonGorunme.valueOf()) Object.assign(c, { yapan, rakip, sonGorunme: gece.tarih });
+        tum.set(anahtar, c);
+      }
+    }
+  }
+  return [...tum.values()]
+    .filter((c) => c.sayi >= enAz)
+    .sort((a, b) => b.sayi - a.sayi || b.sonGorunme.valueOf() - a.sonGorunme.valueOf() || a.yapan.localeCompare(b.yapan, 'tr') || a.rakip.localeCompare(b.rakip, 'tr'));
+}
+
+/** Kim kime bölümünün görünmesi için gereken en az tekrar eden (en az 2 kez yaşanan) çift sayısı. */
+export const VERSUS_ESIK = 3;

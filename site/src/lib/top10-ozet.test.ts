@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ciftler,
   degisimMetni,
   eksenOlcegi,
   etiketleriYerlestir,
@@ -469,5 +470,86 @@ describe('sayimListeleri', () => {
   it('boş sezon ve kayıtsız listeler boş döner', () => {
     expect(sayimListeleri([])).toEqual({ rakipToplam: [], posterlenen: [], bloklanan: [], calimlanan: [], posterBasan: [], blokYapan: [] });
     expect(sayimListeleri([g('2026-11-01')]).calimlanan).toEqual([]);
+  });
+});
+
+describe('ciftler', () => {
+  type K = [string, Rol];
+  const o = (sira: number, kisiler: K[], ek: { eylem?: Eylem; etiketler?: Etiket[]; rakip?: string } = {}): Oyun => ({
+    sira,
+    ...ek,
+    katkilar: kisiler.map(([oyuncu, rol]) => ({ oyuncu, takim: 'SAS', rol })),
+  });
+  const g = (tarih: string, ...oyunlar: Oyun[]): Gece => ({ tarih: new Date(`${tarih}T00:00:00Z`), tur: 'top10', video: VIDEO, oyunlar });
+  const ozet = (l: ReturnType<typeof ciftler>) => l.map((c) => [c.yapan, c.rakip, c.sayi]);
+  const poster = (yapan: string, rakip: string) => o(1, [[yapan, 'bitiren']], { etiketler: ['poster'], rakip });
+
+  it('aynı çift en az iki kez: sayılır; tek seferlik çift varsayılan eşikte listeye girmez', () => {
+    const l = ciftler([
+      g('2026-11-01', o(1, [['Vic V', 'bloklayan']], { eylem: 'blok', rakip: 'Chet H' }), poster('Ada A', 'Ravi R')),
+      g('2026-11-02', o(1, [['Vic V', 'bloklayan']], { eylem: 'blok', rakip: 'Chet H' })),
+    ]);
+    expect(ozet(l)).toEqual([['Vic V', 'Chet H', 2]]);
+    expect(l[0]!.turler).toEqual({ poster: 0, blok: 2, crossover: 0 });
+    expect(ozet(ciftler([g('2026-11-01', poster('Ada A', 'Ravi R'))], 1))).toEqual([['Ada A', 'Ravi R', 1]]);
+  });
+
+  it('yapan role bakılarak bulunur: poster = bitiren, blok = bloklayan, crossover = çalım atan; pasör sayılmaz', () => {
+    const l = ciftler(
+      [
+        g(
+          '2026-11-01',
+          o(1, [['Pas P', 'pasor'], ['Dunk D', 'bitiren']], { eylem: 'alley_oop', etiketler: ['poster'], rakip: 'Rak R' }),
+          o(2, [['Blok B', 'bloklayan']], { eylem: 'blok', rakip: 'Rak R' }),
+          o(3, [['Hand H', 'calim_atan']], { eylem: 'calim', rakip: 'Rak R' }),
+        ),
+      ],
+      1,
+    );
+    expect(ozet(l).map((x) => x[0]).sort()).toEqual(['Blok B', 'Dunk D', 'Hand H']);
+  });
+
+  it('aynı oyunda birden çok tür: çift oyun başına bir kez sayılır, türler ayrı tutulur', () => {
+    const l = ciftler([g('2026-11-01', o(1, [['Ada A', 'calim_atan'], ['Dunk D', 'bitiren']], { eylem: 'smac', etiketler: ['poster', 'crossover'], rakip: 'Rak R' }))], 1);
+    expect(ozet(l).map((x) => [x[0], x[2]]).sort()).toEqual([['Ada A', 1], ['Dunk D', 1]]);
+    expect(l.find((c) => c.yapan === 'Dunk D')!.turler).toEqual({ poster: 1, blok: 0, crossover: 0 });
+    expect(l.find((c) => c.yapan === 'Ada A')!.turler).toEqual({ poster: 0, blok: 0, crossover: 1 });
+    // Aynı kişi hem posteri basıp hem crossover atarsa (tek katkı sahibi iki role sahip olamaz) çift yine bir kez sayılır
+    const tek = ciftler([g('2026-11-01', o(1, [['Ada A', 'bitiren']], { eylem: 'blok', etiketler: ['poster'], rakip: 'Rak R' }))], 1);
+    expect(tek).toHaveLength(1);
+    expect(tek[0]!.sayi).toBe(1);
+    expect(tek[0]!.turler).toEqual({ poster: 1, blok: 1, crossover: 0 });
+  });
+
+  it('blok: bloklayan rolü yoksa ve tek katkı varsa o kişi; rakipsiz oyun, kendine rakip ve belirsiz yapan atlanır', () => {
+    const l = ciftler(
+      [
+        g(
+          '2026-11-01',
+          o(1, [['Tek T', 'diger']], { eylem: 'blok', rakip: 'Rak R' }),
+          o(2, [['Ada A', 'bitiren']], { etiketler: ['poster'] }),
+          poster('Ada A', 'Ada A'),
+          o(4, [['Iki I', 'diger'], ['Iki J', 'diger']], { eylem: 'blok', rakip: 'Rak R' }),
+        ),
+      ],
+      1,
+    );
+    expect(ozet(l)).toEqual([['Tek T', 'Rak R', 1]]);
+  });
+
+  it('sıralama: çoktan aza, eşitlikte daha yeni son görünme; ad sözlüğü yazım farklarını birleştirir', () => {
+    const harita = sozlukHaritasi({ 'Moritz Wagner': ['Mo Wagner'] });
+    const geceler = [
+      g('2026-11-01', poster('Ada A', 'Mo Wagner'), poster('Bora B', 'Cem C')),
+      g('2026-11-02', poster('Ada A', 'Moritz Wagner'), poster('Bora B', 'Cem C')),
+      g('2026-11-03', poster('Deniz D', 'Ece E'), poster('Fatma F', 'Gül G')),
+      g('2026-11-04', poster('Deniz D', 'Ece E'), poster('Fatma F', 'Gül G')),
+    ];
+    expect(ozet(ciftler(geceler, 2, harita))).toEqual([['Deniz D', 'Ece E', 2], ['Fatma F', 'Gül G', 2], ['Ada A', 'Moritz Wagner', 2], ['Bora B', 'Cem C', 2]]);
+    expect(ciftler(geceler, 2)).toHaveLength(3); // sözlük yok: Ada A / Mo Wagner ile Ada A / Moritz Wagner ayrı kalır
+  });
+
+  it('boş girdi: boş liste', () => {
+    expect(ciftler([])).toEqual([]);
   });
 });

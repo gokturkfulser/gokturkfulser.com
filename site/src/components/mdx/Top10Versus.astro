@@ -1,0 +1,112 @@
+---
+// Kim kime ne yaptı: aynı oyuncunun aynı rakibe en az iki kez yaptığı poster, blok ve crossover çiftleri (ilk 10). Tek tablo.
+// Veri yetersizken hiçbir şey çizmez: en az VERSUS_ESIK (3) tekrar eden çift olunca bölüm kendiliğinden görünür. Hesap lib/top10-ozet.ts → ciftler.
+// Yazıya eklemek için MDX'te `<Top10Versus />` yeter. Sıfır JS, style="" yok.
+import { top10Geceleri } from '../../lib/content';
+import { sayiYaz } from '../../lib/format';
+import { ciftler, VERSUS_ESIK, type Cift } from '../../lib/top10-ozet';
+import { dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { geceler } = await top10Geceleri(Astro.props.sezon);
+const tum = ciftler(geceler, 2);
+const liste = tum.length >= VERSUS_ESIK ? tum.slice(0, 10) : [];
+const ayrinti = (c: Cift): string =>
+  (['poster', 'blok', 'crossover'] as const)
+    .filter((t) => c.turler[t] > 0)
+    .map((t) => s.versus[t](c.turler[t]))
+    .join(', ');
+---
+
+{
+  liste.length > 0 && (
+    <section class="kutu" aria-labelledby="top10-versus">
+      <h2 id="top10-versus">{s.versus.baslik}</h2>
+      <div class="sarmal" role="region" aria-labelledby="top10-versus" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{s.sutun.oyuncu}</th>
+              <th scope="col">{s.versus.rakip}</th>
+              <th scope="col">{s.versus.ayrinti}</th>
+              <th scope="col" class="sayi">{s.sayim.sayi}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {liste.map((c) => (
+              <tr>
+                <th scope="row">{c.yapan}</th>
+                <td>{c.rakip}</td>
+                <td>{ayrinti(c)}</td>
+                <td class="sayi puan">{sayiYaz(c.sayi, dil)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="not">{s.versus.not}</p>
+    </section>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .sarmal {
+    overflow-x: auto;
+    border-block-start: 3px solid var(--dunya-bant);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--yazi-sm);
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    hyphens: manual;
+  }
+
+  th,
+  td {
+    padding: var(--aralik-2);
+    text-align: start;
+    vertical-align: baseline;
+  }
+
+  thead th {
+    font-size: var(--yazi-xs);
+    font-weight: 700;
+    border-block-end: 1px solid var(--murekkep);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  tbody tr + tr > * {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+
+  .puan {
+    font-weight: 700;
+  }
+
+  .not {
+    margin: var(--aralik-3) 0 0;
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+  }
+</style>

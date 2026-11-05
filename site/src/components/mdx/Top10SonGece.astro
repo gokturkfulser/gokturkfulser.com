@@ -58,9 +58,9 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
         )
       }
       <div class="video">
-        <a class="video-baglanti" href={gece.video} rel="noopener noreferrer">
+        <a class="video-baglanti" href={gece.video} target="_blank" rel="noopener noreferrer">
           {kapak && <Medya src={kapak} oran="video" width={640} sizes="(min-width: 48rem) 20rem, 100vw" />}
-          <span class="video-metin">{s.video(videoAlani)}</span>
+          <span class="video-metin">{s.video(videoAlani)}<span class="sr-only"> {s.yeniSekmeNotu}</span></span>
         </a>
       </div>
       {incelemeBekliyor(gece) && <p class="bekleyen-not">{s.bekleyenNot}</p>}
