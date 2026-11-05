@@ -3,7 +3,8 @@
 tarih: 2026-11-04
 video: https://www.youtube.com/watch?v=Ym71yZsT4V4
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -61,12 +62,11 @@ oyunlar:
   # pay: Whitehead threads a bounce pass through traffic to the cutting big man.
   # pay oyu 2/3
   - sira: 4
-    eylem: smac
-    aciklama: Dariq Whitehead threads a bounce pass inside to Moritz Wagner for a hammer dunk.
+    eylem: pas
+    aciklama: Mikel Brown Jr. threads a bounce pass inside to Moritz Wagner for a hammer dunk.
     zaman: "01:17"
     katkilar:
-      - { oyuncu: Dariq Whitehead, takim: BKN, rol: pasor, pay: 50 }
-      - { oyuncu: Moritz Wagner, takim: BKN, rol: bitiren, pay: 50 }
+      - { oyuncu: Mikel Brown Jr., takim: BKN, rol: pasor, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
