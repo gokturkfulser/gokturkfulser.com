@@ -2,11 +2,13 @@
 // En yeni gecenin listesi: önce gecenin 1 numarası öne çıkarılmış blokta (oyuncular, eylem, açıklama, videonun o anına bağlantı, puan),
 // ardından 2. sıradan sonuncuya kadar liste. Video yalnızca düz metin bağlantıdır (iframe yok). `sezon` verilmezse en yeni sezon.
 // Gece verisi yoksa boş durum. `inceleme: bekliyor` notu gecenin altında kalır.
+import Medya from '../Medya.astro';
 import Top10Bos from './Top10Bos.astro';
 import Top10Oyun from './Top10Oyun.astro';
 import { top10Geceleri } from '../../lib/content';
 import { tarihIso, tarihYaz } from '../../lib/format';
 import { incelemeBekliyor, sonGece } from '../../lib/top10';
+import { top10Kapagi } from '../../lib/top10-kapak';
 import { dilAl, sozluk } from '../../i18n';
 
 interface Props {
@@ -20,6 +22,8 @@ const gece = sonGece(geceler);
 const oyunlar = gece ? [...gece.oyunlar].sort((a, b) => a.sira - b.sira) : [];
 const birinci = oyunlar.find((o) => o.sira === 1);
 const digerleri = oyunlar.filter((o) => o.sira !== 1);
+// Videonun kapak görseli (build'den önce indirilir, kendi alan adımızdan servis edilir); yoksa yalnızca metin bağlantısı kalır.
+const kapak = gece ? top10Kapagi(gece.video) : undefined;
 const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '';
 ---
 
@@ -36,7 +40,9 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
         birinci && (
           <div class="birinci">
             <p class="birinci-baslik">{s.birinciBaslik}</p>
-            <Top10Oyun oyun={birinci} video={gece.video} buyuk />
+            <div class="birinci-govde">
+              <Top10Oyun oyun={birinci} video={gece.video} buyuk />
+            </div>
           </div>
         )
       }
@@ -51,9 +57,12 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
           </ol>
         )
       }
-      <p class="video">
-        <a href={gece.video} rel="noopener noreferrer">{s.video(videoAlani)}</a>
-      </p>
+      <div class="video">
+        <a class="video-baglanti" href={gece.video} rel="noopener noreferrer">
+          {kapak && <Medya src={kapak} oran="video" width={640} sizes="(min-width: 48rem) 20rem, 100vw" />}
+          <span class="video-metin">{s.video(videoAlani)}</span>
+        </a>
+      </div>
       {incelemeBekliyor(gece) && <p class="bekleyen-not">{s.bekleyenNot}</p>}
     </section>
   )
@@ -89,6 +98,10 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
     border-block-end: 4px solid var(--dunya-bant);
     padding-inline-start: var(--aralik-3);
     border-inline-start: 4px solid var(--dunya-bant);
+  }
+
+  .birinci-govde {
+    padding-block-end: var(--aralik-2);
   }
 
   .birinci-baslik {
@@ -138,5 +151,16 @@ const videoAlani = gece ? new URL(gece.video).hostname.replace(/^www\./, '') : '
   .video a {
     color: var(--murekkep);
     font-weight: 600;
+  }
+
+  /* Kapak ve bağlantı metni tek bağlantı: kapak üstte (en fazla 20rem), metin altında */
+  .video-baglanti {
+    display: block;
+    max-inline-size: 20rem;
+  }
+
+  .video-metin {
+    display: block;
+    margin-block-start: var(--aralik-2);
   }
 </style>

@@ -315,6 +315,22 @@ export function benzerAdlar(geceler: readonly Gece[]): BenzerAd[] {
   return sonuc;
 }
 
+/** YouTube video adresinden 11 karakterlik video kimliği (watch?v=, youtu.be/, /embed/, /shorts/); tanınmazsa undefined. */
+export function videoKimligi(adres: string): string | undefined {
+  let url: URL;
+  try {
+    url = new URL(adres);
+  } catch {
+    return undefined;
+  }
+  const kimlik = (m: string | null | undefined) => (m && /^[A-Za-z0-9_-]{11}$/.test(m) ? m : undefined);
+  if (url.hostname === 'youtu.be') return kimlik(url.pathname.split('/')[1]);
+  if (!(url.hostname === 'youtube.com' || url.hostname.endsWith('.youtube.com'))) return undefined;
+  const parca = url.pathname.split('/').filter(Boolean);
+  if (parca[0] === 'embed' || parca[0] === 'shorts') return kimlik(parca[1]);
+  return kimlik(url.searchParams.get('v'));
+}
+
 // ——— Video zamanı ———
 
 /** "m:ss" / "mm:ss" biçimi (saniye 00–59). */

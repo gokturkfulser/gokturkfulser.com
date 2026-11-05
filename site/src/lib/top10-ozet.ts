@@ -263,8 +263,19 @@ export function cubukDuzeni(degerler: readonly number[], secenek: { genislik: nu
 
 // ——— Rakip ve yetenek listeleri ———
 
-export type SayimSatiri = { kimlik: string; /** Son görünmedeki yazım. */ oyuncu: string; /** Hareket sayısı (puan değil). */ sayi: number; sonGorunme: Date };
+export type SayimSatiri = {
+  kimlik: string;
+  /** Son görünmedeki yazım. */
+  oyuncu: string;
+  /** Hareket sayısı (puan değil). */
+  sayi: number;
+  sonGorunme: Date;
+  /** Yalnızca `rakipToplam` satırlarında: hangi türden kaç kez rakip olduğu (bir oyun birden çok türde olabilir; toplam `sayi`'dan büyük çıkabilir). */
+  dagilim?: { posterlenen: number; bloklanan: number; calimlanan: number };
+};
 export type SayimListeleri = {
+  /** Poster, blok ya da çalım oyunlarında rakip olanlar, oyun başına bir kez (üç rakip listesinin toplamı). */
+  rakipToplam: SayimSatiri[];
   /** Poster etiketli oyunların rakibi: en çok posterlenenler. */
   posterlenen: SayimSatiri[];
   /** Eylemi blok olan oyunların rakibi: en çok bloklananlar. */
@@ -286,7 +297,7 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
   const kaynak = harita ? adlariUygula(geceler, harita) : [...geceler];
   type Sayac = Map<string, SayimSatiri>;
   const yeni = (): Sayac => new Map();
-  const l = { posterlenen: yeni(), bloklanan: yeni(), calimlanan: yeni(), posterBasan: yeni(), blokYapan: yeni() };
+  const l = { rakipToplam: yeni(), posterlenen: yeni(), bloklanan: yeni(), calimlanan: yeni(), posterBasan: yeni(), blokYapan: yeni() };
   const say = (sayac: Sayac, ad: string, tarih: Date) => {
     const k = kimlik(ad);
     const m = sayac.get(k);
@@ -302,6 +313,7 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
       const blok = o.eylem === 'blok';
       const calim = o.eylem === 'calim' || (o.etiketler?.includes('crossover') ?? false);
       if (o.rakip) {
+        if (poster || blok || calim) say(l.rakipToplam, o.rakip, gece.tarih);
         if (poster) say(l.posterlenen, o.rakip, gece.tarih);
         if (blok) say(l.bloklanan, o.rakip, gece.tarih);
         if (calim) say(l.calimlanan, o.rakip, gece.tarih);
@@ -314,5 +326,9 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
   }
   const sirala = (sayac: Sayac) =>
     [...sayac.values()].sort((a, b) => b.sayi - a.sayi || b.sonGorunme.valueOf() - a.sonGorunme.valueOf() || a.oyuncu.localeCompare(b.oyuncu, 'tr')).slice(0, sinir);
-  return { posterlenen: sirala(l.posterlenen), bloklanan: sirala(l.bloklanan), calimlanan: sirala(l.calimlanan), posterBasan: sirala(l.posterBasan), blokYapan: sirala(l.blokYapan) };
+  const rakipToplam = sirala(l.rakipToplam).map((r) => ({
+    ...r,
+    dagilim: { posterlenen: l.posterlenen.get(r.kimlik)?.sayi ?? 0, bloklanan: l.bloklanan.get(r.kimlik)?.sayi ?? 0, calimlanan: l.calimlanan.get(r.kimlik)?.sayi ?? 0 },
+  }));
+  return { rakipToplam, posterlenen: sirala(l.posterlenen), bloklanan: sirala(l.bloklanan), calimlanan: sirala(l.calimlanan), posterBasan: sirala(l.posterBasan), blokYapan: sirala(l.blokYapan) };
 }

@@ -11,6 +11,9 @@ __pycache__/
 # Letterboxd şeridinin afişleri: her build'de TMDB'den indirilir (site/scripts/letterboxd-afis.ts), repo'ya girmez
 site/src/data/letterboxd/
 
+# Top 10 video kapakları: her build'de YouTube'dan indirilir (site/scripts/top10-kapaklar.ts), repo'ya girmez
+site/src/data/top10/
+
 # Playwright ekran görüntüleri ve MCP çıktıları: yerel kanıt, repo'ya girmez
 site/ekran-goruntuleri/
 

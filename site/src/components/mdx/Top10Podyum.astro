@@ -1,0 +1,263 @@
+---
+// İlk 3 için büyük kartlar: fotoğraf (yoksa baş harf kutusu), sıra, ad, takım ve sayılar. Sıralama ve sayım listeleri ortak kullanır.
+// `yan`: dar sütunlarda (sayım listeleri) kartlar alt alta, fotoğraf solda; aksi hâlde geniş ekranda üç sütun. Sıfır JS, style="" yok.
+import Medya from '../Medya.astro';
+import { basHarfler, oyuncuGorseli } from '../../lib/top10-oyuncu-gorsel';
+import { dilAl, sozluk } from '../../i18n';
+
+export interface PodyumOyuncu {
+  sira: string;
+  ad: string;
+  takim?: string;
+  /** Ad–değer çiftleri (ör. Puan 34); ilk çift öne çıkar. */
+  sayilar: { etiket: string; deger: string }[];
+  /** Sayının altında kısa açıklama satırları (ör. "2 kez posterlendi"). */
+  ayrinti?: string[];
+}
+
+interface Props {
+  oyuncular: PodyumOyuncu[];
+  ad: string;
+  yan?: boolean;
+  /** Çok dar sütunlar için küçültülmüş kart: küçük fotoğraf, küçük yazı, atıf satırı yok (atıf, kullanan bileşende toplu verilir). */
+  kompakt?: boolean;
+}
+
+const { oyuncular, ad, yan = false, kompakt = false } = Astro.props;
+const s = sozluk(dilAl(Astro)).top10;
+---
+
+<ol class:list={['podyum', (yan || kompakt) && 'podyum--yan', kompakt && 'podyum--kompakt']} aria-label={ad}>
+  {
+    oyuncular.map((o) => {
+      const foto = oyuncuGorseli(o.ad);
+      const [ana, ...diger] = o.sayilar;
+      return (
+        <li class="kart">
+          <div class="foto">
+            {foto ? <Medya src={foto.gorsel} oran="afis" width={480} alt={o.ad} sizes="(min-width: 48rem) 12rem, 7rem" /> : <span class="harf" aria-hidden="true">{basHarfler(o.ad)}</span>}
+          </div>
+          <div class="bilgi">
+            <p class="sira">{o.sira}</p>
+            <p class="ad">{o.ad}</p>
+            {o.takim && <p class="takim">{o.takim}</p>}
+            {ana && (
+              <p class="ana">
+                <span class="ana-deger">{ana.deger}</span> {ana.etiket}
+              </p>
+            )}
+            {o.ayrinti && o.ayrinti.length > 0 && (
+              <ul class="ayrinti">
+                {o.ayrinti.map((a) => (
+                  <li>{a}</li>
+                ))}
+              </ul>
+            )}
+            {
+              diger.length > 0 && (
+                <dl class="ek">
+                  {diger.map((d) => (
+                    <div>
+                      <dt>{d.etiket}</dt>
+                      <dd>{d.deger}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )
+            }
+            {foto && !kompakt && (
+              <p class="atif">
+                <a href={foto.atif.sayfa} rel="noopener noreferrer">{s.fotoAtif(foto.atif.yazar, foto.atif.lisans)}</a>
+              </p>
+            )}
+          </div>
+        </li>
+      );
+    })
+  }
+</ol>
+
+<style>
+  .podyum {
+    display: grid;
+    gap: var(--aralik-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  /* Kart: üstte 4 px işaret çizgisi, birincide turuncu; kart gölgesi ve dolgusu yok */
+  .kart {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: var(--aralik-3);
+    align-items: start;
+    align-content: start;
+    align-self: start;
+    padding-block-start: var(--aralik-2);
+    border-block-start: 4px solid var(--soluk);
+  }
+
+  /* Yazının genel "li + li" aralığı kartları kaydırmasın */
+  .podyum > .kart + .kart {
+    margin: 0;
+  }
+
+  .kart:first-child {
+    border-block-start-color: var(--dunya-bant);
+  }
+
+  .foto {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: var(--yuzey);
+  }
+
+  /* Fotoğraflar dik (genelde 3:4); yüz üst yarıda olduğu için kadraj üstten hizalanır, orta kesim yüzü ve çeneyi kesiyordu */
+  .foto :global(.medya-kalip) {
+    inline-size: 100%;
+  }
+
+  .foto :global(.medya-kalip > img) {
+    object-position: 50% 8%;
+  }
+
+  .harf {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--murekkep);
+  }
+
+  .bilgi p {
+    margin: 0;
+  }
+
+  .sira {
+    font-size: var(--yazi-sm);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ad {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.15;
+    hyphens: manual;
+    overflow-wrap: anywhere;
+  }
+
+  .takim {
+    font-size: var(--yazi-sm);
+  }
+
+  .ana {
+    margin-block-start: var(--aralik-1);
+    font-size: var(--yazi-sm);
+  }
+
+  .ana-deger {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ayrinti {
+    margin: var(--aralik-1) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--yazi-xs);
+    line-height: 1.45;
+  }
+
+  /* Yazının genel liste kuralları (işaret, aralık) kartın içindeki satırlara geçmesin */
+  .ayrinti > li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ayrinti > li::first-letter {
+    text-transform: uppercase;
+  }
+
+  .ayrinti:has(+ .atif) {
+    margin-block-end: var(--aralik-2);
+  }
+
+  .atif {
+    margin-block-start: var(--aralik-2);
+    font-size: var(--yazi-xs);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .atif a {
+    color: var(--murekkep);
+  }
+
+  .ek {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--aralik-3);
+    margin: var(--aralik-1) 0 0;
+    font-size: var(--yazi-xs);
+  }
+
+  .ek div {
+    display: flex;
+    gap: 0.3em;
+  }
+
+  .ek dt::after {
+    content: ':';
+  }
+
+  .ek dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Kompakt: üç listenin yan yana durduğu dar sütunlar (~11–13 rem) */
+  .podyum--kompakt {
+    gap: var(--aralik-2);
+  }
+
+  .podyum--kompakt .kart {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: var(--aralik-2);
+  }
+
+  .podyum--kompakt .harf {
+    font-size: 1.25rem;
+  }
+
+  .podyum--kompakt .ad {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .podyum--kompakt .ana-deger {
+    font-size: 1.125rem;
+  }
+
+  /* Geniş ekranda üç sütun, fotoğraf kartın üstünde ve büyük (yan düzende değil) */
+  @media (min-width: 48rem) {
+    .podyum:not(.podyum--yan) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--aralik-4);
+    }
+
+    .podyum:not(.podyum--yan) .kart {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .podyum:not(.podyum--yan) .harf {
+      font-size: 4rem;
+    }
+  }
+</style>

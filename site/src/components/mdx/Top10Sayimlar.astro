@@ -1,8 +1,10 @@
 ---
 // Rakip ve yetenek listeleri: hareket sayısına göre ilk 5 (puan değil), her liste küçük bir tablo (caption, th scope: sıra, oyuncu, sayı).
-// `blok="rakip"`: en çok posterlenen / bloklanan / çalımlanan. `blok="yetenek"`: en çok poster basan / blok yapan.
+// `blok="rakip"`: üstte tam genişlikte "Highlight kurbanları" (poster, blok ve crossover oyunlarının toplamı), altında yan yana en çok posterlenen / bloklanan / crossover yiyen. `blok="yetenek"`: en çok poster basan / blok yapan.
 // Kaydı olmayan liste gösterilmez; blokta hiç liste yoksa blok (başlığıyla) hiç çizilmez. `not`: bloğun altına kapsam cümlesi.
 // Hesap lib/top10-ozet.ts → sayimListeleri. Sıfır JS, style="" yok. Mobilde tablolar alt alta, geniş ekranda yan yana (çizgiyle ayrılmış düz bloklar).
+import Top10Podyum from './Top10Podyum.astro';
+import { oyuncuGorseli } from '../../lib/top10-oyuncu-gorsel';
 import { top10Geceleri } from '../../lib/content';
 import { sayiYaz } from '../../lib/format';
 import { sayimListeleri, type SayimSatiri } from '../../lib/top10-ozet';
@@ -21,41 +23,95 @@ const { blok, not = false } = Astro.props;
 const { geceler } = await top10Geceleri(Astro.props.sezon);
 const l = sayimListeleri(geceler);
 const baslik = blok === 'rakip' ? s.sayim.rakipBaslik : s.sayim.yetenekBaslik;
-const anahtarlar = blok === 'rakip' ? (['posterlenen', 'bloklanan', 'calimlanan'] as const) : (['posterBasan', 'blokYapan'] as const);
+const anahtarlar = blok === 'rakip' ? (['rakipToplam', 'posterlenen', 'bloklanan', 'calimlanan'] as const) : (['posterBasan', 'blokYapan'] as const);
 const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarlar
   .map((a) => ({ id: a, ad: s.sayim.liste[a], satirlar: l[a] }))
   .filter((x) => x.satirlar.length > 0);
+/** Rakip toplam satırında hangi türden kaç kez rakip olduğu ("2 kez posterlendi", "1 kez bloklandı"); sıfır olan türler yazılmaz. */
+const ayrinti = (r: SayimSatiri): string[] =>
+  r.dagilim
+    ? (['posterlenen', 'bloklanan', 'calimlanan'] as const).filter((t) => r.dagilim![t] > 0).map((t) => s.sayim.ayrinti[t](r.dagilim![t]))
+    : [];
+// Rakip bloğunda "Highlight kurbanları" tam genişlikte üstte (büyük kartlar), altındaki üç liste yan yana ve kompakt;
+// yetenek bloğunda iki liste yan yana. Kompakt kartlarda atıf satırı yoktur: fotoğraf atıfları bloğun altında tek satırda toplanır.
+type Grup = { sinif: 'ust' | 'alt' | 'yan'; listeler: typeof listeler };
+const gruplar: Grup[] =
+  blok === 'rakip'
+    ? [
+        { sinif: 'ust' as const, listeler: listeler.filter((x) => x.id === 'rakipToplam') },
+        { sinif: 'alt' as const, listeler: listeler.filter((x) => x.id !== 'rakipToplam') },
+      ].filter((g) => g.listeler.length > 0)
+    : [{ sinif: 'yan' as const, listeler }];
+const toplamAtif = [
+  ...new Map(
+    gruplar
+      .filter((g) => g.sinif === 'alt')
+      .flatMap((g) => g.listeler.flatMap((x) => x.satirlar.slice(0, 3)))
+      .map((r) => [r.kimlik, oyuncuGorseli(r.oyuncu)?.atif] as const)
+      .filter((e): e is readonly [string, NonNullable<ReturnType<typeof oyuncuGorseli>>['atif']] => e[1] !== undefined),
+  ).values(),
+];
 ---
 
 {
   listeler.length > 0 && (
     <section class="kutu" aria-labelledby={`top10-sayim-${blok}`}>
       <h2 id={`top10-sayim-${blok}`}>{baslik}</h2>
-      <div class="listeler">
-        {listeler.map((x) => (
-          <div class="sarmal" role="region" aria-label={x.ad} tabindex="0">
-            <table>
-              <caption>{x.ad}</caption>
-              <thead>
-                <tr>
-                  <th scope="col" class="sayi">{s.sutun.sira}</th>
-                  <th scope="col">{s.sutun.oyuncu}</th>
-                  <th scope="col" class="sayi">{s.sayim.sayi}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {x.satirlar.map((r, i) => (
-                  <tr>
-                    <td class="sayi">{sayiYaz(i + 1, dil)}</td>
-                    <th scope="row">{r.oyuncu}</th>
-                    <td class="sayi puan">{sayiYaz(r.sayi, dil)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {gruplar.map((g) => (
+      <div class={`listeler listeler--${g.sinif}`}>
+        {g.listeler.map((x) => (
+          <div class="liste">
+            <p class="liste-ad" id={`top10-sayim-${x.id}`}>{x.ad}</p>
+            <Top10Podyum
+              yan={g.sinif === 'yan'}
+              kompakt={g.sinif === 'alt'}
+              ad={x.ad}
+              oyuncular={x.satirlar.slice(0, 3).map((r, i) => ({
+                sira: sayiYaz(i + 1, dil),
+                ad: r.oyuncu,
+                sayilar: [{ etiket: s.sayim.sayi, deger: sayiYaz(r.sayi, dil) }],
+                ayrinti: ayrinti(r),
+              }))}
+            />
+            {x.satirlar.length > 3 && (
+              <div class="sarmal" role="region" aria-labelledby={`top10-sayim-${x.id}`} tabindex="0">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col" class="sayi">{s.sutun.sira}</th>
+                      <th scope="col">{s.sutun.oyuncu}</th>
+                      {x.satirlar[0]?.dagilim && <th scope="col" class="ayrinti">{s.sayim.ayrinti.baslik}</th>}
+                      <th scope="col" class="sayi">{s.sayim.sayi}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {x.satirlar.slice(3).map((r, i) => (
+                      <tr>
+                        <td class="sayi">{sayiYaz(i + 4, dil)}</td>
+                        <th scope="row">{r.oyuncu}</th>
+                        {r.dagilim && <td class="ayrinti">{ayrinti(r).join(', ')}</td>}
+                        <td class="sayi puan">{sayiYaz(r.sayi, dil)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         ))}
       </div>
+      ))}
+      {toplamAtif.length > 0 && (
+        <p class="atif-toplu">
+          {s.fotolar}:{' '}
+          {toplamAtif.map((a, i) => (
+            <>
+              {i > 0 && '; '}
+              <a href={a.sayfa} rel="noopener noreferrer">{`${a.ad}, ${a.yazar}, ${a.lisans}`}</a>
+            </>
+          ))}
+        </p>
+      )}
       {not && <p class="not">{s.sayim.not}</p>}
     </section>
   )
@@ -70,13 +126,64 @@ const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarl
 
   .listeler {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
     gap: var(--aralik-4) var(--aralik-4);
+  }
+
+  .listeler + .listeler {
+    margin-block-start: var(--aralik-4);
+  }
+
+  /* Yan yana iki liste; dar ekranda alt alta */
+  .listeler--yan {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  }
+
+  /* Üç kompakt liste: ~40 rem'lik yazı sütununda üçü yan yana, dar ekranda alt alta */
+  .listeler--alt {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: var(--aralik-4) var(--aralik-3);
+  }
+
+  /* Dar sütunlarda tablo: sıra ve sayı sütunları daralır, uzun adlar ("Zion Williamson") satır ortasından kırılmasın */
+  .listeler--alt thead th:first-child {
+    width: 3rem;
+  }
+
+  .listeler--alt thead th:last-child {
+    width: 3.25rem;
+  }
+
+  .listeler--alt :is(th, td) {
+    padding-inline: 0.3rem;
+  }
+
+  .atif-toplu {
+    margin: var(--aralik-3) 0 0;
+    font-size: var(--yazi-xs);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .atif-toplu a {
+    color: var(--murekkep);
+  }
+
+  .liste {
+    min-inline-size: 0;
+    border-block-start: 3px solid var(--dunya-bant);
+  }
+
+  .liste-ad {
+    margin: 0;
+    padding: var(--aralik-2) 0;
+    font-size: var(--yazi-sm);
+    font-weight: 800;
+    line-height: 1.3;
   }
 
   .sarmal {
     overflow-x: auto;
-    border-block-start: 3px solid var(--dunya-bant);
+    margin-block-start: var(--aralik-3);
   }
 
   table {
@@ -87,14 +194,6 @@ const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarl
     line-height: 1.35;
     font-variant-numeric: tabular-nums;
     hyphens: manual;
-  }
-
-  caption {
-    padding: var(--aralik-2) 0;
-    text-align: start;
-    font-size: var(--yazi-sm);
-    font-weight: 800;
-    line-height: 1.3;
   }
 
   th,
@@ -129,6 +228,12 @@ const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarl
 
   .sayi {
     text-align: end;
+  }
+
+  /* Üst listedeki ayrıntı sütunu: geniş tablo, adın yanında */
+  th.ayrinti,
+  td.ayrinti {
+    font-weight: 400;
   }
 
   .puan {

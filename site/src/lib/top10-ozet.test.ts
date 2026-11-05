@@ -370,6 +370,24 @@ describe('sayimListeleri', () => {
     expect(ad(l.bloklanan)).toEqual([['Ravi Rakip', 1]]);
   });
 
+  it('rakipToplam: poster, blok ve çalım oyunlarında rakip; aynı oyunda birden çok türde olsa da oyun başına bir kez; rakipsiz ya da türsüz oyun atlanır', () => {
+    const l = sayimListeleri([
+      g(
+        '2026-11-01',
+        o(1, [['Ada Aksoy', 'bitiren']], { eylem: 'smac', etiketler: ['poster', 'crossover'], rakip: 'Ravi Rakip' }), // üç tür birden: tek sayı
+        o(2, [['Bora Berk', 'bloklayan']], { eylem: 'blok', rakip: 'Ravi Rakip' }),
+        o(3, [['Can Ceylan', 'calim_atan']], { eylem: 'calim', rakip: 'Sena Savunma' }),
+        o(4, [['Deniz Demir', 'bitiren']], { eylem: 'smac', etiketler: ['poster'] }), // rakipsiz
+        o(5, [['Ece Er', 'bitiren']], { eylem: 'turnike', rakip: 'Tolga Top' }), // tür yok: sayılmaz
+      ),
+    ]);
+    expect(ad(l.rakipToplam)).toEqual([['Ravi Rakip', 2], ['Sena Savunma', 1]]);
+    // Dağılım: Ravi oyun 1'de posterlendi ve crossover yedi, oyun 2'de bloklandı; toplam oyun sayısı (2) türlerin toplamından (3) küçük olabilir
+    expect(l.rakipToplam[0]!.dagilim).toEqual({ posterlenen: 1, bloklanan: 1, calimlanan: 1 });
+    expect(l.rakipToplam[1]!.dagilim).toEqual({ posterlenen: 0, bloklanan: 0, calimlanan: 1 });
+    expect(l.posterlenen[0]!.dagilim).toBeUndefined();
+  });
+
   it('calimlanan: calim eylemi ya da crossover etiketi; aynı oyunda ikisi de varsa bir kez sayılır', () => {
     const l = sayimListeleri([
       g(
@@ -449,7 +467,7 @@ describe('sayimListeleri', () => {
   });
 
   it('boş sezon ve kayıtsız listeler boş döner', () => {
-    expect(sayimListeleri([])).toEqual({ posterlenen: [], bloklanan: [], calimlanan: [], posterBasan: [], blokYapan: [] });
+    expect(sayimListeleri([])).toEqual({ rakipToplam: [], posterlenen: [], bloklanan: [], calimlanan: [], posterBasan: [], blokYapan: [] });
     expect(sayimListeleri([g('2026-11-01')]).calimlanan).toEqual([]);
   });
 });

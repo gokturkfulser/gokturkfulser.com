@@ -113,8 +113,8 @@ describe('sayfalar', () => {
     expect(govde).toContain('value="clutch"'); // clutch etiketi seçilebilir
     expect(govde.match(/name="o1_etiket"/g)).toHaveLength(ETIKET_ANAHTARLARI.length); // sözlükteki her etiket formda
     // yeni sözlük girdileri formda: çalım eylemi, çalım atan rolü, eşitleyen etiketi
-    expect(govde).toContain('<option value="calim">Çalım</option>');
-    expect(govde).toContain('<option value="calim_atan">Çalım atan</option>');
+    expect(govde).toContain('<option value="calim">Handles</option>');
+    expect(govde).toContain('<option value="calim_atan">Ball handler</option>');
     expect(govde).toContain('value="esitleyen"');
     expect(govde).toContain('<span>Eşitleyen</span>');
     expect(govde).toContain('name="o1_k1_oyuncu"');

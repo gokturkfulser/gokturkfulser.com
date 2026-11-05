@@ -15,7 +15,7 @@ export const EYLEMLER = {
   ucluk: { tr: 'Üçlük', en: 'Three-pointer', gemini: 'three_pointer' },
   turnike: { tr: 'Turnike', en: 'Layup', gemini: 'layup' },
   orta_mesafe: { tr: 'Orta mesafe', en: 'Mid-range', gemini: 'mid_range' },
-  calim: { tr: 'Çalım', en: 'Handles', gemini: 'dribble_move' },
+  calim: { tr: 'Handles', en: 'Handles', gemini: 'dribble_move' },
   diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 
@@ -46,7 +46,7 @@ export const ROLLER = {
   pasor: { tr: 'Pasör', en: 'Passer', gemini: 'passer' },
   bloklayan: { tr: 'Bloklayan', en: 'Blocker', gemini: 'blocker' },
   top_calan: { tr: 'Top çalan', en: 'Stealer', gemini: 'stealer' },
-  calim_atan: { tr: 'Çalım atan', en: 'Ball handler', gemini: 'ball_handler' },
+  calim_atan: { tr: 'Ball handler', en: 'Ball handler', gemini: 'ball_handler' },
   diger: { tr: 'Diğer', en: 'Other', gemini: 'other' },
 } as const satisfies Record<string, Adlar>;
 

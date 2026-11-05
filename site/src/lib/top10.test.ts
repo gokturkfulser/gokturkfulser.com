@@ -10,6 +10,7 @@ import {
   siraHatasi,
   sonGece,
   videoAdresiMi,
+  videoKimligi,
   yinelenenTarihler,
   type Gece,
   type Katki,
@@ -405,5 +406,20 @@ describe('izinliBolusumler ve sezonKlasoru (kontrol düzenleyicisiyle paylaşıl
     expect(sezonKlasoru('2026-11-01')).toBe('2026-27');
     expect(sezonKlasoru('2027-01-15')).toBe('2026-27');
     expect(sezonKlasoru('2027-08-01')).toBe('2027-28');
+  });
+});
+
+describe('videoKimligi', () => {
+  it('watch, youtu.be, embed ve shorts adreslerinden 11 karakterlik kimlik', () => {
+    expect(videoKimligi('https://www.youtube.com/watch?v=WICJbDrybJc')).toBe('WICJbDrybJc');
+    expect(videoKimligi('https://youtube.com/watch?v=WICJbDrybJc&t=47')).toBe('WICJbDrybJc');
+    expect(videoKimligi('https://youtu.be/WICJbDrybJc?t=5')).toBe('WICJbDrybJc');
+    expect(videoKimligi('https://www.youtube.com/embed/WICJbDrybJc')).toBe('WICJbDrybJc');
+    expect(videoKimligi('https://www.youtube.com/shorts/WICJbDrybJc')).toBe('WICJbDrybJc');
+  });
+  it('YouTube dışı, bozuk ya da kimliği geçersiz adresler undefined', () => {
+    for (const a of ['https://www.nba.com/watch?v=WICJbDrybJc', 'https://www.youtube.com/watch?v=kisa', 'https://www.youtube.com/watch', 'yok', 'https://evil.com/../WICJbDrybJc', 'https://www.youtube.com/watch?v=../../etc/passwd']) {
+      expect(videoKimligi(a), a).toBeUndefined();
+    }
   });
 });

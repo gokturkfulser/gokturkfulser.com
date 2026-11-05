@@ -2,6 +2,7 @@
 // Sezon sıralaması (ilk 20): sıra, oyuncu, son takım, toplam puan, gece sayısı, 1 numara sayısı ve bir önceki geceye kadarki sıraya göre
 // değişim ("+2", "−1", "=", "yeni"; metin, ok yok). Veri `top10` koleksiyonu, hesap lib/top10.ts ve lib/top10-ozet.ts. `sezon` verilmezse en yeni sezon. Gece verisi yoksa boş durum. Sıfır JS; geniş tablo yalnızca kendi kabında kayar.
 import Top10Bos from './Top10Bos.astro';
+import Top10Podyum from './Top10Podyum.astro';
 import { top10Geceleri } from '../../lib/content';
 import { ondalikYaz, sayiYaz } from '../../lib/format';
 import { degisimMetni, siralamaDegisimi } from '../../lib/top10-ozet';
@@ -20,6 +21,8 @@ const { sezon, geceler } = await top10Geceleri(Astro.props.sezon);
 const sinir = Astro.props.sinir ?? 20;
 const tablo = siralamaDegisimi(geceler, sinir);
 const baslik = s.siralama(sezon ?? '', tablo.length);
+const podyum = tablo.slice(0, 3);
+const kalan = tablo.slice(3);
 ---
 
 {
@@ -27,9 +30,23 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
     <Top10Bos />
   ) : (
     <div class="kutu">
-      <div class="sarmal" role="region" aria-label={baslik} tabindex="0">
+      <p class="baslik" id="top10-siralama-baslik">{baslik}</p>
+      <Top10Podyum
+        ad={baslik}
+        oyuncular={podyum.map(({ satir, sira, degisim }) => ({
+          sira: sayiYaz(sira, dil),
+          ad: satir.oyuncu,
+          takim: satir.takim,
+          sayilar: [
+            { etiket: s.sutun.puan, deger: ondalikYaz(satir.puan, dil) },
+            { etiket: s.sutun.gece, deger: sayiYaz(satir.gece, dil) },
+            { etiket: s.sutun.birinci, deger: sayiYaz(satir.birinci, dil) },
+            { etiket: s.sutun.degisim, deger: degisimMetni(degisim, s.degisimYeni) },
+          ],
+        }))}
+      />
+      {kalan.length > 0 && <div class="sarmal" role="region" aria-labelledby="top10-siralama-baslik" tabindex="0">
         <table>
-          <caption>{baslik}</caption>
           <thead>
             <tr>
               <th scope="col" class="sayi">{s.sutun.sira}</th>
@@ -42,7 +59,7 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
             </tr>
           </thead>
           <tbody>
-            {tablo.map(({ satir, sira, degisim }) => (
+            {kalan.map(({ satir, sira, degisim }) => (
               <tr>
                 <td class="sayi">{sayiYaz(sira, dil)}</td>
                 <th scope="row">{satir.oyuncu}</th>
@@ -55,7 +72,7 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
             ))}
           </tbody>
         </table>
-      </div>
+      </div>}
       <p class="not">{s.puanNotu}</p>
     </div>
   )
@@ -83,13 +100,17 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
     font-variant-numeric: tabular-nums;
   }
 
-  caption {
-    padding: var(--aralik-3) var(--aralik-3) var(--aralik-2);
-    text-align: start;
+  .baslik {
+    margin: 0 0 var(--aralik-3);
+    font-family: var(--font-baslik-yigin);
     font-weight: 800;
     font-size: 1.5rem;
     line-height: 1.1;
     color: var(--murekkep);
+  }
+
+  .sarmal {
+    margin-block-start: var(--aralik-4);
   }
 
   th,
@@ -108,18 +129,6 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
     font-weight: 600;
   }
 
-  /* Satır başında 4 px'lik işaret şeridi (hizayı korumak için hepsinde var, yalnızca lider satırda turuncu) */
-  :is(thead, tbody) tr > :first-child {
-    border-inline-start: 4px solid transparent;
-  }
-
-  tbody tr:first-child > :first-child {
-    border-inline-start-color: var(--dunya-bant);
-  }
-
-  tbody tr:first-child :is(th, .puan) {
-    font-weight: 800;
-  }
 
   tbody tr:nth-child(even) {
     background: color-mix(in srgb, var(--dunya-bant) 8%, transparent);
@@ -146,7 +155,7 @@ const baslik = s.siralama(sezon ?? '', tablo.length);
       font-size: var(--yazi-xs);
     }
 
-    caption {
+    .baslik {
       font-size: 1.25rem;
     }
 

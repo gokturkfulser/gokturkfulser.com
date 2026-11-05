@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "top10-kapaklar": "node scripts/top10-kapaklar.ts",
+    "top10-oyuncular": "node scripts/top10-oyuncular.ts",
     "afisler": "node --env-file-if-exists=.env scripts/letterboxd-afis.ts",
-    "build": "pnpm run afisler && astro build && pagefind --site dist && pagefind --site dist --output-path dist/pagefind-b",
+    "build": "pnpm run afisler && pnpm run top10-kapaklar && pnpm run top10-oyuncular && astro build && pagefind --site dist && pagefind --site dist --output-path dist/pagefind-b",
     "build:workers": "node scripts/workers-build.mjs",
     "preview": "astro preview",
     "check": "astro check",

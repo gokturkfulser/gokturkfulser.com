@@ -11,8 +11,8 @@ describe('clutch etiketi', () => {
 
 describe('çalım eylemi, çalım atan rolü ve eşitleyen etiketi', () => {
   it('anahtar, Gemini değeri ve görünen adlar', () => {
-    expect(EYLEMLER.calim).toEqual({ tr: 'Çalım', en: 'Handles', gemini: 'dribble_move' });
-    expect(ROLLER.calim_atan).toEqual({ tr: 'Çalım atan', en: 'Ball handler', gemini: 'ball_handler' });
+    expect(EYLEMLER.calim).toEqual({ tr: 'Handles', en: 'Handles', gemini: 'dribble_move' });
+    expect(ROLLER.calim_atan).toEqual({ tr: 'Ball handler', en: 'Ball handler', gemini: 'ball_handler' });
     expect(ETIKETLER.esitleyen).toEqual({ tr: 'Eşitleyen', en: 'Game-tying', gemini: 'game_tying' });
     expect(EYLEM_ANAHTARLARI).toContain('calim');
     expect(ROL_ANAHTARLARI).toContain('calim_atan');
