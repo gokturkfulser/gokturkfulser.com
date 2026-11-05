@@ -1,0 +1,192 @@
+# Gemini ile üretildi: 2026-11-05T08:40:31.016Z, model gemini-3.8-flash
+
+tarih: 2026-11-04
+video: https://www.youtube.com/watch?v=Ym71yZsT4V4
+kaynak: gemini
+inceleme: onaylandi
+elle_duzenlendi: true
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: ucluk
+    etiketler: [ son_saniye, mac_kazandiran, clutch ]
+    aciklama: Klay Thompson buries a buzzer-beating three-pointer in overtime to win the game for Miami.
+    zaman: "02:02"
+    katkilar:
+      - { oyuncu: Klay Thompson, takim: MIA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    etiketler: [ clutch ]
+    aciklama: Jaylen Brown closes out and leaps high to block Cade Cunningham's clutch three-point attempt.
+    rakip: Cade Cunningham
+    zaman: "01:48"
+    katkilar:
+      - { oyuncu: Jaylen Brown, takim: PHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Zuby Ejiofor rises through contact in the paint for a ferocious poster dunk over Bilal Coulibaly.
+    rakip: Bilal Coulibaly
+    zaman: "01:34"
+    katkilar:
+      - { oyuncu: Zuby Ejiofor, takim: ATL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; orta (Whitehead identified by jersey #0 on the Brooklyn Nets.); yüksek
+  # pay: Whitehead threads a bounce pass through traffic to the cutting big man.
+  # pay oyu 2/3
+  - sira: 4
+    eylem: pas
+    aciklama: Mikel Brown Jr. threads a bounce pass inside to Moritz Wagner for a hammer dunk.
+    zaman: "01:17"
+    katkilar:
+      - { oyuncu: Mikel Brown Jr., takim: BKN, rol: pasor, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - "orta (Whitehead identified by jersey #0 on the Brooklyn Nets.)"
+        - yüksek
+        - "pay: Whitehead threads a bounce pass through traffic to the cutting big man."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Jones delivers the high lob from the perimeter.
+  - sira: 5
+    eylem: alley_oop
+    aciklama: Tyus Jones throws up a lob to Trevon Brazile, who flies in for a high-flying alley-oop dunk.
+    zaman: "01:04"
+    katkilar:
+      - { oyuncu: Tyus Jones, takim: DEN, rol: pasor, pay: 30 }
+      - { oyuncu: Trevon Brazile, takim: DEN, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jones delivers the high lob from the perimeter."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    etiketler: [ chase_down_blok, clutch ]
+    aciklama: Giannis Antetokounmpo tracks back in overtime to swat away Rui Hachimura's shot at the rim.
+    rakip: Rui Hachimura
+    zaman: "00:53"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: blok
+    aciklama: Tolu Smith elevates at the rim to emphatically reject LeBron James' reverse layup attempt.
+    rakip: LeBron James
+    zaman: "00:41"
+    katkilar:
+      - { oyuncu: Tolu Smith, takim: DET, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: VanVleet creates the highlight with a flashy behind-the-back bounce pass on the break.
+  - sira: 8
+    eylem: pas
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: Fred VanVleet delivers a behind-the-back bounce pass to Amen Thompson for a transition dunk.
+    zaman: "00:27"
+    katkilar:
+      - { oyuncu: Fred VanVleet, takim: HOU, rol: pasor, pay: 70 }
+      - { oyuncu: Amen Thompson, takim: HOU, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: VanVleet creates the highlight with a flashy behind-the-back bounce pass on the break."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: smac
+    etiketler: [ putback ]
+    aciklama: Dalton Knecht soars in to grab the offensive rebound and slam home a putback dunk.
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Dalton Knecht, takim: NYK, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Vassell lofts an accurate lob pass right to the rim.
+  # pay oyu 2/3
+  - sira: 10
+    eylem: alley_oop
+    etiketler: [ tek_el, hizli_hucum ]
+    aciklama: Devin Vassell lofts an alley-oop pass to Dylan Harper for a one-handed flush.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Devin Vassell, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Dylan Harper, takim: SAS, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Vassell lofts an accurate lob pass right to the rim."
