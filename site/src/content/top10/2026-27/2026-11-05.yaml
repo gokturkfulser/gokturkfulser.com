@@ -4,7 +4,8 @@ tarih: 2026-11-05
 video: https://www.youtube.com/watch?v=zxgN8xTI9ME
 tur: top5
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: düşük (oy 2/3)
   # diğer: Collin Gillespie + Ryan Dunn 1/3
@@ -16,10 +17,10 @@ oyunlar:
   # doğrulanmamış ad: Oso Ighodaro, Ryan Dunn (sözlükte ve mevcut veride yok, güven düşük)
   - sira: 1
     eylem: alley_oop
-    aciklama: Oso Ighodaro serves up a lob to a cutting Ryan Dunn for an alley-oop slam.
+    aciklama: Devin Booker serves up a lob to a cutting Ryan Dunn for an alley-oop slam.
     zaman: "01:13"
     katkilar:
-      - { oyuncu: Oso Ighodaro, takim: PHX, rol: pasor, pay: 50 }
+      - { oyuncu: Devin Booker, takim: PHX, rol: pasor, pay: 50 }
       - { oyuncu: Ryan Dunn, takim: PHX, rol: bitiren, pay: 50 }
     kontrol:
       guven: dusuk
@@ -74,9 +75,8 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 4
     eylem: smac
-    etiketler: [ poster, tek_el ]
-    aciklama: Jalen Green slashes into the lane and hammers a one-handed poster dunk over Goga Bitadze.
-    rakip: Goga Bitadze
+    etiketler: [ tek_el ]
+    aciklama: Jalen Green slashes into the lane and hammers a one-handed dunk.
     zaman: "00:16"
     katkilar:
       - { oyuncu: Jalen Green, takim: PHX, rol: bitiren, pay: 100 }
