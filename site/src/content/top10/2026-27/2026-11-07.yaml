@@ -1,0 +1,181 @@
+# Gemini ile üretildi: 2026-11-08T14:06:21.674Z, model gemini-3.8-flash
+
+tarih: 2026-11-07
+video: https://www.youtube.com/watch?v=y-PKE63m-U8
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: calim
+    etiketler: [ crossover, clutch ]
+    aciklama: Nickeil Alexander-Walker pulls off a vicious crossover move that drops Danny Wolf to the floor before floating in the basket.
+    rakip: Danny Wolf
+    zaman: "02:14"
+    katkilar:
+      - { oyuncu: Nickeil Alexander-Walker, takim: ATL, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # ad uyarısı: "Axel Lendeborg", mevcut yazım: Yaxel Lendeborg?
+  - sira: 2
+    eylem: blok
+    aciklama: Axel Lendeborg rises up at the rim and swats away Jase Richardson's aggressive dunk attempt.
+    rakip: Jase Richardson
+    zaman: "02:00"
+    katkilar:
+      - { oyuncu: Axel Lendeborg, takim: GSW, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      uyarilar:
+        - 'ad uyarısı: "Axel Lendeborg", mevcut yazım: Yaxel Lendeborg?'
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ and_one ]
+    aciklama: Karl-Anthony Towns powers through traffic into the paint and throws down a strong dunk while drawing the foul.
+    zaman: "01:48"
+    katkilar:
+      - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: blok
+    aciklama: Aday Mara protects the rim and emphatically denies Bilal Coulibaly's dunk attempt.
+    rakip: Bilal Coulibaly
+    zaman: "01:31"
+    katkilar:
+      - { oyuncu: Aday Mara, takim: OKC, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Booker pushes ahead in transition and lofts a precise pass.
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Devin Booker leads the break and finds Jalen Green for a high-flying transition alley-oop slam.
+    zaman: "01:14"
+    katkilar:
+      - { oyuncu: Devin Booker, takim: PHX, rol: pasor, pay: 30 }
+      - { oyuncu: Jalen Green, takim: PHX, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Booker pushes ahead in transition and lofts a precise pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Julius Randle drives down the middle of the lane and detonates a ferocious one-handed southpaw dunk.
+    zaman: "01:00"
+    katkilar:
+      - { oyuncu: Julius Randle, takim: BKN, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Stephen Curry drives into the paint, absorbs contact, and converts a high-arcing falling-down scoop shot for the and-one.
+    rakip: Jamal Cain
+    zaman: "00:44"
+    katkilar:
+      - { oyuncu: Stephen Curry, takim: GSW, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Fox delivers a well-timed lob to Wembanyama over the rim protector.
+  - sira: 8
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: De'Aaron Fox lofts an alley-oop pass to Victor Wembanyama, who finishes with authority over Donovan Clingan.
+    rakip: Donovan Clingan
+    zaman: "00:29"
+    katkilar:
+      - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Fox delivers a well-timed lob to Wembanyama over the rim protector."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: turnike
+    etiketler: [ esitleyen, clutch, son_saniye ]
+    aciklama: Jamal Cain corrals the offensive rebound and banks in a clutch putback layup at the buzzer to tie the game and force overtime.
+    rakip: Draymond Green
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Jamal Cain, takim: ORL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Kelly Oubre Jr. hustles back on defense and swats away Christian Braun's breakaway dunk attempt from behind.
+    rakip: Christian Braun
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
