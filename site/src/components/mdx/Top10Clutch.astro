@@ -1,0 +1,70 @@
+---
+// Oyuncu clutch tablosu: NBA'in clutch ölçütüyle (4. çeyrek ya da uzatmanın son 5 dakikası, fark ≤ 5) maç başı değerler (src/data/nba/clutch.tsv, NBA.com/stats'tan elle yapıştırılır).
+// Sıra NBA'in dosyadaki sırasıdır; son sütunda oyuncunun bizim sezon sıralamamızdaki yeri (ad sözlüğüyle eşleşir). Ana puanlamaya katılmaz.
+// Dosya yoksa ya da boşsa hiçbir şey çizmez. `sinir`: en çok kaç satır (varsayılan 50).
+import Top10NbaTablo from './Top10NbaTablo.astro';
+import { top10AdHaritasi, top10Geceleri } from '../../lib/content';
+import { nbaClutch } from '../../lib/nba-dosyalari';
+import { nbaKimligi, sezonSiralari } from '../../lib/nba-veri';
+import { AYAR, dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+  sinir?: number;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { geceler } = await top10Geceleri(Astro.props.sezon);
+const harita = await top10AdHaritasi();
+const siralar = sezonSiralari(geceler);
+const oyuncular = nbaClutch().slice(0, Astro.props.sinir ?? 50);
+const bir = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const isaretli = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+const tam = new Intl.NumberFormat(AYAR[dil].intl);
+const c = s.nba.clutch;
+const sutunlar = [
+  { ad: s.sutun.oyuncu },
+  { ad: s.sutun.takim },
+  { ad: c.sutun.siramiz, sayisal: true },
+  { ad: c.sutun.mac, sayisal: true },
+  { ad: c.sutun.galibiyet, sayisal: true },
+  { ad: c.sutun.maglubiyet, sayisal: true },
+  { ad: c.sutun.dakika, sayisal: true },
+  { ad: c.sutun.sayi, sayisal: true },
+  { ad: c.sutun.isabet, sayisal: true },
+  { ad: c.sutun.uclukIsabet, sayisal: true },
+  { ad: c.sutun.ribaund, sayisal: true },
+  { ad: c.sutun.asist, sayisal: true },
+  { ad: c.sutun.calma, sayisal: true },
+  { ad: c.sutun.blok, sayisal: true },
+  { ad: c.sutun.artiEksi, sayisal: true },
+];
+const satirlar = oyuncular.map((x) => [
+  x.oyuncu,
+  x.takim,
+  siralar.has(nbaKimligi(x.oyuncu, harita)) ? tam.format(siralar.get(nbaKimligi(x.oyuncu, harita))!) : '',
+  tam.format(x.mac),
+  tam.format(x.galibiyet),
+  tam.format(x.maglubiyet),
+  bir.format(x.dakika),
+  bir.format(x.sayi),
+  bir.format(x.isabet),
+  bir.format(x.uclukIsabet),
+  bir.format(x.ribaund),
+  bir.format(x.asist),
+  bir.format(x.calma),
+  bir.format(x.blok),
+  isaretli.format(x.artiEksi),
+]);
+---
+
+<Top10NbaTablo
+  id="top10-clutch"
+  baslik={c.baslik}
+  aciklama={c.aciklama}
+  kaynakAdresi="https://www.nba.com/stats/players/clutch-traditional"
+  not={c.veri}
+  sutunlar={sutunlar}
+  satirlar={satirlar}
+/>

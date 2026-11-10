@@ -193,6 +193,11 @@ export async function top10Geceleri(sezon?: string): Promise<{ sezon: string | u
   return { sezon: secilen, geceler };
 }
 
+/** Oyuncu adı sözlüğünün haritası (takma ad → kanonik ad); NBA tablolarındaki yazımları kendi adlarımızla eşleştirmek için. */
+export async function top10AdHaritasi() {
+  return sozlukHaritasi((await getCollection('top10Adlar'))[0]?.data.kayitlar ?? {});
+}
+
 /**
  * Top 10 kontrol sayfasının verisi: sezon ayrımı olmadan tüm geceler (kanonik adlarla) ve kimlikleri (`<sezon>/<tarih>`).
  * Yalnızca SHOW_DRAFTS build'lerinde veri döner; production'da her zaman boştur (kontrol alanı ve gece verisi hiçbir sayfaya girmez).

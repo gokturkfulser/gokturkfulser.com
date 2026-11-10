@@ -1,0 +1,147 @@
+---
+// NBA.com/stats verisinden bilgi tablosu (Dunk Score, clutch): başlık, açıklama, belirgin kaynak atfı, kendi kabında kayan düz tablo. İlk sütun satır başlığıdır
+// (oyuncu) ve yatay kaydırmada sabit kalır. Sıfır JS, style="" yok. Tablolar ana puanlamaya katılmaz. Veri hazırlığı Top10DunkScore.astro / Top10Clutch.astro'dadır.
+import { dilAl, sozluk } from '../../i18n';
+
+export interface NbaSutun {
+  ad: string;
+  /** Sağa hizalı sayısal sütun. */
+  sayisal?: boolean;
+}
+
+interface Props {
+  id: string;
+  baslik: string;
+  aciklama: string;
+  kaynakAdresi: string;
+  /** Kaynak satırının sonuna eklenen kısa not (ör. veri tarihi). */
+  not?: string;
+  sutunlar: NbaSutun[];
+  /** Her satır, `sutunlar` kadar önceden biçimlenmiş metin; ilk hücre satır başlığıdır. */
+  satirlar: string[][];
+}
+
+const s = sozluk(dilAl(Astro)).top10;
+const { id, baslik, aciklama, kaynakAdresi, not, sutunlar, satirlar } = Astro.props;
+---
+
+{
+  satirlar.length > 0 && (
+    <section class="kutu" aria-labelledby={id}>
+      <h2 id={id}>{baslik}</h2>
+      <p class="aciklama">{aciklama}</p>
+      <p class="kaynak">
+        {s.nba.kaynak}:{' '}
+        <a href={kaynakAdresi} target="_blank" rel="noopener noreferrer">
+          {s.nba.kaynakAd}<span class="sr-only"> {s.yeniSekmeNotu}</span>
+        </a>
+        {'.'}
+        {not && <> {not}</>}
+      </p>
+      <div class="sarmal" role="region" aria-labelledby={id} tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              {sutunlar.map((x, i) => (
+                <th scope="col" class:list={[x.sayisal && 'sayi', i === 0 && 'ilk']}>{x.ad}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {satirlar.map((satir) => (
+              <tr>
+                {satir.map((hucre, i) =>
+                  i === 0 ? (
+                    <th scope="row" class="ilk">{hucre}</th>
+                  ) : (
+                    <td class:list={[sutunlar[i]?.sayisal && 'sayi']}>{hucre}</td>
+                  ),
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .kutu {
+    margin-block: 1.6em;
+    font-family: var(--font-baslik-yigin);
+    color: var(--murekkep);
+  }
+
+  .aciklama,
+  .kaynak {
+    margin: 0 0 var(--aralik-2);
+    font-size: var(--yazi-sm);
+    line-height: 1.5;
+  }
+
+  .kaynak {
+    font-weight: 600;
+  }
+
+  .kaynak a {
+    color: var(--murekkep);
+  }
+
+  .sarmal {
+    max-block-size: 26rem;
+    overflow: auto;
+    background: var(--yuzey);
+    border-block-start: 3px solid var(--dunya-bant);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--yazi-xs);
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+    hyphens: manual;
+  }
+
+  th,
+  td {
+    padding: 0.35rem 0.6rem;
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    background: var(--yuzey);
+    border-block-end: 2px solid var(--dunya-bant);
+    font-weight: 700;
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  /* Oyuncu sütunu yatay kaydırmada sabit; satır çizgileri hücrelerde, bu yüzden altı da çizilir */
+  .ilk {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    background: var(--yuzey);
+  }
+
+  thead .ilk {
+    z-index: 3;
+  }
+
+  tbody tr + tr > * {
+    border-block-start: 1px solid var(--cizgi);
+  }
+
+  .sayi {
+    text-align: end;
+  }
+</style>

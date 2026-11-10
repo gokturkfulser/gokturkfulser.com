@@ -1,0 +1,61 @@
+---
+// Dunk Score tablosu: NBA'in oyuncu takip verisinden hesapladığı smaç puanı (src/data/nba/dunk-score.tsv, NBA.com/stats'tan elle yapıştırılır).
+// Skora göre çoktan aza; son sütunda smaç bizim Top 10 gecemizde de yer aldıysa o oyunun sırası (tahmini eşleşme: lib/nba-veri.ts → dunkTop10Sirasi).
+// Ana puanlamaya katılmaz. Dosya yoksa ya da boşsa hiçbir şey çizmez. `sinir`: en çok kaç satır (varsayılan 50).
+import Top10NbaTablo from './Top10NbaTablo.astro';
+import { top10AdHaritasi, top10Geceleri } from '../../lib/content';
+import { tarihYaz } from '../../lib/format';
+import { nbaDunkScore } from '../../lib/nba-dosyalari';
+import { dunkTop10Sirasi } from '../../lib/nba-veri';
+import { AYAR, dilAl, sozluk } from '../../i18n';
+
+interface Props {
+  sezon?: string;
+  sinir?: number;
+}
+
+const dil = dilAl(Astro);
+const s = sozluk(dil).top10;
+const { geceler } = await top10Geceleri(Astro.props.sezon);
+const harita = await top10AdHaritasi();
+const dunklar = nbaDunkScore().slice(0, Astro.props.sinir ?? 50);
+const sirlar = dunkTop10Sirasi(dunklar, geceler, harita);
+const bir = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const kisaTarih = new Intl.DateTimeFormat(AYAR[dil].intl, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const sonTarih = dunklar.reduce<Date | undefined>((en, d) => (!en || d.tarih > en ? d.tarih : en), undefined);
+const d = s.nba.dunk;
+const sutunlar = [
+  { ad: s.sutun.oyuncu },
+  { ad: s.sutun.takim },
+  { ad: d.sutun.tarih },
+  { ad: d.sutun.skor, sayisal: true },
+  { ad: d.sutun.top10 },
+  { ad: d.sutun.atlama, sayisal: true },
+  { ad: d.sutun.guc, sayisal: true },
+  { ad: d.sutun.stil, sayisal: true },
+  { ad: d.sutun.savunma, sayisal: true },
+  { ad: d.sutun.mac },
+];
+const satirlar = dunklar.map((x, i) => [
+  x.oyuncu,
+  x.takim,
+  kisaTarih.format(x.tarih),
+  bir.format(x.skor),
+  sirlar[i] !== undefined ? d.top10Sira(sirlar[i]!) : '',
+  bir.format(x.atlama),
+  bir.format(x.guc),
+  bir.format(x.stil),
+  bir.format(x.savunma),
+  x.mac,
+]);
+---
+
+<Top10NbaTablo
+  id="top10-dunk-score"
+  baslik={d.baslik}
+  aciklama={d.aciklama}
+  kaynakAdresi="https://www.nba.com/stats/players/dunk-scores"
+  not={sonTarih ? d.veriTarihi(tarihYaz(sonTarih, dil)) : undefined}
+  sutunlar={sutunlar}
+  satirlar={satirlar}
+/>

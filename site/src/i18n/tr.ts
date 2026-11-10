@@ -257,6 +257,25 @@ export const tr = {
       },
       not: "Sayılar yalnızca NBA'in Top 10 listelerine giren hareketleri kapsıyor.",
     },
+    nba: {
+      kaynak: 'Kaynak',
+      kaynakAd: 'NBA.com/stats',
+      dunk: {
+        baslik: 'Dunk Score',
+        aciklama:
+          "Dunk Score, NBA'in oyuncu takip verisinden hesapladığı smaç puanı: sıçrama, güç, stil ve savunma baskısı alt skorlarından oluşuyor, üst sınırı yok. Sıralamadaki puanlara katılmıyor, yalnızca bilgi olarak duruyor.",
+        sutun: { mac: 'Maç', tarih: 'Tarih', skor: 'Skor', atlama: 'Sıçrama', guc: 'Güç', stil: 'Stil', savunma: 'Savunma', top10: 'Top 10' },
+        top10Sira: (n: number) => `O gece ${n}. sıra`,
+        veriTarihi: (tarih: string) => `Veri ${tarih} gecesine kadar, elle güncelleniyor.`,
+      },
+      clutch: {
+        baslik: 'Clutch',
+        aciklama:
+          "Clutch, 4. çeyreğin ya da uzatmanın son 5 dakikasında farkın en fazla 5 olduğu anlar. Değerler NBA'in tablosundan olduğu gibi, maç başı ortalama. Sıralamadaki puanlara katılmıyor, yalnızca bilgi olarak duruyor.",
+        veri: 'Elle güncelleniyor.',
+        sutun: { mac: 'Maç', galibiyet: 'G', maglubiyet: 'M', dakika: 'Dk', sayi: 'Sayı', isabet: 'FG%', uclukIsabet: '3P%', ribaund: 'Rib', asist: 'Ast', calma: 'Çalma', blok: 'Blok', artiEksi: '+/-', siramiz: 'Sıramız' },
+      },
+    },
     versus: {
       baslik: 'Kim kime ne yaptı',
       rakip: 'Rakibi',
