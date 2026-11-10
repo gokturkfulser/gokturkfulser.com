@@ -3,7 +3,8 @@
 tarih: 2026-11-06
 video: https://www.youtube.com/watch?v=0OKpLFirSOQ
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -48,8 +49,8 @@ oyunlar:
     aciklama: Victor Wembanyama lofts an alley-oop pass from the top of the key to Stephon Castle for a high-flying one-handed slam.
     zaman: "01:35"
     katkilar:
-      - { oyuncu: Victor Wembanyama, takim: SAS, rol: pasor, pay: 50 }
-      - { oyuncu: Stephon Castle, takim: SAS, rol: bitiren, pay: 50 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Stephon Castle, takim: SAS, rol: bitiren, pay: 70 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -71,8 +72,7 @@ oyunlar:
     aciklama: Donovan Mitchell penetrates the paint and drops a no-look behind-the-back pass to Thomas Bryant for a two-handed flush.
     zaman: "01:23"
     katkilar:
-      - { oyuncu: Donovan Mitchell, takim: CLE, rol: pasor, pay: 70 }
-      - { oyuncu: Thomas Bryant, takim: CLE, rol: bitiren, pay: 30 }
+      - { oyuncu: Donovan Mitchell, takim: CLE, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -102,12 +102,13 @@ oyunlar:
   # diğer: Adem Bona 1/3
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
-    eylem: blok
+    eylem: smac
+    etiketler: [ poster ]
     aciklama: Aday Mara rises up at the rim to emphatically reject Quinten Post's inside shot attempt with his left hand.
     rakip: Quinten Post
     zaman: "00:55"
     katkilar:
-      - { oyuncu: Aday Mara, takim: OKC, rol: bloklayan, pay: 100 }
+      - { oyuncu: Aday Mara, takim: OKC, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 2/3
