@@ -3,7 +3,8 @@
 tarih: 2026-11-08
 video: https://www.youtube.com/watch?v=XD3GA0FazBk
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -33,8 +34,7 @@ oyunlar:
     aciklama: Kevin Huerter flips a no-look pass over his head to find Daniss Jenkins for a baseline triple.
     zaman: "01:53"
     katkilar:
-      - { oyuncu: Kevin Huerter, takim: DET, rol: pasor, pay: 70 }
-      - { oyuncu: Daniss Jenkins, takim: DET, rol: bitiren, pay: 30 }
+      - { oyuncu: Kevin Huerter, takim: DET, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -128,11 +128,11 @@ oyunlar:
   # doğrulanmamış ad: Darren Peterson (sözlükte ve mevcut veride yok, güven düşük)
   - sira: 7
     eylem: alley_oop
-    aciklama: Keyonte George delivers a wrap-around pass to Darren Peterson for a two-handed dunk.
+    aciklama: Keyonte George delivers a wrap-around pass to Darryn Peterson for a two-handed dunk.
     zaman: "00:43"
     katkilar:
-      - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 50 }
-      - { oyuncu: Darren Peterson, takim: UTA, rol: bitiren, pay: 50 }
+      - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 70 }
+      - { oyuncu: Darryn Peterson, takim: UTA, rol: bitiren, pay: 30 }
     kontrol:
       guven: dusuk
       oy: 2/3
@@ -177,7 +177,6 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 9
     eylem: smac
-    etiketler: [ putback ]
     aciklama: Caleb Wilson cuts baseline and elevates for an emphatic reverse dunk.
     zaman: "00:16"
     katkilar:
@@ -200,8 +199,7 @@ oyunlar:
     aciklama: Jaylen Brown pushes the ball ahead to LeBron James for a fast-break dunk.
     zaman: "00:00"
     katkilar:
-      - { oyuncu: Jaylen Brown, takim: PHI, rol: pasor, pay: 30 }
-      - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 70 }
+      - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
