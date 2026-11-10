@@ -1,0 +1,107 @@
+# Gemini ile üretildi: 2026-11-06T08:27:42.466Z, model gemini-3.8-flash
+
+tarih: 2026-11-05
+video: https://www.youtube.com/watch?v=zxgN8xTI9ME
+tur: top5
+kaynak: gemini
+inceleme: onaylandi
+elle_duzenlendi: true
+oyunlar:
+  # güven: düşük (oy 2/3)
+  # diğer: Collin Gillespie + Ryan Dunn 1/3
+  # pay diğer: 50/50 1/2
+  # pay diğer: 30/70 1/2
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ighodaro delivers an accurate lob and Dunn finishes with a high-flying dunk.
+  # pay oyu 1/2
+  # doğrulanmamış ad: Oso Ighodaro, Ryan Dunn (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 1
+    eylem: alley_oop
+    aciklama: Devin Booker serves up a lob to a cutting Ryan Dunn for an alley-oop slam.
+    zaman: "01:13"
+    katkilar:
+      - { oyuncu: Devin Booker, takim: PHX, rol: pasor, pay: 50 }
+      - { oyuncu: Ryan Dunn, takim: PHX, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - pay oyu 1/2
+        - "doğrulanmamış ad: Oso Ighodaro, Ryan Dunn (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Collin Gillespie + Ryan Dunn 1/3"
+        - "pay diğer: 50/50 1/2"
+        - "pay diğer: 30/70 1/2"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ighodaro delivers an accurate lob and Dunn finishes with a high-flying dunk."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Dillon Brooks pushes the ball in transition and finishes a fast break with a two-handed flush.
+    zaman: "00:54"
+    katkilar:
+      - { oyuncu: Dillon Brooks, takim: PHX, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: calim
+    etiketler: [ crossover ]
+    aciklama: Bam Adebayo crosses over Al Horford, sending him stumbling backward, before sinking a mid-range jumper.
+    rakip: Al Horford
+    zaman: "00:32"
+    katkilar:
+      - { oyuncu: Bam Adebayo, takim: MIA, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Oso Ighodaro + Jalen Green 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Jalen Green slashes into the lane and hammers a one-handed dunk.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Jalen Green, takim: PHX, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Oso Ighodaro + Jalen Green 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Charles Bassey pins Pelle Larsson's layup attempt against the backboard for a block.
+    rakip: Pelle Larsson
+    zaman: "00:01"
+    katkilar:
+      - { oyuncu: Charles Bassey, takim: GSW, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek

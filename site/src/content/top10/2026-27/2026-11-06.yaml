@@ -1,0 +1,207 @@
+# Gemini ile üretildi: 2026-11-07T13:46:53.148Z, model gemini-3.8-flash
+
+tarih: 2026-11-06
+video: https://www.youtube.com/watch?v=0OKpLFirSOQ
+kaynak: gemini
+inceleme: onaylandi
+elle_duzenlendi: true
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: ucluk
+    etiketler: [ son_saniye, yari_saha_ve_otesi ]
+    aciklama: Luka Doncic launches a three-quarter-court heave before the halftime buzzer that banks off the backboard and in.
+    zaman: "02:03"
+    katkilar:
+      - { oyuncu: Luka Doncic, takim: LAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ hizli_hucum, windmill, ters ]
+    aciklama: Cooper Flagg gathers a loose ball, pushes down the floor in transition, and unleashes a powerful windmill slam.
+    zaman: "01:49"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Wembanyama delivers a high pinpoint lob pass from beyond the arc.
+  # pay oyu 2/3
+  - sira: 3
+    eylem: alley_oop
+    etiketler: [ tek_el ]
+    aciklama: Victor Wembanyama lofts an alley-oop pass from the top of the key to Stephon Castle for a high-flying one-handed slam.
+    zaman: "01:35"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Stephon Castle, takim: SAS, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Wembanyama delivers a high pinpoint lob pass from beyond the arc."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Mitchell draws the defense and delivers a flashy behind-the-back bounce pass to Bryant.
+  - sira: 4
+    eylem: pas
+    etiketler: [ bakmadan ]
+    aciklama: Donovan Mitchell penetrates the paint and drops a no-look behind-the-back pass to Thomas Bryant for a two-handed flush.
+    zaman: "01:23"
+    katkilar:
+      - { oyuncu: Donovan Mitchell, takim: CLE, rol: pasor, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Mitchell draws the defense and delivers a flashy behind-the-back bounce pass to Bryant."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Toumani Camara cuts along the baseline and throws down a ferocious one-handed poster dunk over Walker Kessler.
+    rakip: Walker Kessler
+    zaman: "01:09"
+    katkilar:
+      - { oyuncu: Toumani Camara, takim: POR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Adem Bona 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Aday Mara rises up at the rim to emphatically reject Quinten Post's inside shot attempt with his left hand.
+    rakip: Quinten Post
+    zaman: "00:55"
+    katkilar:
+      - { oyuncu: Aday Mara, takim: OKC, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Adem Bona 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Kyrie Irving weaves into the lane and floats an acrobatic high-arcing left-handed layup off the glass while drawing the foul.
+    rakip: Lauri Markkanen
+    zaman: "00:40"
+    katkilar:
+      - { oyuncu: Kyrie Irving, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Williamson throws an accurate half-court lob ahead to Murphy in transition.
+  - sira: 8
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Zion Williamson launches a half-court transition pass to Trey Murphy III for an alley-oop slam.
+    zaman: "00:27"
+    katkilar:
+      - { oyuncu: Zion Williamson, takim: NOP, rol: pasor, pay: 50 }
+      - { oyuncu: Trey Murphy III, takim: NOP, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Williamson throws an accurate half-court lob ahead to Murphy in transition."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    etiketler: [ chase_down_blok, hizli_hucum ]
+    aciklama: Naji Marshall hustles back in transition to pin Josh Green's fast-break dunk attempt against the backboard.
+    rakip: Josh Green
+    zaman: "00:17"
+    katkilar:
+      - { oyuncu: Naji Marshall, takim: DAL, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 2/3)
+  # diğer: Rob Dillingham + Rudy Gobert 1/3
+  # eylem diğer: Pas 1/3
+  # pay diğer: 70/30 1/2
+  # pay diğer: 50/50 1/2
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ball creates the play with a flashy behind-the-back pass through the defense to set up Gobert.
+  # eylem oyu 2/3
+  # pay oyu 1/2
+  # doğrulanmamış ad: Rudy Gobert (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 10
+    eylem: alley_oop
+    aciklama: LaMelo Ball drives into the lane and dishes a behind-the-back pass to Rudy Gobert for a two-handed dunk.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 50 }
+      - { oyuncu: Rudy Gobert, takim: MIN, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 1/2
+        - "doğrulanmamış ad: Rudy Gobert (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Rob Dillingham + Rudy Gobert 1/3"
+        - "eylem diğer: Pas 1/3"
+        - "pay diğer: 70/30 1/2"
+        - "pay diğer: 50/50 1/2"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ball creates the play with a flashy behind-the-back pass through the defense to set up Gobert."

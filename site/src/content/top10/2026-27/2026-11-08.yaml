@@ -1,0 +1,214 @@
+# Gemini ile üretildi: 2026-11-09T17:11:56.940Z, model gemini-3.8-flash
+
+tarih: 2026-11-08
+video: https://www.youtube.com/watch?v=XD3GA0FazBk
+kaynak: gemini
+inceleme: onaylandi
+elle_duzenlendi: true
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Marshall throws an accurate transition pass to Irving.
+  - sira: 1
+    eylem: turnike
+    etiketler: [ ters, son_saniye ]
+    aciklama: Kyrie Irving receives a pass from Naji Marshall and converts a circus reverse layup over the rim.
+    zaman: "02:11"
+    katkilar:
+      - { oyuncu: Naji Marshall, takim: DAL, rol: pasor, pay: 30 }
+      - { oyuncu: Kyrie Irving, takim: DAL, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Marshall throws an accurate transition pass to Irving."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Huerter executes a spectacular over-the-head no-look pass to the corner.
+  - sira: 2
+    eylem: pas
+    etiketler: [ bakmadan ]
+    aciklama: Kevin Huerter flips a no-look pass over his head to find Daniss Jenkins for a baseline triple.
+    zaman: "01:53"
+    katkilar:
+      - { oyuncu: Kevin Huerter, takim: DET, rol: pasor, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Huerter executes a spectacular over-the-head no-look pass to the corner."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster, and_one ]
+    aciklama: Cooper Flagg drives to the basket and posters Noah Clowney for an and-one slam.
+    rakip: Noah Clowney
+    zaman: "01:37"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Turnike 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 4
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: Daniss Jenkins drives through traffic and hits a runner as the first half expires.
+    zaman: "01:22"
+    katkilar:
+      - { oyuncu: Daniss Jenkins, takim: DET, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Turnike 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Jaden McDaniels flies in to swat away Keyonte George's driving layup attempt.
+    rakip: Keyonte George
+    zaman: "01:08"
+    katkilar:
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Matas Buzelis rises high above the rim to reject Anfernee Simons on the drive.
+    rakip: Anfernee Simons
+    zaman: "00:56"
+    katkilar:
+      - { oyuncu: Matas Buzelis, takim: CHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 2/3)
+  # diğer: Keyonte George + Darryn Peterson 1/3
+  # eylem diğer: Pas 1/3
+  # pay diğer: 70/30 1/2
+  # pay diğer: 50/50 1/2
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: George's dazzling wrap-around pass sets up an uncontested basket.
+  # eylem oyu 2/3
+  # pay oyu 1/2
+  # benzer ad, aynı kişi mi? Darren Peterson / Darryn Peterson; aynıysa sözlüğe ekle, farklıysa yoksay
+  # doğrulanmamış ad: Darren Peterson (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 7
+    eylem: alley_oop
+    aciklama: Keyonte George delivers a wrap-around pass to Darryn Peterson for a two-handed dunk.
+    zaman: "00:43"
+    katkilar:
+      - { oyuncu: Keyonte George, takim: UTA, rol: pasor, pay: 70 }
+      - { oyuncu: Darryn Peterson, takim: UTA, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 1/2
+        - benzer ad, aynı kişi mi? Darren Peterson / Darryn Peterson; aynıysa sözlüğe ekle, farklıysa yoksay
+        - "doğrulanmamış ad: Darren Peterson (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Keyonte George + Darryn Peterson 1/3"
+        - "eylem diğer: Pas 1/3"
+        - "pay diğer: 70/30 1/2"
+        - "pay diğer: 50/50 1/2"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: George's dazzling wrap-around pass sets up an uncontested basket."
+  # güven: orta (oy 2/3)
+  # diğer: Nic Claxton 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # benzer ad, aynı kişi mi? Nicolas Claxton / Nic Claxton; aynıysa sözlüğe ekle, farklıysa yoksay
+  - sira: 8
+    eylem: blok
+    aciklama: Nicolas Claxton elevates quickly with his left hand to block Joel Embiid in the post.
+    rakip: Joel Embiid
+    zaman: "00:29"
+    katkilar:
+      - { oyuncu: Nicolas Claxton, takim: CHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      uyarilar:
+        - benzer ad, aynı kişi mi? Nicolas Claxton / Nic Claxton; aynıysa sözlüğe ekle, farklıysa yoksay
+      alternatifler:
+        - "diğer: Nic Claxton 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: smac
+    aciklama: Caleb Wilson cuts baseline and elevates for an emphatic reverse dunk.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Caleb Wilson, takim: CHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Brown secures the loose ball and feeds James ahead on the break.
+  # pay oyu 2/3
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Jaylen Brown pushes the ball ahead to LeBron James for a fast-break dunk.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: LeBron James, takim: PHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Brown secures the loose ball and feeds James ahead on the break."
