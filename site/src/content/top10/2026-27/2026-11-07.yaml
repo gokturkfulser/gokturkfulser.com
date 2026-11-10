@@ -3,13 +3,14 @@
 tarih: 2026-11-07
 video: https://www.youtube.com/watch?v=y-PKE63m-U8
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: calim
-    etiketler: [ crossover, clutch ]
+    etiketler: [ crossover ]
     aciklama: Nickeil Alexander-Walker pulls off a vicious crossover move that drops Danny Wolf to the floor before floating in the basket.
     rakip: Danny Wolf
     zaman: "02:14"
@@ -27,11 +28,11 @@ oyunlar:
   # ad uyarısı: "Axel Lendeborg", mevcut yazım: Yaxel Lendeborg?
   - sira: 2
     eylem: blok
-    aciklama: Axel Lendeborg rises up at the rim and swats away Jase Richardson's aggressive dunk attempt.
+    aciklama: Yaxel Lendeborg rises up at the rim and swats away Jase Richardson's aggressive dunk attempt.
     rakip: Jase Richardson
     zaman: "02:00"
     katkilar:
-      - { oyuncu: Axel Lendeborg, takim: GSW, rol: bloklayan, pay: 100 }
+      - { oyuncu: Yaxel Lendeborg, takim: GSW, rol: bloklayan, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -96,8 +97,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
-    etiketler: [ tek_el ]
+    etiketler: [ tek_el, poster ]
     aciklama: Julius Randle drives down the middle of the lane and detonates a ferocious one-handed southpaw dunk.
+    rakip: Onyeka Okongwu
     zaman: "01:00"
     katkilar:
       - { oyuncu: Julius Randle, takim: BKN, rol: bitiren, pay: 100 }
@@ -111,7 +113,7 @@ oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
-    eylem: turnike
+    eylem: orta_mesafe
     etiketler: [ and_one ]
     aciklama: Stephen Curry drives into the paint, absorbs contact, and converts a high-arcing falling-down scoop shot for the and-one.
     rakip: Jamal Cain
@@ -151,7 +153,6 @@ oyunlar:
     eylem: turnike
     etiketler: [ esitleyen, clutch, son_saniye ]
     aciklama: Jamal Cain corrals the offensive rebound and banks in a clutch putback layup at the buzzer to tie the game and force overtime.
-    rakip: Draymond Green
     zaman: "00:16"
     katkilar:
       - { oyuncu: Jamal Cain, takim: ORL, rol: bitiren, pay: 100 }
