@@ -1,0 +1,177 @@
+# Gemini ile üretildi: 2026-11-10T15:27:44.197Z, model gemini-3.8-flash
+
+tarih: 2026-11-09
+video: https://www.youtube.com/watch?v=B5VNBCvu4E0
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Alperen Sengun charges down the lane and detonates a vicious one-handed poster dunk over Peyton Watson.
+    rakip: Peyton Watson
+    zaman: "02:13"
+    katkilar:
+      - { oyuncu: Alperen Sengun, takim: HOU, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Doncic's over-the-head no-look pass is the spectacular center of the play.
+  - sira: 2
+    eylem: pas
+    etiketler: [ bakmadan ]
+    aciklama: Luka Doncic flips a backward over-the-head pass to Sandro Mamukelashvili for a three-pointer.
+    zaman: "01:58"
+    katkilar:
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
+      - { oyuncu: Sandro Mamukelashvili, takim: LAL, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Doncic's over-the-head no-look pass is the spectacular center of the play."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: AJ Dybantsa elevates high into the air and throws down a thunderous one-handed poster dunk over John Collins.
+    rakip: John Collins
+    zaman: "01:43"
+    katkilar:
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: blok
+    aciklama: Ausar Thompson soars at the rim to block Alex Sarr's dunk attempt.
+    rakip: Alex Sarr
+    zaman: "01:31"
+    katkilar:
+      - { oyuncu: Ausar Thompson, takim: DET, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Sengun's behind-the-back dime creates the highlight layup opportunity.
+  - sira: 5
+    eylem: pas
+    etiketler: [ sirt_arkasi ]
+    aciklama: Alperen Sengun delivers a flashy behind-the-back bounce pass to Amen Thompson for a layup.
+    zaman: "01:14"
+    katkilar:
+      - { oyuncu: Alperen Sengun, takim: HOU, rol: pasor, pay: 70 }
+      - { oyuncu: Amen Thompson, takim: HOU, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Sengun's behind-the-back dime creates the highlight layup opportunity."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: RJ Barrett drives into the paint and delivers a powerful one-handed poster dunk over Cedric Coward.
+    rakip: Cedric Coward
+    zaman: "01:00"
+    katkilar:
+      - { oyuncu: RJ Barrett, takim: TOR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: blok
+    aciklama: Charles Bassey meets Derik Queen at the rim to emphatically deny his dunk attempt.
+    rakip: Derik Queen
+    zaman: "00:44"
+    katkilar:
+      - { oyuncu: Charles Bassey, takim: GSW, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Jamaree Bouyea elevates through the lane and throws down a one-handed poster slam over Harrison Ingram.
+    rakip: Harrison Ingram
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Jamaree Bouyea, takim: PHX, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Victor Wembanyama rejects Royce O'Neale at the rim twice on the same possession.
+    rakip: Royce O'Neale
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    aciklama: Cooper Flagg shakes his defender with a pump fake and drives the lane for a two-handed slam.
+    rakip: Pascal Siakam
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
