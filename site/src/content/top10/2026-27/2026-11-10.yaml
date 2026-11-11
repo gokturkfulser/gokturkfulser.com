@@ -1,0 +1,179 @@
+# Gemini ile üretildi: 2026-11-11T09:00:27.738Z, model gemini-3.8-flash
+
+tarih: 2026-11-10
+video: https://www.youtube.com/watch?v=7Zh5T6xb6jk
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Jayson Tatum attacks the lane and throws down a ferocious one-handed poster dunk over LeBron James.
+    rakip: LeBron James
+    zaman: "02:11"
+    katkilar:
+      - { oyuncu: Jayson Tatum, takim: BOS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: turnike
+    etiketler: [ ters ]
+    aciklama: V.J. Edgecombe glides along the baseline behind the backboard and reaches around Neemias Queta for an improbable reverse layup.
+    rakip: Neemias Queta
+    zaman: "01:48"
+    katkilar:
+      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: Damian Lillard pulls up from deep beyond the arc and splashes a buzzer-beating three-pointer to end the third quarter.
+    zaman: "01:31"
+    katkilar:
+      - { oyuncu: Damian Lillard, takim: POR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: McCain floats a well-placed lob pass over the defense.
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ tek_el ]
+    aciklama: Jared McCain lofts an alley-oop pass to Isaiah Hartenstein for a one-handed throwdown over Donovan Clingan.
+    rakip: Donovan Clingan
+    zaman: "01:16"
+    katkilar:
+      - { oyuncu: Jared McCain, takim: OKC, rol: pasor, pay: 30 }
+      - { oyuncu: Isaiah Hartenstein, takim: OKC, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: McCain floats a well-placed lob pass over the defense."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Brook Lopez meets Jalen Green at the summit to stuff his one-handed dunk attempt at the rim.
+    rakip: Jalen Green
+    zaman: "01:04"
+    katkilar:
+      - { oyuncu: Brook Lopez, takim: WAS, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Ace Bailey 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Green pushes the pace in transition and leads Bailey with a bounce pass.
+  - sira: 6
+    eylem: smac
+    etiketler: [ hizli_hucum, ters ]
+    aciklama: Josh Green feeds Ace Bailey in transition for an emphatic two-handed reverse dunk.
+    zaman: "00:50"
+    katkilar:
+      - { oyuncu: Josh Green, takim: UTA, rol: pasor, pay: 30 }
+      - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Ace Bailey 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Green pushes the pace in transition and leads Bailey with a bounce pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Ajay Mitchell absorbs contact in mid-air and flips in an acrobatic circus layup for an and-one.
+    rakip: Donovan Clingan
+    zaman: "00:37"
+    katkilar:
+      - { oyuncu: Ajay Mitchell, takim: OKC, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ putback ]
+    aciklama: Giannis Antetokounmpo snatches his own offensive rebound and powers through defenders for a putback slam.
+    zaman: "00:24"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Isaiah Hartenstein elevates at the rim to emphatically reject Donovan Clingan's dunk attempt.
+    rakip: Donovan Clingan
+    zaman: "00:12"
+    katkilar:
+      - { oyuncu: Isaiah Hartenstein, takim: OKC, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: turnike
+    aciklama: V.J. Edgecombe spins through traffic in the lane and scoops in a tough layup.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
