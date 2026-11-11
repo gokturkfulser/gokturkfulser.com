@@ -3,7 +3,8 @@
 tarih: 2026-11-10
 video: https://www.youtube.com/watch?v=7Zh5T6xb6jk
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -65,8 +66,8 @@ oyunlar:
     rakip: Donovan Clingan
     zaman: "01:16"
     katkilar:
-      - { oyuncu: Jared McCain, takim: OKC, rol: pasor, pay: 30 }
-      - { oyuncu: Isaiah Hartenstein, takim: OKC, rol: bitiren, pay: 70 }
+      - { oyuncu: Jared McCain, takim: OKC, rol: pasor, pay: 50 }
+      - { oyuncu: Isaiah Hartenstein, takim: OKC, rol: bitiren, pay: 50 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -83,7 +84,7 @@ oyunlar:
     rakip: Jalen Green
     zaman: "01:04"
     katkilar:
-      - { oyuncu: Brook Lopez, takim: WAS, rol: bloklayan, pay: 100 }
+      - { oyuncu: Brook Lopez, takim: LAC, rol: bloklayan, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -119,7 +120,6 @@ oyunlar:
     eylem: turnike
     etiketler: [ and_one ]
     aciklama: Ajay Mitchell absorbs contact in mid-air and flips in an acrobatic circus layup for an and-one.
-    rakip: Donovan Clingan
     zaman: "00:37"
     katkilar:
       - { oyuncu: Ajay Mitchell, takim: OKC, rol: bitiren, pay: 100 }
@@ -134,7 +134,6 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 8
     eylem: smac
-    etiketler: [ putback ]
     aciklama: Giannis Antetokounmpo snatches his own offensive rebound and powers through defenders for a putback slam.
     zaman: "00:24"
     katkilar:
