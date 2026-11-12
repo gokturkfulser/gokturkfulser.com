@@ -1,0 +1,182 @@
+# Gemini ile üretildi: 2026-11-12T15:49:51.136Z, model gemini-3.8-flash
+
+tarih: 2026-11-11
+video: https://www.youtube.com/watch?v=b5Se9OZUmJ0
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el, hizli_hucum ]
+    aciklama: Tyler Herro cuts baseline and soars for an authoritative one-handed poster dunk over Christian Koloko.
+    rakip: Christian Koloko
+    zaman: "02:03"
+    katkilar:
+      - { oyuncu: Tyler Herro, takim: MIL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Wendell Carter Jr. charges down the lane and throws down a thunderous one-handed poster slam over Svi Mykhailiuk.
+    rakip: Svi Mykhailiuk
+    zaman: "01:52"
+    katkilar:
+      - { oyuncu: Wendell Carter Jr., takim: ORL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Austin Reaves absorbs contact and flips in an improbable underhand scoop circus layup for an and-one.
+    zaman: "01:36"
+    katkilar:
+      - { oyuncu: Austin Reaves, takim: LAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: GG Jackson beats his defender with a hesitation move and detonates a two-handed poster dunk at the rim.
+    zaman: "01:22"
+    katkilar:
+      - { oyuncu: GG Jackson, takim: MEM, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    etiketler: [ chase_down_blok, clutch ]
+    aciklama: Peyton Watson chases down Miles McBride and pins his layup against the backboard in the closing minute of a tight game.
+    rakip: Miles McBride
+    zaman: "01:08"
+    katkilar:
+      - { oyuncu: Peyton Watson, takim: CLE, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ poster, ters ]
+    aciklama: Tari Eason drives baseline and throws down a reverse jam over Brandin Podziemski.
+    rakip: Brandin Podziemski
+    zaman: "00:54"
+    katkilar:
+      - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Stephon Castle + Victor Wembanyama 1/3
+  # eylem diğer: Alley-oop 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 7
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Victor Wembanyama takes off from near the free throw line on the fast break for a gliding one-handed dunk.
+    zaman: "00:41"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "diğer: Stephon Castle + Victor Wembanyama 1/3"
+        - "eylem diğer: Alley-oop 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ poster, clutch, tek_el ]
+    aciklama: Jarrett Allen rises high down the lane to throw down a huge one-handed poster slam over Mitchell Robinson late in the fourth quarter.
+    rakip: Mitchell Robinson
+    zaman: "00:31"
+    katkilar:
+      - { oyuncu: Jarrett Allen, takim: CLE, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Andrew Nembhard executes a spinning pass to set up Jay Huff's spinning dunk.
+  - sira: 9
+    eylem: smac
+    aciklama: Andrew Nembhard delivers a spinning pass to Jay Huff, who spins and throws down a two-handed slam.
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Andrew Nembhard, takim: IND, rol: pasor, pay: 50 }
+      - { oyuncu: Jay Huff, takim: IND, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Andrew Nembhard executes a spinning pass to set up Jay Huff's spinning dunk."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: Isaiah Collier beats the first-quarter buzzer with a contested three-pointer.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Isaiah Collier, takim: UTA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
