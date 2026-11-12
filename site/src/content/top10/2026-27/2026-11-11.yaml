@@ -3,18 +3,19 @@
 tarih: 2026-11-11
 video: https://www.youtube.com/watch?v=b5Se9OZUmJ0
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
     etiketler: [ poster, tek_el, hizli_hucum ]
-    aciklama: Tyler Herro cuts baseline and soars for an authoritative one-handed poster dunk over Christian Koloko.
-    rakip: Christian Koloko
+    aciklama: Tyler Herro cuts baseline and soars for an authoritative one-handed poster dunk over Walker Kessler.
+    rakip: Walker Kessler
     zaman: "02:03"
     katkilar:
-      - { oyuncu: Tyler Herro, takim: MIL, rol: bitiren, pay: 100 }
+      - { oyuncu: Nate Ament, takim: MIL, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -61,6 +62,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: GG Jackson beats his defender with a hesitation move and detonates a two-handed poster dunk at the rim.
+    rakip: Trevon Brazile
     zaman: "01:22"
     katkilar:
       - { oyuncu: GG Jackson, takim: MEM, rol: bitiren, pay: 100 }
@@ -92,9 +94,8 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
-    etiketler: [ poster, ters ]
+    etiketler: [ ters ]
     aciklama: Tari Eason drives baseline and throws down a reverse jam over Brandin Podziemski.
-    rakip: Brandin Podziemski
     zaman: "00:54"
     katkilar:
       - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
@@ -112,7 +113,7 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 7
     eylem: smac
-    etiketler: [ hizli_hucum, tek_el ]
+    etiketler: [ hizli_hucum ]
     aciklama: Victor Wembanyama takes off from near the free throw line on the fast break for a gliding one-handed dunk.
     zaman: "00:41"
     katkilar:
@@ -134,8 +135,8 @@ oyunlar:
   - sira: 8
     eylem: smac
     etiketler: [ poster, clutch, tek_el ]
-    aciklama: Jarrett Allen rises high down the lane to throw down a huge one-handed poster slam over Mitchell Robinson late in the fourth quarter.
-    rakip: Mitchell Robinson
+    aciklama: Jarrett Allen rises high down the lane to throw down a huge one-handed poster slam over OG Anunoby late in the fourth quarter.
+    rakip: OG Anunoby
     zaman: "00:31"
     katkilar:
       - { oyuncu: Jarrett Allen, takim: CLE, rol: bitiren, pay: 100 }
@@ -150,12 +151,12 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # pay: Andrew Nembhard executes a spinning pass to set up Jay Huff's spinning dunk.
   - sira: 9
-    eylem: smac
+    eylem: pas
     aciklama: Andrew Nembhard delivers a spinning pass to Jay Huff, who spins and throws down a two-handed slam.
     zaman: "00:15"
     katkilar:
-      - { oyuncu: Andrew Nembhard, takim: IND, rol: pasor, pay: 50 }
-      - { oyuncu: Jay Huff, takim: IND, rol: bitiren, pay: 50 }
+      - { oyuncu: Andrew Nembhard, takim: IND, rol: pasor, pay: 70 }
+      - { oyuncu: Jay Huff, takim: IND, rol: bitiren, pay: 30 }
     kontrol:
       guven: yuksek
       oy: 3/3
