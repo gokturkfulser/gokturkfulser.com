@@ -1,5 +1,5 @@
 ---
-// Son izlediklerim: yavaş akan afiş bandı (saf CSS; içerik iki kez, ikincisi aria-hidden + inert).
+// Son izlediklerim: yavaş akan afiş bandı (saf CSS; içerik KOPYA_SAYISI kez, ilk dışındakiler aria-hidden + inert).
 // WCAG 2.2.2 (Duraklat, durdur, gizle): hover/klavye odağında durur ve yanında görünür bir "Akışı durdur / Akışı oynat"
 // düğmesi vardır. Düğme JS'siz: klavyeyle odaklanabilen onay kutusu (sabit aria-label; işaretli = durdurulmuş) + görsel etiket; `:checked ~ .akis` ile animation-play-state: paused.
 // prefers-reduced-motion'da bant hiç akmaz, düğme gizlenir, bant yatay kaydırılabilir olur ve kopya gizlenir.
@@ -16,7 +16,9 @@ interface Props {
 const { filmler, ton = 'koyu' } = Astro.props;
 const dil = dilAl(Astro);
 const s = sozluk(dil).izlenen;
-const kopyalar = [false, true];
+// 15 film ≈ 2070 px; iki kopya geniş ekranı (≥ 2000 px) doldurmaz ve sağda boşluk kalırdı. Üç kopya ≈ 4000 px'e kadar yeter.
+const KOPYA_SAYISI = 3;
+const kopyalar = Array.from({ length: KOPYA_SAYISI }, (_, i) => i > 0);
 ---
 
 {
@@ -187,7 +189,7 @@ const kopyalar = [false, true];
 
   @media (prefers-reduced-motion: no-preference) {
     .iz {
-      animation: akis 110s linear infinite;
+      animation: akis 140s linear infinite;
     }
 
     /* Hover, klavye odağı ya da düğme: akış durur */
@@ -199,7 +201,8 @@ const kopyalar = [false, true];
 
     @keyframes akis {
       to {
-        transform: translateX(-50%);
+        /* tam bir kopya genişliği (1/3) kayınca başa döner; kopya sayısıyla (KOPYA_SAYISI) eşleşmeli */
+        transform: translateX(calc(-100% / 3));
       }
     }
   }

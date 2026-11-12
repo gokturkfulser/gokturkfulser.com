@@ -5,13 +5,14 @@ import { izinliBolusumler, type Gece, type Oyun } from '../../site/src/lib/top10
 import { etiketAdi, ETIKET_ANAHTARLARI, eylemAdi, EYLEM_ANAHTARLARI, rolAdi, ROL_ANAHTARLARI, TAKIM_KODLARI } from '../../site/src/lib/top10-sozluk.ts';
 import { birlestir, esc, h, Ham } from './html.ts';
 import { EN_COK_KATKI, ESIT, oyundanDurum, type OyunDurumu } from './form.ts';
+import type { NbaDurumu } from './nba.ts';
 
 const tarihYaz = (d: Date) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
 const tarihIso = (d: Date) => d.toISOString().slice(0, 10);
 const GUVEN: Record<string, string> = { yuksek: 'Yüksek', orta: 'Orta', dusuk: 'Düşük' };
 const TUR: Record<string, string> = { top10: 'Top 10', top5: 'Top 5' };
 
-export function sayfa(baslik: string, govde: Ham, aktif: 'liste' | 'sozluk' | '' = ''): string {
+export function sayfa(baslik: string, govde: Ham, aktif: 'liste' | 'sozluk' | 'nba' | '' = ''): string {
   return `<!doctype html>
 <html lang="tr">
 <head>
@@ -30,6 +31,7 @@ export function sayfa(baslik: string, govde: Ham, aktif: 'liste' | 'sozluk' | ''
     <nav aria-label="Bölümler" class="menu">
       <a href="/"${aktif === 'liste' ? ' aria-current="page"' : ''}>Geceler</a>
       <a href="/sozluk"${aktif === 'sozluk' ? ' aria-current="page"' : ''}>Ad sözlüğü</a>
+      <a href="/nba"${aktif === 'nba' ? ' aria-current="page"' : ''}>NBA verisi</a>
     </nav>
   </div>
 </header>
@@ -57,9 +59,16 @@ const duyuru = (ok: string | null) =>
           ? h`<p class="duyuru duyuru-ok" role="status">Takma ad eklendi ve main'e commit edildi.</p>`
           : '';
 
+/** NBA verisi kaydedildi bildirimi: `ad` ve `satir` adresten gelir; yalnızca bilinen ad ve sayı olarak gösterilir. */
+const nbaDuyurusu = (ok: string | null, ad: string | undefined, satir: number | undefined) =>
+  ok === 'nba-kaydedildi' && ad && satir !== undefined
+    ? h`<p class="duyuru duyuru-ok" role="status">${ad} kaydedildi: ${satir} satır okundu ve main'e commit edildi; site her zamanki gibi yayınlanacak.</p>`
+    : '';
+
 // ——— Liste ———
 
-export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar: readonly string[], eskiVar: boolean): string {
+export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar: readonly string[], eskiVar: boolean, nba: readonly NbaDurumu[] = []): string {
+  const guncellenecek = nba.filter((n) => n.eski);
   const { bekleyen, onayli } = kontrolOzeti(girdiler);
   const kart = (b: (typeof bekleyen)[number]) => {
     const tarih = tarihIso(b.gece.tarih);
@@ -76,6 +85,7 @@ export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar:
   return sayfa(
     'Geceler',
     h`<h1 class="baslik">Geceler</h1>
+    ${guncellenecek.length ? h`<section aria-labelledby="nba-uyari-b"><h2 id="nba-uyari-b" class="bolum">NBA verisi güncellenmeli</h2><ul role="list">${guncellenecek.map((n) => h`<li class="duyuru duyuru-hata" role="alert">${n.ad}: ${n.mesaj} <a href="/nba#${n.kod}">Güncelle</a></li>`)}</ul></section>` : ''}
     <section aria-labelledby="bekleyen-b"><h2 id="bekleyen-b" class="bolum">Bekleyen geceler</h2>
       ${bekleyen.length ? h`<ul class="geceler" role="list">${bekleyen.map(kart)}</ul>` : h`<p>Bekleyen gece yok.</p>`}
     </section>
@@ -204,6 +214,53 @@ export function geceSayfasi(g: GeceSayfasiGirdisi): string {
     </form>
     ${sablon}`,
     'liste',
+  );
+}
+
+// ——— NBA verisi ———
+
+export type NbaSayfasiGirdisi = {
+  /** Her tablo için durum ve dosyanın okunduğu andaki sha'sı (forma konur). */
+  tablolar: readonly (NbaDurumu & { sha: string })[];
+  ok?: string | null;
+  okAd?: string;
+  okSatir?: number;
+  /** Reddedilen yapıştırma: hangi tablo, hatalar ve gönderilen değerler (korunur). */
+  red?: { kod: string; hatalar: readonly string[]; veri: string; mod: string };
+};
+
+export function nbaSayfasi(g: NbaSayfasiGirdisi): string {
+  const bolum = (t: NbaSayfasiGirdisi['tablolar'][number]) => {
+    const red = g.red?.kod === t.kod ? g.red : undefined;
+    return h`<section aria-labelledby="${t.kod}-b" id="${t.kod}">
+      <h2 id="${t.kod}-b" class="bolum">${t.ad}</h2>
+      <p class="duyuru${t.eski ? ' duyuru-hata' : ' duyuru-ok'}" role="${t.eski ? 'alert' : 'status'}">${t.mesaj}</p>
+      <ul class="ozet" role="list">
+        <li>${t.satir} satır</li>
+        <li>${t.guncelleme ? `Son güncelleme: ${t.guncelleme}` : 'Son güncelleme bilinmiyor'}</li>
+        <li><a href="${t.adres}" target="_blank" rel="noopener noreferrer">NBA sayfasını aç (yeni sekme)</a></li>
+      </ul>
+      <p class="not">${t.gerekce}</p>
+      ${t.hatalar.length ? h`<div class="hatalar" role="status"><p class="hata-baslik">Dosyada okunamayan satırlar var:</p><ul role="list">${t.hatalar.slice(0, 8).map((m) => h`<li>${m}</li>`)}</ul></div>` : ''}
+      ${red ? h`<div class="hatalar" role="alert"><p class="hata-baslik">Kaydedilmedi:</p><ul role="list">${red.hatalar.map((m) => h`<li>${m}</li>`)}</ul></div>` : ''}
+      ${t.sha ? h`<form method="post" action="/nba/${t.kod}" class="nba-form">
+        <input type="hidden" name="sha" value="${t.sha}">
+        <div class="alan"><label for="veri-${t.kod}">NBA tablosunu buraya yapıştırın (başlık satırıyla)</label><textarea id="veri-${t.kod}" name="veri" rows="8" spellcheck="false" autocomplete="off" required>${red?.veri ?? ''}</textarea></div>
+        <fieldset><legend>Nasıl kaydedilsin</legend>
+          <label class="onay"><input type="radio" name="mod" value="degistir"${red?.mod === 'ekle' ? '' : ' checked'}> <span>Değiştir (dosya yalnızca bu metinle yazılır)</span></label>
+          <label class="onay"><input type="radio" name="mod" value="ekle"${red?.mod === 'ekle' ? ' checked' : ''}> <span>Mevcut veriye ekle (çok sayfalı tabloda sayfa sayfa; aynı satırlar bir kez kalır)</span></label>
+        </fieldset>
+        <div class="eylemler"><button type="submit" class="dugme dugme-birincil">Doğrula ve kaydet</button></div>
+      </form>` : ''}
+    </section>`;
+  };
+  return sayfa(
+    'NBA verisi',
+    h`<h1 class="baslik">NBA verisi</h1>
+    <p class="not">Sitedeki Dunk Score ve clutch tabloları NBA.com/stats'tan elle yapıştırılan veriyle çalışır (ana puanlamaya katılmaz). Kayıt, sitenin kendi okuyucusuyla doğrulanır; bozuk satır varsa hiçbir şey kaydedilmez. Kayıt main'e commit edilir ve site yeniden yayınlanır.</p>
+    ${nbaDuyurusu(g.ok ?? null, g.okAd, g.okSatir)}
+    ${g.tablolar.map(bolum)}`,
+    'nba',
   );
 }
 

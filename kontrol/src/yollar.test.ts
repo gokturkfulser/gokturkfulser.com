@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { geceYolu, SOZLUK_YOLU, TOP10_DIZINI, yolDogrula, yolTuru, YolHatasi } from './yollar.ts';
+import { geceYolu, nbaKodu, SOZLUK_YOLU, TOP10_DIZINI, yolDogrula, yolTuru, YolHatasi } from './yollar.ts';
 
 describe('yol beyaz listesi', () => {
   it('izinli yollar: gece dosyası, ad sözlüğü (okuma ve yazma); dizin yalnızca okuma', () => {
@@ -10,6 +10,30 @@ describe('yol beyaz listesi', () => {
     expect(yolTuru('site/src/content/top10/2026-27', 'oku')).toBe('dizin');
     expect(yolTuru(TOP10_DIZINI, 'yaz')).toBeNull();
     expect(yolTuru('site/src/content/top10/2026-27', 'yaz')).toBeNull();
+  });
+
+  it('NBA tabloları: tam iki yol (okuma ve yazma); başka dosya, dizin, uzantı ve kaçışlar reddedilir', () => {
+    for (const y of ['site/src/data/nba/dunk-score.tsv', 'site/src/data/nba/clutch.tsv']) {
+      expect(yolTuru(y, 'oku'), y).toBe('nba');
+      expect(yolTuru(y, 'yaz'), y).toBe('nba');
+    }
+    for (const y of [
+      'site/src/data/nba',
+      'site/src/data/nba/',
+      'site/src/data/nba/baska.tsv',
+      'site/src/data/nba/dunk-score.csv',
+      'site/src/data/nba/dunk-score.tsv.bak',
+      'site/src/data/nba/../letterboxd/afis.tsv',
+      'site/src/data/nba/dunk-score.tsv?ref=x',
+      'site/src/data/tmdb-cache.json',
+      'site/src/data/nba/Dunk-Score.tsv',
+    ]) {
+      expect(yolTuru(y, 'oku'), y).toBeNull();
+      expect(yolTuru(y, 'yaz'), y).toBeNull();
+    }
+    expect(nbaKodu('dunk-score')).toBe('dunk-score');
+    expect(nbaKodu('clutch')).toBe('clutch');
+    for (const k of ['', 'baska', 'toString', '__proto__', 'constructor', 'Clutch']) expect(nbaKodu(k), k).toBeNull();
   });
 
   it('başka her yol reddedilir: başka klasör, uzantı, sezon uyuşmazlığı, geçersiz tarih, dizin geçişi, kaçış dizileri', () => {

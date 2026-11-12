@@ -5,7 +5,7 @@
 import Top10NbaTablo from './Top10NbaTablo.astro';
 import { top10AdHaritasi, top10Geceleri } from '../../lib/content';
 import { tarihYaz } from '../../lib/format';
-import { nbaDunkScore } from '../../lib/nba-dosyalari';
+import { nbaDunkScore, nbaGuncelleme } from '../../lib/nba-dosyalari';
 import { dunkTop10Sirasi } from '../../lib/nba-veri';
 import { AYAR, dilAl, sozluk } from '../../i18n';
 
@@ -22,7 +22,7 @@ const dunklar = nbaDunkScore().slice(0, Astro.props.sinir ?? 50);
 const sirlar = dunkTop10Sirasi(dunklar, geceler, harita);
 const bir = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const kisaTarih = new Intl.DateTimeFormat(AYAR[dil].intl, { day: 'numeric', month: 'short', timeZone: 'UTC' });
-const sonTarih = dunklar.reduce<Date | undefined>((en, d) => (!en || d.tarih > en ? d.tarih : en), undefined);
+const guncelleme = nbaGuncelleme('dunk-score');
 const d = s.nba.dunk;
 const sutunlar = [
   { ad: s.sutun.oyuncu },
@@ -55,7 +55,7 @@ const satirlar = dunklar.map((x, i) => [
   baslik={d.baslik}
   aciklama={d.aciklama}
   kaynakAdresi="https://www.nba.com/stats/players/dunk-scores"
-  not={sonTarih ? d.veriTarihi(tarihYaz(sonTarih, dil)) : undefined}
+  not={guncelleme ? s.nba.guncelleme(tarihYaz(new Date(`${guncelleme}T00:00:00Z`), dil)) : undefined}
   sutunlar={sutunlar}
   satirlar={satirlar}
 />

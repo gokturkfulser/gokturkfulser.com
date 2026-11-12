@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** Şerit akışın ilk 6 filmini gösterir; birkaçı TMDB'de bulunmazsa diye bir miktar fazlası indirilir. */
-const ADET = 12;
+const ADET = 15; // lib/letterboxd.ts → sonIzlenenler varsayılanıyla aynı olmalı
 
 const klasor = join(dirname(fileURLToPath(import.meta.url)), '../src/data/letterboxd/afis');
 const API = process.env.TMDB_API_TABANI ?? 'https://api.themoviedb.org/3';

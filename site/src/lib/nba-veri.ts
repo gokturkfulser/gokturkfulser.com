@@ -57,6 +57,17 @@ export function nbaTarihi(metin: string): Date | undefined {
   return t.getUTCFullYear() === yil && t.getUTCMonth() === ay - 1 && t.getUTCDate() === gun ? t : undefined;
 }
 
+/**
+ * Dosyadaki "# guncellendi: YYYY-AA-GG" damgası (kontrol düzenleyicisi yapıştırınca İstanbul gününü yazar); yoksa ya da geçersizse undefined.
+ * Damga veri satırı değildir: okuyucular `#` satırını yok sayar.
+ */
+export function guncellemeTarihi(metin: string): string | undefined {
+  const e = /^#\s*guncellendi:\s*(\d{4}-\d{2}-\d{2})\s*$/m.exec(metin);
+  if (!e) return undefined;
+  const t = new Date(`${e[1]}T00:00:00Z`);
+  return !Number.isNaN(t.valueOf()) && t.toISOString().slice(0, 10) === e[1] ? e[1] : undefined;
+}
+
 /** Başlık satırını bulur (verilen tüm adları içeren ilk satır); sütun adı → konum. Boş başlıklı sütunlar konum sayar ama adlandırılmaz. */
 function baslikBul(satirlar: string[], gerekli: string[]): { index: number; konum: Map<string, number>; uzunluk: number } | undefined {
   for (let i = 0; i < satirlar.length; i++) {

@@ -77,6 +77,6 @@ function akis(adres: string | undefined): Promise<Izlenen[]> {
   return onbellek;
 }
 
-export async function sonIzlenenler(adres: string | undefined, adet = 6): Promise<Izlenen[]> {
+export async function sonIzlenenler(adres: string | undefined, adet = 15): Promise<Izlenen[]> {
   return (await akis(adres)).slice(0, adet);
 }

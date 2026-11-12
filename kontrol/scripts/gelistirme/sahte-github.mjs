@@ -16,6 +16,12 @@ if (!existsSync(depo)) {
   mkdirSync(join(depo, 'site/src/content'), { recursive: true });
   cpSync(kaynak, join(depo, 'site/src/content/top10'), { recursive: true });
 }
+// NBA tabloları (site/src/data/nba): her açılışta eksikse kopyalanır; geçici depoda düzenlenir, gerçek dosyaya yazılmaz.
+const nbaKaynak = resolve(kok, '../site/src/data/nba');
+if (existsSync(nbaKaynak) && !existsSync(join(depo, 'site/src/data/nba'))) {
+  mkdirSync(join(depo, 'site/src/data'), { recursive: true });
+  cpSync(nbaKaynak, join(depo, 'site/src/data/nba'), { recursive: true });
+}
 
 const blobSha = (buf) => createHash('sha1').update(Buffer.concat([Buffer.from(`blob ${buf.length}\0`), buf])).digest('hex');
 const yanit = (res, durum, nesne) => {

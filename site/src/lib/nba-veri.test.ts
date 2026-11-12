@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clutchOku, dunkScoreOku, dunkTop10Sirasi, nbaTarihi, sezonSiralari } from './nba-veri';
+import { clutchOku, dunkScoreOku, dunkTop10Sirasi, guncellemeTarihi, nbaTarihi, sezonSiralari } from './nba-veri';
 import { sozlukHaritasi } from './top10-adlar';
 import type { Gece, Oyun } from './top10';
 import type { Etiket, Eylem, Rol } from './top10-sozluk';
@@ -26,6 +26,20 @@ describe('nbaTarihi', () => {
     expect(nbaTarihi('13/1/2026')).toBeUndefined();
     expect(nbaTarihi('2/30/2026')).toBeUndefined();
     expect(nbaTarihi('2026-10-31')).toBeUndefined();
+  });
+});
+
+describe('guncellemeTarihi', () => {
+  it('"# guncellendi: YYYY-AA-GG" damgasını okur; yoksa ya da geçersizse undefined; damga veri okumayı bozmaz', () => {
+    expect(guncellemeTarihi('# guncellendi: 2026-11-10\nPLAYER')).toBe('2026-11-10');
+    expect(guncellemeTarihi('PLAYER\n#guncellendi:   2026-11-10  \n')).toBe('2026-11-10');
+    expect(guncellemeTarihi('PLAYER\tTEAM')).toBeUndefined();
+    expect(guncellemeTarihi('# guncellendi: 2026-13-45')).toBeUndefined();
+    expect(guncellemeTarihi('# guncellendi: dün')).toBeUndefined();
+    expect(guncellemeTarihi('')).toBeUndefined();
+    const r = dunkScoreOku(['# guncellendi: 2026-11-10', DUNK_BASLIK, dunk('A B', 'MIL', 'A @ B', '10/31/2026', '100.0')].join('\n'));
+    expect(r.hatalar).toEqual([]);
+    expect(r.satirlar).toHaveLength(1);
   });
 });
 

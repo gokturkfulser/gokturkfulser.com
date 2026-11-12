@@ -136,7 +136,7 @@ Site statik olduğundan "Son izlediklerim" şeridi yalnızca build anında günc
 
 ## 10. Top 10 günlük otomasyonu (NBA izlemesi en keyifli oyuncu)
 
-`.github/workflows/site-top10.yml` günde iki kez (**10:00 ve 16:00 İstanbul**; GitHub cron'u UTC olduğundan `0 7 * * *` ve `0 13 * * *`) NBA resmi YouTube kanalının son videolarına bakar. "NBA's Top 10 (ya da 5) Plays of the Night | <tarih>" başlıklı ve son 3 ABD gecesine denk gelen videolar için, dosyası yoksa Gemini'ye videonun resmi YouTube adresini verip `site/src/content/top10/<sezon>/<tarih>.yaml` dosyasını üretir, sitenin kendi içerik şemasıyla doğrular ve **doğrudan `main`'e commit'ler (PR yok)**. Bot yalnızca `site/src/content/top10/**` yazar. Mantık: `site/scripts/top10/`; kurallar: `site/CLAUDE.md` "Top 10 verisi".
+`.github/workflows/site-top10.yml` günde iki kez (**12:00 ve 16:00 İstanbul**; GitHub cron'u UTC olduğundan `0 9 * * *` ve `0 13 * * *`) NBA resmi YouTube kanalının son videolarına bakar. "NBA's Top 10 (ya da 5) Plays of the Night | <tarih>" başlıklı ve son 3 ABD gecesine denk gelen videolar için, dosyası yoksa Gemini'ye videonun resmi YouTube adresini verip `site/src/content/top10/<sezon>/<tarih>.yaml` dosyasını üretir, sitenin kendi içerik şemasıyla doğrular ve **doğrudan `main`'e commit'ler (PR yok)**. Bot yalnızca `site/src/content/top10/**` yazar. Mantık: `site/scripts/top10/`; kurallar: `site/CLAUDE.md` "Top 10 verisi".
 
 ### Gereken iki sır (Settings → Secrets and variables → Actions → New repository secret)
 

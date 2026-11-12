@@ -235,7 +235,8 @@ code {
 
 /* ——— Form ——— */
 .gece-form,
-.sozluk-form {
+.sozluk-form,
+.nba-form {
   display: grid;
   gap: var(--aralik-4);
 }
@@ -243,6 +244,10 @@ code {
 .alan {
   display: grid;
   gap: var(--aralik-1);
+}
+
+.nba-form {
+  margin-block-start: var(--aralik-3);
 }
 
 label,

@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { anahtarOnbelleginiSifirla } from './erisim.ts';
 import { oyundanDurum, geceOku, type OyunDurumu } from './form.ts';
 import { isle } from './isleyici.ts';
-import { AUD, birlesikFetch, durumdanForm, GECE_YOLU, GECE_YOLU_2, geceMetni, gecerliYuk, ORIJIN, ortam, sahteAccess, sahteGitHub, SOZLUK_METNI, SOZLUK_YOLU, TAKIM, TOKEN } from './test-yardim.ts';
+import { AUD, birlesikFetch, clutchMetni, clutchSatiri, DUNK_BASLIK, dunkMetni, dunkSatiri, durumdanForm, GECE_YOLU, GECE_YOLU_2, geceMetni, gecerliYuk, NBA_CLUTCH_YOLU, NBA_DUNK_YOLU, ORIJIN, ortam, sahteAccess, sahteGitHub, SOZLUK_METNI, SOZLUK_YOLU, TAKIM, TOKEN } from './test-yardim.ts';
+import { bugunIstanbul } from './nba.ts';
 import type { Env } from './ortam.ts';
 import { ETIKET_ANAHTARLARI } from '../../site/src/lib/top10-sozluk.ts';
 
@@ -392,6 +393,157 @@ describe('güvenlik', () => {
     const k = await kur(undefined, { GITHUB_API_TABANI: 'https://kotu.example' });
     await k.iste('/');
     expect(k.github.istekler.length).toBeGreaterThan(0); // istekler api.github.com'a gitti (sahte kotu.example'a gitseydi birlesikFetch hata verirdi)
+  });
+});
+
+describe('NBA verisi (/nba): bayatlık uyarısı ve yapıştırarak güncelleme', () => {
+  const bugunDe = (k: Kurulum) => bugunIstanbul(k.dep.simdi());
+  const dosyalarla = (dunk: string | null, clutch: string | null): Record<string, string> => ({
+    [GECE_YOLU]: geceMetni(),
+    [SOZLUK_YOLU]: SOZLUK_METNI,
+    ...(dunk !== null ? { [NBA_DUNK_YOLU]: dunk } : {}),
+    ...(clutch !== null ? { [NBA_CLUTCH_YOLU]: clutch } : {}),
+  });
+  const a = dunkSatiri('Ada Aksoy', '10/31/2026', '100.0');
+  const b = dunkSatiri('Bora Berk', '11/1/2026', '90.0');
+  const sayfa = (...satirlar: string[]) => ['Glossary', '300 Rows', DUNK_BASLIK, ...satirlar].join('\n');
+  const yapistir = (k: Kurulum, sha: string, veri: string, mod = 'degistir', kod = 'dunk-score') => k.iste(`/nba/${kod}`, { form: new URLSearchParams({ sha, veri, mod }) });
+  const bayat = '2020-01-01';
+
+  it('/nba: iki tablo, durum mesajı, satır sayısı, NBA sayfasına yeni sekme bağlantısı; bayat tabloda uyarı (alert), güncelde durum', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a, b), clutchMetni(bugunIstanbul(Date.now()), clutchSatiri('1', 'Tyrese Maxey', 'PHI'))));
+    const { durum, govde } = await k.iste('/nba');
+    expect(durum).toBe(200);
+    expect(govde).toContain('>Dunk Score</h2>');
+    expect(govde).toContain('>Clutch</h2>');
+    expect(govde).toContain('gündür güncellenmedi (en çok 3 gün olmalı)');
+    expect(govde).toMatch(/class="duyuru duyuru-hata" role="alert">\d+ gündür güncellenmedi/);
+    expect(govde).toContain('Bugün güncellendi.');
+    expect(govde).toContain('<li>2 satır</li>');
+    expect(govde).toContain('<li>Son güncelleme: 2020-01-01</li>');
+    expect(govde).toContain('href="https://www.nba.com/stats/players/dunk-scores" target="_blank" rel="noopener noreferrer"');
+    expect(govde).toContain('action="/nba/dunk-score"');
+    expect(govde).toContain('action="/nba/clutch"');
+    expect(govde).toMatch(/name="mod" value="degistir" checked/);
+    expect(govde).toContain('href="/nba" aria-current="page"');
+  });
+
+  it('liste sayfası: bayat tablo için "NBA verisi güncellenmeli" uyarısı ve /nba bağlantısı; ikisi de güncelse uyarı yok', async () => {
+    const k1 = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat, clutchSatiri('1', 'Tyrese Maxey', 'PHI'))));
+    const l1 = await k1.iste('/');
+    expect(l1.govde).toContain('NBA verisi güncellenmeli');
+    expect(l1.govde).toContain('href="/nba#dunk-score"');
+    expect(l1.govde).toContain('href="/nba#clutch"');
+    expect(l1.govde.indexOf('NBA verisi güncellenmeli')).toBeLessThan(l1.govde.indexOf('Bekleyen geceler'));
+
+    const bugun = bugunIstanbul(Date.now());
+    const k2 = await kur(dosyalarla(dunkMetni(bugun, a), clutchMetni(bugun, clutchSatiri('1', 'Tyrese Maxey', 'PHI'))));
+    expect((await k2.iste('/')).govde).not.toContain('NBA verisi güncellenmeli');
+  });
+
+  it('dosya repoda yoksa: liste uyarır, /nba "dosya repoda yok" der ve form göstermez; POST 404 (yeni dosya oluşturulmaz)', async () => {
+    const k = await kur(dosyalarla(null, null));
+    expect((await k.iste('/')).govde).toContain('NBA verisi güncellenmeli');
+    const g = await k.iste('/nba');
+    expect(g.govde).toContain('Dosya repoda yok');
+    expect(g.govde).not.toContain('action="/nba/dunk-score"');
+    const p = await yapistir(k, 'x'.repeat(40), sayfa(DUNK_BASLIK, a));
+    expect(p.durum).toBe(404);
+    expect(k.github.commitler).toHaveLength(0);
+  });
+
+  it('geçerli yapıştırma: main\'e commit (yol, ileti, damga + temizlenmiş içerik), 303 ile /nba, başarı notu; clutch dosyasına dokunulmaz', async () => {
+    const eski = dunkMetni(bayat, a);
+    const k = await kur(dosyalarla(eski, clutchMetni(bayat, clutchSatiri('1', 'Tyrese Maxey', 'PHI'))));
+    const sha = await k.github.sha(NBA_DUNK_YOLU);
+    const r = await yapistir(k, sha, sayfa(a, b));
+    expect(r.durum).toBe(303);
+    expect(r.basliklar.get('Location')).toBe('/nba?ok=nba-kaydedildi&kod=dunk-score&satir=2');
+    expect(k.github.commitler).toHaveLength(1);
+    const c = sonCommit(k);
+    expect(c.yol).toBe(NBA_DUNK_YOLU);
+    expect(c.mesaj).toBe('nba: dunk-score verisi');
+    expect(c.dal).toBe('main');
+    expect(c.metin).toBe(`# guncellendi: ${bugunDe(k)}\n${DUNK_BASLIK}\n${a}\n${b}\n`);
+    expect(k.github.depo.get(NBA_CLUTCH_YOLU)).toContain(bayat);
+    const son = await k.iste('/nba?ok=nba-kaydedildi&kod=dunk-score&satir=2');
+    expect(son.govde).toContain('Dunk Score kaydedildi: 2 satır okundu');
+  });
+
+  it('"ekle": mevcut satırlar korunur, aynı satır bir kez; başarı notundaki ad ve sayı adresten güvenli biçimde gelir', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    const r = await yapistir(k, await k.github.sha(NBA_DUNK_YOLU), sayfa(a, b), 'ekle');
+    expect(r.durum).toBe(303);
+    expect(sonCommit(k).metin).toBe(`# guncellendi: ${bugunDe(k)}\n${DUNK_BASLIK}\n${a}\n${b}\n`);
+    // adres parametreleri: bilinmeyen kod ve sayı olmayan değer bildirimi göstermez, sayfaya yansımaz
+    const kotu = await k.iste('/nba?ok=nba-kaydedildi&kod=<script>&satir=<b>x</b>');
+    expect(kotu.govde).not.toContain('<script>');
+    expect(kotu.govde).not.toContain('<b>x</b>');
+    expect(kotu.govde).not.toContain('kaydedildi:');
+  });
+
+  it('bozuk yapıştırma: 422, satır satır hata, gönderilen metin ve seçim korunur, commit yok', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    const veri = sayfa(a, dunkSatiri('Bora Berk', 'bozuk-tarih', '90.0'));
+    const r = await yapistir(k, await k.github.sha(NBA_DUNK_YOLU), veri, 'ekle');
+    expect(r.durum).toBe(422);
+    expect(r.govde).toContain('Kaydedilmedi:');
+    expect(r.govde).toContain('geçersiz tarih (bozuk-tarih)');
+    expect(r.govde).toContain('Bora Berk');
+    expect(r.govde).toMatch(/name="mod" value="ekle" checked/);
+    expect(k.github.commitler).toHaveLength(0);
+    // sekmesiz/boş metin
+    const bos = await yapistir(k, await k.github.sha(NBA_DUNK_YOLU), 'sadece düz yazı');
+    expect(bos.durum).toBe(422);
+    expect(bos.govde).toContain('sekmeyle ayrılmış');
+    expect(k.github.commitler).toHaveLength(0);
+  });
+
+  it('formda ya da dosyada HTML varsa sayfada kaçırılır (XSS yok)', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    const r = await yapistir(k, await k.github.sha(NBA_DUNK_YOLU), sayfa('<img src=x onerror=alert(1)>\t<script>x</script>'));
+    expect(r.durum).toBe(422);
+    expect(r.govde).not.toContain('<img src=x');
+    expect(r.govde).not.toContain('<script>x');
+    expect(r.govde).toContain('&lt;img src=x');
+  });
+
+  it('sha çakışması: dosya arada değiştiyse 409 ve commit yok; sha eksikse de', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    const eskiSha = await k.github.sha(NBA_DUNK_YOLU);
+    k.github.depo.set(NBA_DUNK_YOLU, dunkMetni('2026-11-10', a, b)); // başka biri değiştirdi
+    const r = await yapistir(k, eskiSha, sayfa(a));
+    expect(r.durum).toBe(409);
+    expect(r.govde).toContain('Dosya değişti');
+    const eksik = await yapistir(k, '', sayfa(a));
+    expect(eksik.durum).toBe(409);
+    expect(k.github.commitler).toHaveLength(0);
+  });
+
+  it('bilinmeyen tablo kodu 404; GET ile POST rotası çalışmaz; çapraz kaynaklı POST 403; JWT yoksa 403 ve GitHub\'a istek yok', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    expect((await yapistir(k, 'x', sayfa(a), 'degistir', 'baska')).durum).toBe(404);
+    expect((await yapistir(k, 'x', sayfa(a), 'degistir', 'toString')).durum).toBe(404);
+    expect((await k.iste('/nba/dunk-score')).durum).toBe(404);
+    const capraz = await k.iste('/nba/dunk-score', { form: new URLSearchParams({ sha: 'x', veri: sayfa(a) }), basliklar: { Origin: 'https://kotu.example' } });
+    expect(capraz.durum).toBe(403);
+    const k2 = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    expect((await k2.iste('/nba', { jwt: null })).durum).toBe(403);
+    expect((await k2.iste('/nba/dunk-score', { form: new URLSearchParams({ sha: 'x', veri: sayfa(a) }), jwt: null })).durum).toBe(403);
+    expect(k2.github.istekler).toHaveLength(0);
+    expect(k.github.commitler).toHaveLength(0);
+  });
+
+  it('GitHub yalnızca beyaz listeli yollara gider (NBA için tam iki dosya); token hiçbir NBA sayfasına yazılmaz', async () => {
+    const k = await kur(dosyalarla(dunkMetni(bayat, a), clutchMetni(bayat)));
+    await k.iste('/nba');
+    await yapistir(k, await k.github.sha(NBA_DUNK_YOLU), sayfa(a));
+    const izinli = new Set([NBA_DUNK_YOLU, NBA_CLUTCH_YOLU]);
+    for (const i of k.github.istekler.filter((x) => x.yol.includes('data/nba'))) expect(izinli.has(i.yol), i.yol).toBe(true);
+    for (const y of k.yanitlar) {
+      expect(y.govde).not.toContain(TOKEN);
+      expect(y.govde).not.toContain('ghp_');
+    }
   });
 });
 

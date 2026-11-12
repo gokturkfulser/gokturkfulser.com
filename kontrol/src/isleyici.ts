@@ -1,13 +1,14 @@
 // Top 10 kontrol düzenleyicisi: istek işleyici (nba-daily-top10-control.gokturkfulser.com, Cloudflare Access arkasında). Her istek önce Access JWT doğrulamasından geçer;
-// GitHub'a yalnızca iki beyaz listeli yol türü (gece dosyaları, ad sözlüğü) üzerinden, sabit repo ve main dalı ile erişilir.
+// GitHub'a yalnızca beyaz listeli yol türleri (gece dosyaları, ad sözlüğü, iki NBA tablo dosyası) üzerinden, sabit repo ve main dalı ile erişilir.
 import { erisimDogrula } from './erisim.ts';
 import { geceOku, durumlariDogrula, formdanDurumlar, oyundanDurum, type OyunGirdisi } from './form.ts';
 import { geceyiYenidenYaz } from './gece-yaml.ts';
 import { CakismaHatasi, GitHub, GitHubHatasi } from './github.ts';
 import { gelistirmeModu, type Bagimlilik, type Env } from './ortam.ts';
-import { geceSayfasi, hataSayfasi, listeSayfasi, sozlukSayfasi } from './sayfalar.ts';
+import { geceSayfasi, hataSayfasi, listeSayfasi, nbaSayfasi, sozlukSayfasi } from './sayfalar.ts';
 import { sozlukHaritasiOlustur, sozlukOku, takmaAdEkle } from './sozluk.ts';
-import { geceYolu, SOZLUK_YOLU, TOP10_DIZINI, YolHatasi } from './yollar.ts';
+import { bugunIstanbul, NBA_TABLOLARI, nbaDurumu, nbaYapistir, type NbaDurumu } from './nba.ts';
+import { geceYolu, NBA_YOLLARI, nbaKodu, SOZLUK_YOLU, TOP10_DIZINI, YolHatasi, type NbaKodu } from './yollar.ts';
 import type { KontrolGirdisi } from '../../site/src/lib/top10-kontrol.ts';
 import type { Oyun } from '../../site/src/lib/top10.ts';
 
@@ -59,7 +60,57 @@ async function paralelOku(yollar: string[], gh: GitHub): Promise<{ yol: string; 
   return cikti;
 }
 
-async function listeIstegi(gh: GitHub): Promise<Response> {
+type NbaOkuma = NbaDurumu & { sha: string };
+
+/**
+ * İki NBA tablosunun durumu (bayatlık uyarısı ve /nba sayfası için). Dosya repoda yoksa sha boştur (yeni dosya oluşturulmaz).
+ * `hataFirlat` false iken (liste sayfası) GitHub okuma hatası sayfayı düşürmez: o tablo "okunamadı" olarak gösterilir ve uyarı sayılmaz.
+ */
+async function nbaDurumlari(gh: GitHub, dep: Bagimlilik, hataFirlat: boolean): Promise<NbaOkuma[]> {
+  const bugun = bugunIstanbul(dep.simdi());
+  return Promise.all(
+    (Object.keys(NBA_YOLLARI) as NbaKodu[]).map(async (kod): Promise<NbaOkuma> => {
+      try {
+        const dosya = await gh.oku(NBA_YOLLARI[kod]);
+        if (!dosya) return { ...nbaDurumu(kod, null, bugun), mesaj: `Dosya repoda yok; ${NBA_YOLLARI[kod]} bir kez elle eklenip commit edilmeli.`, sha: '' };
+        return { ...nbaDurumu(kod, dosya.metin, bugun), sha: dosya.sha };
+      } catch (e) {
+        if (hataFirlat) throw e;
+        return { ...nbaDurumu(kod, null, bugun), eski: false, mesaj: 'Okunamadı (GitHub hatası).', sha: '' };
+      }
+    }),
+  );
+}
+
+const sayiParametresi = (p: string | null): number | undefined => (p && /^\d{1,6}$/.test(p) ? Number(p) : undefined);
+
+async function nbaGet(url: URL, gh: GitHub, dep: Bagimlilik): Promise<Response> {
+  const kod = nbaKodu(url.searchParams.get('kod') ?? '');
+  return html(nbaSayfasi({ tablolar: await nbaDurumlari(gh, dep, true), ok: url.searchParams.get('ok'), ...(kod ? { okAd: NBA_TABLOLARI[kod].ad } : {}), okSatir: sayiParametresi(url.searchParams.get('satir')) }));
+}
+
+async function nbaPost(kod: NbaKodu, istek: Request, gh: GitHub, dep: Bagimlilik): Promise<Response> {
+  const yol = NBA_YOLLARI[kod];
+  const form = await istek.formData();
+  const gonderilenSha = String(form.get('sha') ?? '');
+  const veri = String(form.get('veri') ?? '');
+  const mod = String(form.get('mod') ?? '') === 'ekle' ? 'ekle' : 'degistir';
+  const mevcut = await gh.oku(yol);
+  if (!mevcut) return html(hataSayfasi('Dosya bulunamadı', `${yol} repoda yok; bir kez elle eklenip commit edilmeli (düzenleyici yeni dosya oluşturmaz).`, { href: '/nba', ad: 'NBA verisi' }), 404);
+  const cakisma = () => html(hataSayfasi('Dosya değişti, yeniden yükleyin', `${NBA_TABLOLARI[kod].ad} verisi siz düzenlerken değişti. Hiçbir şey kaydedilmedi.`, { href: '/nba', ad: 'Yeniden yükle' }), 409);
+  if (!gonderilenSha || gonderilenSha !== mevcut.sha) return cakisma();
+  const sonuc = nbaYapistir(kod, mevcut.metin, veri, mod, bugunIstanbul(dep.simdi()));
+  if (!sonuc.tamam) return html(nbaSayfasi({ tablolar: await nbaDurumlari(gh, dep, true), red: { kod, hatalar: sonuc.hatalar, veri, mod } }), 422);
+  try {
+    await gh.yaz(yol, sonuc.metin, mevcut.sha, `nba: ${kod} verisi`);
+  } catch (e) {
+    if (e instanceof CakismaHatasi) return cakisma();
+    throw e;
+  }
+  return yonlendir(`/nba?ok=nba-kaydedildi&kod=${kod}&satir=${sonuc.satir}`);
+}
+
+async function listeIstegi(gh: GitHub, dep: Bagimlilik): Promise<Response> {
   const sezonlar = (await gh.listele(TOP10_DIZINI)).filter((o) => o.tur === 'dir' && /^\d{4}-\d{2}$/.test(o.ad)).map((o) => o.ad).sort().reverse();
   const dosyalar: { id: string; yol: string }[] = [];
   for (const s of sezonlar.slice(0, 2)) {
@@ -82,7 +133,7 @@ async function listeIstegi(gh: GitHub): Promise<Response> {
     if (g.tamam) girdiler.push({ id, gece: g.gece as unknown as KontrolGirdisi['gece'] });
     else okunamayan.push(`${id}: ${g.hata}`);
   }
-  return html(listeSayfasi(girdiler, okunamayan, dosyalar.length > secilen.length));
+  return html(listeSayfasi(girdiler, okunamayan, dosyalar.length > secilen.length, await nbaDurumlari(gh, dep, false)));
 }
 
 /** Şemadan geçmiş oyun → dosyaya yazılacak girdi (değişiklik yapılmadan; onaylama için). */
@@ -201,7 +252,14 @@ export async function isle(istek: Request, env: Env, dep: Bagimlilik): Promise<R
   if (!gh) return html(hataSayfasi('Yapılandırma eksik', 'GITHUB_TOKEN_KONTROL secret\'ı tanımlı değil (kontrol/DEPLOY.md).'), 500);
   try {
     const gece = /^\/gece\/(\d{4}-\d{2}-\d{2})\/?$/.exec(url.pathname);
-    if (url.pathname === '/' && yontem !== 'POST') return await listeIstegi(gh);
+    if (url.pathname === '/' && yontem !== 'POST') return await listeIstegi(gh, dep);
+    if (url.pathname === '/nba' && yontem !== 'POST') return await nbaGet(url, gh, dep);
+    const nba = /^\/nba\/([a-z-]+)$/.exec(url.pathname);
+    if (nba && yontem === 'POST') {
+      const kod = nbaKodu(nba[1]!);
+      if (!kod) return html(hataSayfasi('Sayfa bulunamadı', 'Bu adres yok.', { href: '/nba', ad: 'NBA verisi' }), 404);
+      return await nbaPost(kod, istek, gh, dep);
+    }
     if (gece) return yontem === 'POST' ? await gecePost(gece[1]!, istek, gh) : await geceGet(gece[1]!, url, gh);
     if (url.pathname === '/sozluk') return yontem === 'POST' ? await sozlukPost(istek, gh) : await sozlukGet(url, gh);
     return html(hataSayfasi('Sayfa bulunamadı', 'Bu adres yok.', { href: '/', ad: 'Geceler' }), 404);

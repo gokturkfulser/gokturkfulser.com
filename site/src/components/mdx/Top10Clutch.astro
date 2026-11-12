@@ -4,7 +4,8 @@
 // Dosya yoksa ya da boşsa hiçbir şey çizmez. `sinir`: en çok kaç satır (varsayılan 50).
 import Top10NbaTablo from './Top10NbaTablo.astro';
 import { top10AdHaritasi, top10Geceleri } from '../../lib/content';
-import { nbaClutch } from '../../lib/nba-dosyalari';
+import { tarihYaz } from '../../lib/format';
+import { nbaClutch, nbaGuncelleme } from '../../lib/nba-dosyalari';
 import { nbaKimligi, sezonSiralari } from '../../lib/nba-veri';
 import { AYAR, dilAl, sozluk } from '../../i18n';
 
@@ -23,6 +24,7 @@ const bir = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, ma
 const isaretli = new Intl.NumberFormat(AYAR[dil].intl, { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: 'exceptZero' });
 const tam = new Intl.NumberFormat(AYAR[dil].intl);
 const c = s.nba.clutch;
+const guncelleme = nbaGuncelleme('clutch');
 const sutunlar = [
   { ad: s.sutun.oyuncu },
   { ad: s.sutun.takim },
@@ -64,7 +66,7 @@ const satirlar = oyuncular.map((x) => [
   baslik={c.baslik}
   aciklama={c.aciklama}
   kaynakAdresi="https://www.nba.com/stats/players/clutch-traditional"
-  not={c.veri}
+  not={guncelleme ? s.nba.guncelleme(tarihYaz(new Date(`${guncelleme}T00:00:00Z`), dil)) : undefined}
   sutunlar={sutunlar}
   satirlar={satirlar}
 />

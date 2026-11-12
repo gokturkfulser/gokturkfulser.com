@@ -256,19 +256,18 @@ export const en: Sozluk = {
     nba: {
       kaynak: 'Source',
       kaynakAd: 'NBA.com/stats',
+      guncelleme: (tarih: string) => `Last updated ${tarih}, by hand.`,
       dunk: {
         baslik: 'Dunk Score',
         aciklama:
           "Dunk Score is the NBA's dunk rating computed from player-tracking data: it combines jump, power, style and defensive-contest subscores and has no maximum. It does not count toward the standings points; it is here for reference only.",
         sutun: { mac: 'Game', tarih: 'Date', skor: 'Score', atlama: 'Jump', guc: 'Power', stil: 'Style', savunma: 'Defense', top10: 'Top 10' },
         top10Sira: (n: number) => `No. ${n} that night`,
-        veriTarihi: (tarih: string) => `Data through ${tarih}, updated by hand.`,
       },
       clutch: {
         baslik: 'Clutch',
         aciklama:
           "Clutch means the last five minutes of the fourth quarter or overtime with the score within five points. Values are copied from the NBA's table as they are, per-game averages. They do not count toward the standings points; they are here for reference only.",
-        veri: 'Updated by hand.',
         sutun: { mac: 'GP', galibiyet: 'W', maglubiyet: 'L', dakika: 'Min', sayi: 'PTS', isabet: 'FG%', uclukIsabet: '3P%', ribaund: 'REB', asist: 'AST', calma: 'STL', blok: 'BLK', artiEksi: '+/-', siramiz: 'Our rank' },
       },
     },

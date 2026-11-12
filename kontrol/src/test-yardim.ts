@@ -60,7 +60,23 @@ export const geceMetni = (tarih = '2026-11-01', inceleme: string | null = 'bekli
     ]),
   ].join(LF) + LF;
 
-export const SOZLUK_METNI = '# Oyuncu adı sözlüğü' + LF + 'Svi Mykhailiuk: [Sviatoslav Mykhailiuk]' + LF + 'Brayden Burries: [Braden Burries]' + LF;
+export const NBA_DUNK_YOLU = 'site/src/data/nba/dunk-score.tsv';
+export const NBA_CLUTCH_YOLU = 'site/src/data/nba/clutch.tsv';
+
+const TAB = String.fromCharCode(9);
+/** NBA Dunk Score sayfasından kopyalanan biçimde (boş sütunlu, sekme ayrımlı) başlık ve satır. */
+export const DUNK_BASLIK = ['PLAYER', '', 'TEAM', 'MATCH UP', 'GAME DATE', 'Score', 'JMP', 'PWR', 'STYL', 'DEF', 'VERT', 'HANG', 'DIST', 'HAND', 'HGT', 'SPD', 'RB', 'TIP', 'OOP'].join(TAB);
+export const dunkSatiri = (oyuncu: string, tarih: string, skor: string) =>
+  [oyuncu, '', 'MIL', 'CLE @ MIL', tarih, skor, '92.4', '95.5', '76.1', '82.5', '37.1', '0.567', '6.6', 'right', '11.1', '25.5', '1.6', 'No', 'No'].join(TAB);
+/** Damga (yoksa null) + başlık + satırlar; dosyanın depodaki biçimi. */
+export const dunkMetni = (damga: string | null, ...satirlar: string[]) => [...(damga ? [`# guncellendi: ${damga}`] : []), DUNK_BASLIK, ...satirlar].join(LF) + LF;
+
+export const CLUTCH_BASLIK = ['', 'Player', 'Team', 'Age', 'GP', 'W', 'L', 'Min', 'PTS', 'FGM', 'FGA', 'FG%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OREB', 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'PF', 'TFP', 'HSFP', 'DD2', 'TD3', '+/-'].join(TAB);
+export const clutchSatiri = (sira: string, oyuncu: string, takim: string) =>
+  [sira, oyuncu, takim, '26', '8', '8', '0', '2.9', '3.5', '0.6', '1.3', '50.0', '0.4', '0.6', '60.0', '1.9', '2.1', '88.2', '0.0', '0.5', '0.5', '0.3', '0.0', '0.1', '0.0', '0.1', '4.9', '4.9', '0', '0', '4.4'].join(TAB);
+export const clutchMetni = (damga: string | null, ...satirlar: string[]) => [...(damga ? [`# guncellendi: ${damga}`] : []), CLUTCH_BASLIK, ...satirlar].join(LF) + LF;
+
+export const SOZLUK_METNI ='# Oyuncu adı sözlüğü' + LF + 'Svi Mykhailiuk: [Sviatoslav Mykhailiuk]' + LF + 'Brayden Burries: [Braden Burries]' + LF;
 
 const blobSha = async (metin: string): Promise<string> => {
   const bayt = new TextEncoder().encode(metin);
