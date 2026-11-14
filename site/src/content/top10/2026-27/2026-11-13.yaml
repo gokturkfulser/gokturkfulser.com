@@ -1,0 +1,188 @@
+# Gemini ile üretildi: 2026-11-14T11:02:04.218Z, model gemini-3.8-flash
+
+tarih: 2026-11-13
+video: https://www.youtube.com/watch?v=eMmwFGv2u3c
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, hizli_hucum, tek_el ]
+    aciklama: Tari Eason takes it coast-to-coast in transition and throws down a monstrous one-handed poster dunk over Darren Peterson.
+    rakip: Darryn Peterson
+    zaman: "02:14"
+    katkilar:
+      - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ poster, and_one, tek_el ]
+    aciklama: Wendell Carter Jr. drives baseline and elevates over Jaime Jaquez Jr. for a ferocious one-handed poster dunk plus the foul.
+    rakip: Jaime Jaquez Jr.
+    zaman: "01:59"
+    katkilar:
+      - { oyuncu: Wendell Carter Jr., takim: ORL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Collier lofts an accurate high lob from the perimeter.
+  - sira: 3
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: Isaiah Collier delivers a high lob pass to Jaxson Hayes, who reaches up to throw down an alley-oop dunk.
+    zaman: "01:46"
+    katkilar:
+      - { oyuncu: Isaiah Collier, takim: UTA, rol: pasor, pay: 30 }
+      - { oyuncu: Jaxson Hayes, takim: UTA, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Collier lofts an accurate high lob from the perimeter."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Giannis Antetokounmpo attacks downhill through the paint and throws down a violent one-handed poster dunk over Jarrett Allen.
+    rakip: Jarrett Allen
+    zaman: "01:32"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Alley-oop 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Jerome drives and threads a bounce pass to Grant on the roll.
+  # eylem oyu 2/3
+  - sira: 5
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Ty Jerome sets up Jerami Grant on the roll for an emphatic one-handed throwdown.
+    zaman: "01:18"
+    katkilar:
+      - { oyuncu: Ty Jerome, takim: MEM, rol: pasor, pay: 30 }
+      - { oyuncu: Jerami Grant, takim: MEM, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Alley-oop 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jerome drives and threads a bounce pass to Grant on the roll."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: turnike
+    aciklama: Malik Thomas drives into traffic and converts a difficult falling scoop layup off the glass right as the shot clock expires.
+    zaman: "01:02"
+    katkilar:
+      - { oyuncu: Malik Thomas, takim: CLE, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Sabonis creates the play with an incredible no-look, over-the-head touch pass in transition.
+  - sira: 7
+    eylem: pas
+    etiketler: [ bakmadan, hizli_hucum ]
+    aciklama: Domantas Sabonis gathers a loose ball and immediately flips a brilliant no-look pass over his head to Keegan Murray for a fastbreak slam.
+    zaman: "00:43"
+    katkilar:
+      - { oyuncu: Domantas Sabonis, takim: SAC, rol: pasor, pay: 70 }
+      - { oyuncu: Keegan Murray, takim: SAC, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Sabonis creates the play with an incredible no-look, over-the-head touch pass in transition."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Acuff penetrates and dishes a precise pass inside to set up the finish.
+  - sira: 8
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Darius Acuff Jr. drives into the lane and feeds Domantas Sabonis for a strong left-handed dunk.
+    zaman: "00:32"
+    katkilar:
+      - { oyuncu: Darius Acuff Jr., takim: SAC, rol: pasor, pay: 30 }
+      - { oyuncu: Domantas Sabonis, takim: SAC, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Acuff penetrates and dishes a precise pass inside to set up the finish."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Darren Peterson elevates high at the rim to emphatically reject Jabari Smith Jr.'s dunk attempt.
+    rakip: Jabari Smith Jr.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Darryn Peterson, takim: UTA, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Kelly Oubre Jr. sprints back in transition and delivers a chase-down block on OG Anunoby's layup attempt.
+    rakip: OG Anunoby
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
