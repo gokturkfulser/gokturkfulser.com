@@ -7,11 +7,12 @@ name: site-top10
 on:
   schedule:
     # GitHub cron'u UTC'dir (https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
-    # İstanbul yıl boyu UTC+3'tür (yaz saati yok): 12:00 İstanbul = 09:00 UTC, 16:00 İstanbul = 13:00 UTC.
-    # NBA'in "Plays of the Night" videosu öğlene kadar çoğunlukla yüklenmiş olur (10:00 çok erkendi, 2026-11-12'de 12:00'ye alındı);
-    # ikinci çalıştırma ilkinin kaçırdığını da yakalar (GitHub yoğun saatlerde başlatmayı geciktirebilir).
-    - cron: '0 9 * * *'
-    - cron: '0 13 * * *'
+    # İstanbul yıl boyu UTC+3'tür (yaz saati yok): 12:17 İstanbul = 09:17 UTC, 16:43 İstanbul = 13:43 UTC.
+    # NBA'in "Plays of the Night" videosu öğlene kadar çoğunlukla yüklenmiş olur (10:00 çok erkendi, 2026-11-12'de öğlene alındı);
+    # ikinci çalıştırma ilkinin kaçırdığını da yakalar. Dakikalar bilerek saat başından uzak: GitHub, "schedule" olayının yoğun saatlerde (saat başları dahil)
+    # gecikebildiğini ve yük yüksekse sıradaki işlerin düşürülebildiğini belgeliyor; 2026-11-13'te `0 9` / `0 13` ile çalışmalar saatlerce geç başladı.
+    - cron: '17 9 * * *'
+    - cron: '43 13 * * *'
   workflow_dispatch:
     inputs:
       tarih:
