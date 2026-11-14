@@ -3,13 +3,14 @@
 tarih: 2026-11-12
 video: https://www.youtube.com/watch?v=teWTVBh3XTo
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
-    etiketler: [ hizli_hucum, ters ]
+    etiketler: [ hizli_hucum ]
     aciklama: VJ Edgecombe gets the steal, races down the court, and throws down a monstrous two-handed cockback jam.
     zaman: "02:02"
     katkilar:
@@ -59,6 +60,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, tek_el ]
     aciklama: Naz Reid drives down the lane and posterizes the rim protector with a vicious one-handed slam.
+    rakip: Oso Ighodaro
     zaman: "01:24"
     katkilar:
       - { oyuncu: Naz Reid, takim: CHA, rol: bitiren, pay: 100 }
@@ -114,8 +116,7 @@ oyunlar:
     aciklama: LaMelo Ball delivers a pinpoint wrap-around pass through the defense to set up Rudy Gobert for a two-handed slam.
     zaman: "00:50"
     katkilar:
-      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
-      - { oyuncu: Rudy Gobert, takim: MIN, rol: bitiren, pay: 30 }
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
@@ -154,10 +155,10 @@ oyunlar:
   - sira: 9
     eylem: orta_mesafe
     etiketler: [ clutch, esitleyen ]
-    aciklama: Darryn Peterson sinks a pull-up jumper from the free throw line late in overtime to tie the game.
+    aciklama: AJ Dybantsa sinks a pull-up jumper from the free throw line late in overtime to tie the game.
     zaman: "00:22"
     katkilar:
-      - { oyuncu: Darryn Peterson, takim: WAS, rol: bitiren, pay: 100 }
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 1/3
