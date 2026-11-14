@@ -3,7 +3,8 @@
 tarih: 2026-11-13
 video: https://www.youtube.com/watch?v=eMmwFGv2u3c
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -11,7 +12,6 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, hizli_hucum, tek_el ]
     aciklama: Tari Eason takes it coast-to-coast in transition and throws down a monstrous one-handed poster dunk over Darren Peterson.
-    rakip: Darryn Peterson
     zaman: "02:14"
     katkilar:
       - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 100 }
@@ -27,8 +27,8 @@ oyunlar:
   - sira: 2
     eylem: smac
     etiketler: [ poster, and_one, tek_el ]
-    aciklama: Wendell Carter Jr. drives baseline and elevates over Jaime Jaquez Jr. for a ferocious one-handed poster dunk plus the foul.
-    rakip: Jaime Jaquez Jr.
+    aciklama: Wendell Carter Jr. drives baseline and elevates over Myles Turner for a ferocious one-handed poster dunk plus the foul.
+    rakip: Myles Turner
     zaman: "01:59"
     katkilar:
       - { oyuncu: Wendell Carter Jr., takim: ORL, rol: bitiren, pay: 100 }
@@ -44,7 +44,6 @@ oyunlar:
   # pay: Collier lofts an accurate high lob from the perimeter.
   - sira: 3
     eylem: alley_oop
-    etiketler: [ poster ]
     aciklama: Isaiah Collier delivers a high lob pass to Jaxson Hayes, who reaches up to throw down an alley-oop dunk.
     zaman: "01:46"
     katkilar:
@@ -63,8 +62,8 @@ oyunlar:
   - sira: 4
     eylem: smac
     etiketler: [ poster, tek_el ]
-    aciklama: Giannis Antetokounmpo attacks downhill through the paint and throws down a violent one-handed poster dunk over Jarrett Allen.
-    rakip: Jarrett Allen
+    aciklama: Giannis Antetokounmpo attacks downhill through the paint and throws down a violent one-handed poster dunk over Peyton Watson.
+    rakip: Peyton Watson
     zaman: "01:32"
     katkilar:
       - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
@@ -104,10 +103,10 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: turnike
-    aciklama: Malik Thomas drives into traffic and converts a difficult falling scoop layup off the glass right as the shot clock expires.
+    aciklama: Meleek Thomas drives into traffic and converts a difficult falling scoop layup off the glass right as the shot clock expires.
     zaman: "01:02"
     katkilar:
-      - { oyuncu: Malik Thomas, takim: CLE, rol: bitiren, pay: 100 }
+      - { oyuncu: Meleek Thomas, takim: CLE, rol: bitiren, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -120,12 +119,11 @@ oyunlar:
   # pay: Sabonis creates the play with an incredible no-look, over-the-head touch pass in transition.
   - sira: 7
     eylem: pas
-    etiketler: [ bakmadan, hizli_hucum ]
+    etiketler: [ bakmadan, hizli_hucum, sirt_arkasi ]
     aciklama: Domantas Sabonis gathers a loose ball and immediately flips a brilliant no-look pass over his head to Keegan Murray for a fastbreak slam.
     zaman: "00:43"
     katkilar:
-      - { oyuncu: Domantas Sabonis, takim: SAC, rol: pasor, pay: 70 }
-      - { oyuncu: Keegan Murray, takim: SAC, rol: bitiren, pay: 30 }
+      - { oyuncu: Domantas Sabonis, takim: SAC, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
