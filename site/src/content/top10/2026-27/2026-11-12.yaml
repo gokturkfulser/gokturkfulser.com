@@ -1,0 +1,189 @@
+# Gemini ile üretildi: 2026-11-13T16:54:58.226Z, model gemini-3.8-flash
+
+tarih: 2026-11-12
+video: https://www.youtube.com/watch?v=teWTVBh3XTo
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ hizli_hucum, ters ]
+    aciklama: VJ Edgecombe gets the steal, races down the court, and throws down a monstrous two-handed cockback jam.
+    zaman: "02:02"
+    katkilar:
+      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: ucluk
+    etiketler: [ clutch, esitleyen, son_saniye ]
+    aciklama: Trae Young drains a deep contested three-pointer at the buzzer to tie the game and send it to overtime.
+    zaman: "01:47"
+    katkilar:
+      - { oyuncu: Trae Young, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Cooper Flagg pushes the pace on the fast break and detonates a one-handed tomahawk jam.
+    zaman: "01:36"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Naz Reid drives down the lane and posterizes the rim protector with a vicious one-handed slam.
+    zaman: "01:24"
+    katkilar:
+      - { oyuncu: Naz Reid, takim: CHA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Collin Murray-Boyles meets Jaylen Brown at the rim and swats his dunk attempt off the backboard.
+    rakip: Jaylen Brown
+    zaman: "01:13"
+    katkilar:
+      - { oyuncu: Collin Murray-Boyles, takim: TOR, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    etiketler: [ chase_down_blok, hizli_hucum ]
+    aciklama: Devin Booker hustles back in transition to deny Sion James at the rim with a chase-down block off the glass.
+    rakip: Sion James
+    zaman: "01:02"
+    katkilar:
+      - { oyuncu: Devin Booker, takim: PHX, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: LaMelo Ball creates the highlight with a slick wrap-around dish through traffic in the lane.
+  # eylem oyu 2/3
+  # pay oyu 2/3
+  - sira: 7
+    eylem: pas
+    aciklama: LaMelo Ball delivers a pinpoint wrap-around pass through the defense to set up Rudy Gobert for a two-handed slam.
+    zaman: "00:50"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
+      - { oyuncu: Rudy Gobert, takim: MIN, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: LaMelo Ball creates the highlight with a slick wrap-around dish through traffic in the lane."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ putback ]
+    aciklama: Ja'Kobe Walter soars in from the perimeter to throw down an emphatic one-handed putback slam.
+    zaman: "00:36"
+    katkilar:
+      - { oyuncu: Ja'Kobe Walter, takim: TOR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 1/3)
+  # diğer: Markelle Fultz 1/3
+  # diğer: AJ Dybantsa 1/3
+  # model güveni: orta (Referred to as the number one pick wearing jersey number 4 for the Wizards.); yüksek; yüksek
+  # uzlaşma yok
+  - sira: 9
+    eylem: orta_mesafe
+    etiketler: [ clutch, esitleyen ]
+    aciklama: Darryn Peterson sinks a pull-up jumper from the free throw line late in overtime to tie the game.
+    zaman: "00:22"
+    katkilar:
+      - { oyuncu: Darryn Peterson, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+      alternatifler:
+        - "diğer: Markelle Fultz 1/3"
+        - "diğer: AJ Dybantsa 1/3"
+      model_guveni:
+        - orta (Referred to as the number one pick wearing jersey number 4 for the Wizards.)
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: blok
+    etiketler: [ chase_down_blok, hizli_hucum ]
+    aciklama: Ron Holland chases down Bilal Coulibaly on the fast break and pins his layup attempt off the backboard.
+    rakip: Bilal Coulibaly
+    zaman: "00:04"
+    katkilar:
+      - { oyuncu: Ron Holland, takim: DET, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
