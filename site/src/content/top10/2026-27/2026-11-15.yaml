@@ -3,19 +3,19 @@
 tarih: 2026-11-15
 video: https://www.youtube.com/watch?v=qfVVGVneBXs
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   # pay: LeBron James threads a dazzling behind-the-back bounce pass on the fast break.
   - sira: 1
     eylem: pas
-    etiketler: [ sirt_arkasi, hizli_hucum ]
+    etiketler: [ hizli_hucum, bakmadan ]
     aciklama: LeBron James delivers a behind-the-back bounce pass in transition to Jaylen Brown for a slam.
     zaman: "02:13"
     katkilar:
-      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 70 }
-      - { oyuncu: Jaylen Brown, takim: PHI, rol: bitiren, pay: 30 }
+      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -30,7 +30,6 @@ oyunlar:
     eylem: turnike
     etiketler: [ ters, clutch ]
     aciklama: Scottie Barnes drives along the baseline, hangs in the air, and scoops in a reverse layup.
-    rakip: Landry Shamet
     zaman: "01:57"
     katkilar:
       - { oyuncu: Scottie Barnes, takim: TOR, rol: bitiren, pay: 100 }
@@ -95,8 +94,7 @@ oyunlar:
     aciklama: Kobe Sanders cuts down the lane and throws down a two-handed dunk off a feed from Kobe Bufkin.
     zaman: "01:14"
     katkilar:
-      - { oyuncu: Kobe Bufkin, takim: LAC, rol: pasor, pay: 30 }
-      - { oyuncu: Kobe Sanders, takim: LAC, rol: bitiren, pay: 70 }
+      - { oyuncu: Kobe Sanders, takim: LAC, rol: pasor, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 1/3
@@ -115,9 +113,8 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 6
     eylem: smac
-    etiketler: [ poster, hizli_hucum ]
+    etiketler: [ hizli_hucum ]
     aciklama: Scottie Barnes intercepts the ball and throws down a thunderous two-handed poster dunk over OG Anunoby.
-    rakip: OG Anunoby
     zaman: "01:00"
     katkilar:
       - { oyuncu: Scottie Barnes, takim: TOR, rol: bitiren, pay: 100 }
@@ -133,12 +130,11 @@ oyunlar:
   # pay: Karl-Anthony Towns flips a no-look over-the-shoulder pass while trapped in the corner.
   - sira: 7
     eylem: pas
-    etiketler: [ bakmadan ]
+    etiketler: [ bakmadan, sirt_arkasi ]
     aciklama: Karl-Anthony Towns delivers an over-the-shoulder no-look pass out of the baseline trap to Jordan Clarkson for a layup.
     zaman: "00:44"
     katkilar:
-      - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: pasor, pay: 70 }
-      - { oyuncu: Jordan Clarkson, takim: NYK, rol: bitiren, pay: 30 }
+      - { oyuncu: Karl-Anthony Towns, takim: NYK, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -152,8 +148,7 @@ oyunlar:
   - sira: 8
     eylem: smac
     etiketler: [ poster, tek_el ]
-    aciklama: Keyonte George bursts into the paint and throws down a one-handed poster slam over Victor Wembanyama.
-    rakip: Victor Wembanyama
+    aciklama: Keyonte George bursts into the paint and throws down a one-handed dunk.
     zaman: "00:30"
     katkilar:
       - { oyuncu: Keyonte George, takim: UTA, rol: bitiren, pay: 100 }
@@ -172,8 +167,7 @@ oyunlar:
     aciklama: LeBron James assists VJ Edgecombe to pass Jason Kidd for third on the all-time assists list.
     zaman: "00:17"
     katkilar:
-      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 70 }
-      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bitiren, pay: 30 }
+      - { oyuncu: LeBron James, takim: PHI, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
