@@ -3,7 +3,8 @@
 tarih: 2026-11-16
 video: https://www.youtube.com/watch?v=d-AekDrIGIE
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
