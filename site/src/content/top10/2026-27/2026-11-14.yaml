@@ -1,0 +1,236 @@
+# Gemini ile üretildi: 2026-11-15T16:23:28.454Z, model gemini-3.8-flash
+
+tarih: 2026-11-14
+video: https://www.youtube.com/watch?v=sfnZqGhlJKI
+kaynak: gemini
+inceleme: onaylandi
+elle_duzenlendi: true
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Antetokounmpo dives for a loose ball and hikes a long-snap pass between his legs.
+  - sira: 1
+    eylem: pas
+    etiketler: [ bacak_arasi ]
+    aciklama: Giannis Antetokounmpo secures a loose ball while diving on the floor and snaps a pass between his legs to Klay Thompson for three.
+    zaman: "02:22"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: pasor, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Antetokounmpo dives for a loose ball and hikes a long-snap pass between his legs."
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Coward comes up with the steal and throws an accurate transition lob.
+  # pay oyu 2/3
+  - sira: 2
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Cedric Coward grabs the steal and lofts an alley-oop pass to Javon Small for a high-flying reverse flush.
+    zaman: "02:02"
+    katkilar:
+      - { oyuncu: Cedric Coward, takim: MEM, rol: pasor, pay: 30 }
+      - { oyuncu: Javon Small, takim: MEM, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Coward comes up with the steal and throws an accurate transition lob."
+  # güven: orta (oy 2/3)
+  # diğer: Luka Doncic + Daniel Gafford 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: Daniel Gafford elevates over Thomas Bryant to corral the alley-oop and hammer it down one-handed.
+    rakip: Thomas Bryant
+    zaman: "01:46"
+    katkilar:
+      - { oyuncu: Daniel Gafford, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Luka Doncic + Daniel Gafford 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: blok
+    aciklama: Yves Missi flies out to the perimeter to cleanly block a Christian Braun three-point attempt.
+    rakip: Christian Braun
+    zaman: "01:31"
+    katkilar:
+      - { oyuncu: Yves Missi, takim: NOP, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Blok 1/3
+  # pay diğer: 70/30 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Adebayo delivers an emphatic block on the interior to spark the break.
+  # eylem oyu 2/3
+  # pay oyu 2/3
+  - sira: 5
+    eylem: ucluk
+    etiketler: [ hizli_hucum ]
+    aciklama: Bam Adebayo rejects a shot inside, triggering a fast break that ends in a Klay Thompson three-pointer.
+    zaman: "01:11"
+    katkilar:
+      - { oyuncu: Bam Adebayo, takim: MIA, rol: bloklayan, pay: 70 }
+      - { oyuncu: Klay Thompson, takim: MIA, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Blok 1/3"
+        - "pay diğer: 70/30 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Adebayo delivers an emphatic block on the interior to spark the break."
+  # güven: düşük (oy 1/3)
+  # diğer: Tyrese Proctor + Thomas Bryant 1/3
+  # diğer: Tyrese Proctor + Craig Porter Jr. 1/3
+  # model güveni: yüksek; yüksek; orta (Finisher number partially obscured during rapid baseline cut.)
+  # pay: Proctor delivers a spectacular behind-the-back pocket pass in traffic.
+  # uzlaşma yok
+  # doğrulanmamış ad: Tyrese Proctor, Mario Hezonja (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 6
+    eylem: pas
+    etiketler: [ sirt_arkasi ]
+    aciklama: Tyrese Proctor dishes a slick behind-the-back pass inside to Mario Hezonja for the basket.
+    zaman: "00:59"
+    katkilar:
+      - { oyuncu: Tyrese Proctor, takim: CLE, rol: pasor, pay: 100 }
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+        - "doğrulanmamış ad: Tyrese Proctor, Mario Hezonja (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Tyrese Proctor + Thomas Bryant 1/3"
+        - "diğer: Tyrese Proctor + Craig Porter Jr. 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - orta (Finisher number partially obscured during rapid baseline cut.)
+        - "pay: Proctor delivers a spectacular behind-the-back pocket pass in traffic."
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 70/30 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Wiggins swats away the shot at the rim to trigger the transition opportunity.
+  # eylem oyu 2/3
+  # pay oyu 2/3
+  - sira: 7
+    eylem: blok
+    etiketler: [ hizli_hucum ]
+    aciklama: Andrew Wiggins blocks a layup attempt at the rim, leading to a fast-break dunk by Giannis Antetokounmpo.
+    zaman: "00:43"
+    katkilar:
+      - { oyuncu: Andrew Wiggins, takim: MIA, rol: bloklayan, pay: 70 }
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+        - "pay diğer: 70/30 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Wiggins swats away the shot at the rim to trigger the transition opportunity."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ball uncorks a magnificent full-court touchdown pass leading directly to the slam.
+  - sira: 8
+    eylem: pas
+    etiketler: [ hizli_hucum ]
+    aciklama: LaMelo Ball fires a pinpoint full-court football pass to Jaden McDaniels for a transition dunk.
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ball uncorks a magnificent full-court touchdown pass leading directly to the slam."
+  # güven: orta (oy 3/3)
+  # eylem diğer: Orta mesafe 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 9
+    eylem: ucluk
+    etiketler: [ and_one ]
+    aciklama: Nikola Jokic absorbs contact in the paint and tosses up an off-balance circus shot off the glass for the and-one.
+    zaman: "00:18"
+    katkilar:
+      - { oyuncu: Nikola Jokic, takim: DEN, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Orta mesafe 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Orta mesafe 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 10
+    eylem: ucluk
+    etiketler: [ son_saniye ]
+    aciklama: Cam Spencer pump-fakes and drains a buzzer-beating three-pointer to end the first half.
+    zaman: "00:04"
+    katkilar:
+      - { oyuncu: Cam Spencer, takim: MEM, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Orta mesafe 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
