@@ -1,0 +1,180 @@
+# Gemini ile üretildi: 2026-11-17T10:11:35.211Z, model gemini-3.8-flash
+
+tarih: 2026-11-16
+video: https://www.youtube.com/watch?v=d-AekDrIGIE
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Yaxel Lendeborg attacks the rim off the dribble and throws down a thunderous one-handed poster dunk over Derik Queen.
+    rakip: Derik Queen
+    zaman: "02:21"
+    katkilar:
+      - { oyuncu: Yaxel Lendeborg, takim: GSW, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Jeremiah Fears lobs the ball over the defense toward the rim.
+  - sira: 2
+    eylem: alley_oop
+    aciklama: Jeremiah Fears lobs to Karlo Matkovic, who contorts mid-air for a two-handed alley-oop jam over a defender.
+    zaman: "02:07"
+    katkilar:
+      - { oyuncu: Jeremiah Fears, takim: NOP, rol: pasor, pay: 30 }
+      - { oyuncu: Karlo Matkovic, takim: NOP, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jeremiah Fears lobs the ball over the defense toward the rim."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: blok
+    aciklama: Jalen Smith elevates and forcefully swats Peyton Watson's shot attempt at the rim.
+    rakip: Peyton Watson
+    zaman: "01:54"
+    katkilar:
+      - { oyuncu: Jalen Smith, takim: CHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ hizli_hucum, ters ]
+    aciklama: Zion Williamson takes off on an open-court breakaway and throws down a high-flying windmill dunk.
+    zaman: "01:41"
+    katkilar:
+      - { oyuncu: Zion Williamson, takim: NOP, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Tyrese Proctor delivers an on-target lob pass on the break.
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Tyrese Proctor leads Donovan Mitchell on the fast break for an explosive one-handed alley-oop slam.
+    zaman: "01:22"
+    katkilar:
+      - { oyuncu: Tyrese Proctor, takim: CLE, rol: pasor, pay: 30 }
+      - { oyuncu: Donovan Mitchell, takim: CLE, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Tyrese Proctor delivers an on-target lob pass on the break."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Nikola Jokic launches a spectacular pinpoint full-court outlet pass right in stride.
+  - sira: 6
+    eylem: pas
+    etiketler: [ hizli_hucum ]
+    aciklama: Nikola Jokic throws a pinpoint full-court pass to Jamal Murray for an uncontested transition dunk.
+    zaman: "01:04"
+    katkilar:
+      - { oyuncu: Nikola Jokic, takim: DEN, rol: pasor, pay: 70 }
+      - { oyuncu: Jamal Murray, takim: DEN, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Nikola Jokic launches a spectacular pinpoint full-court outlet pass right in stride."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Giannis Antetokounmpo drives into the lane and delivers a powerful left-handed poster dunk over Jabari Smith Jr.
+    rakip: Jabari Smith Jr.
+    zaman: "00:47"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: blok
+    aciklama: Cedric Coward rises up at the rim to reject AJ Dybantsa's drive.
+    rakip: AJ Dybantsa
+    zaman: "00:32"
+    katkilar:
+      - { oyuncu: Cedric Coward, takim: MEM, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Michael Porter Jr. swats Joel Embiid's shot attempt at the rim.
+    rakip: Joel Embiid
+    zaman: "00:19"
+    katkilar:
+      - { oyuncu: Michael Porter Jr., takim: BKN, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Trae Young pushes the break and delivers an accurate lob pass to Anthony Davis.
+  - sira: 10
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Trae Young tosses an alley-oop pass on the fast break to Anthony Davis for a one-handed dunk.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Trae Young, takim: WAS, rol: pasor, pay: 50 }
+      - { oyuncu: Anthony Davis, takim: WAS, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Trae Young pushes the break and delivers an accurate lob pass to Anthony Davis."
