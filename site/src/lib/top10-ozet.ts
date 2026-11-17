@@ -1,7 +1,7 @@
 // Top 10 yazı sayfasının ek hesapları: sıralama değişimi, takım toplamı, eylem dağılımı, liderlik serileri ve grafik koordinatları.
 // Saf fonksiyonlar: Astro'ya ve içerik koleksiyonuna dokunmaz; puan ve sıralama kuralları top10.ts'ten gelir (burada ikinci kopya yok).
 // Birim testleri `top10-ozet.test.ts`'tedir.
-import { katkiBirimi, katkiPaylari, kimlik, PUAN_BIRIMI, sezonTablosu, type Gece, type Satir } from './top10.ts';
+import { katkiBirimi, katkiPaylari, kimlik, puan, PUAN_BIRIMI, sezonTablosu, type Gece, type Satir } from './top10.ts';
 import { adlariUygula, type AdHaritasi } from './top10-adlar.ts';
 import { EYLEM_ANAHTARLARI, type Eylem } from './top10-sozluk.ts';
 
@@ -272,6 +272,8 @@ export type SayimSatiri = {
   sonGorunme: Date;
   /** Yalnızca `rakipToplam` satırlarında: hangi türden kaç kez rakip olduğu (bir oyun birden çok türde olabilir; toplam `sayi`'dan büyük çıkabilir). */
   dagilim?: { posterlenen: number; bloklanan: number; calimlanan: number };
+  /** Yalnızca `puanVerenler` satırlarında: rakip olduğu oyun sayısı (`sayi` bu oyunların toplam puanıdır). */
+  hareket?: number;
 };
 export type SayimListeleri = {
   /** Poster, blok ya da çalım oyunlarında rakip olanlar, oyun başına bir kez (üç rakip listesinin toplamı). */
@@ -331,6 +333,34 @@ export function sayimListeleri(geceler: readonly Gece[], sinir = 5, harita?: AdH
     dagilim: { posterlenen: l.posterlenen.get(r.kimlik)?.sayi ?? 0, bloklanan: l.bloklanan.get(r.kimlik)?.sayi ?? 0, calimlanan: l.calimlanan.get(r.kimlik)?.sayi ?? 0 },
   }));
   return { rakipToplam, posterlenen: sirala(l.posterlenen), bloklanan: sirala(l.bloklanan), calimlanan: sirala(l.calimlanan), posterBasan: sirala(l.posterBasan), blokYapan: sirala(l.blokYapan) };
+}
+
+/**
+ * "Puan verenler": rakibi yazılı her oyunda, oyunun puanı (11 − sıra, top5'te de aynı) rakibe "verilmiş" sayılır; rakip puan almaz,
+ * bu yalnızca onun yüzünden oyunun listede ne kadar yukarıda olduğunu gösterir. `sayi` = toplam verilen puan, `hareket` = oyun sayısı.
+ * Çoktan aza; eşitlikte daha az oyunla aynı puana ulaşan (oyun başına ortalaması yüksek), sonra daha yeni son görünme, sonra ad. İlk `sinir`.
+ * Kendi katkısı olduğu oyunda rakip yazılmışsa (veri hatası) o oyun sayılmaz.
+ */
+export function puanVerenler(geceler: readonly Gece[], sinir = 5, harita?: AdHaritasi): SayimSatiri[] {
+  const kaynak = harita ? adlariUygula(geceler, harita) : [...geceler];
+  const sayac = new Map<string, SayimSatiri>();
+  for (const gece of [...kaynak].sort(artan)) {
+    for (const o of gece.oyunlar) {
+      if (!o.rakip) continue;
+      const k = kimlik(o.rakip);
+      if (o.katkilar.some((x) => kimlik(x.oyuncu) === k)) continue;
+      const m = sayac.get(k);
+      if (!m) sayac.set(k, { kimlik: k, oyuncu: o.rakip, sayi: puan(o.sira), hareket: 1, sonGorunme: gece.tarih });
+      else {
+        m.sayi += puan(o.sira);
+        m.hareket = (m.hareket ?? 0) + 1;
+        if (gece.tarih.valueOf() >= m.sonGorunme.valueOf()) Object.assign(m, { oyuncu: o.rakip, sonGorunme: gece.tarih });
+      }
+    }
+  }
+  return [...sayac.values()]
+    .sort((a, b) => b.sayi - a.sayi || a.hareket! - b.hareket! || b.sonGorunme.valueOf() - a.sonGorunme.valueOf() || a.oyuncu.localeCompare(b.oyuncu, 'tr'))
+    .slice(0, sinir);
 }
 
 // ——— Kim kime: oyuncu–rakip çiftleri ———

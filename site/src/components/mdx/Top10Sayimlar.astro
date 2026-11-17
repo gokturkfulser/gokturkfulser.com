@@ -7,11 +7,11 @@ import Top10Podyum from './Top10Podyum.astro';
 import { oyuncuGorseli } from '../../lib/top10-oyuncu-gorsel';
 import { top10Geceleri } from '../../lib/content';
 import { sayiYaz } from '../../lib/format';
-import { sayimListeleri, type SayimSatiri } from '../../lib/top10-ozet';
+import { puanVerenler, sayimListeleri, type SayimSatiri } from '../../lib/top10-ozet';
 import { dilAl, sozluk } from '../../i18n';
 
 interface Props {
-  blok: 'rakip' | 'yetenek';
+  blok: 'rakip' | 'yetenek' | 'puan';
   sezon?: string;
   /** Bloğun altına "Sayılar yalnızca…" cümlesini ekler. */
   not?: boolean;
@@ -22,16 +22,21 @@ const s = sozluk(dil).top10;
 const { blok, not = false } = Astro.props;
 const { geceler } = await top10Geceleri(Astro.props.sezon);
 const l = sayimListeleri(geceler);
-const baslik = blok === 'rakip' ? s.sayim.rakipBaslik : s.sayim.yetenekBaslik;
+const baslik = blok === 'rakip' ? s.sayim.rakipBaslik : blok === 'puan' ? s.sayim.puanBaslik : s.sayim.yetenekBaslik;
 const anahtarlar = blok === 'rakip' ? (['rakipToplam', 'posterlenen', 'bloklanan', 'calimlanan'] as const) : (['posterBasan', 'blokYapan'] as const);
-const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] = anahtarlar
-  .map((a) => ({ id: a, ad: s.sayim.liste[a], satirlar: l[a] }))
-  .filter((x) => x.satirlar.length > 0);
+// `puan` bloğu: rakibin "verdiği" toplam puan (oyun puanı = 11 − sıra); sayı etiketi "Puan", altında oyun sayısı.
+const listeler: { id: string; ad: string; satirlar: SayimSatiri[] }[] =
+  blok === 'puan'
+    ? [{ id: 'puanVeren', ad: s.sayim.liste.puanVeren, satirlar: puanVerenler(geceler) }].filter((x) => x.satirlar.length > 0)
+    : anahtarlar.map((a) => ({ id: a, ad: s.sayim.liste[a], satirlar: l[a] })).filter((x) => x.satirlar.length > 0);
+const sayiEtiketi = blok === 'puan' ? s.sayim.puan : s.sayim.sayi;
 /** Rakip toplam satırında hangi türden kaç kez rakip olduğu ("2 kez posterlendi", "1 kez bloklandı"); sıfır olan türler yazılmaz. */
 const ayrinti = (r: SayimSatiri): string[] =>
   r.dagilim
     ? (['posterlenen', 'bloklanan', 'calimlanan'] as const).filter((t) => r.dagilim![t] > 0).map((t) => s.sayim.ayrinti[t](r.dagilim![t]))
-    : [];
+    : r.hareket
+      ? [s.sayim.ayrinti.puanVeren(r.hareket)]
+      : [];
 // Rakip bloğunda "Highlight kurbanları" tam genişlikte üstte (büyük kartlar), altındaki üç liste yan yana ve kompakt;
 // yetenek bloğunda iki liste yan yana. Kompakt kartlarda atıf satırı yoktur: fotoğraf atıfları bloğun altında tek satırda toplanır.
 type Grup = { sinif: 'ust' | 'alt' | 'yan'; listeler: typeof listeler };
@@ -41,7 +46,9 @@ const gruplar: Grup[] =
         { sinif: 'ust' as const, listeler: listeler.filter((x) => x.id === 'rakipToplam') },
         { sinif: 'alt' as const, listeler: listeler.filter((x) => x.id !== 'rakipToplam') },
       ].filter((g) => g.listeler.length > 0)
-    : [{ sinif: 'yan' as const, listeler }];
+    : blok === 'puan'
+      ? [{ sinif: 'ust' as const, listeler }]
+      : [{ sinif: 'yan' as const, listeler }];
 const toplamAtif = [
   ...new Map(
     gruplar
@@ -69,7 +76,7 @@ const toplamAtif = [
               oyuncular={x.satirlar.slice(0, 3).map((r, i) => ({
                 sira: sayiYaz(i + 1, dil),
                 ad: r.oyuncu,
-                sayilar: [{ etiket: s.sayim.sayi, deger: sayiYaz(r.sayi, dil) }],
+                sayilar: [{ etiket: sayiEtiketi, deger: sayiYaz(r.sayi, dil) }],
                 ayrinti: ayrinti(r),
               }))}
             />
@@ -80,8 +87,8 @@ const toplamAtif = [
                     <tr>
                       <th scope="col" class="sayi">{s.sutun.sira}</th>
                       <th scope="col">{s.sutun.oyuncu}</th>
-                      {x.satirlar[0]?.dagilim && <th scope="col" class="ayrinti">{s.sayim.ayrinti.baslik}</th>}
-                      <th scope="col" class="sayi">{s.sayim.sayi}</th>
+                      {(x.satirlar[0]?.dagilim || x.satirlar[0]?.hareket) && <th scope="col" class="ayrinti">{s.sayim.ayrinti.baslik}</th>}
+                      <th scope="col" class="sayi">{sayiEtiketi}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -89,7 +96,7 @@ const toplamAtif = [
                       <tr>
                         <td class="sayi">{sayiYaz(i + 4, dil)}</td>
                         <th scope="row">{r.oyuncu}</th>
-                        {r.dagilim && <td class="ayrinti">{ayrinti(r).join(', ')}</td>}
+                        {(r.dagilim || r.hareket) && <td class="ayrinti">{ayrinti(r).join(', ')}</td>}
                         <td class="sayi puan">{sayiYaz(r.sayi, dil)}</td>
                       </tr>
                     ))}
@@ -112,6 +119,7 @@ const toplamAtif = [
           ))}
         </p>
       )}
+      {blok === 'puan' && <p class="yorum">{s.sayim.puanYorum}</p>}
       {not && <p class="not">{s.sayim.not}</p>}
     </section>
   )
@@ -238,6 +246,12 @@ const toplamAtif = [
 
   .puan {
     font-weight: 700;
+  }
+
+  .yorum {
+    margin: var(--aralik-3) 0 0;
+    font-size: var(--yazi-sm);
+    line-height: 1.55;
   }
 
   .not {

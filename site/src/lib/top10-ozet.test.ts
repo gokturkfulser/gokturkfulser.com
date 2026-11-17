@@ -9,6 +9,7 @@ import {
   eylemDagilimi,
   grafikDuzeni,
   liderlikSerileri,
+  puanVerenler,
   sayimListeleri,
   siralamaDegisimi,
   takimToplami,
@@ -551,5 +552,27 @@ describe('ciftler', () => {
 
   it('boş girdi: boş liste', () => {
     expect(ciftler([])).toEqual([]);
+  });
+});
+
+describe('puanVerenler', () => {
+  const ok = (sira: number, rakip: string | undefined, oyuncu = 'Ada Aksoy'): Oyun => ({ sira, ...(rakip ? { rakip } : {}), katkilar: [{ oyuncu, takim: 'SAS', rol: 'bitiren' }] });
+  const g = (tarih: string, ...oyunlar: Oyun[]): Gece => {
+    const kalan = Array.from({ length: 10 }, (_, i) => i + 1).filter((n) => !oyunlar.some((x) => x.sira === n));
+    return { tarih: new Date(`${tarih}T00:00:00Z`), tur: 'top10', video: VIDEO, oyunlar: [...oyunlar, ...kalan.map((n) => ok(n, undefined, `Dolgu ${tarih} ${n}`))] };
+  };
+
+  it('rakibin oyunlarının puanı (11 − sıra) toplanır; rakipsiz oyun atlanır; eşitlikte daha az oyunla ulaşan önde', () => {
+    const l = puanVerenler([
+      g('2026-11-01', ok(1, 'Victor Wembanyama'), ok(4, 'Ravi Rakip'), ok(5, undefined)),
+      g('2026-11-02', ok(10, 'Victor Wembanyama'), ok(2, 'Ravi Rakip'), ok(7, 'Sena Savunma')),
+    ]);
+    expect(l.map((x) => [x.oyuncu, x.sayi, x.hareket])).toEqual([['Victor Wembanyama', 11, 2], ['Ravi Rakip', 16, 2]].sort((a, b) => (b[1] as number) - (a[1] as number)).concat([['Sena Savunma', 4, 1]]));
+  });
+
+  it('aynı oyunun hem katkı sahibi hem rakibi olan kişi sayılmaz; sinir uygulanır; boş veri boş liste', () => {
+    expect(puanVerenler([g('2026-11-01', ok(1, 'Ada Aksoy'))])).toEqual([]);
+    expect(puanVerenler([g('2026-11-01', ok(1, 'A Bir'), ok(2, 'B Iki'), ok(3, 'C Uc'))], 2)).toHaveLength(2);
+    expect(puanVerenler([])).toEqual([]);
   });
 });
