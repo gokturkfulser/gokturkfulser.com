@@ -1,0 +1,203 @@
+# Gemini ile üretildi: 2026-11-18T16:04:45.231Z, model gemini-3.8-flash
+
+tarih: 2026-11-17
+video: https://www.youtube.com/watch?v=wPu-uSlHD8Q
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: blok
+    etiketler: [ clutch ]
+    aciklama: Trey Lyles swats Damian Lillard's driving layup at the buzzer to seal the victory for Minnesota.
+    rakip: Damian Lillard
+    zaman: "02:16"
+    katkilar:
+      - { oyuncu: Trey Lyles, takim: MIN, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 2
+    eylem: alley_oop
+    etiketler: [ kendine_alley_oop, tek_el ]
+    aciklama: Victor Wembanyama tosses the ball off the backboard to himself and flushes a dominant one-handed slam.
+    rakip: Ausar Thompson
+    zaman: "01:57"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Doncic draws the defense and delivers a crisp cross-court pass.
+  - sira: 3
+    eylem: ucluk
+    etiketler: [ clutch, esitleyen ]
+    aciklama: Luka Doncic finds Quentin Grimes, who drills a clutch game-tying three-pointer to send the game to overtime.
+    zaman: "01:35"
+    katkilar:
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 30 }
+      - { oyuncu: Quentin Grimes, takim: LAL, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Doncic draws the defense and delivers a crisp cross-court pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: calim
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: Cade Cunningham goes coast-to-coast, splitting defenders with a behind-the-back dribble before finishing at the rim.
+    rakip: Stephon Castle
+    zaman: "01:18"
+    katkilar:
+      - { oyuncu: Cade Cunningham, takim: DET, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Turnike 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ball creates the play by deflecting the inbound pass to force a critical late turnover.
+  # eylem oyu 2/3
+  - sira: 5
+    eylem: smac
+    etiketler: [ clutch, hizli_hucum ]
+    aciklama: LaMelo Ball deflects an inbound pass, allowing Jaden McDaniels to recover and finish the go-ahead layup in the final seconds.
+    zaman: "01:02"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: top_calan, pay: 50 }
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Turnike 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ball creates the play by deflecting the inbound pass to force a critical late turnover."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ poster, and_one, hizli_hucum, tek_el ]
+    aciklama: Javonte Green takes it the length of the floor and throws down a monstrous tomahawk poster dunk through contact.
+    rakip: Julian Champagnie
+    zaman: "00:50"
+    katkilar:
+      - { oyuncu: Javonte Green, takim: DET, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Cunningham creates the highlight with a spectacular no-look transition bounce pass.
+  - sira: 7
+    eylem: pas
+    etiketler: [ bakmadan, ters, hizli_hucum ]
+    aciklama: Cade Cunningham drops a gorgeous no-look bounce pass on the break to Ausar Thompson for a reverse layup.
+    zaman: "00:37"
+    katkilar:
+      - { oyuncu: Cade Cunningham, takim: DET, rol: pasor, pay: 70 }
+      - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Cunningham creates the highlight with a spectacular no-look transition bounce pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: blok
+    aciklama: Joan Beringer meets Jayson Kent at the rim and swats away his dunk attempt.
+    rakip: Jayson Kent
+    zaman: "00:25"
+    katkilar:
+      - { oyuncu: Joan Beringer, takim: MIN, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Ja'Kobe Walter 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    etiketler: [ clutch ]
+    aciklama: Jalen Brunson comes up with a clutch rejection on Ja'Kobe Walter late in the fourth quarter.
+    rakip: Ja'Kobe Walter
+    zaman: "00:13"
+    katkilar:
+      - { oyuncu: Jalen Brunson, takim: NYK, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Ja'Kobe Walter 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 3/3)
+  # eylem diğer: Turnike 1/3
+  # eylem diğer: Orta mesafe 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 1/3
+  - sira: 10
+    eylem: diger
+    aciklama: Svi Mykhailiuk makes an incredible high-arcing shot from behind the backboard.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Svi Mykhailiuk, takim: UTA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: dusuk
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 1/3
+      alternatifler:
+        - "eylem diğer: Turnike 1/3"
+        - "eylem diğer: Orta mesafe 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
