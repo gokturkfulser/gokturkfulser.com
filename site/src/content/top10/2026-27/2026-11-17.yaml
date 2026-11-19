@@ -3,7 +3,8 @@
 tarih: 2026-11-17
 video: https://www.youtube.com/watch?v=wPu-uSlHD8Q
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -30,7 +31,6 @@ oyunlar:
     eylem: alley_oop
     etiketler: [ kendine_alley_oop, tek_el ]
     aciklama: Victor Wembanyama tosses the ball off the backboard to himself and flushes a dominant one-handed slam.
-    rakip: Ausar Thompson
     zaman: "01:57"
     katkilar:
       - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
@@ -70,7 +70,7 @@ oyunlar:
     eylem: calim
     etiketler: [ sirt_arkasi, hizli_hucum ]
     aciklama: Cade Cunningham goes coast-to-coast, splitting defenders with a behind-the-back dribble before finishing at the rim.
-    rakip: Stephon Castle
+    rakip: Keldon Johnson
     zaman: "01:18"
     katkilar:
       - { oyuncu: Cade Cunningham, takim: DET, rol: calim_atan, pay: 100 }
@@ -87,7 +87,7 @@ oyunlar:
   # pay: Ball creates the play by deflecting the inbound pass to force a critical late turnover.
   # eylem oyu 2/3
   - sira: 5
-    eylem: smac
+    eylem: turnike
     etiketler: [ clutch, hizli_hucum ]
     aciklama: LaMelo Ball deflects an inbound pass, allowing Jaden McDaniels to recover and finish the go-ahead layup in the final seconds.
     zaman: "01:02"
@@ -128,12 +128,11 @@ oyunlar:
   # pay: Cunningham creates the highlight with a spectacular no-look transition bounce pass.
   - sira: 7
     eylem: pas
-    etiketler: [ bakmadan, ters, hizli_hucum ]
+    etiketler: [ bakmadan, hizli_hucum ]
     aciklama: Cade Cunningham drops a gorgeous no-look bounce pass on the break to Ausar Thompson for a reverse layup.
     zaman: "00:37"
     katkilar:
-      - { oyuncu: Cade Cunningham, takim: DET, rol: pasor, pay: 70 }
-      - { oyuncu: Ausar Thompson, takim: DET, rol: bitiren, pay: 30 }
+      - { oyuncu: Cade Cunningham, takim: DET, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
