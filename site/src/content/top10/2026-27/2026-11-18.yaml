@@ -3,7 +3,8 @@
 tarih: 2026-11-18
 video: https://www.youtube.com/watch?v=D9xpyGipZ9E
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: orta (oy 2/3)
   # diğer: Kel'el Ware 1/3
@@ -11,6 +12,7 @@ oyunlar:
   - sira: 1
     eylem: blok
     aciklama: Giannis Antetokounmpo swats away a driving layup attempt at the rim against his former team.
+    rakip: Brayden Burries
     zaman: "02:03"
     katkilar:
       - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bloklayan, pay: 100 }
@@ -49,7 +51,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster, tek_el ]
     aciklama: Neemias Queta rolls to the rim and throws down a left-handed poster dunk over Peyton Watson.
-    rakip: Peyton Watson
+    rakip: Demar Derozan
     zaman: "01:34"
     katkilar:
       - { oyuncu: Neemias Queta, takim: BOS, rol: bitiren, pay: 100 }
@@ -80,8 +82,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 5
     eylem: smac
-    etiketler: [ tek_el ]
+    etiketler: [ tek_el, poster ]
     aciklama: Jalen Johnson drives through the defense and hangs in the air for an emphatic one-handed slam.
+    rakip: Isaiah Hartenstein
     zaman: "01:08"
     katkilar:
       - { oyuncu: Jalen Johnson, takim: ATL, rol: bitiren, pay: 100 }
@@ -115,7 +118,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 7
     eylem: smac
-    etiketler: [ poster, tek_el ]
+    etiketler: [ poster ]
     aciklama: Anthony Black attacks the basket and throws down a violent one-handed dunk over Joel Embiid.
     rakip: Joel Embiid
     zaman: "00:42"
@@ -176,10 +179,9 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: Markelle Fultz spins past his defender into the paint and hammers down a dunk over Scottie Barnes.
-    rakip: Scottie Barnes
     zaman: "00:03"
     katkilar:
-      - { oyuncu: Markelle Fultz, takim: WAS, rol: bitiren, pay: 100 }
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 1/3
