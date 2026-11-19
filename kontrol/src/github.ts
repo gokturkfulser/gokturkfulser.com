@@ -1,6 +1,6 @@
 // GitHub REST contents API istemcisi (docs.github.com/en/rest/repos/contents). Repo ve dal sabit (ortam.ts → DEPO); her çağrıdan önce yol
 // beyaz listeden geçer (yollar.ts). Token yalnızca Authorization başlığına gider; hata iletilerine, loga ya da yanıta yazılmaz.
-import { DEPO, GITHUB_API_SURUMU, GITHUB_API_TABANI, WORKER_ADI } from './ortam.ts';
+import { DEPO, GITHUB_API_SURUMU, GITHUB_API_TABANI, WORKER_ADI, WORKFLOW_DOSYASI } from './ortam.ts';
 import { yolDogrula } from './yollar.ts';
 
 /** Dosya, okunduktan sonra başkası tarafından değiştirildi (sha uyuşmuyor). */
@@ -73,6 +73,20 @@ export class GitHub {
     const v = (await r.json()) as unknown;
     if (!Array.isArray(v)) throw new GitHubHatasi(502, 'GitHub yanıtı beklenen biçimde değil');
     return v.map((o: { name: string; type: string; sha: string }) => ({ ad: o.name, tur: o.type === 'dir' ? 'dir' : 'file', sha: o.sha }));
+  }
+
+  /**
+   * `site-top10` workflow'unu main'de girdisiz başlatır (workflow_dispatch; docs.github.com/en/rest/actions/workflows). Yalnızca bu sabit workflow, hiçbir girdi yok.
+   * Başarı 204. İzin yoksa (token'da Actions: Read and write eksik) GitHub 403/404 döner; ikisi de `GitHubHatasi` olur, iletide token yoktur.
+   */
+  async workflowBaslat(): Promise<void> {
+    const r = await this.fetchFn(`${this.taban}/repos/${DEPO.sahip}/${DEPO.ad}/actions/workflows/${WORKFLOW_DOSYASI}/dispatches`, {
+      method: 'POST',
+      headers: { ...this.basliklar(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: DEPO.dal }),
+    });
+    if (r.status === 204) return;
+    throw new GitHubHatasi(r.status, `GitHub workflow başlatma hatası (${r.status})`);
   }
 
   /**

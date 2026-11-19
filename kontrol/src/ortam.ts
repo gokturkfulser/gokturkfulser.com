@@ -3,7 +3,7 @@
 export interface Env {
   /** Statik varlıklar (wrangler.jsonc → assets.binding). */
   ASSETS: { fetch(istek: Request): Promise<Response> };
-  /** Worker secret'ı: fine-grained GitHub token (yalnızca bu repo, Contents: Read and write). */
+  /** Worker secret'ı: fine-grained GitHub token (yalnızca bu repo, Contents: Read and write; "Yeni geceleri tara" düğmesi için ayrıca Actions: Read and write). */
   GITHUB_TOKEN_KONTROL?: string;
   /** Worker secret'ı: https://<ekip-adı>.cloudflareaccess.com (şemasız yazılırsa https:// eklenir). */
   ACCESS_TEAM_DOMAIN?: string;
@@ -25,6 +25,9 @@ export const DEPO = { sahip: 'gokturkfulser', ad: 'gokturkfulser.com', dal: 'mai
 /** Dışarıya görünen Worker adı ve alan adı: kodda tek kaynak (wrangler.jsonc `name` ve DEPLOY.md ile aynı olmalı). */
 export const WORKER_ADI = 'nba-daily-top10-control';
 export const ALAN_ADI = `${WORKER_ADI}.gokturkfulser.com`;
+/** Elle başlatılabilen tek workflow (girdisiz: zamanlanmış çalıştırmayla aynı, son 3 gece taranır) ve GitHub'daki sayfası. */
+export const WORKFLOW_DOSYASI = 'site-top10.yml';
+export const WORKFLOW_SAYFASI = `https://github.com/${DEPO.sahip}/${DEPO.ad}/actions/workflows/${WORKFLOW_DOSYASI}`;
 export const GITHUB_API_TABANI = 'https://api.github.com';
 /** GitHub REST API sürümü (docs.github.com/en/rest/repos/contents sayfasında listelenen). */
 export const GITHUB_API_SURUMU = '2026-03-10';

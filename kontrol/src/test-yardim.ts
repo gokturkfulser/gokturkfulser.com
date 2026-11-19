@@ -92,13 +92,21 @@ const json = (nesne: unknown, durum = 200) => new Response(JSON.stringify(nesne)
 export type GitHubIstegi = { yontem: string; yol: string; yetki: string | null; govde?: { message: string; content: string; sha: string; branch: string } };
 
 /** Sahte GitHub: bellekte dosyalar; sha = git blob sha'sı; PUT'ta sha uyuşmazsa 409. */
-export function sahteGitHub(baslangic: Record<string, string>) {
+export function sahteGitHub(baslangic: Record<string, string>, dagitimDurumu = 204) {
   const depo = new Map(Object.entries(baslangic));
   const istekler: GitHubIstegi[] = [];
+  const tetiklemeler: { yol: string; govde: unknown; yetki: string | null }[] = [];
   const commitler: { mesaj: string; yol: string; metin: string; dal: string; sha: string }[] = [];
   const yanit = async (girdi: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const url = new URL(String(girdi));
     const yontem = init?.method ?? 'GET';
+    const dagitim = /^\/repos\/[^/]+\/[^/]+\/actions\/workflows\/([^/]+)\/dispatches$/.exec(url.pathname);
+    if (dagitim && url.hostname === 'api.github.com' && yontem === 'POST') {
+      const yetki = new Headers(init?.headers).get('Authorization');
+      tetiklemeler.push({ yol: dagitim[1]!, govde: init?.body ? JSON.parse(String(init.body)) : undefined, yetki });
+      if (yetki !== `Bearer ${TOKEN}`) return json({ message: 'Bad credentials' }, 401);
+      return dagitimDurumu === 204 ? new Response(null, { status: 204 }) : json({ message: `Resource not accessible by personal access token ${TOKEN}` }, dagitimDurumu);
+    }
     const m = new RegExp(`^/repos/${DEPO.sahip}/${DEPO.ad.replace('.', '\\.')}/contents/(.+)$`).exec(url.pathname);
     const yetki = new Headers(init?.headers).get('Authorization');
     if (!m || url.hostname !== 'api.github.com') return json({ message: 'Not Found' }, 404);
@@ -130,7 +138,7 @@ export function sahteGitHub(baslangic: Record<string, string>) {
     }
     return json({ message: 'Method Not Allowed' }, 405);
   };
-  return { depo, istekler, commitler, fetch: yanit as typeof fetch, sha: (yol: string) => blobSha(depo.get(yol)!) };
+  return { depo, istekler, tetiklemeler, commitler, fetch: yanit as typeof fetch, sha: (yol: string) => blobSha(depo.get(yol)!) };
 }
 
 const b64url = (bayt: Uint8Array | string) => {

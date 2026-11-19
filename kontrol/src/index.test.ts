@@ -11,9 +11,9 @@ import { ETIKET_ANAHTARLARI } from '../../site/src/lib/top10-sozluk.ts';
 
 type Kurulum = Awaited<ReturnType<typeof kur>>;
 
-async function kur(dosyalar: Record<string, string> = { [GECE_YOLU]: geceMetni(), [GECE_YOLU_2]: geceMetni('2026-10-31', 'onaylandi'), [SOZLUK_YOLU]: SOZLUK_METNI }, envEk: Partial<Env> = {}) {
+async function kur(dosyalar: Record<string, string> = { [GECE_YOLU]: geceMetni(), [GECE_YOLU_2]: geceMetni('2026-10-31', 'onaylandi'), [SOZLUK_YOLU]: SOZLUK_METNI }, envEk: Partial<Env> = {}, dagitimDurumu = 204) {
   const access = await sahteAccess();
-  const github = sahteGitHub(dosyalar);
+  const github = sahteGitHub(dosyalar, dagitimDurumu);
   const dep = { fetch: birlesikFetch(github, access), simdi: () => access.simdi * 1000 };
   const env = ortam(envEk);
   const jwt = await access.imzala(gecerliYuk(access.simdi));
@@ -544,6 +544,50 @@ describe('NBA verisi (/nba): bayatlık uyarısı ve yapıştırarak güncelleme'
       expect(y.govde).not.toContain(TOKEN);
       expect(y.govde).not.toContain('ghp_');
     }
+  });
+});
+
+describe('Yeni geceleri tara (workflow_dispatch)', () => {
+  it('liste sayfasında düğme (POST /tara) ve GitHub bağlantısı var', async () => {
+    const k = await kur();
+    const { govde } = await k.iste('/');
+    expect(govde).toContain('action="/tara"');
+    expect(govde).toContain('Yeni geceleri tara');
+    expect(govde).toContain('https://github.com/gokturkfulser/gokturkfulser.com/actions/workflows/site-top10.yml');
+  });
+
+  it('POST /tara: yalnızca site-top10.yml, girdisiz, main; 303 ile listeye ve başarı notu; token yalnızca Authorization başlığında', async () => {
+    const k = await kur();
+    const r = await k.iste('/tara', { form: new URLSearchParams() });
+    expect(r.durum).toBe(303);
+    expect(r.basliklar.get('Location')).toBe('/?ok=tarama-basladi');
+    expect(k.github.tetiklemeler).toEqual([{ yol: 'site-top10.yml', govde: { ref: 'main' }, yetki: `Bearer ${TOKEN}` }]);
+    expect(k.github.commitler).toEqual([]);
+    const liste = await k.iste('/?ok=tarama-basladi');
+    expect(liste.govde).toContain('Tarama başlatıldı');
+    expect((await k.iste('/?ok=baska')).govde).not.toContain('Tarama başlatıldı');
+  });
+
+  it('izin yoksa (GitHub 403/404): anlaşılır hata ve GitHub bağlantısı; token ve GitHub yanıt gövdesi sayfaya girmez', async () => {
+    for (const durum of [403, 404]) {
+      anahtarOnbelleginiSifirla(); // her kurulum kendi anahtar çiftini üretir (aynı kid)
+      const k = await kur(undefined, {}, durum);
+      const r = await k.iste('/tara', { form: new URLSearchParams() });
+      expect(r.durum).toBe(502);
+      expect(r.govde).toContain('Tarama başlatılamadı');
+      expect(r.govde).toContain('Actions: Read and write');
+      expect(r.govde).toContain('site-top10.yml');
+      expect(r.govde).not.toContain(TOKEN);
+      expect(JSON.stringify([...r.basliklar])).not.toContain(TOKEN);
+    }
+  });
+
+  it("GET /tara çalışmaz; çapraz kaynaklı POST 403 ve GitHub'a istek gitmez; JWT yoksa 403", async () => {
+    const k = await kur();
+    expect((await k.iste('/tara')).durum).toBe(404);
+    expect((await k.iste('/tara', { form: new URLSearchParams(), basliklar: { Origin: 'https://kotu.example' } })).durum).toBe(403);
+    expect((await k.iste('/tara', { form: new URLSearchParams(), jwt: null })).durum).toBe(403);
+    expect(k.github.tetiklemeler).toEqual([]);
   });
 });
 

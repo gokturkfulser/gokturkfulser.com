@@ -6,6 +6,7 @@ import { etiketAdi, ETIKET_ANAHTARLARI, eylemAdi, EYLEM_ANAHTARLARI, rolAdi, ROL
 import { birlestir, esc, h, Ham } from './html.ts';
 import { EN_COK_KATKI, ESIT, oyundanDurum, type OyunDurumu } from './form.ts';
 import type { NbaDurumu } from './nba.ts';
+import { WORKFLOW_SAYFASI } from './ortam.ts';
 
 const tarihYaz = (d: Date) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d);
 const tarihIso = (d: Date) => d.toISOString().slice(0, 10);
@@ -57,7 +58,9 @@ const duyuru = (ok: string | null) =>
         ? h`<p class="duyuru" role="status">Değişiklik yok; commit atılmadı.</p>`
         : ok === 'eklendi'
           ? h`<p class="duyuru duyuru-ok" role="status">Takma ad eklendi ve main'e commit edildi.</p>`
-          : '';
+          : ok === 'tarama-basladi'
+            ? h`<p class="duyuru duyuru-ok" role="status">Tarama başlatıldı. Genelde 1–3 dakika sürer; bitince bu sayfayı yenileyin, yeni gece listede görünür. Gecikirse <a href="${WORKFLOW_SAYFASI}" target="_blank" rel="noopener noreferrer">GitHub'daki çalıştırmaya bakın (yeni sekme)</a>.</p>`
+            : '';
 
 /** NBA verisi kaydedildi bildirimi: `ad` ve `satir` adresten gelir; yalnızca bilinen ad ve sayı olarak gösterilir. */
 const nbaDuyurusu = (ok: string | null, ad: string | undefined, satir: number | undefined) =>
@@ -67,7 +70,7 @@ const nbaDuyurusu = (ok: string | null, ad: string | undefined, satir: number | 
 
 // ——— Liste ———
 
-export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar: readonly string[], eskiVar: boolean, nba: readonly NbaDurumu[] = []): string {
+export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar: readonly string[], eskiVar: boolean, nba: readonly NbaDurumu[] = [], ok: string | null = null): string {
   const guncellenecek = nba.filter((n) => n.eski);
   const { bekleyen, onayli } = kontrolOzeti(girdiler);
   const kart = (b: (typeof bekleyen)[number]) => {
@@ -85,6 +88,12 @@ export function listeSayfasi(girdiler: readonly KontrolGirdisi[], okunamayanlar:
   return sayfa(
     'Geceler',
     h`<h1 class="baslik">Geceler</h1>
+    ${duyuru(ok)}
+    <section aria-labelledby="tara-b"><h2 id="tara-b" class="bolum">Yeni geceleri tara</h2>
+      <p>Son 3 gece için NBA videosunu arar; dosyası olmayan geceleri üretir (var olanlara dokunmaz). GitHub'ın zamanlanmış çalıştırması gecikirse ya da atlarsa buradan elle başlatın.</p>
+      <form method="post" action="/tara"><button type="submit" class="dugme dugme-birincil">Yeni geceleri tara</button></form>
+      <p><a href="${WORKFLOW_SAYFASI}" target="_blank" rel="noopener noreferrer">GitHub'da aç (yeni sekme)</a></p>
+    </section>
     ${guncellenecek.length ? h`<section aria-labelledby="nba-uyari-b"><h2 id="nba-uyari-b" class="bolum">NBA verisi güncellenmeli</h2><ul role="list">${guncellenecek.map((n) => h`<li class="duyuru duyuru-hata" role="alert">${n.ad}: ${n.mesaj} <a href="/nba#${n.kod}">Güncelle</a></li>`)}</ul></section>` : ''}
     <section aria-labelledby="bekleyen-b"><h2 id="bekleyen-b" class="bolum">Bekleyen geceler</h2>
       ${bekleyen.length ? h`<ul class="geceler" role="list">${bekleyen.map(kart)}</ul>` : h`<p>Bekleyen gece yok.</p>`}

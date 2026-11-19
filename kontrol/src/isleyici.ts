@@ -4,7 +4,7 @@ import { erisimDogrula } from './erisim.ts';
 import { geceOku, durumlariDogrula, formdanDurumlar, oyundanDurum, type OyunGirdisi } from './form.ts';
 import { geceyiYenidenYaz } from './gece-yaml.ts';
 import { CakismaHatasi, GitHub, GitHubHatasi } from './github.ts';
-import { gelistirmeModu, type Bagimlilik, type Env } from './ortam.ts';
+import { gelistirmeModu, WORKFLOW_SAYFASI, type Bagimlilik, type Env } from './ortam.ts';
 import { geceSayfasi, hataSayfasi, listeSayfasi, nbaSayfasi, sozlukSayfasi } from './sayfalar.ts';
 import { sozlukHaritasiOlustur, sozlukOku, takmaAdEkle } from './sozluk.ts';
 import { bugunIstanbul, NBA_TABLOLARI, nbaDurumu, nbaYapistir, type NbaDurumu } from './nba.ts';
@@ -110,7 +110,7 @@ async function nbaPost(kod: NbaKodu, istek: Request, gh: GitHub, dep: Bagimlilik
   return yonlendir(`/nba?ok=nba-kaydedildi&kod=${kod}&satir=${sonuc.satir}`);
 }
 
-async function listeIstegi(gh: GitHub, dep: Bagimlilik): Promise<Response> {
+async function listeIstegi(gh: GitHub, dep: Bagimlilik, ok: string | null): Promise<Response> {
   const sezonlar = (await gh.listele(TOP10_DIZINI)).filter((o) => o.tur === 'dir' && /^\d{4}-\d{2}$/.test(o.ad)).map((o) => o.ad).sort().reverse();
   const dosyalar: { id: string; yol: string }[] = [];
   for (const s of sezonlar.slice(0, 2)) {
@@ -133,7 +133,19 @@ async function listeIstegi(gh: GitHub, dep: Bagimlilik): Promise<Response> {
     if (g.tamam) girdiler.push({ id, gece: g.gece as unknown as KontrolGirdisi['gece'] });
     else okunamayan.push(`${id}: ${g.hata}`);
   }
-  return html(listeSayfasi(girdiler, okunamayan, dosyalar.length > secilen.length, await nbaDurumlari(gh, dep, false)));
+  return html(listeSayfasi(girdiler, okunamayan, dosyalar.length > secilen.length, await nbaDurumlari(gh, dep, false), ok === 'tarama-basladi' ? ok : null));
+}
+
+/** "Yeni geceleri tara": site-top10 workflow'unu başlatır; izin yoksa ya da GitHub reddederse elle başlatma bağlantısı gösterilir. */
+async function taraPost(gh: GitHub): Promise<Response> {
+  try {
+    await gh.workflowBaslat();
+  } catch (e) {
+    if (!(e instanceof GitHubHatasi)) throw e;
+    const neden = e.durum === 403 || e.durum === 404 ? "GitHub izin vermedi: token'da Actions: Read and write izni olmayabilir (kontrol/DEPLOY.md bölüm 1)." : `GitHub isteği reddetti (${e.durum}).`;
+    return html(hataSayfasi('Tarama başlatılamadı', `${neden} Workflow'u GitHub'dan elle başlatabilirsiniz.`, { href: WORKFLOW_SAYFASI, ad: "GitHub'da aç" }), 502);
+  }
+  return yonlendir('/?ok=tarama-basladi');
 }
 
 /** Şemadan geçmiş oyun → dosyaya yazılacak girdi (değişiklik yapılmadan; onaylama için). */
@@ -252,7 +264,8 @@ export async function isle(istek: Request, env: Env, dep: Bagimlilik): Promise<R
   if (!gh) return html(hataSayfasi('Yapılandırma eksik', 'GITHUB_TOKEN_KONTROL secret\'ı tanımlı değil (kontrol/DEPLOY.md).'), 500);
   try {
     const gece = /^\/gece\/(\d{4}-\d{2}-\d{2})\/?$/.exec(url.pathname);
-    if (url.pathname === '/' && yontem !== 'POST') return await listeIstegi(gh, dep);
+    if (url.pathname === '/' && yontem !== 'POST') return await listeIstegi(gh, dep, url.searchParams.get('ok'));
+    if (url.pathname === '/tara' && yontem === 'POST') return await taraPost(gh);
     if (url.pathname === '/nba' && yontem !== 'POST') return await nbaGet(url, gh, dep);
     const nba = /^\/nba\/([a-z-]+)$/.exec(url.pathname);
     if (nba && yontem === 'POST') {

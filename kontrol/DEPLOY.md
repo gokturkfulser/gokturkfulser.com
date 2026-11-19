@@ -19,7 +19,7 @@ Kaynak: GitHub Docs "Managing your personal access tokens".
 2. **Token name:** `nba-daily-top10-control`. **Expiration:** bir süre seçin (süre dolunca editör GitHub hatası verir; yenileyip secret'ı güncelleyin).
 3. **Resource owner:** `gokturkfulser` (repo sahibi hesap).
 4. **Repository access:** **Only select repositories** → yalnızca **`gokturkfulser/gokturkfulser.com`**.
-5. **Permissions → Repository permissions:** yalnızca **Contents: Read and write**. Başka izin vermeyin (Workflows, Pull requests vb. yok; editör yalnızca YAML veri dosyalarına yazar). Metadata (salt okunur) GitHub'ın zorunlu eklediği izindir; eklenirse kalsın.
+5. **Permissions → Repository permissions:** **Contents: Read and write** (gece/sözlük/NBA dosyaları) ve liste sayfasındaki **"Yeni geceleri tara"** düğmesi için **Actions: Read and write** (yalnızca `site-top10.yml` workflow'unu `workflow_dispatch` ile başlatır; kod, girdi ya da başka workflow tetiklemez). Başka izin vermeyin (Workflows, Pull requests vb. yok). Actions iznini vermezseniz her şey çalışır, yalnızca düğme "GitHub izin vermedi" hatası ve GitHub'daki workflow sayfasına bağlantı gösterir (elle başlatırsınız). Mevcut token'a sonradan eklemek için: Settings → Developer settings → token → Repository permissions → Actions. Metadata (salt okunur) GitHub'ın zorunlu eklediği izindir; eklenirse kalsın.
 6. **Generate token** → değeri kopyalayın (bir daha gösterilmez). Repo'ya, sohbete ya da `.env` dosyasına yazmayın; yalnızca 3. adımdaki Worker secret'ına girilir.
 7. **Dal koruması:** `main`'de "Require a pull request" gibi bir kural varsa PAT ile doğrudan commit reddedilir (editör "GitHub hatası" gösterir); kural yoksa (bugünkü bot da main'e doğrudan yazıyor) bir şey yapmayın.
 
