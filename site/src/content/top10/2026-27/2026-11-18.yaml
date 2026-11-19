@@ -1,0 +1,195 @@
+# Gemini ile üretildi: 2026-11-19T16:15:36.719Z, model gemini-3.8-flash
+
+tarih: 2026-11-18
+video: https://www.youtube.com/watch?v=D9xpyGipZ9E
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: orta (oy 2/3)
+  # diğer: Kel'el Ware 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: blok
+    aciklama: Giannis Antetokounmpo swats away a driving layup attempt at the rim against his former team.
+    zaman: "02:03"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Kel'el Ware 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Jaren Jackson Jr. 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    etiketler: [ clutch ]
+    aciklama: Taylor Hendricks rejects Jarrett Allen twice at the rim in a close fourth-quarter battle.
+    rakip: Jarrett Allen
+    zaman: "01:48"
+    katkilar:
+      - { oyuncu: Taylor Hendricks, takim: MEM, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Jaren Jackson Jr. 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Neemias Queta rolls to the rim and throws down a left-handed poster dunk over Peyton Watson.
+    rakip: Peyton Watson
+    zaman: "01:34"
+    katkilar:
+      - { oyuncu: Neemias Queta, takim: BOS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Matas Buzelis glides down the lane and throws down a vicious one-handed tomahawk slam.
+    zaman: "01:21"
+    katkilar:
+      - { oyuncu: Matas Buzelis, takim: CHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Jalen Johnson drives through the defense and hangs in the air for an emphatic one-handed slam.
+    zaman: "01:08"
+    katkilar:
+      - { oyuncu: Jalen Johnson, takim: ATL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Adem Bona 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Tacko Fall stands tall in the lane and denies Wendell Carter Jr. at the rim.
+    rakip: Wendell Carter Jr.
+    zaman: "00:55"
+    katkilar:
+      - { oyuncu: Tacko Fall, takim: PHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Adem Bona 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Anthony Black attacks the basket and throws down a violent one-handed dunk over Joel Embiid.
+    rakip: Joel Embiid
+    zaman: "00:42"
+    katkilar:
+      - { oyuncu: Anthony Black, takim: ORL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Matt Ryan + Javonte Green 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Huerter pushes the pace in transition and lofts a well-placed alley-oop pass to Green for the slam.
+  - sira: 8
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Kevin Huerter leads the fast break and throws up an alley-oop lob to Javonte Green for the two-handed finish.
+    zaman: "00:29"
+    katkilar:
+      - { oyuncu: Kevin Huerter, takim: DET, rol: pasor, pay: 50 }
+      - { oyuncu: Javonte Green, takim: DET, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Matt Ryan + Javonte Green 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Huerter pushes the pace in transition and lofts a well-placed alley-oop pass to Green for the slam."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Ryan Dunn takes the ball coast-to-coast on the fast break for a powerful one-handed slam.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Ryan Dunn, takim: PHX, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: düşük (oy 1/3)
+  # diğer: Alexandre Sarr 1/3
+  # diğer: Carlton Carrington 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # uzlaşma yok
+  # doğrulanmamış ad: Markelle Fultz (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 10
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Markelle Fultz spins past his defender into the paint and hammers down a dunk over Scottie Barnes.
+    rakip: Scottie Barnes
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Markelle Fultz, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+        - "doğrulanmamış ad: Markelle Fultz (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Alexandre Sarr 1/3"
+        - "diğer: Carlton Carrington 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
