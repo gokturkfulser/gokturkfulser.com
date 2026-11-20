@@ -1,0 +1,100 @@
+# Gemini ile üretildi: 2026-11-20T09:19:14.254Z, model gemini-3.8-flash
+
+tarih: 2026-11-19
+video: https://www.youtube.com/watch?v=RXlRw306XTQ
+tur: top5
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ hizli_hucum, tek_el, poster ]
+    aciklama: Harrison Barnes takes off in transition and throws down a soaring one-handed slam.
+    zaman: "00:49"
+    katkilar:
+      - { oyuncu: Harrison Barnes, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: McLaughlin comes up with the steal and delivers a flashy behind-the-back pass on the break.
+  - sira: 2
+    eylem: pas
+    etiketler: [ hizli_hucum, sirt_arkasi ]
+    aciklama: Jordan McLaughlin steals the ball from Keaton Wagler and dishes a behind-the-back pass to Harrison Barnes for the layup.
+    rakip: Keaton Wagler
+    zaman: "00:32"
+    katkilar:
+      - { oyuncu: Jordan McLaughlin, takim: SAS, rol: pasor, pay: 70 }
+      - { oyuncu: Harrison Barnes, takim: SAS, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: McLaughlin comes up with the steal and delivers a flashy behind-the-back pass on the break."
+  # güven: orta (oy 3/3)
+  # eylem diğer: Üçlük 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 3
+    eylem: calim
+    etiketler: [ sirt_arkasi ]
+    aciklama: LaMelo Ball executes a behind-the-back dribble into a step-back three-pointer.
+    rakip: Miles McBride
+    zaman: "00:21"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Üçlük 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: calim
+    etiketler: [ crossover ]
+    aciklama: Jaden McDaniels crosses over OG Anunoby to drop him to the floor before sinking a mid-range jumper.
+    rakip: OG Anunoby
+    zaman: "00:09"
+    katkilar:
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    aciklama: Isaiah Jackson rises up and emphatically blocks Victor Wembanyama at the rim.
+    rakip: Victor Wembanyama
+    zaman: "00:01"
+    katkilar:
+      - { oyuncu: Isaiah Jackson, takim: LAC, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
