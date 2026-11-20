@@ -4,7 +4,8 @@ tarih: 2026-11-19
 video: https://www.youtube.com/watch?v=RXlRw306XTQ
 tur: top5
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -29,11 +30,9 @@ oyunlar:
     eylem: pas
     etiketler: [ hizli_hucum, sirt_arkasi ]
     aciklama: Jordan McLaughlin steals the ball from Keaton Wagler and dishes a behind-the-back pass to Harrison Barnes for the layup.
-    rakip: Keaton Wagler
     zaman: "00:32"
     katkilar:
-      - { oyuncu: Jordan McLaughlin, takim: SAS, rol: pasor, pay: 70 }
-      - { oyuncu: Harrison Barnes, takim: SAS, rol: bitiren, pay: 30 }
+      - { oyuncu: Jordan McLaughlin, takim: SAS, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -48,9 +47,9 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 3
     eylem: calim
-    etiketler: [ sirt_arkasi ]
+    etiketler: [ sirt_arkasi, crossover ]
     aciklama: LaMelo Ball executes a behind-the-back dribble into a step-back three-pointer.
-    rakip: Miles McBride
+    rakip: Josh Hart
     zaman: "00:21"
     katkilar:
       - { oyuncu: LaMelo Ball, takim: MIN, rol: calim_atan, pay: 100 }
