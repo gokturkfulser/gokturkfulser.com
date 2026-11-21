@@ -3,7 +3,8 @@
 tarih: 2026-11-20
 video: https://www.youtube.com/watch?v=NPcBCUad5aM
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -11,7 +12,6 @@ oyunlar:
     eylem: orta_mesafe
     etiketler: [ mac_kazandiran, clutch ]
     aciklama: Franz Wagner creates space with a step-back and drills the clutch game-winning fadeaway jumper over Noah Clowney.
-    rakip: Noah Clowney
     zaman: "02:00"
     katkilar:
       - { oyuncu: Franz Wagner, takim: ORL, rol: bitiren, pay: 100 }
@@ -26,7 +26,7 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   - sira: 2
     eylem: smac
-    etiketler: [ poster, hizli_hucum, tek_el ]
+    etiketler: [ hizli_hucum, tek_el ]
     aciklama: Peyton Watson snatches a steal and explodes downcourt for a monster one-handed tomahawk poster slam.
     zaman: "01:45"
     katkilar:
@@ -47,7 +47,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: Zuby Ejiofor splits two defenders in mid-air and detonates a two-handed poster dunk.
-    rakip: Tidjane Salaun
+    rakip: Moussa Diabate
     zaman: "01:33"
     katkilar:
       - { oyuncu: Zuby Ejiofor, takim: ATL, rol: bitiren, pay: 100 }
@@ -69,6 +69,7 @@ oyunlar:
     eylem: smac
     etiketler: [ poster ]
     aciklama: Tidjane Salaun attacks the paint and throws down a violent one-handed slam to beat the shot clock.
+    rakip: Zuby Ejiofor
     zaman: "01:19"
     katkilar:
       - { oyuncu: Tidjane Salaun, takim: CHA, rol: bitiren, pay: 100 }
@@ -163,7 +164,6 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 9
     eylem: smac
-    etiketler: [ putback ]
     aciklama: Norchad Omier skies above Pascal Siakam to hammer home an aggressive two-handed putback slam.
     rakip: Pascal Siakam
     zaman: "00:15"
