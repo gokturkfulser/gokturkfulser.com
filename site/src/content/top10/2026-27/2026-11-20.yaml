@@ -1,0 +1,199 @@
+# Gemini ile üretildi: 2026-11-21T10:34:03.197Z, model gemini-3.8-flash
+
+tarih: 2026-11-20
+video: https://www.youtube.com/watch?v=NPcBCUad5aM
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: orta_mesafe
+    etiketler: [ mac_kazandiran, clutch ]
+    aciklama: Franz Wagner creates space with a step-back and drills the clutch game-winning fadeaway jumper over Noah Clowney.
+    rakip: Noah Clowney
+    zaman: "02:00"
+    katkilar:
+      - { oyuncu: Franz Wagner, takim: ORL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: smac
+    etiketler: [ poster, hizli_hucum, tek_el ]
+    aciklama: Peyton Watson snatches a steal and explodes downcourt for a monster one-handed tomahawk poster slam.
+    zaman: "01:45"
+    katkilar:
+      - { oyuncu: Peyton Watson, takim: CLE, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Dyson Daniels + Zuby Ejiofor 1/3
+  # eylem diğer: Alley-oop 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Zuby Ejiofor splits two defenders in mid-air and detonates a two-handed poster dunk.
+    rakip: Tidjane Salaun
+    zaman: "01:33"
+    katkilar:
+      - { oyuncu: Zuby Ejiofor, takim: ATL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "diğer: Dyson Daniels + Zuby Ejiofor 1/3"
+        - "eylem diğer: Alley-oop 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Tidjane Salaun attacks the paint and throws down a violent one-handed slam to beat the shot clock.
+    zaman: "01:19"
+    katkilar:
+      - { oyuncu: Tidjane Salaun, takim: CHA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Alperen Sengun drives hard from the top of the key and detonates a one-handed poster dunk over Julian Strawther.
+    rakip: Julian Strawther
+    zaman: "01:06"
+    katkilar:
+      - { oyuncu: Alperen Sengun, takim: HOU, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Dennis creates the transition opportunity with a steal and feeds the break.
+  # pay oyu 2/3
+  - sira: 6
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: RayJ Dennis pokes the ball away for a steal and dishes to Zuby Ejiofor for a rim-rattling transition dunk.
+    zaman: "00:53"
+    katkilar:
+      - { oyuncu: RayJ Dennis, takim: ATL, rol: top_calan, pay: 50 }
+      - { oyuncu: Zuby Ejiofor, takim: ATL, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Dennis creates the transition opportunity with a steal and feeds the break."
+  # güven: orta (oy 2/3)
+  # diğer: Kobe Bufkin 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Coby White tracks back on defense and pins Aaron Wiggins' layup attempt against the backboard.
+    rakip: Aaron Wiggins
+    zaman: "00:40"
+    katkilar:
+      - { oyuncu: Coby White, takim: CHA, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Kobe Bufkin 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: smac
+    etiketler: [ ters, hizli_hucum ]
+    aciklama: AJ Dybantsa sprints out on the fast break and elevates for a clean two-handed reverse slam.
+    zaman: "00:27"
+    katkilar:
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Blok 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 9
+    eylem: smac
+    etiketler: [ putback ]
+    aciklama: Norchad Omier skies above Pascal Siakam to hammer home an aggressive two-handed putback slam.
+    rakip: Pascal Siakam
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Norchad Omier, takim: CLE, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Blok 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Scottie Barnes drives down the lane on the break and throws down a left-handed poster slam over Cade Cunningham.
+    rakip: Cade Cunningham
+    zaman: "00:04"
+    katkilar:
+      - { oyuncu: Scottie Barnes, takim: TOR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
