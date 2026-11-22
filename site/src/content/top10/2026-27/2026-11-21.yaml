@@ -3,7 +3,8 @@
 tarih: 2026-11-21
 video: https://www.youtube.com/watch?v=YodCnYfQvmU
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -11,7 +12,6 @@ oyunlar:
     eylem: ucluk
     etiketler: [ son_saniye, mac_kazandiran, clutch ]
     aciklama: Mikal Bridges executes a shot fake and drains a buzzer-beating three-pointer to win the game.
-    rakip: Toumani Camara
     zaman: "02:18"
     katkilar:
       - { oyuncu: Mikal Bridges, takim: NYK, rol: bitiren, pay: 100 }
@@ -30,7 +30,6 @@ oyunlar:
     eylem: turnike
     etiketler: [ putback, mac_kazandiran, clutch ]
     aciklama: Keegan Murray battles inside for the offensive rebound and puts in the game-winning score.
-    rakip: Neemias Queta
     zaman: "02:01"
     katkilar:
       - { oyuncu: Keegan Murray, takim: SAC, rol: bitiren, pay: 100 }
