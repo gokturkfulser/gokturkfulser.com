@@ -1,0 +1,190 @@
+# Gemini ile üretildi: 2026-11-22T08:02:36.805Z, model gemini-3.8-flash
+
+tarih: 2026-11-21
+video: https://www.youtube.com/watch?v=YodCnYfQvmU
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: ucluk
+    etiketler: [ son_saniye, mac_kazandiran, clutch ]
+    aciklama: Mikal Bridges executes a shot fake and drains a buzzer-beating three-pointer to win the game.
+    rakip: Toumani Camara
+    zaman: "02:18"
+    katkilar:
+      - { oyuncu: Mikal Bridges, takim: NYK, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 2
+    eylem: turnike
+    etiketler: [ putback, mac_kazandiran, clutch ]
+    aciklama: Keegan Murray battles inside for the offensive rebound and puts in the game-winning score.
+    rakip: Neemias Queta
+    zaman: "02:01"
+    katkilar:
+      - { oyuncu: Keegan Murray, takim: SAC, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Victor Wembanyama shows off his footwork with a step-through move and dunks over Yves Missi.
+    rakip: Yves Missi
+    zaman: "01:42"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Cooper Flagg drives hard into the paint and throws down a one-handed slam over Brook Lopez.
+    rakip: Brook Lopez
+    zaman: "01:27"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Fox throws the alley-oop pass right on target.
+  - sira: 5
+    eylem: alley_oop
+    etiketler: [ ters ]
+    aciklama: De'Aaron Fox connects with Victor Wembanyama for a reverse alley-oop slam.
+    zaman: "01:12"
+    katkilar:
+      - { oyuncu: De'Aaron Fox, takim: SAS, rol: pasor, pay: 30 }
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Fox throws the alley-oop pass right on target."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: blok
+    aciklama: Isaiah Stewart protects the rim with a two-handed rejection on Jaden McDaniels.
+    rakip: Jaden McDaniels
+    zaman: "00:57"
+    katkilar:
+      - { oyuncu: Isaiah Stewart, takim: MEM, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ poster, tek_el ]
+    aciklama: Donovan Clingan fakes a pass, attacks the rim, and throws down a one-handed poster slam.
+    zaman: "00:42"
+    katkilar:
+      - { oyuncu: Donovan Clingan, takim: POR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: blok
+    aciklama: Hugo Gonzalez meets De'Andre Hunter at the rim to block his dunk attempt.
+    rakip: De'Andre Hunter
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Hugo Gonzalez, takim: BOS, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: V.J. Edgecombe tracks back in transition and denies Jaime Jaquez Jr. with a chase-down block.
+    rakip: Jaime Jaquez Jr.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: V.J. Edgecombe, takim: PHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Jones delivers an alley-oop pass to Missi for the slam.
+  # pay oyu 2/3
+  - sira: 10
+    eylem: alley_oop
+    etiketler: [ tek_el ]
+    aciklama: Herbert Jones finds Yves Missi with a lob for a one-handed alley-oop dunk.
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Herbert Jones, takim: NOP, rol: pasor, pay: 50 }
+      - { oyuncu: Yves Missi, takim: NOP, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Jones delivers an alley-oop pass to Missi for the slam."
