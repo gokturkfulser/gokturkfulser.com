@@ -4,7 +4,8 @@ tarih: 2026-11-22
 video: https://www.youtube.com/watch?v=WLPoVCfp53k
 tur: top5
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -51,7 +52,7 @@ oyunlar:
     zaman: "00:33"
     katkilar:
       - { oyuncu: Kyshawn George, takim: WAS, rol: pasor, pay: 70 }
-      - { oyuncu: Alex Sarr, takim: WAS, rol: bitiren, pay: 30 }
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 30 }
     kontrol:
       guven: orta
       oy: 2/3
@@ -73,12 +74,11 @@ oyunlar:
   # doğrulanmamış ad: Noa Essengue (sözlükte ve mevcut veride yok, güven düşük)
   - sira: 4
     eylem: blok
-    etiketler: [ hizli_hucum ]
     aciklama: Zach Collins swats the shot at the rim to trigger a fast break finished with a slam by Noa Essengue.
+    rakip: Trevon Brazile
     zaman: "00:16"
     katkilar:
-      - { oyuncu: Zach Collins, takim: CHI, rol: bloklayan, pay: 50 }
-      - { oyuncu: Noa Essengue, takim: CHI, rol: bitiren, pay: 50 }
+      - { oyuncu: Zach Collins, takim: CHI, rol: bloklayan, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 2/3
@@ -101,8 +101,8 @@ oyunlar:
   - sira: 5
     eylem: smac
     etiketler: [ poster, hizli_hucum ]
-    aciklama: Ace Bailey gathers the ball on the fast break and throws down a ferocious poster dunk over Luka Doncic.
-    rakip: Luka Doncic
+    aciklama: Ace Bailey gathers the ball on the fast break and throws down a ferocious poster dunk over Cooper Flagg.
+    rakip: Cooper Flagg
     zaman: "00:00"
     katkilar:
       - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 100 }
