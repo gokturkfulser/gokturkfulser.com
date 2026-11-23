@@ -1,0 +1,117 @@
+# Gemini ile üretildi: 2026-11-23T18:40:57.167Z, model gemini-3.8-flash
+
+tarih: 2026-11-22
+video: https://www.youtube.com/watch?v=WLPoVCfp53k
+tur: top5
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, hizli_hucum, tek_el ]
+    aciklama: Cooper Flagg sprints end-to-end and elevates for a monstrous one-handed poster slam over Svi Mykhailiuk.
+    rakip: Svi Mykhailiuk
+    zaman: "01:04"
+    katkilar:
+      - { oyuncu: Cooper Flagg, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: calim
+    etiketler: [ crossover ]
+    aciklama: Kingston Flemings executes a vicious crossover that sends John Collins falling to the floor before knocking down the jumper.
+    rakip: John Collins
+    zaman: "00:47"
+    katkilar:
+      - { oyuncu: Kingston Flemings, takim: ATL, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Kyshawn George + AJ Dybantsa 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Kyshawn George creates the play with a brilliant behind-the-back bounce pass on the break.
+  - sira: 3
+    eylem: pas
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: Kyshawn George leads the fast break with a behind-the-back dish to Alex Sarr for a two-handed flush.
+    zaman: "00:33"
+    katkilar:
+      - { oyuncu: Kyshawn George, takim: WAS, rol: pasor, pay: 70 }
+      - { oyuncu: Alex Sarr, takim: WAS, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Kyshawn George + AJ Dybantsa 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Kyshawn George creates the play with a brilliant behind-the-back bounce pass on the break."
+  # güven: düşük (oy 2/3)
+  # diğer: Zach Collins + Noah Essengue 1/3
+  # pay diğer: 70/30 1/2
+  # pay diğer: 50/50 1/2
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Zach Collins makes an emphatic rejection at the rim to trigger the transition before Noa Essengue finishes at the other end.
+  # pay oyu 1/2
+  # benzer ad, aynı kişi mi? Noa Essengue / Noah Essengue; aynıysa sözlüğe ekle, farklıysa yoksay
+  # doğrulanmamış ad: Noa Essengue (sözlükte ve mevcut veride yok, güven düşük)
+  - sira: 4
+    eylem: blok
+    etiketler: [ hizli_hucum ]
+    aciklama: Zach Collins swats the shot at the rim to trigger a fast break finished with a slam by Noa Essengue.
+    zaman: "00:16"
+    katkilar:
+      - { oyuncu: Zach Collins, takim: CHI, rol: bloklayan, pay: 50 }
+      - { oyuncu: Noa Essengue, takim: CHI, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: dusuk
+      oy: 2/3
+      uyarilar:
+        - pay oyu 1/2
+        - benzer ad, aynı kişi mi? Noa Essengue / Noah Essengue; aynıysa sözlüğe ekle, farklıysa yoksay
+        - "doğrulanmamış ad: Noa Essengue (sözlükte ve mevcut veride yok, güven düşük)"
+      alternatifler:
+        - "diğer: Zach Collins + Noah Essengue 1/3"
+        - "pay diğer: 70/30 1/2"
+        - "pay diğer: 50/50 1/2"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Zach Collins makes an emphatic rejection at the rim to trigger the transition before Noa Essengue finishes at the other end."
+  # güven: orta (oy 2/3)
+  # diğer: Keyonte George + Ace Bailey 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: smac
+    etiketler: [ poster, hizli_hucum ]
+    aciklama: Ace Bailey gathers the ball on the fast break and throws down a ferocious poster dunk over Luka Doncic.
+    rakip: Luka Doncic
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Keyonte George + Ace Bailey 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
