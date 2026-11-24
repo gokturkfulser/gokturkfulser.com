@@ -1,0 +1,192 @@
+# Gemini ile üretildi: 2026-11-24T18:28:43.296Z, model gemini-3.8-flash
+
+tarih: 2026-11-23
+video: https://www.youtube.com/watch?v=ow4aC9AmYCc
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: smac
+    etiketler: [ poster, hizli_hucum, tek_el ]
+    aciklama: Kyle Filipowski runs the floor and detonates a monster one-handed poster dunk over Sandro Mamukelashvili through contact.
+    rakip: Sandro Mamukelashvili
+    zaman: "02:22"
+    katkilar:
+      - { oyuncu: Kyle Filipowski, takim: UTA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 2
+    eylem: blok
+    aciklama: Yves Missi meets Miles Bridges at the rim and emphatically denies his dunk attempt.
+    rakip: Miles Bridges
+    zaman: "02:06"
+    katkilar:
+      - { oyuncu: Yves Missi, takim: NOP, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: blok
+    etiketler: [ chase_down_blok, clutch ]
+    aciklama: Kelly Oubre Jr. hustles back in crunch time to pin Ajay Mitchell's layup off the backboard.
+    rakip: Ajay Mitchell
+    zaman: "01:48"
+    katkilar:
+      - { oyuncu: Kelly Oubre Jr., takim: IND, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Slawson initiates the highlight with an underhanded alley-oop pass on the break.
+  # pay oyu 2/3
+  - sira: 4
+    eylem: alley_oop
+    etiketler: [ hizli_hucum, tek_el ]
+    aciklama: Jalen Slawson pushes the fast break and scoops an underhand lob to Obi Toppin for the one-handed alley-oop jam.
+    zaman: "01:30"
+    katkilar:
+      - { oyuncu: Jalen Slawson, takim: IND, rol: pasor, pay: 50 }
+      - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - pay oyu 2/3
+      alternatifler:
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Slawson initiates the highlight with an underhanded alley-oop pass on the break."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: ucluk
+    etiketler: [ son_saniye, sirt_arkasi ]
+    aciklama: Jordan Poole goes behind his back on the fast break and drills a fading buzzer-beating three-pointer to close the first quarter.
+    zaman: "01:14"
+    katkilar:
+      - { oyuncu: Jordan Poole, takim: NOP, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Oubre tosses the lob pass over the defense.
+  - sira: 6
+    eylem: alley_oop
+    etiketler: [ ters, clutch ]
+    aciklama: Kelly Oubre Jr. lofts a pass to Obi Toppin, who skywalks for a high-difficulty reverse alley-oop finish.
+    zaman: "00:58"
+    katkilar:
+      - { oyuncu: Kelly Oubre Jr., takim: IND, rol: pasor, pay: 30 }
+      - { oyuncu: Obi Toppin, takim: IND, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Oubre tosses the lob pass over the defense."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ poster, tek_el, hizli_hucum ]
+    aciklama: Ace Bailey drives baseline and throws down a one-handed poster slam over Walker Kessler.
+    rakip: Walker Kessler
+    zaman: "00:43"
+    katkilar:
+      - { oyuncu: Ace Bailey, takim: UTA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Doncic whips a dazzling pinpoint full-court pass.
+  - sira: 8
+    eylem: alley_oop
+    etiketler: [ hizli_hucum ]
+    aciklama: Luka Doncic launches a laser full-court alley-oop pass to Ziaire Williams for the leaping layup.
+    zaman: "00:28"
+    katkilar:
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
+      - { oyuncu: Ziaire Williams, takim: LAL, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Doncic whips a dazzling pinpoint full-court pass."
+  # güven: orta (oy 3/3)
+  # eylem diğer: Alley-oop 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Ball creates the highlight with a spectacular mid-air pump-fake pass.
+  # eylem oyu 2/3
+  - sira: 9
+    eylem: pas
+    aciklama: LaMelo Ball fakes a shot in mid-air and delivers an alley-oop feed to Jonathan Kuminga for the aerial finish.
+    zaman: "00:14"
+    katkilar:
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
+      - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Alley-oop 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Ball creates the highlight with a spectacular mid-air pump-fake pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: ucluk
+    aciklama: Tre Jones attempts an alley-oop pass from beyond the arc that accidentally swishes through the net for three points.
+    zaman: "00:03"
+    katkilar:
+      - { oyuncu: Tre Jones, takim: CHI, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
