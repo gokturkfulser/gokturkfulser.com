@@ -1,0 +1,195 @@
+# Gemini ile üretildi: 2026-11-25T12:02:49.694Z, model gemini-3.8-flash
+
+tarih: 2026-11-24
+video: https://www.youtube.com/watch?v=8fxZAV3qXxk
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 1
+    eylem: calim
+    etiketler: [ crossover ]
+    aciklama: Paul George puts Kyshawn George on the floor with a crossover, stares him down, and knocks down the mid-range jumper.
+    rakip: Kyshawn George
+    zaman: "02:13"
+    katkilar:
+      - { oyuncu: Paul George, takim: BOS, rol: calim_atan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 2/3)
+  # diğer: Walter Clayton Jr. + Keshad Johnson 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Clayton Jr. pushes the break and leads the transition pass.
+  # benzer ad, aynı kişi mi? Morez Johnson Jr. / Keshad Johnson; aynıysa sözlüğe ekle, farklıysa yoksay
+  - sira: 2
+    eylem: smac
+    aciklama: Walter Clayton Jr. finds Morez Johnson Jr. on the break for an emphatic one-handed slam.
+    zaman: "02:01"
+    katkilar:
+      - { oyuncu: Walter Clayton Jr., takim: DAL, rol: pasor, pay: 30 }
+      - { oyuncu: Morez Johnson Jr., takim: DAL, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      uyarilar:
+        - benzer ad, aynı kişi mi? Morez Johnson Jr. / Keshad Johnson; aynıysa sözlüğe ekle, farklıysa yoksay
+      alternatifler:
+        - "diğer: Walter Clayton Jr. + Keshad Johnson 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Clayton Jr. pushes the break and leads the transition pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: turnike
+    etiketler: [ and_one ]
+    aciklama: Jamal Murray absorbs contact inside and converts an acrobatic circus layup for an and-one.
+    zaman: "01:44"
+    katkilar:
+      - { oyuncu: Jamal Murray, takim: DEN, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 50/50 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Young shakes his defender with a sharp crossover to initiate the play.
+  # eylem oyu 2/3
+  # pay oyu 2/3
+  - sira: 4
+    eylem: calim
+    etiketler: [ crossover, tek_el ]
+    aciklama: Trae Young crosses over Hugo Gonzalez and feeds a cutting Kyshawn George for a one-handed dunk.
+    rakip: Hugo Gonzalez
+    zaman: "01:27"
+    katkilar:
+      - { oyuncu: Trae Young, takim: WAS, rol: calim_atan, pay: 70 }
+      - { oyuncu: Kyshawn George, takim: WAS, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+        - "pay diğer: 50/50 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Young shakes his defender with a sharp crossover to initiate the play."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Irving creates the highlight with a stunning no-look bounce pass.
+  - sira: 5
+    eylem: pas
+    etiketler: [ bakmadan ]
+    aciklama: Kyrie Irving delivers a pinpoint no-look bounce pass to Naji Marshall for a corner three-pointer.
+    zaman: "01:11"
+    katkilar:
+      - { oyuncu: Kyrie Irving, takim: DAL, rol: pasor, pay: 70 }
+      - { oyuncu: Naji Marshall, takim: DAL, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Irving creates the highlight with a stunning no-look bounce pass."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 6
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Caleb Martin jumps the passing lane for a steal and sprints away for a two-handed dunk.
+    zaman: "00:56"
+    katkilar:
+      - { oyuncu: Caleb Martin, takim: DAL, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 7
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: AJ Dybantsa drives into the paint and rises up for an authoritative one-handed slam.
+    zaman: "00:42"
+    katkilar:
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 8
+    eylem: blok
+    aciklama: Anthony Black meets Daniss Jenkins at the rim to record an emphatic rejection.
+    rakip: Daniss Jenkins
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Anthony Black, takim: ORL, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Dybantsa lofts a perfectly placed alley-oop feed.
+  - sira: 9
+    eylem: alley_oop
+    aciklama: AJ Dybantsa delivers a pinpoint lob to Bilal Coulibaly for an alley-oop slam.
+    zaman: "00:18"
+    katkilar:
+      - { oyuncu: AJ Dybantsa, takim: WAS, rol: pasor, pay: 50 }
+      - { oyuncu: Bilal Coulibaly, takim: WAS, rol: bitiren, pay: 50 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Dybantsa lofts a perfectly placed alley-oop feed."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ hizli_hucum ]
+    aciklama: Daniss Jenkins intercepts a pass and races downcourt for a fast-break slam.
+    zaman: "00:02"
+    katkilar:
+      - { oyuncu: Daniss Jenkins, takim: DET, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
