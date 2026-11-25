@@ -3,13 +3,14 @@
 tarih: 2026-11-23
 video: https://www.youtube.com/watch?v=ow4aC9AmYCc
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
   - sira: 1
     eylem: smac
-    etiketler: [ poster, hizli_hucum, tek_el ]
+    etiketler: [ poster, hizli_hucum ]
     aciklama: Kyle Filipowski runs the floor and detonates a monster one-handed poster dunk over Sandro Mamukelashvili through contact.
     rakip: Sandro Mamukelashvili
     zaman: "02:22"
@@ -136,13 +137,12 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # pay: Doncic whips a dazzling pinpoint full-court pass.
   - sira: 8
-    eylem: alley_oop
+    eylem: pas
     etiketler: [ hizli_hucum ]
     aciklama: Luka Doncic launches a laser full-court alley-oop pass to Ziaire Williams for the leaping layup.
     zaman: "00:28"
     katkilar:
-      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 70 }
-      - { oyuncu: Ziaire Williams, takim: LAL, rol: bitiren, pay: 30 }
+      - { oyuncu: Luka Doncic, takim: LAL, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
@@ -158,11 +158,11 @@ oyunlar:
   # eylem oyu 2/3
   - sira: 9
     eylem: pas
+    etiketler: [ bakmadan ]
     aciklama: LaMelo Ball fakes a shot in mid-air and delivers an alley-oop feed to Jonathan Kuminga for the aerial finish.
     zaman: "00:14"
     katkilar:
-      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 70 }
-      - { oyuncu: Jonathan Kuminga, takim: MIN, rol: bitiren, pay: 30 }
+      - { oyuncu: LaMelo Ball, takim: MIN, rol: pasor, pay: 100 }
     kontrol:
       guven: orta
       oy: 3/3
