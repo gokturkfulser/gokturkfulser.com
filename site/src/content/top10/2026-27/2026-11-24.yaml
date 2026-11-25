@@ -4,6 +4,7 @@ tarih: 2026-11-24
 video: https://www.youtube.com/watch?v=8fxZAV3qXxk
 kaynak: gemini
 inceleme: bekliyor
+elle_duzenlendi: true
 oyunlar:
   # güven: yüksek (oy 3/3)
   # model güveni: yüksek; yüksek; yüksek
@@ -30,6 +31,7 @@ oyunlar:
   - sira: 2
     eylem: smac
     aciklama: Walter Clayton Jr. finds Morez Johnson Jr. on the break for an emphatic one-handed slam.
+    rakip: Spencer Jones
     zaman: "02:01"
     katkilar:
       - { oyuncu: Walter Clayton Jr., takim: DAL, rol: pasor, pay: 30 }
@@ -101,8 +103,7 @@ oyunlar:
     aciklama: Kyrie Irving delivers a pinpoint no-look bounce pass to Naji Marshall for a corner three-pointer.
     zaman: "01:11"
     katkilar:
-      - { oyuncu: Kyrie Irving, takim: DAL, rol: pasor, pay: 70 }
-      - { oyuncu: Naji Marshall, takim: DAL, rol: bitiren, pay: 30 }
+      - { oyuncu: Kyrie Irving, takim: DAL, rol: pasor, pay: 100 }
     kontrol:
       guven: yuksek
       oy: 3/3
