@@ -3,16 +3,16 @@
 tarih: 2026-11-25
 video: https://www.youtube.com/watch?v=OqcEIMYFOLc
 kaynak: gemini
-inceleme: bekliyor
+inceleme: onaylandi
+elle_duzenlendi: true
 oyunlar:
   # güven: orta (oy 3/3)
   # eylem diğer: Diğer 1/3
   # model güveni: yüksek; yüksek; yüksek
   # eylem oyu 2/3
   - sira: 1
-    eylem: turnike
+    eylem: orta_mesafe
     aciklama: Trapped behind the baseline by a double-team, Mikal Bridges flips in an unbelievable shot over the corner of the backboard.
-    rakip: Jarrett Allen
     zaman: "02:10"
     katkilar:
       - { oyuncu: Mikal Bridges, takim: NYK, rol: bitiren, pay: 100 }
@@ -32,10 +32,9 @@ oyunlar:
   # model güveni: yüksek; yüksek; yüksek
   # eylem oyu 2/3
   - sira: 2
-    eylem: turnike
+    eylem: ucluk
     etiketler: [ son_saniye ]
     aciklama: Jaden McDaniels sinks an off-balance, left-handed circus flip shot over Alex Caruso at the third-quarter buzzer.
-    rakip: Alex Caruso
     zaman: "01:54"
     katkilar:
       - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 100 }
@@ -142,8 +141,7 @@ oyunlar:
     aciklama: Naz Reid pushes the break and delivers a spectacular behind-the-back bounce pass to Moussa Diabate for the flush.
     zaman: "00:40"
     katkilar:
-      - { oyuncu: Naz Reid, takim: CHA, rol: pasor, pay: 70 }
-      - { oyuncu: Moussa Diabate, takim: CHA, rol: bitiren, pay: 30 }
+      - { oyuncu: Naz Reid, takim: CHA, rol: pasor, pay: 100 }
     kontrol:
       guven: dusuk
       oy: 1/3
@@ -162,14 +160,13 @@ oyunlar:
   # model güveni: orta (Passer identified as Josh Okogie from jersey number 2.); yüksek; yüksek
   # pay: Okogie tosses a pinpoint lob to set up Maluach's explosive poster finish.
   - sira: 8
-    eylem: alley_oop
+    eylem: smac
     etiketler: [ poster ]
     aciklama: Khaman Maluach catches an alley-oop feed from Josh Okogie and throws down a thunderous one-handed poster dunk over Jabari Smith Jr.
     rakip: Jabari Smith Jr.
     zaman: "00:30"
     katkilar:
-      - { oyuncu: Josh Okogie, takim: PHX, rol: pasor, pay: 30 }
-      - { oyuncu: Khaman Maluach, takim: PHX, rol: bitiren, pay: 70 }
+      - { oyuncu: Khaman Maluach, takim: PHX, rol: bitiren, pay: 100 }
     kontrol:
       guven: orta
       oy: 2/3
