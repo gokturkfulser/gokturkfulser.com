@@ -1,0 +1,215 @@
+# Gemini ile üretildi: 2026-11-26T14:34:18.388Z, model gemini-3.8-flash
+
+tarih: 2026-11-25
+video: https://www.youtube.com/watch?v=OqcEIMYFOLc
+kaynak: gemini
+inceleme: bekliyor
+oyunlar:
+  # güven: orta (oy 3/3)
+  # eylem diğer: Diğer 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 1
+    eylem: turnike
+    aciklama: Trapped behind the baseline by a double-team, Mikal Bridges flips in an unbelievable shot over the corner of the backboard.
+    rakip: Jarrett Allen
+    zaman: "02:10"
+    katkilar:
+      - { oyuncu: Mikal Bridges, takim: NYK, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Diğer 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Üçlük 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # eylem oyu 2/3
+  - sira: 2
+    eylem: turnike
+    etiketler: [ son_saniye ]
+    aciklama: Jaden McDaniels sinks an off-balance, left-handed circus flip shot over Alex Caruso at the third-quarter buzzer.
+    rakip: Alex Caruso
+    zaman: "01:54"
+    katkilar:
+      - { oyuncu: Jaden McDaniels, takim: MIN, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+      alternatifler:
+        - "eylem diğer: Üçlük 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 3
+    eylem: turnike
+    etiketler: [ sirt_arkasi, ters ]
+    aciklama: Victor Wembanyama wraps the ball behind his back and scoops in an acrobatic reverse layup under Donovan Clingan.
+    rakip: Donovan Clingan
+    zaman: "01:36"
+    katkilar:
+      - { oyuncu: Victor Wembanyama, takim: SAS, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 4
+    eylem: smac
+    etiketler: [ poster ]
+    aciklama: Sidy Cissoko drives into the paint and throws down a fearless poster slam over Victor Wembanyama.
+    rakip: Victor Wembanyama
+    zaman: "01:24"
+    katkilar:
+      - { oyuncu: Sidy Cissoko, takim: POR, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 5
+    eylem: blok
+    etiketler: [ chase_down_blok ]
+    aciklama: Bobby Portis hustles back in transition to pin Dominick Barlow's fast-break layup against the backboard.
+    rakip: Dominick Barlow
+    zaman: "01:09"
+    katkilar:
+      - { oyuncu: Bobby Portis, takim: MIA, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: orta (oy 3/3)
+  # eylem diğer: Smaç 1/3
+  # pay diğer: 30/70 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Smart draws defenders on the baseline drive and delivers a clever bounce pass to Eason.
+  # eylem oyu 2/3
+  # pay oyu 2/3
+  - sira: 6
+    eylem: pas
+    etiketler: [ ters ]
+    aciklama: Marcus Smart drives baseline and threads a sharp bounce pass to Tari Eason for a baseline slam.
+    zaman: "00:54"
+    katkilar:
+      - { oyuncu: Marcus Smart, takim: HOU, rol: pasor, pay: 70 }
+      - { oyuncu: Tari Eason, takim: HOU, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: orta
+      oy: 3/3
+      uyarilar:
+        - eylem oyu 2/3
+        - pay oyu 2/3
+      alternatifler:
+        - "eylem diğer: Smaç 1/3"
+        - "pay diğer: 30/70 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Smart draws defenders on the baseline drive and delivers a clever bounce pass to Eason."
+  # güven: düşük (oy 1/3)
+  # diğer: Miles Bridges + Moussa Diabate 1/3
+  # diğer: Josh Green + Moussa Diabate 1/3
+  # model güveni: yüksek; yüksek; yüksek
+  # pay: Reid leads the fast break and dishes a flashy behind-the-back bounce pass to set up Diabate.
+  # uzlaşma yok
+  - sira: 7
+    eylem: pas
+    etiketler: [ sirt_arkasi, hizli_hucum ]
+    aciklama: Naz Reid pushes the break and delivers a spectacular behind-the-back bounce pass to Moussa Diabate for the flush.
+    zaman: "00:40"
+    katkilar:
+      - { oyuncu: Naz Reid, takim: CHA, rol: pasor, pay: 70 }
+      - { oyuncu: Moussa Diabate, takim: CHA, rol: bitiren, pay: 30 }
+    kontrol:
+      guven: dusuk
+      oy: 1/3
+      uyarilar:
+        - uzlaşma yok
+      alternatifler:
+        - "diğer: Miles Bridges + Moussa Diabate 1/3"
+        - "diğer: Josh Green + Moussa Diabate 1/3"
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+        - "pay: Reid leads the fast break and dishes a flashy behind-the-back bounce pass to set up Diabate."
+  # güven: orta (oy 2/3)
+  # diğer: Collin Gillespie + Khaman Maluach 1/3
+  # model güveni: orta (Passer identified as Josh Okogie from jersey number 2.); yüksek; yüksek
+  # pay: Okogie tosses a pinpoint lob to set up Maluach's explosive poster finish.
+  - sira: 8
+    eylem: alley_oop
+    etiketler: [ poster ]
+    aciklama: Khaman Maluach catches an alley-oop feed from Josh Okogie and throws down a thunderous one-handed poster dunk over Jabari Smith Jr.
+    rakip: Jabari Smith Jr.
+    zaman: "00:30"
+    katkilar:
+      - { oyuncu: Josh Okogie, takim: PHX, rol: pasor, pay: 30 }
+      - { oyuncu: Khaman Maluach, takim: PHX, rol: bitiren, pay: 70 }
+    kontrol:
+      guven: orta
+      oy: 2/3
+      alternatifler:
+        - "diğer: Collin Gillespie + Khaman Maluach 1/3"
+      model_guveni:
+        - orta (Passer identified as Josh Okogie from jersey number 2.)
+        - yüksek
+        - yüksek
+        - "pay: Okogie tosses a pinpoint lob to set up Maluach's explosive poster finish."
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 9
+    eylem: blok
+    aciklama: Adem Bona rises up at the rim to emphatically reject Giannis Antetokounmpo's dunk attempt.
+    rakip: Giannis Antetokounmpo
+    zaman: "00:15"
+    katkilar:
+      - { oyuncu: Adem Bona, takim: PHI, rol: bloklayan, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
+  # güven: yüksek (oy 3/3)
+  # model güveni: yüksek; yüksek; yüksek
+  - sira: 10
+    eylem: smac
+    etiketler: [ tek_el ]
+    aciklama: Giannis Antetokounmpo attacks downhill in transition and throws down a ferocious one-handed southpaw dunk.
+    rakip: Dominick Barlow
+    zaman: "00:00"
+    katkilar:
+      - { oyuncu: Giannis Antetokounmpo, takim: MIA, rol: bitiren, pay: 100 }
+    kontrol:
+      guven: yuksek
+      oy: 3/3
+      model_guveni:
+        - yüksek
+        - yüksek
+        - yüksek
